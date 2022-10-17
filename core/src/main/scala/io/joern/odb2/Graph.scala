@@ -32,7 +32,6 @@ object DebugDump {
     val sb = new java.lang.StringBuilder(0)
     val numstr = g._nodes.map { _.size }.zipWithIndex.map { case (kid, sz) => s"${kid}: ${sz}" }.mkString(", ")
     sb.append(s"#Node numbers (kindId, nnodes) ${numstr}, total ${g._nodes.iterator.map { _.size }.sum}\n")
-    //sb.append(s"Edge types: ${g.schema.getNEdgeKinds}\\")
     for (kid <- Range(0, g.schema.getNNodeKinds)) {
       sb.append(s"Node kind ${kid}. (eid, nEdgesOut, nEdgesIn): ")
       for (eid <- Range(0, g.schema.getNEdgeKinds)) {
