@@ -283,5 +283,55 @@ class GraphTests extends AnyWordSpec with Matchers {
       DebugDump.debugDump(g) shouldBe expectation
     }
 
+    "permit node deletion" in {
+      var g = mkGraph()
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) 4: 0, total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]), 
+          |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
+          |   V0_1   [0] <- V0_0, V0_3, V0_0
+          |   V0_2   [0] <- V0_0, V0_0, V0_3
+          |   V0_3   [0] -> V0_1, V0_2
+          |   V0_3   [0] <- V0_0
+          |""".stripMargin
+
+      DiffGraphApplier.applyDiff(g,
+                                 (new DiffGraphBuilder)
+                                   .removeNode((g._nodes(0)(0))))
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) 4: 0, total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]), 
+          |   V0_1   [0] <- V0_3
+          |   V0_2   [0] <- V0_3
+          |   V0_3   [0] -> V0_1, V0_2
+          |""".stripMargin
+
+      g = mkGraph()
+      DiffGraphApplier.applyDiff(g,
+                                 (new DiffGraphBuilder)
+                                   .removeNode((g._nodes(0)(1))))
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) 4: 0, total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 4 [dense], 4 [dense]), 
+          |   V0_0   [0] -> V0_2, V0_3, V0_2
+          |   V0_2   [0] <- V0_0, V0_0, V0_3
+          |   V0_3   [0] -> V0_2
+          |   V0_3   [0] <- V0_0
+          |""".stripMargin
+
+      g = mkGraph()
+      DiffGraphApplier.applyDiff(g,
+                                 (new DiffGraphBuilder)
+                                   .removeNode((g._nodes(0)(2)))
+                                   .removeNode((g._nodes(0)(3))))
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) 4: 0, total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]), 
+          |   V0_0   [0] -> V0_1, V0_1
+          |   V0_1   [0] <- V0_0, V0_0
+          |""".stripMargin
+
+    }
+
   }
 }

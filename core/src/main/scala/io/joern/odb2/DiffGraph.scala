@@ -21,6 +21,11 @@ class DiffGraphBuilder {
     this
   }
 
+  def removeNode(node: GNode): this.type = {
+    this.buffer.append(new DelNode(node))
+    this
+  }
+
   def addEdgeUnsafeUnidirectional(src: DNodeOrNode, dst: DNodeOrNode, eid: Short): this.type = {
     this.buffer.append(new AddEdgeUnprocessed(src, dst, eid, true));
     this
@@ -41,7 +46,8 @@ class DiffGraphBuilder {
   }
 }
 
-class AddEdgeProcessed(val src: GNode, val dst: GNode)
+class AddEdgeProcessed(val src: GNode, val dst: GNode, val eid: Short)
+class DelNode(val node: GNode) extends RawUpdate
 
 object DiffGraphApplier {
   def applyDiff(g: Graph, diff: DiffGraphBuilder): Unit = {
@@ -50,13 +56,16 @@ object DiffGraphApplier {
   }
 }
 
+/**The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff*/
 class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](g.schema.getNNodeKinds)
-  val newEdges = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](g.schema.getNEdgeKinds * g.schema.getNNodeKinds * 2)
-  val delEdges = new Array[mutable.ArrayBuffer[Edge]](g.schema.getNEdgeKinds * g.schema.getNNodeKinds * 2)
+  //newEdges and delEdges are oversized, in order to permit usage of the same indexing function
+  val newEdges = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](g._neighbors.size)
+  val delEdges = new Array[mutable.ArrayBuffer[Edge]](g._neighbors.size)
   val deferred = new mutable.ArrayDeque[DNode]()
+  val delNodes = mutable.ArrayBuffer[GNode]()
 
-  def emplace[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
+  private def emplace[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
     if (a(pos) == null) a(pos) = mutable.ArrayBuffer[T]()
     a(pos).append(item)
   }
@@ -89,6 +98,16 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
   }
 
   def splitUpdate(): Unit = {
+
+    for (item <- diff.buffer) item match {
+      case delNode: DelNode =>
+        if (!AccessHelpers.isDeleted(delNode.node)) {
+          AccessHelpers.markDeleted(delNode.node)
+          delNodes.append(delNode.node)
+        }
+      case _ =>
+    }
+
     for (item <- diff.buffer) {
       item match {
         case a: DNode =>
@@ -96,10 +115,12 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
         case a: AddEdgeUnprocessed =>
           val src = getGNode(a.src)
           val dst = getGNode(a.dst)
-          emplace(newEdges, new AddEdgeProcessed(src, dst), (src.kindId + g.schema.getNNodeKinds * a.eid * 2))
-          if (!a.unsafeUnidirectional)
-            emplace(newEdges, new AddEdgeProcessed(dst, src), (dst.kindId + g.schema.getNNodeKinds * (a.eid * 2 + 1)))
-        case e: Edge =>
+          if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
+            emplace(newEdges, new AddEdgeProcessed(src, dst, a.eid), g.schema.indexEdge(src.kindId, 1, a.eid))
+            if (!a.unsafeUnidirectional)
+              emplace(newEdges, new AddEdgeProcessed(dst, src, a.eid), g.schema.indexEdge(dst.kindId, 0, a.eid))
+          }
+        case e: Edge if !AccessHelpers.isDeleted(e.src) && !AccessHelpers.isDeleted(e.dst) =>
           /**This is the delEdge case. It is massively annoying.
             *
             * In order to support edge properties, we need to grab the right edge from e.src->e.dst.
@@ -114,7 +135,7 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
             *  */
           if (e.subSeq > 0) {
             //the edge is forward, i.e. pulled from getEdgesOut
-            emplace(delEdges, e, (e.src.kindId + g.schema.getNNodeKinds * e.eid * 2))
+            emplace(delEdges, e, g.schema.indexEdge(e.src.kindId, 1, e.eid))
             val nbo = Accessors.getNeighborsOut(e.src, e.eid)
             var count = 0
             assert(nbo(e.subSeq - 1) == e.dst)
@@ -125,14 +146,10 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
               if (nbi(idx) == e.src) { count -= 1 }
               idx += 1
             }
-            emplace(delEdges,
-                    new Edge(e.dst, e.src, e.eid, idx),
-                    (e.dst.kindId + g.schema.getNNodeKinds * (e.eid * 2 + 1)))
+            emplace(delEdges, new Edge(e.dst, e.src, e.eid, idx), g.schema.indexEdge(e.dst.kindId, 0, e.eid))
           } else if (e.subSeq < 0) {
             //the edge is backwards, i.e. pulled from getEdgesIn
-            emplace(delEdges,
-                    new Edge(e.dst, e.src, e.eid, -e.subSeq),
-                    (e.dst.kindId + g.schema.getNNodeKinds * (e.eid * 2 + 1)))
+            emplace(delEdges, new Edge(e.dst, e.src, e.eid, -e.subSeq), g.schema.indexEdge(e.dst.kindId, 0, e.eid))
             val nbi = Accessors.getNeighborsIn(e.dst, e.eid)
             var count = 0
             assert(nbi(-e.subSeq - 1) == e.src)
@@ -143,9 +160,11 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
               if (nbo(idx) == e.dst) count -= 1
               idx += 1
             }
-            emplace(delEdges, new Edge(e.src, e.dst, e.eid, idx), (e.src.kindId + g.schema.getNNodeKinds * e.eid * 2))
+            emplace(delEdges, new Edge(e.src, e.dst, e.eid, idx), g.schema.indexEdge(e.src.kindId, 1, e.eid))
           } else assert(false)
-
+        case delNode: DelNode =>
+          //already processed
+          assert(AccessHelpers.isDeleted(delNode.node))
       }
       drainDeferred()
     }
@@ -153,12 +172,16 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
 
   def applyUpdate(): Unit = {
     splitUpdate()
-    //order: 1. remove edges, 2. add nodes, 3. add edges
+    //order: 1. remove edges, 2. add nodes, 3. delete nodes, 4. add edges
     for (kid <- Range(0, g.schema.getNNodeKinds);
          eid <- Range(0, g.schema.getNEdgeKinds);
          inOut <- Array(true, false)) deleteEdges(kid.asInstanceOf[Short], eid.asInstanceOf[Short], inOut)
 
     for (kid <- Range(0, g.schema.getNNodeKinds)) addNodes(kid.asInstanceOf[Short])
+
+    if (delNodes.nonEmpty) {
+      deleteNodes()
+    }
 
     for (kid <- Range(0, g.schema.getNNodeKinds);
          eid <- Range(0, g.schema.getNEdgeKinds);
@@ -166,13 +189,117 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
 
   }
 
+  def deleteNodes(): Unit = {
+    val replacement = new Array[AnyRef](g._neighbors.length)
+    def cowgetQty(kid: Int, inout: Int, eid: Int): Array[Int] = {
+      val pos = g.schema.indexEdge(kid, inout, eid)
+      if (replacement(pos) != null) replacement(pos).asInstanceOf[Array[Int]]
+      else {
+        val r = g._neighbors(pos).asInstanceOf[Array[Int]].clone()
+        ranToLen(r)
+        replacement(pos) = r
+        r
+      }
+    }
+
+    def cowgetVal(kid: Int, inout: Int, eid: Int): Array[GNode] = {
+      val pos = g.schema.indexEdge(kid, inout, eid)
+      if (replacement(pos + 1) != null) replacement(pos + 1).asInstanceOf[Array[GNode]]
+      else {
+        val r = g._neighbors(pos + 1).asInstanceOf[Array[GNode]].clone()
+        replacement(pos + 1) = r
+        r
+      }
+    }
+
+    for (del <- delNodes;
+         eid <- Range(0, g.schema.getNEdgeKinds);
+         inout <- Range(0, 2)) {
+      //this loop is not threadsafe. Don't fiddle with locks. It is possible to handle each eid separately, though.
+      //alternative alg can be fully multithreaded
+      val pos = g.schema.indexEdge(del.kindId, inout, eid)
+      val qtyOld = g._neighbors(pos).asInstanceOf[Array[Int]]
+      val oldVal = g._neighbors(pos + 1).asInstanceOf[Array[GNode]]
+      if (qtyOld != null) {
+        val start = get(qtyOld, del.seqId)
+        val end = get(qtyOld, del.seqId + 1)
+        if (end - start > 0) {
+          //there is something to delete.
+          val modQty = cowgetQty(del.kindId, inout, eid)
+          val modVal = cowgetVal(del.kindId, inout, eid)
+          //val (modQty, modVal) = cowget(del.kindId, inout, eid)
+          modQty(del.seqId) = 0
+          for (idx <- Range(start, end)) {
+            modVal(idx) = del // we replace the neighbor with a tombstone, conveniently del itself
+            val neighbor = oldVal(idx)
+            if (!AccessHelpers.isDeleted(neighbor)) {
+              //the backwards edge is already a tombstone (it points to del). So we only need to adjust the length.
+              //in order to avoid double-adjusting, we only do this if the neighbor itself is not deleted.
+              cowgetQty(neighbor.kindId, 1 - inout, eid)(neighbor.seqId) -= 1
+            }
+          }
+        }
+      }
+    }
+    //Now replacements is filled with the modifications.
+    for (kid <- Range(0, g.schema.getNNodeKinds);
+         eid <- Range(0, g.schema.getNEdgeKinds);
+         inout <- Range(0, 2)) {
+      val pos = g.schema.indexEdge(kid, inout, eid)
+      if (replacement(pos) != null) {
+        val newQty = replacement(pos).asInstanceOf[Array[Int]]
+        lenToRan(newQty)
+        val newVal = new Array[GNode](get(newQty, g._nodes(kid).length))
+        val oldVal =
+          (if (replacement(pos + 1) != null) replacement(pos + 1) else g._neighbors(pos + 1)).asInstanceOf[Array[GNode]]
+        var idx = 0
+        var idxOut = 0
+        while (idx < oldVal.length) {
+          if (!AccessHelpers.isDeleted(oldVal(idx))) {
+            newVal(idxOut) = oldVal(idx)
+            idxOut += 1
+          }
+          idx += 1
+        }
+        assert(idxOut == newVal.length)
+        g._neighbors(pos) = newQty
+        g._neighbors(pos + 1) = newVal
+      }
+    }
+  }
+
+  def ranToLen(a: Array[Int]): Unit = {
+    if (a.length > 0) {
+      assert(a(0) == 0)
+      for (idx <- Range(0, a.length - 1)) {
+        a(idx) = a(idx + 1) - a(idx)
+      }
+    }
+    a(a.length - 1) = 0
+  }
+
+  def lenToRan(a: Array[Int]): Unit = {
+    if (a.length > 0) {
+      assert(a.last == 0)
+      var count = 0
+      var idx = 0
+      while (idx < a.length) {
+        val tmp = a(idx)
+        a(idx) = count
+        count += tmp
+        idx += 1
+      }
+    }
+  }
+
   def addNodes(kid: Short): Unit = {
     if (newNodes(kid) == null || newNodes(kid).isEmpty) { return }
     g._nodes(kid) = g._nodes(kid).appendedAll(newNodes(kid).iterator.map { _.storedRef.get })
+    g.nnodes(kid) += newNodes(kid).size
   }
 
   def deleteEdges(kid: Short, eid: Short, isIn: Boolean): Unit = {
-    val pos = kid + g.schema.getNNodeKinds * (2 * eid + (if (isIn) 1 else 0))
+    val pos = g.schema.indexEdge(kid, if (isIn) 0 else 1, eid)
     val de = delEdges(pos)
     if (de == null) return
     assert(de.forall { e =>
@@ -183,10 +310,10 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
     }
     dedupBy(de, (e: Edge) => ((e.src.seqId.toLong << 32) + e.subSeq.toLong))
     val nnodes = g._nodes(kid).size
-    val oldQty = g._neighbors(2 * pos).asInstanceOf[Array[Int]]
-    val oldVal = g._neighbors(2 * pos + 1).asInstanceOf[Array[GNode]]
+    val oldQty = g._neighbors(pos).asInstanceOf[Array[Int]]
+    val oldVal = g._neighbors(pos + 1).asInstanceOf[Array[GNode]]
 
-    val newQty = new Array[Int](oldQty.length)
+    val newQty = new Array[Int](nnodes + 1)
     val newVal = new Array[GNode](oldVal.length - de.length)
 
     var delPtr = 0
@@ -219,18 +346,19 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
         newQty(seq + 1) = start + idx - delPtr
       }
     }
-    g._neighbors(2 * pos) = newQty
-    g._neighbors(2 * pos + 1) = newVal
+    g._neighbors(pos) = newQty
+    g._neighbors(pos + 1) = newVal
   }
 
   def addEdges(kid: Short, eid: Short, isIn: Boolean): Unit = {
-    val pos = kid + g.schema.getNNodeKinds * (2 * eid + (if (isIn) 1 else 0))
+    val pos = g.schema.indexEdge(kid, if (isIn) 0 else 1, eid)
     val ne = newEdges(pos)
     if (ne == null || ne.isEmpty) return;
     ne.sortInPlaceBy { _.src.seqId }
+    assert(ne.forall(e => e.src.kindId == kid && e.eid == eid))
     val nnodes = g._nodes(kid).size
-    val oldQty = Option(g._neighbors(2 * pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
-    val oldVal = Option(g._neighbors(2 * pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
+    val oldQty = Option(g._neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+    val oldVal = Option(g._neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
     val newQty = new Array[Int](nnodes + 1)
     val newVal = new Array[GNode](oldVal.size + ne.size)
     var nePtr = 0
@@ -252,8 +380,8 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
       }
       nxIdx = seq + 1
     }
-    g._neighbors(2 * pos) = newQty
-    g._neighbors(2 * pos + 1) = newVal
+    g._neighbors(pos) = newQty
+    g._neighbors(pos + 1) = newVal
   }
 
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last

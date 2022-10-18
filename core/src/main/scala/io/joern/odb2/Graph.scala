@@ -14,14 +14,14 @@ object Accessors {
     }
 
   def getNeighborsOut(n: GNode, eid: Int): IndexedSeq[GNode] =
-    getNeighborsOut(n.graph, eid.asInstanceOf[Short], n.kindId, n.seqId)
+    getNeighborsOut(n.graph, eid.toShort, n.kindId, n.seqId)
   def getNeighborsIn(n: GNode, eid: Int): IndexedSeq[GNode] =
-    getNeighborsIn(n.graph, eid.asInstanceOf[Short], n.kindId, n.seqId)
+    getNeighborsIn(n.graph, eid.toShort, n.kindId, n.seqId)
 
   def getNeighborsOut(g: Graph, eid: Short, kindId: Short, seqid: Int): ISeq[GNode] =
-    getNeighbors(g, 2 * (kindId + g.schema.getNNodeKinds * eid * 2), seqid)
+    getNeighbors(g, g.schema.indexEdge(kindId, 1, eid), seqid)
   def getNeighborsIn(g: Graph, eid: Short, kindId: Short, seqid: Int): ISeq[GNode] =
-    getNeighbors(g, 2 * (kindId + g.schema.getNNodeKinds * (eid * 2 + 1)), seqid)
+    getNeighbors(g, g.schema.indexEdge(kindId, 0, eid), seqid)
 
   private def getNeighbors(g: Graph, pos: Int, seqid: Int): ISeq[GNode] = {
     val qty = g._neighbors(pos).asInstanceOf[Array[Int]]
@@ -36,7 +36,8 @@ object Accessors {
 
 object DebugDump {
 
-  def printNode(n: GNode): String = s"V${n.kindId}_${n.seqId}"
+  def printNode(n: GNode): String =
+    if (!AccessHelpers.isDeleted(n)) s"V${n.kindId}_${n.seqId}" else s"V${n.kindId}_${n.seqId} (deleted)"
 
   def debugDump(g: Graph): String = {
     val sb = new java.lang.StringBuilder(0)
@@ -45,12 +46,12 @@ object DebugDump {
     for (kid <- Range(0, g.schema.getNNodeKinds)) {
       sb.append(s"Node kind ${kid}. (eid, nEdgesOut, nEdgesIn): ")
       for (eid <- Range(0, g.schema.getNEdgeKinds)) {
-        val posOut = 2 * (kid + g.schema.getNNodeKinds * eid * 2)
+        val posOut = g.schema.indexEdge(kid, 1, eid)
         val neO = g._neighbors(posOut + 1) match {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
         }
-        val posIn = 2 * (kid + g.schema.getNNodeKinds * (eid * 2 + 1))
+        val posIn = g.schema.indexEdge(kid, 0, eid)
         val neIn = g._neighbors(posIn + 1) match {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
@@ -60,6 +61,7 @@ object DebugDump {
       sb.append("\n")
 
       for (n <- g._nodes(kid)) {
+
         for (eid <- Range(0, g.schema.getNEdgeKinds)) {
           val nbo = Accessors.getNeighborsOut(n, eid)
           if (nbo.nonEmpty) {
@@ -83,5 +85,11 @@ class Graph(val schema: Schema) {
   val _nodes: Array[Array[GNode]] = new Array[Array[GNode]](schema.getNNodeKinds)
   val _neighbors: Array[AnyRef] = new Array[AnyRef](schema.getNNodeKinds * schema.getNEdgeKinds * 4)
 
+  val nnodes: Array[Int] = new Array[Int](schema.getNNodeKinds)
+  def nodes(kid: Short): Iterator[GNode] = {
+    if (_nodes(kid).length == nnodes(kid)) _nodes(kid).iterator
+    else _nodes(kid).iterator.filter { !AccessHelpers.isDeleted(_) }
+  }
   for (idx <- Range(0, _nodes.length)) _nodes(idx) = new Array[GNode](0)
+
 }
