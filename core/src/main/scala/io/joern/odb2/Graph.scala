@@ -3,9 +3,19 @@ import misc.ISeq
 
 object Accessors {
 
-  def getNeighborsOut(n: GNode, eid: Int): ISeq[GNode] =
+  def getEdgesOut(n: GNode, eid: Int): Iterator[Edge] =
+    getNeighborsOut(n, eid).iterator.zipWithIndex.map {
+      case (nb, i) => n.graph.schema.makeEdge(n, nb, eid.asInstanceOf[Short], i + 1)
+    }
+
+  def getEdgesIn(n: GNode, eid: Int): Iterator[Edge] =
+    getNeighborsIn(n, eid).iterator.zipWithIndex.map {
+      case (nb, i) => n.graph.schema.makeEdge(nb, n, eid.asInstanceOf[Short], -i - 1)
+    }
+
+  def getNeighborsOut(n: GNode, eid: Int): IndexedSeq[GNode] =
     getNeighborsOut(n.graph, eid.asInstanceOf[Short], n.kindId, n.seqId)
-  def getNeighborsIn(n: GNode, eid: Int): ISeq[GNode] =
+  def getNeighborsIn(n: GNode, eid: Int): IndexedSeq[GNode] =
     getNeighborsIn(n.graph, eid.asInstanceOf[Short], n.kindId, n.seqId)
 
   def getNeighborsOut(g: Graph, eid: Short, kindId: Short, seqid: Int): ISeq[GNode] =
