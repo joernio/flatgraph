@@ -140,9 +140,7 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
             val nbo = Accessors.getNeighborsOut(e.src, e.eid)
             var idx = 0
             while (count > 0) {
-              if (nbo(idx) == e.dst) {
-                count -= 1
-              }
+              if (nbo(idx) == e.dst) count -= 1
               idx += 1
             }
             emplace(delEdges, new Edge(e.src, e.dst, e.eid, idx), (e.src.kindId + g.schema.getNNodeKinds * e.eid * 2))
@@ -155,20 +153,20 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
 
   def applyUpdate(): Unit = {
     splitUpdate()
-    //order: 1. remove edges, 2. add nodes, 3. add edges, 4. remove nodes
+    //order: 1. remove edges, 2. add nodes, 3. add edges
     for (kid <- Range(0, g.schema.getNNodeKinds);
          eid <- Range(0, g.schema.getNEdgeKinds);
          inOut <- Array(true, false)) deleteEdges(kid.asInstanceOf[Short], eid.asInstanceOf[Short], inOut)
 
-    for (kid <- Range(0, g.schema.getNNodeKinds)) rewriteNodes(kid.asInstanceOf[Short])
+    for (kid <- Range(0, g.schema.getNNodeKinds)) addNodes(kid.asInstanceOf[Short])
 
     for (kid <- Range(0, g.schema.getNNodeKinds);
          eid <- Range(0, g.schema.getNEdgeKinds);
-         inOut <- Array(true, false)) rewriteEdges(kid.asInstanceOf[Short], eid.asInstanceOf[Short], inOut)
+         inOut <- Array(true, false)) addEdges(kid.asInstanceOf[Short], eid.asInstanceOf[Short], inOut)
 
   }
 
-  def rewriteNodes(kid: Short): Unit = {
+  def addNodes(kid: Short): Unit = {
     if (newNodes(kid) == null || newNodes(kid).isEmpty) { return }
     g._nodes(kid) = g._nodes(kid).appendedAll(newNodes(kid).iterator.map { _.storedRef.get })
   }
@@ -221,52 +219,11 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
         newQty(seq + 1) = start + idx - delPtr
       }
     }
-    /*
-    var nxIdx = 0
-    var delPtr = 0
-    while (delPtr < de.length) {
-      var nxDel = de(delPtr)
-      val delSeq = nxDel.src.seqId
-      acpy(oldVal, oldQty, newVal, newQty, nxIdx, nxDel.src.seqId)
-      nxIdx = delSeq + 1
-
-      var idx = 0
-      var outIdx = newQty(delSeq)
-      while (oldQty(delSeq) + idx < oldQty(delSeq + 1)) {
-        if (nxDel != null && idx == nxDel.subSeq - 1) {
-          assert(nxDel.dst == oldVal(oldQty(delSeq) + idx))
-          delPtr += 1
-          nxDel = if (delPtr < de.length && de(delPtr).src.seqId == delSeq) de(delPtr) else null
-        } else {
-          newVal(outIdx) = oldVal(idx)
-          outIdx += 1
-        }
-        idx += 1
-      }
-      newQty(nxIdx + 1) = outIdx
-    }
-    acpy(oldVal, oldQty, newVal, newQty, nxIdx, newQty.length - 1)
-     */
     g._neighbors(2 * pos) = newQty
     g._neighbors(2 * pos + 1) = newVal
   }
 
-  def dedupBy[T, S](a: mutable.ArrayBuffer[T], by: T => S): Unit = {
-    var outIdx = 0
-    var idx = 0
-    while (idx < a.length - 1) {
-      if (by(a(idx)) == by(a(idx + 1))) {
-        a(outIdx) = a(idx)
-        idx += 1
-      } else {
-        if (outIdx != idx) a(outIdx) = a(idx)
-        idx += 1
-        outIdx += 1
-      }
-    }
-    a.dropRightInPlace(idx - outIdx)
-  }
-  def rewriteEdges(kid: Short, eid: Short, isIn: Boolean): Unit = {
+  def addEdges(kid: Short, eid: Short, isIn: Boolean): Unit = {
     val pos = kid + g.schema.getNNodeKinds * (2 * eid + (if (isIn) 1 else 0))
     val ne = newEdges(pos)
     if (ne == null || ne.isEmpty) return;
@@ -299,57 +256,22 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
     g._neighbors(2 * pos + 1) = newVal
   }
 
-  def copyEdgeMulti(src: Array[GNode],
-                    srcQty: Array[Int],
-                    nnodes: Int,
-                    expectedSize: Int,
-                    newEdges: mutable.ArrayBuffer[AddEdgeProcessed]): (Array[Int], Array[GNode]) = {
-    val dst = new Array[GNode](expectedSize)
-    val dstQty = new Array[Int](nnodes + 1)
-    var nxIdx = 0
-    for (e <- newEdges) {
-      val seq = e.src.seqId
-      acpy(src, srcQty, dst, dstQty, nxIdx, seq + 1)
-      val insertpoint = dstQty(seq + 1)
-      dst(insertpoint) = e.dst
-      dstQty(seq + 1) = insertpoint + 1
-      nxIdx = seq + 1
-    }
-    acpy(src, srcQty, dst, dstQty, nxIdx, nnodes)
-    (dstQty, dst)
-  }
-
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last
-  private def acpy(src: AnyRef, srci: Array[Int], dst: AnyRef, dsti: Array[Int], from: Int, until: Int): Unit = {
-    if (until <= from) return
-    if (from + 1 >= srci.length) {
-      //there are no values, we just need to write the indices
-      val lastpos = dsti(from)
-      var idx = from + 1
-      while (idx < until + 1) {
-        dsti(idx) = lastpos
+
+  /**Removes in place all subsequent duplicate items, with the last overwriting the previous ones.*/
+  private def dedupBy[T, S](a: mutable.ArrayBuffer[T], by: T => S): Unit = {
+    var outIdx = 0
+    var idx = 0
+    while (idx < a.length - 1) {
+      if (by(a(idx)) == by(a(idx + 1))) {
+        a(outIdx) = a(idx)
         idx += 1
-      }
-      return
-    }
-
-    val until0 = scala.math.min(until, srci.length - 1)
-    val sn = srci(from)
-    val dn = dsti(from)
-    val len = srci(until0) - sn
-    System.arraycopy(src, sn, dst, dn, len)
-    val off = dn - sn
-    for (idx <- Range(from + 1, until0 + 1)) {
-      dsti(idx) = srci(idx) + off
-    }
-
-    //we now need to set the remaining items
-    if (until != until0) {
-      val terminal = dsti(until0)
-      for (idx <- Range(until0 + 1, until + 1)) {
-        dsti(idx) = terminal
+      } else {
+        if (outIdx != idx) a(outIdx) = a(idx)
+        idx += 1
+        outIdx += 1
       }
     }
+    a.dropRightInPlace(idx - outIdx)
   }
-
 }
