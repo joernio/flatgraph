@@ -102,7 +102,7 @@ class DiffGraphApplier(g: Graph, diff: DiffGraphBuilder) {
         case e: Edge =>
           /**This is the delEdge case. It is massively annoying.
             *
-            * In order to support edge propreties, we need to grab the right edge from e.src->e.dst.
+            * In order to support edge properties, we need to grab the right edge from e.src->e.dst.
             * If we assume that our graph was built normally, i.e. edges were sequentially/batched added without the unsafe
             * unidirectional edges, then our graph has the following invariant:
             *   The kth edge connecting A->B corresponds to the kth edge connecting B<-A
