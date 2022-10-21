@@ -3,11 +3,7 @@ package io.joern.odb2
 trait Schema {
   def getNNodeKinds: Int
   def getNEdgeKinds: Int
-
-  def indexEdge(kid: Short, inOut: Int, eid: Short): Int =
-    indexEdge(kid.toInt, inOut, eid.toInt)
-
-  def indexEdge(kid: Int, inOut: Int, eid: Int): Int = 2 * (kid + getNNodeKinds * (inOut + 2 * eid))
+  def indexEdge(nodekind: Int, inout: Int, edgekind: Int): Int = 2 * (nodekind + getNNodeKinds * (inout + 2 * edgekind))
 
   def makeNode(g: Graph, kid: Short, seqId: Int): GNode
 
