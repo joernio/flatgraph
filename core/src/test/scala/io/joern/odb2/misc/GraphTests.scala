@@ -3,9 +3,9 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class TestSchema(val nKinds: Int, val nEdgeKinds: Int) extends Schema {
-  override def getNNodeKinds: Int = nKinds
+  override def getNumberOfNodeKinds: Int = nKinds
 
-  override def getNEdgeKinds: Int = nEdgeKinds
+  override def getNumberOfEdgeKinds: Int = nEdgeKinds
 
   override def makeNode(g: Graph, kid: Short, seqId: Int): GNode = new GNode(g, kid, seqId)
 

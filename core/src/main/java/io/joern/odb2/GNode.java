@@ -8,6 +8,7 @@ public class GNode implements DNodeOrNode {
 
     final public short kindId;
 
+    // Sequential ID per node kind.
     int _seqId;
 
     //an extra field just for this looks quite wasteful. But we have 2 bytes of alignment padding anyways...
