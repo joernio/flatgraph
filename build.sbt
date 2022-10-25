@@ -26,9 +26,10 @@ ThisBuild / scalacOptions ++= Seq("-deprecation", "-feature") ++ (
 
 ThisBuild / compile / javacOptions ++= Seq(
   "-g", //debug symbols
-  "--release=8"
+//  "--release=8"
 )
-ThisBuild / scalacOptions ++= Seq("-target:jvm-1.8", "--release", "8")
+ThisBuild / scalacOptions ++= Seq("-target:jvm-1.8",// "--release", "8"
+  )
 
 ThisBuild / resolvers ++= Seq(Resolver.mavenLocal,
                               "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public")
