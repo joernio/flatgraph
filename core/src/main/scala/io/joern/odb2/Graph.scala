@@ -48,7 +48,7 @@ object DebugDump {
       g._nodes.map { _.size }.zipWithIndex.map { case (nodeKind, sz) => s"${nodeKind}: ${sz}" }.mkString(", ")
     sb.append(s"#Node numbers (kindId, nnodes) ${numstr}, total ${g._nodes.iterator.map { _.size }.sum}\n")
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
-      sb.append(s"Node kind ${nodeKind}. (eid, nEdgesOut, nEdgesIn): ")
+      sb.append(s"Node kind ${nodeKind}. (eid, nEdgesOut, nEdgesIn):")
       for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
         val posOut = g.schema.neighborOffsetArrayIndex(nodeKind, 1, edgeKind)
         val neO = g._neighbors(posOut + 1) match {
@@ -60,7 +60,7 @@ object DebugDump {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
         }
-        sb.append(s"(${edgeKind}, ${neO}, ${neIn}), ")
+        sb.append(s" (${edgeKind}, ${neO}, ${neIn}),")
       }
       sb.append("\n")
 

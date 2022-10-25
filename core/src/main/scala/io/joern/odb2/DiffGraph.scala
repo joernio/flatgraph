@@ -4,12 +4,10 @@ import scala.collection.mutable
 
 trait RawUpdate
 
-class AddEdgeUnprocessed(
-  val src: DNodeOrNode,
-  val dst: DNodeOrNode,
-  val edgeKind: Short,
-  val unsafeUnidirectional: Boolean = false
-) extends RawUpdate
+class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short) extends RawUpdate
+
+class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val inout: Int)
+    extends RawUpdate
 
 class DiffGraphBuilder {
   var buffer = mutable.ArrayDeque[RawUpdate]()
@@ -33,8 +31,13 @@ class DiffGraphBuilder {
     this
   }
 
-  def addEdgeUnsafeUnidirectional(src: DNodeOrNode, dst: DNodeOrNode, eid: Short): this.type = {
-    this.buffer.append(new AddEdgeUnprocessed(src, dst, eid, true));
+  def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Short): this.type = {
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind, 1));
+    this
+  }
+
+  def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Short): this.type = {
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind, 0));
     this
   }
 
@@ -120,6 +123,23 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       item match {
         case addNode: DNode =>
           getGNode(addNode)
+        case halfEdge: AddUnsafeHalfEdge =>
+          val src = getGNode(halfEdge.src)
+          val dst = getGNode(halfEdge.dst)
+          if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
+            if (halfEdge.inout == 0)
+              emplace(
+                newEdges,
+                new AddEdgeProcessed(dst, src, halfEdge.edgeKind),
+                graph.schema.neighborOffsetArrayIndex(dst.nodeKind, 0, halfEdge.edgeKind)
+              )
+            else
+              emplace(
+                newEdges,
+                new AddEdgeProcessed(src, dst, halfEdge.edgeKind),
+                graph.schema.neighborOffsetArrayIndex(src.nodeKind, 1, halfEdge.edgeKind)
+              )
+          }
         case newEdge: AddEdgeUnprocessed =>
           val src = getGNode(newEdge.src)
           val dst = getGNode(newEdge.dst)
@@ -129,14 +149,13 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
               new AddEdgeProcessed(src, dst, newEdge.edgeKind),
               graph.schema.neighborOffsetArrayIndex(src.nodeKind, 1, newEdge.edgeKind)
             )
-            if (!newEdge.unsafeUnidirectional)
-              emplace(
-                newEdges,
-                new AddEdgeProcessed(dst, src, newEdge.edgeKind),
-                graph.schema.neighborOffsetArrayIndex(dst.nodeKind, 0, newEdge.edgeKind)
-              )
+            emplace(
+              newEdges,
+              new AddEdgeProcessed(dst, src, newEdge.edgeKind),
+              graph.schema.neighborOffsetArrayIndex(dst.nodeKind, 0, newEdge.edgeKind)
+            )
           } else {
-            // TODO throw exception
+            // TODO maybe throw exception
           }
         case edgeDeletion: Edge
             if !AccessHelpers.isDeleted(edgeDeletion.src) && !AccessHelpers.isDeleted(edgeDeletion.dst) =>
