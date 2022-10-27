@@ -9,6 +9,7 @@ class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKin
 class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val inout: Int)
     extends RawUpdate
 
+class RemoveEdge(val src: GNode, val dst: GNode, val edgeKind: Int, val subSeq: Int) extends RawUpdate
 class DiffGraphBuilder {
   var buffer = mutable.ArrayDeque[RawUpdate]()
 
@@ -22,7 +23,7 @@ class DiffGraphBuilder {
   }
 
   def removeEdge(edge: Edge): this.type = {
-    this.buffer.append(edge)
+    this.buffer.append(new RemoveEdge(edge.src, edge.dst, edge.edgeKind, edge.subSeq))
     this
   }
 
@@ -74,7 +75,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph._neighbors.size)
-  val delEdges = new Array[mutable.ArrayBuffer[Edge]](graph._neighbors.size)
+  val delEdges = new Array[mutable.ArrayBuffer[RemoveEdge]](graph._neighbors.size)
   val deferred = new mutable.ArrayDeque[DNode]()
   val delNodes = mutable.ArrayBuffer[GNode]()
 
@@ -157,7 +158,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           } else {
             // TODO maybe throw exception
           }
-        case edgeDeletion: Edge
+        case edgeDeletion: RemoveEdge
             if !AccessHelpers.isDeleted(edgeDeletion.src) && !AccessHelpers.isDeleted(edgeDeletion.dst) =>
           /** This is the delEdge case. It is massively annoying.
             *
@@ -191,14 +192,14 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
             }
             emplace(
               delEdges,
-              new Edge(edgeDeletion.dst, edgeDeletion.src, edgeDeletion.edgeKind, idx),
+              new RemoveEdge(edgeDeletion.dst, edgeDeletion.src, edgeDeletion.edgeKind, idx),
               graph.schema.neighborOffsetArrayIndex(edgeDeletion.dst.nodeKind, 0, edgeDeletion.edgeKind)
             )
           } else if (edgeDeletion.subSeq < 0) {
             // the edge is backwards, i.e. pulled from getEdgesIn
             emplace(
               delEdges,
-              new Edge(edgeDeletion.dst, edgeDeletion.src, edgeDeletion.edgeKind, -edgeDeletion.subSeq),
+              new RemoveEdge(edgeDeletion.dst, edgeDeletion.src, edgeDeletion.edgeKind, -edgeDeletion.subSeq),
               graph.schema.neighborOffsetArrayIndex(edgeDeletion.dst.nodeKind, 0, edgeDeletion.edgeKind)
             )
             val inNeighbors = Accessors.getNeighborsIn(edgeDeletion.dst, edgeDeletion.edgeKind)
@@ -213,10 +214,10 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
             }
             emplace(
               delEdges,
-              new Edge(edgeDeletion.src, edgeDeletion.dst, edgeDeletion.edgeKind, idx),
+              new RemoveEdge(edgeDeletion.src, edgeDeletion.dst, edgeDeletion.edgeKind, idx),
               graph.schema.neighborOffsetArrayIndex(edgeDeletion.src.nodeKind, 1, edgeDeletion.edgeKind)
             )
-          } else assert(false)
+          } else throw new RuntimeException("Edge deletion requires subseq != 0")
         case delNode: DelNode =>
           // already processed
           assert(AccessHelpers.isDeleted(delNode.node))
@@ -378,7 +379,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     deletions.sortInPlaceBy { edge =>
       ((edge.src.seq.toLong << 32) + edge.subSeq.toLong)
     }
-    dedupBy(deletions, (e: Edge) => ((e.src.seq.toLong << 32) + e.subSeq.toLong))
+    dedupBy(deletions, (e: RemoveEdge) => ((e.src.seq.toLong << 32) + e.subSeq.toLong))
     val nnodes       = graph._nodes(nodeKind).size
     val oldQty       = graph._neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph._neighbors(pos + 1).asInstanceOf[Array[GNode]]

@@ -6,11 +6,11 @@ trait Schema {
   def getNumberOfEdgeKinds: Int
 
   def neighborOffsetArrayIndex(nodeKind: Int, inout: Int, edgeKind: Int): Int = {
-    2 * (nodeKind + getNumberOfNodeKinds * (inout + 2 * edgeKind))
+    3 * (nodeKind + getNumberOfNodeKinds * (inout + 2 * edgeKind))
   }
 
   def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode
 
   // fixme: API will need to change when we add generated edge classes (relevant for edge properties)
-  def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int): Edge
+  def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge
 }

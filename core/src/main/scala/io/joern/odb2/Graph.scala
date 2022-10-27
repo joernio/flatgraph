@@ -4,15 +4,58 @@ import misc.ISeq
 
 object Accessors {
 
-  def getEdgesOut(node: GNode, edgeKind: Int): Iterator[Edge] =
-    getNeighborsOut(node, edgeKind).iterator.zipWithIndex.map { case (nb, i) =>
-      node.graph.schema.makeEdge(node, nb, edgeKind.asInstanceOf[Short], i + 1)
+  def getEdgesOut(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
+    val pos  = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 1, edgeKind)
+    val offs = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
+    if (offs == null || node.seq() + 1 >= offs.length) return IndexedSeq.empty[Edge]
+    new EdgeView(
+      node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
+      node,
+      node.graph._neighbors(pos + 2),
+      true,
+      edgeKind.toShort,
+      offs(node.seq()),
+      offs(node.seq() + 1)
+    )
+  }
+
+  def getEdgesIn(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
+    val pos  = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 0, edgeKind)
+    val offs = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
+    if (offs == null || node.seq() + 1 >= offs.length) return IndexedSeq.empty[Edge]
+    new EdgeView(
+      node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
+      node,
+      node.graph._neighbors(pos + 2),
+      false,
+      edgeKind.toShort,
+      offs(node.seq()),
+      offs(node.seq() + 1)
+    )
+  }
+
+  class EdgeView(
+    neighbors: Array[GNode],
+    base: GNode,
+    properties: Any,
+    inout: Boolean,
+    edgeKind: Short,
+    start: Int,
+    end: Int
+  ) extends IndexedSeq[Edge] {
+    override def apply(i: Int): Edge = {
+      val property = properties match {
+        case null                        => null
+        case a: Array[_] if i < a.length => a(i)
+        case _                           => null
+      }
+      if (inout == false) base.graph.schema.makeEdge(neighbors(start + i), base, edgeKind, -i - 1, property)
+      else
+        base.graph.schema.makeEdge(base, neighbors(start + i), edgeKind, i + 1, property)
     }
 
-  def getEdgesIn(node: GNode, edgeKind: Int): Iterator[Edge] =
-    getNeighborsIn(node, edgeKind).iterator.zipWithIndex.map { case (nb, i) =>
-      node.graph.schema.makeEdge(nb, node, edgeKind.asInstanceOf[Short], -i - 1)
-    }
+    override def length: Int = end - start
+  }
 
   def getNeighborsOut(node: GNode, edgeKind: Int): IndexedSeq[GNode] =
     getNeighborsOut(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
@@ -86,9 +129,9 @@ object DebugDump {
 }
 
 object Graph {
-  // Slot size is 2 because we have one pointer to array of quantity array and one pointer to array of
-  // neighbors.
-  val NeighborsSlotSize  = 2
+  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
+  // neighbors, and one array containing edge properties
+  val NeighborsSlotSize  = 3
   val NumberOfDirections = 2
 }
 

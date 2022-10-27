@@ -10,7 +10,7 @@ class TestSchema(val nKinds: Int, val nEdgeKinds: Int) extends Schema {
 
   override def makeNode(g: Graph, nodeKind: Short, seq: Int): GNode = new GNode(g, nodeKind, seq)
 
-  override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int): Edge = new Edge(src, dst, edgeKind, subSeq)
+  override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property:Any): Edge = new Edge(src, dst, edgeKind, subSeq, property)
 
 }
 
