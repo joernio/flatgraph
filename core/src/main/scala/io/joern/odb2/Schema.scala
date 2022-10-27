@@ -1,6 +1,7 @@
 package io.joern.odb2
 
-class DefaultValue(val default: Any)
+object DefaultValue
+final class DefaultValue(val default: Any)
 trait Schema {
   def getNumberOfNodeKinds: Int
 

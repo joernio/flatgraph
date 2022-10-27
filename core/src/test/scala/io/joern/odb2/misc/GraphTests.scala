@@ -494,7 +494,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       DiffGraphApplier.applyDiff(
         g,
         (new DiffGraphBuilder)
-          .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(1), null)
+          .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(1), DefaultValue)
       )
       DebugDump.debugDump(g) shouldBe
         """#Node numbers (kindId, nnodes) 4: 0, total 4
@@ -580,7 +580,15 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_1   [0] -> (2) V0_1
           |   V0_1   [0] <- (5) V0_0, (-1) V0_0, (2) V0_1
           |""".stripMargin
-      println(DebugDump.debugDump(g))
+
+      DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), DefaultValue))
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) 2: 0, total 2
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
+          |   V0_0   [0] -> (-1) V0_1, (-1) V0_1
+          |   V0_1   [0] -> (2) V0_1
+          |   V0_1   [0] <- (-1) V0_0, (-1) V0_0, (2) V0_1
+          |""".stripMargin
     }
 
   }

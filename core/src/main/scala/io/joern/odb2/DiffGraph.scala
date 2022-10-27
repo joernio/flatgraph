@@ -22,7 +22,7 @@ class DiffGraphBuilder {
     this.buffer.append(newNode); this
   }
 
-  def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = null): this.type = {
+  def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
     this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind.toShort, property));
     this
   }
@@ -42,12 +42,12 @@ class DiffGraphBuilder {
     this
   }
 
-  def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = null): this.type = {
+  def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
     this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 1, property));
     this
   }
 
-  def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = null): this.type = {
+  def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
     this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 0, property));
     this
   }
@@ -401,7 +401,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     val default  = graph.schema.edgePropertyDefaultValue(nodeKind, inout, edgeKind).default
     for (edgeRepr <- setEdgeProperties(pos)) {
       val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
-      propview(index) = if (edgeRepr.property == null) default else edgeRepr.property
+      propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
     }
     graph._neighbors(pos + 2) = edgeProp
 
@@ -492,7 +492,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     val newQty       = new Array[Int](nnodes + 1)
     val newNeighbors = new Array[GNode](oldNeighbors.size + insertions.size)
 
-    val hasNewProp = insertions.exists(_.property != null)
+    val hasNewProp = insertions.exists(_.property != DefaultValue)
     val oldProperty = graph._neighbors(pos + 2) match {
       case _: DefaultValue => null
       case other           => other
@@ -519,7 +519,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       while (insertionCounter < insertions.size && insertions(insertionCounter).src.seq == insertionSeq) {
         val insertion = insertions(insertionCounter)
         newNeighbors(insertionBaseIndex + insertionCounter) = insertion.dst
-        if (newPropertyView != null && insertion.property != null)
+        if (newPropertyView != null && insertion.property != DefaultValue)
           newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
         insertionCounter += 1
       }
