@@ -17,8 +17,7 @@ object ISeq {
     }
   }
 }
-class ISeq[@specialized +T](underlying: Array[T], start: Int, end: Int)
-    extends scala.collection.immutable.IndexedSeq[T] {
+class ISeq[@specialized +T](underlying: Array[T], start: Int, end: Int) extends scala.collection.immutable.IndexedSeq[T] {
   override def length: Int = end - start
 
   override def apply(idx: Int): T = underlying.apply(idx + start)

@@ -12,7 +12,7 @@ object Accessors {
       node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
       node,
       node.graph._neighbors(pos + 2),
-      true,
+      1,
       edgeKind.toShort,
       offs(node.seq()),
       offs(node.seq() + 1)
@@ -27,29 +27,22 @@ object Accessors {
       node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
       node,
       node.graph._neighbors(pos + 2),
-      false,
+      0,
       edgeKind.toShort,
       offs(node.seq()),
       offs(node.seq() + 1)
     )
   }
 
-  class EdgeView(
-    neighbors: Array[GNode],
-    base: GNode,
-    properties: Any,
-    inout: Boolean,
-    edgeKind: Short,
-    start: Int,
-    end: Int
-  ) extends IndexedSeq[Edge] {
+  class EdgeView(neighbors: Array[GNode], base: GNode, properties: Any, inout: Byte, edgeKind: Short, start: Int, end: Int)
+      extends IndexedSeq[Edge] {
     override def apply(i: Int): Edge = {
       val property = properties match {
-        case null                        => null
-        case a: Array[_] if i < a.length => a(i)
-        case _                           => null
+        case null                       => null
+        case defaultValue: DefaultValue => defaultValue.default
+        case a: Array[_]                => a(start + i)
       }
-      if (inout == false) base.graph.schema.makeEdge(neighbors(start + i), base, edgeKind, -i - 1, property)
+      if (inout == 0) base.graph.schema.makeEdge(neighbors(start + i), base, edgeKind, -i - 1, property)
       else
         base.graph.schema.makeEdge(base, neighbors(start + i), edgeKind, i + 1, property)
     }
@@ -82,8 +75,10 @@ object Accessors {
 
 object DebugDump {
 
-  def printNode(n: GNode): String =
-    if (!AccessHelpers.isDeleted(n)) s"V${n.nodeKind}_${n.seq}" else s"V${n.nodeKind}_${n.seq} (deleted)"
+  def printNode(n: GNode): String = printNode(n, null)
+  def printNode(n: GNode, property: Any): String =
+    if (!AccessHelpers.isDeleted(n)) { if (property == null) s"V${n.nodeKind}_${n.seq}" else s"(${property}) V${n.nodeKind}_${n.seq}" }
+    else s"(property, deleted) V${n.nodeKind}_${n.seq}"
 
   def debugDump(g: Graph): String = {
     val sb = new java.lang.StringBuilder(0)
@@ -110,15 +105,17 @@ object DebugDump {
       for (n <- g._nodes(nodeKind)) {
 
         for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
-          val nbo = Accessors.getNeighborsOut(n, edgeKind)
-          if (nbo.nonEmpty) {
-            sb.append(s"   ${printNode(n)}   [${edgeKind}] -> " + nbo.map(printNode).mkString(", ") + "\n")
+          val edgesOut = Accessors.getEdgesOut(n, edgeKind)
+          assert(Accessors.getNeighborsOut(n, edgeKind).sameElements(edgesOut.map { _.dst }))
+          if (edgesOut.nonEmpty) {
+            sb.append(s"   ${printNode(n)}   [${edgeKind}] -> " + edgesOut.map { e => printNode(e.dst, e.property) }.mkString(", ") + "\n")
           }
         }
         for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
-          val nbo = Accessors.getNeighborsIn(n, edgeKind)
-          if (nbo.nonEmpty) {
-            sb.append(s"   ${printNode(n)}   [${edgeKind}] <- " + nbo.map(printNode).mkString(", ") + "\n")
+          val edgesIn = Accessors.getEdgesIn(n, edgeKind)
+          assert(Accessors.getNeighborsIn(n, edgeKind) == (edgesIn.map { _.src }))
+          if (edgesIn.nonEmpty) {
+            sb.append(s"   ${printNode(n)}   [${edgeKind}] <- " + edgesIn.map { e => printNode(e.src, e.property) }.mkString(", ") + "\n")
           }
         }
       }
@@ -138,9 +135,17 @@ object Graph {
 class Graph(val schema: Schema) {
   val _nodes: Array[Array[GNode]] = new Array[Array[GNode]](schema.getNumberOfNodeKinds)
 
-  val _neighbors: Array[AnyRef] = new Array[AnyRef](
-    schema.getNumberOfNodeKinds * schema.getNumberOfEdgeKinds * NeighborsSlotSize * NumberOfDirections
-  )
+  val _neighbors: Array[AnyRef] =
+    new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfEdgeKinds * NeighborsSlotSize * NumberOfDirections)
+
+  for (
+    nodeKind <- Range(0, schema.getNumberOfNodeKinds);
+    inout    <- Range(0, 2);
+    edgeKind <- Range(0, schema.getNumberOfEdgeKinds)
+  ) {
+    val pos = schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
+    _neighbors(pos + 2) = schema.edgePropertyDefaultValue(nodeKind, inout, edgeKind)
+  }
 
   val nnodes: Array[Int] = new Array[Int](schema.getNumberOfNodeKinds)
   def nodes(nodeKind: Int): Iterator[GNode] = {

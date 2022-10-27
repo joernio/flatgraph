@@ -1,5 +1,6 @@
 package io.joern.odb2
 
+class DefaultValue(val default: Any)
 trait Schema {
   def getNumberOfNodeKinds: Int
 
@@ -13,4 +14,8 @@ trait Schema {
 
   // fixme: API will need to change when we add generated edge classes (relevant for edge properties)
   def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge
+
+  def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_]
+
+  def edgePropertyDefaultValue(nodeKind: Int, inout: Int, edgeKind: Int): DefaultValue
 }

@@ -8,9 +8,14 @@
 - [x] Support multiple node types and edge types
 - [x] Full support for self-edges; neighbor order is well-defined
 - [ ] Support node properties
-- [ ] Support a single optional edge property
+- [x] Support a single optional edge property
 - [ ] Support file IO
 - [ ] Version counters for stuff like iterator invalidation
+
+## Edge Property implementation
+Each edge has a property. The property default and type (String vs Int vs ...) is determined by the schema, and can
+depend on edge kind (AST vs CFG), node kind (CALL vs METHOD) and direction (but the types need to be consistent). Absence
+of the property is designated by a nullpointer.
 
 ## Performance and memory features
 - [ ] Support compressed memory representation if actual quantity is 0-1
