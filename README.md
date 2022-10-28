@@ -17,7 +17,7 @@
 - [ ] Multi-thread batched update application
 
 ## Edge Properties and edge identity
-Each edge has a property. The property default and type (String vs Int vs ...) is determined by the schema, and can
+Each edge has exactly one property. The property default and type (String vs Int vs ...) is determined by the schema, and can
 depend on edge kind (AST vs CFG), node kind (CALL vs METHOD) and direction (but the types need to be consistent).
 The `object DefaultValue` is used as formal default argument to `addEdge`; using it in `setEdgeProperty` will reset the edge's property to its default value.
 
