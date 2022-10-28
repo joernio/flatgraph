@@ -247,10 +247,14 @@ class GraphTests extends AnyWordSpec with Matchers {
         List(1, 0, 3, 2),
         List(1, 2, 0, 3),
         List(1, 2, 3, 0),
+        List(1, 3, 0, 2),
+        List(1, 3, 2, 0),
         List(2, 0, 1, 3),
         List(2, 0, 3, 1),
         List(2, 1, 0, 3),
         List(2, 1, 3, 0),
+        List(2, 3, 0, 1),
+        List(2, 3, 1, 0),
         List(3, 0, 1, 2),
         List(3, 0, 2, 1),
         List(3, 1, 0, 2),
@@ -259,11 +263,10 @@ class GraphTests extends AnyWordSpec with Matchers {
         List(3, 2, 1, 0)
       )
       val siglist = perms.map { p => signature(makePermGraph(p)) }.iterator.distinct.toList.sorted
-      siglist.length shouldBe 13
+      siglist.length shouldBe 14
       siglist should not contain "+-+-"
       siglist should not contain "-+-+"
-      siglist should not contain "+---"
-      /*We see that only 13 out of the 16 possible edge-orderings can be achieved without unsafe half-edges.
+      /*We see that only 14 out of the 16 possible edge-orderings can be achieved without unsafe half-edges.
       The constructed one in the beginning is one  of the impossible ones.*/
 
     }

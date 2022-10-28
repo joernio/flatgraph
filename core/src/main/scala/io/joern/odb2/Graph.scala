@@ -5,32 +5,32 @@ import misc.ISeq
 object Accessors {
 
   def getEdgesOut(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
-    val pos  = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 1, edgeKind)
-    val offs = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
-    if (offs == null || node.seq() + 1 >= offs.length) return IndexedSeq.empty[Edge]
+    val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 1, edgeKind)
+    val offsets = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
+    if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
     new EdgeView(
       node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
       node,
       node.graph._neighbors(pos + 2),
       1,
       edgeKind.toShort,
-      offs(node.seq()),
-      offs(node.seq() + 1)
+      offsets(node.seq()),
+      offsets(node.seq() + 1)
     )
   }
 
   def getEdgesIn(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
-    val pos  = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 0, edgeKind)
-    val offs = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
-    if (offs == null || node.seq() + 1 >= offs.length) return IndexedSeq.empty[Edge]
+    val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 0, edgeKind)
+    val offsets = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
+    if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
     new EdgeView(
       node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
       node,
       node.graph._neighbors(pos + 2),
       0,
       edgeKind.toShort,
-      offs(node.seq()),
-      offs(node.seq() + 1)
+      offsets(node.seq()),
+      offsets(node.seq() + 1)
     )
   }
 

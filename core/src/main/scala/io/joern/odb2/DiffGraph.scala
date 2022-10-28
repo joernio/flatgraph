@@ -5,6 +5,9 @@ import scala.collection.mutable
 
 trait RawUpdate
 
+/*Todo: All the edge representations for updates have the property field. It makes sense to use subclasses with and
+   without edge property, in order to save some memory. The resulting dynamic dispatch should be cheap -- at most bimorphic,
+   which doesn't prevent inlining, and well-predicted since edge properties are so rarely used.*/
 class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val property: Any) extends RawUpdate
 
 class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val inout: Byte, val property: Any)

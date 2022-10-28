@@ -17,45 +17,74 @@
 - [ ] Multi-thread batched update application
 
 ## Edge Properties and edge identity
+### Edge Property storage
 Each edge has exactly one property. The property default and type (String vs Int vs ...) is determined by the schema, and can
 depend on edge kind (AST vs CFG), node kind (CALL vs METHOD) and direction (but the types need to be consistent).
-The `object DefaultValue` is used as formal default argument to `addEdge`; using it in `setEdgeProperty` will reset the edge's property to its default value.
+The singleton `object DefaultValue` is used as formal default argument to `addEdge`; using it in `setEdgeProperty` will 
+reset the edge's property to its default value.
 
-Primitives are stored unboxed and null values for non-primitives are supported. `NaN` values in Float or Double valued edge properties will
+Primitives are stored unboxed; null values for non-primitives are supported. `NaN` values in Float or Double valued edge properties will
 probably blow up some sanity checks / assertions (lol scala, `==` is not reflexive).
 
 It is impossible to determine whether a property has been set to its default value or is missing (has been set to `DefaultValue`).
-Edge properties are not stored until they are actually set.
+Until edge properties of an edgeKind are actually set, we store them as `DefaultValue(default)` instead of `Array[PropertyType]`, i.e.
+the edge property feature incurs negligible O(1) memory cost unless actually used in a graph.
 
+### Edge identity
 The graph is stored in adjecency lists, and the ordering of the adjecency lists is preserved and well-defined. Batched 
-updates to the graph are applied "as if they were unbatched" for the sake of ordering. When an edge is added, then we append 
-the required out-neighbors and in-neighbors and properties to the relevant adjacency lists. 
+updates to the graph are applied "as if they were unbatched" for the sake of ordering. When a full directed edge A->B is added,
+then we add both half-edges A->B and B<-A (meaning: `B` is appended to the list of out-neighbors of `A`, and `A` is appended
+to the list of in-neighbors of `B`). The order of edge additions will then determine the order of out-neighbors and in-neighbors.
 
-Therefore edges have apriori no identity, and especially no identity on the JVM level; the Edge instances are created on-demand.
+In order to permit `setEdgeProperty` and to give meaningful semantics to `removeEdge` we therefore need a concept of edge-identity,
+i.e. a pairing of all half-edges `A->B` with all half-edges `B<-A` of the same edgeKind. Then we need to defend the invariant
+that paired half-edges `A->B` and `B<-A` have the same property value.
 
-Hence, we need a scheme for establishing identity, i.e. a relation between a slot in the out-neighbors of node A that is 
-filled with node B, and a slot in the in-neighbors of node B that is filled with node A.The way we do this is the following: 
-For edges with `(src=A, dst=B)`, the kth half-edge A->B corresponds to the kth half-edge B<-A. It is clear that addition or 
-removal or setting of properties preserves the crucial invariant that paired half-edges have the same property value.
+Since edges are not explicitly stored in the graph, the JVM will not help us with this pairing.
 
-The way we process edge additions establishes a hidden invariant. Consider the following graph:
+We are using the obvious pairing between the first `A->B` half-edge (in the order of out-neighbors of A) against the first
+`B<-A` edge (in the order of in-neighbors of `B`), and second-against-second and so on.
+
+Note that this is only an issue for multi-graphs, i.e. graphs with multiple `A->B` edges; and the issue is only critical
+in view of edge properties.
+
+In the implmentation, edges store their offset into the neighbor list. This allows fast edge construction. We count preceding
+similar (same source, same destination, same edgeKind) half-edges only when the pairing is actually required, i.e. when the edge is used
+in `setEdgeProperty` or in `removeEdge`. This has the effect that e.g. removing all edges from a graph has worst-case O(E^2)
+complexity, where E is the number of edges. Node deletion implicitly removes all incident edges, but can use a fast
+algorithm and does not suffer from bad complexity classes.
+
+### Hidden invariant
+The way we process edge additions establishes a hidden invariant. Consider the following graph with 4 nodes and 4 edges:
 ```
    V0    -> V1, V2
    V1    <- V3, V0
    V2    <- V0, V3
    V3    -> V2, V1
 ```
-Suppose we wanted to construct the graph via edge additions. The ordering of out-neighbors of `V0` implies that the edge
-`V0->V1` was added before `V0->V2`; the second line, i.e. the ordering of in-neighbors of V1, implies that `V3->V1` was 
-added before `V0->V1`, and so on. These conditions form a cycle, and it is therefore impossible to construct such a graph 
-via normal edge additions.
+It is impossible to construct this graph, with this ordering of in-neighbors and out-neighbors, by using only `addEdge`.
+In order to see this, consider either the unit tests where all possible 4! = 24 orders of edge additions are tested, or consider
+the following argument:
 
-More to the point, when a graph with certain ordering of adjacency lists is desired, then it is quite cumbersome to determine
-whether this is possible by edge additions at all, and if so to determine the correct order of edge additions.
+The ordering of out-neighbors of `V0` implies that the edge `V0->V1` was added before `V0->V2` (because in/out neighbors 
+are appended to the end of adjacency lists). 
+The second line, i.e. the ordering of in-neighbors of V1, implies that `V3->V1` was added before `V0->V1`.
+The fourth line imples that `V3->V2` was added before `V3->V1`.
+The third line implies that `V0->V2` was added before `V3->V2`.
+
+This is a contradiction.
+
+Note that this hidden invariant also holds for overflowdbv1.
+
+### UnsafeAddHalfEdge
+When a graph with certain ordering of adjacency lists is desired, then it is quite cumbersome to determine
+whether this is possible by edge additions at all (see above example), and if so to determine the required order of edge additions.
 
 For this reason, we also support unsafe additions of half-edges. These are unsafe in the sense that we cannot check validity i.e.
-that the reverse half-edge has been added at all and that the paired half-edge has the same property value. Bad half-edges
-are liable to lead to exceptions or wrong results later on, but should not pop a shell.
+that the reverse half-edge has been added at all and that the paired half-edge has the same property value.
+
+
+Bad half-edges are liable to lead to exceptions or wrong results later on, but not "nasal demon"-style UB.
 
 ## Open Design decisions
 There are several ways of updating a graph:
