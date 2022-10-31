@@ -7,7 +7,7 @@
 - [x] Delete nodes
 - [x] Support multiple node types and edge types
 - [x] Full support for self-edges; neighbor order is well-defined
-- [ ] Support node properties
+- [x] Support node properties
 - [x] Support a single optional edge property
 - [ ] Support file IO
 - [ ] Version counters for stuff like iterator invalidation
