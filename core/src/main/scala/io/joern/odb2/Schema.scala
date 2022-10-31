@@ -7,8 +7,13 @@ trait Schema {
 
   def getNumberOfEdgeKinds: Int
 
+  def getNumberOfProperties: Int
   def neighborOffsetArrayIndex(nodeKind: Int, inout: Int, edgeKind: Int): Int = {
     3 * (nodeKind + getNumberOfNodeKinds * (inout + 2 * edgeKind))
+  }
+
+  def propertyOffsetArrayIndex(nodeKind: Int, propertyKind: Int): Int = {
+    2 * (nodeKind + getNumberOfNodeKinds * propertyKind)
   }
 
   def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode
@@ -19,4 +24,6 @@ trait Schema {
   def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_]
 
   def edgePropertyDefaultValue(nodeKind: Int, inout: Int, edgeKind: Int): DefaultValue
+
+  def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_]
 }
