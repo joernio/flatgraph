@@ -3,11 +3,12 @@ package io.joern.odb2
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TestSchema(val nKinds: Int, val nEdgeKinds: Int) extends Schema {
+class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0) extends Schema {
   override def getNumberOfNodeKinds: Int = nKinds
 
   override def getNumberOfEdgeKinds: Int = nEdgeKinds
 
+  override def getNumberOfProperties: Int                           = nProperties
   override def makeNode(g: Graph, nodeKind: Short, seq: Int): GNode = new GNode(g, nodeKind, seq)
 
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
@@ -16,6 +17,8 @@ class TestSchema(val nKinds: Int, val nEdgeKinds: Int) extends Schema {
   override def allocateEdgeProperty(nodeKind: Int, edgeKind: Int, inout: Int, size: Int): Array[_] = new Array[String](size)
 
   override def edgePropertyDefaultValue(nodeKind: Int, edgeKind: Int, inout: Int): DefaultValue = new DefaultValue(null)
+
+  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = ???
 }
 
 class GraphTests extends AnyWordSpec with Matchers {
@@ -26,7 +29,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       val g      = new Graph(schema)
       // empty graph
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 0: 0, total 0
+        """#Node numbers (kindId, nnodes) (0: 0), total 0
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
           |""".stripMargin
       // with some edges
@@ -43,7 +46,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         .addEdge(V0_1, V0_0, 0)
       DiffGraphApplier.applyDiff(g, diff0)
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 5 [dense], 5 [dense]),
           |   V0_0   [0] -> V0_1
           |   V0_0   [0] <- V0_3, V0_1
@@ -61,7 +64,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       diff2.addEdge(V0_2, V0_3, 0)
       DiffGraphApplier.applyDiff(g, diff2)
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> V0_1
           |   V0_0   [0] <- V0_3, V0_1
@@ -77,7 +80,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       val V0_4 = new GenericDNode(0)
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_4))
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 5: 0, total 5
+        """#Node numbers (kindId, nnodes) (0: 5), total 5
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> V0_1
           |   V0_0   [0] <- V0_3, V0_1
@@ -93,7 +96,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       // add an interior edge. Check that adding edges in the middle and at the end of undersized edge arrays works
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addEdge(V0_1, V0_4, 0))
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 5: 0, total 5
+        """#Node numbers (kindId, nnodes) (0: 5), total 5
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
           |   V0_0   [0] -> V0_1
           |   V0_0   [0] <- V0_3, V0_1
@@ -113,7 +116,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       val g      = new Graph(schema)
       // empty graph
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 0: 0, 0: 1, 0: 2, total 0
+        """#Node numbers (kindId, nnodes) (0: 0), (1: 0), (2: 0), total 0
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
           |Node kind 1. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
           |Node kind 2. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
@@ -135,7 +138,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .addEdge(V1_1, V0_0, 1)
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 2: 0, 2: 1, 0: 2, total 4
+        """#Node numbers (kindId, nnodes) (0: 2), (1: 2), (2: 0), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 1 [dense]), (1, 0 [NA], 1 [dense]),
           |   V0_0   [0] -> V0_0
           |   V0_0   [0] <- V0_0
@@ -147,6 +150,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |Node kind 2. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
           |""".stripMargin
     }
+
     val schema = new TestSchema(1, 1)
 
     def mkGraph(): Graph = {
@@ -227,7 +231,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       }
 
       val badGraphDump =
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 4 [dense], 4 [dense]),
           |   V0_0   [0] -> V0_1, V0_2
           |   V0_1   [0] <- V0_3, V0_0
@@ -275,7 +279,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       // empty
       var g = mkGraph()
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
           |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
           |   V0_1   [0] <- V0_0, V0_3, V0_0
@@ -286,7 +290,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
       // remove first V0_0->V0_1
       val expectation =
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> V0_2, V0_3, V0_2, V0_1
           |   V0_1   [0] <- V0_3, V0_0
@@ -324,7 +328,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     "permit a different edge deletion" in {
       var g = mkGraph()
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
           |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
           |   V0_1   [0] <- V0_0, V0_3, V0_0
@@ -334,7 +338,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |""".stripMargin
       // we remove the second edge 0->1
       val expectation =
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2
           |   V0_1   [0] <- V0_0, V0_3
@@ -361,7 +365,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     "permit multiple edge deletion" in {
       var g = mkGraph()
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
           |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
           |   V0_1   [0] <- V0_0, V0_3, V0_0
@@ -371,7 +375,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |""".stripMargin
       // we remove the second edge 0->1 and the second edge 2<-0
       val expectation =
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 5 [dense], 5 [dense]),
           |   V0_0   [0] -> V0_2, V0_1, V0_3
           |   V0_1   [0] <- V0_0, V0_3
@@ -392,7 +396,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     "permit node deletion" in {
       var g = mkGraph()
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
           |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
           |   V0_1   [0] <- V0_0, V0_3, V0_0
@@ -407,7 +411,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .removeNode((g._nodes(0)(0)))
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
           |   V0_1   [0] <- V0_3
           |   V0_2   [0] <- V0_3
@@ -421,7 +425,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .removeNode((g._nodes(0)(1)))
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 4 [dense], 4 [dense]),
           |   V0_0   [0] -> V0_2, V0_3, V0_2
           |   V0_2   [0] <- V0_0, V0_0, V0_3
@@ -437,7 +441,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .removeNode((g._nodes(0)(3)))
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
           |   V0_0   [0] -> V0_1, V0_1
           |   V0_1   [0] <- V0_0, V0_0
@@ -464,7 +468,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       )
 
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> V0_1, (A) V0_1
           |   V0_0   [0] <- (D) V0_3, (E) V0_1
@@ -482,7 +486,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(0), "X")
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> (X) V0_1, (A) V0_1
           |   V0_0   [0] <- (D) V0_3, (E) V0_1
@@ -500,7 +504,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(1), DefaultValue)
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
           |   V0_0   [0] -> (X) V0_1, V0_1
           |   V0_0   [0] <- (D) V0_3, (E) V0_1
@@ -518,7 +522,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .removeEdge(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(0))
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 5 [dense], 5 [dense]),
           |   V0_0   [0] -> V0_1
           |   V0_0   [0] <- (D) V0_3, (E) V0_1
@@ -536,7 +540,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .removeNode(V0_2.storedRef.get)
       )
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 4: 0, total 4
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
           |   V0_0   [0] -> V0_1
           |   V0_0   [0] <- (D) V0_3, (E) V0_1
@@ -560,7 +564,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0).addNode(V0_1).addEdge(V0_0, V0_1, 0).addEdge(V0_0, V0_1, 0))
       g._neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 2: 0, total 2
+        """#Node numbers (kindId, nnodes) (0: 2), total 2
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
           |   V0_0   [0] -> (-1) V0_1, (-1) V0_1
           |   V0_1   [0] <- (-1) V0_0, (-1) V0_0
@@ -569,7 +573,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), 5.toShort))
       g._neighbors(2).getClass.getName shouldBe "[S"
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 2: 0, total 2
+        """#Node numbers (kindId, nnodes) (0: 2), total 2
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
           |   V0_0   [0] -> (5) V0_1, (-1) V0_1
           |   V0_1   [0] <- (5) V0_0, (-1) V0_0
@@ -577,7 +581,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addEdge(V0_1.storedRef.get, V0_1, 0, 2.toShort))
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 2: 0, total 2
+        """#Node numbers (kindId, nnodes) (0: 2), total 2
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
           |   V0_0   [0] -> (5) V0_1, (-1) V0_1
           |   V0_1   [0] -> (2) V0_1
@@ -586,12 +590,129 @@ class GraphTests extends AnyWordSpec with Matchers {
 
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), DefaultValue))
       DebugDump.debugDump(g) shouldBe
-        """#Node numbers (kindId, nnodes) 2: 0, total 2
+        """#Node numbers (kindId, nnodes) (0: 2), total 2
           |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
           |   V0_0   [0] -> (-1) V0_1, (-1) V0_1
           |   V0_1   [0] -> (2) V0_1
           |   V0_1   [0] <- (-1) V0_0, (-1) V0_0, (2) V0_1
           |""".stripMargin
+    }
+
+    "support node properties" in {
+      val schema = new TestSchema(2, 0, 2) {
+        override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = {
+          (nodeKind, propertyKind) match {
+            case (0, 1) => new Array[GNode](size)
+            case (1, 0) => new Array[Short](size)
+          }
+        }
+      }
+      val g = new Graph(schema)
+
+      val V0_0 = new GenericDNode(0)
+      val V0_1 = new GenericDNode(0)
+      val V0_2 = new GenericDNode(0)
+      val V1_0 = new GenericDNode(1)
+      val V1_1 = new GenericDNode(1)
+      DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0).addNode(V0_1).addNode(V1_0).addNode(V1_1))
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) (0: 2), (1: 2), total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+          |Node kind 1. (eid, nEdgesOut, nEdgesIn):
+          |""".stripMargin
+      DiffGraphApplier.applyDiff(
+        g,
+        (new DiffGraphBuilder)
+          .setNodeProperty(V0_0.storedRef.get, 1, V0_2 :: V0_0 :: Nil)
+          .setNodeProperty(V1_1.storedRef.get, 0, 0.toShort :: 1.toShort :: Nil)
+      )
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+          |   V0_0       : 1: [V0_2, V0_0]
+          |Node kind 1. (eid, nEdgesOut, nEdgesIn):
+          |   V1_1       : 0: [0, 1]
+          |""".stripMargin
+      DiffGraphApplier.applyDiff(
+        g,
+        (new DiffGraphBuilder)
+          .setNodeProperty(V0_2.storedRef.get, 1, V0_2)
+          .setNodeProperty(V1_0.storedRef.get, 0, 0.toShort)
+      )
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+          |   V0_0       : 1: [V0_2, V0_0]
+          |   V0_2       : 1: [V0_2]
+          |Node kind 1. (eid, nEdgesOut, nEdgesIn):
+          |   V1_0       : 0: [0]
+          |   V1_1       : 0: [0, 1]
+          |""".stripMargin
+
+      DiffGraphApplier.applyDiff(
+        g,
+        (new DiffGraphBuilder)
+          .removeNode(V0_2.storedRef.get)
+          .setNodeProperty(V1_0.storedRef.get, 0, null)
+          .setNodeProperty(V0_1.storedRef.get, 1, null :: Nil)
+      )
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+          |   V0_0       : 1: [<deleted V0_2>, V0_0]
+          |   V0_1       : 1: [null]
+          |Node kind 1. (eid, nEdgesOut, nEdgesIn):
+          |   V1_1       : 0: [0, 1]
+          |""".stripMargin
+    }
+
+    "Support custom domain classes for detached nodes" in {
+      class CustomNode extends DNode {
+        private var _storedRef: GNode = null
+        var nodes: List[DNodeOrNode]  = Nil
+        var strings: List[String]     = Nil
+        override def nodeKind: Short  = 0.toShort
+
+        override def storedRef: Option[GNode] = Option(_storedRef)
+
+        override def storedRef_=(ref: Option[GNode]): Unit = ref match {
+          case Some(gnode) => _storedRef = gnode
+          case None        => _storedRef = null
+        }
+
+        override def flattenProperties(interface: BatchedUpdateInterface): Unit = {
+          interface.emplaceProperty(this, 0, nodes)
+          interface.emplaceProperty(this, 1, strings)
+        }
+      }
+      val schema = new TestSchema(2, 0, 2) {
+        override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = {
+          propertyKind match {
+            case 0 => new Array[GNode](size)
+            case 1 => new Array[String](size)
+          }
+        }
+      }
+      val V0_0 = new CustomNode
+      val V0_1 = new CustomNode
+      val V0_2 = new CustomNode
+      V0_0.nodes = V0_1 :: Nil
+      V0_1.nodes = V0_1 :: V0_2 :: Nil
+      V0_2.strings = "b" :: Nil
+      V0_1.strings = "c" :: Nil
+
+      val g = new Graph(schema)
+      DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0))
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) (0: 3), (1: 0), total 3
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+        |   V0_0       : 0: [V0_1]
+        |   V0_1       : 0: [V0_1, V0_2], 1: [c]
+        |   V0_2       : 1: [b]
+        |Node kind 1. (eid, nEdgesOut, nEdgesIn):
+        |""".stripMargin
+      println(DebugDump.debugDump(g))
+
     }
 
   }

@@ -1,6 +1,8 @@
 package io.joern.odb2
-import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections}
+import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
 import misc.ISeq
+
+import scala.collection.mutable
 
 object Accessors {
 
@@ -71,6 +73,17 @@ object Accessors {
     } else ISeq.empty
   }
 
+  def getNodeProperty(node: GNode, propertyKind: Int): IndexedSeq[Any] =
+    getNodeProperty(node.graph, node.nodeKind, propertyKind, node.seq())
+
+  def getNodeProperty(graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int): ISeq[Any] = {
+    val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    if (qty == null || seq + 1 >= qty.length) return ISeq.empty
+    val vals = graph._properties(pos + 1)
+    ISeq.from(vals, qty(seq), qty(seq + 1))
+  }
+
 }
 
 object DebugDump {
@@ -78,12 +91,12 @@ object DebugDump {
   def printNode(n: GNode): String = printNode(n, null)
   def printNode(n: GNode, property: Any): String =
     if (!AccessHelpers.isDeleted(n)) { if (property == null) s"V${n.nodeKind}_${n.seq}" else s"(${property}) V${n.nodeKind}_${n.seq}" }
-    else s"(property, deleted) V${n.nodeKind}_${n.seq}"
+    else { if (property == null) s"<deleted V${n.nodeKind}_${n.seq}>" else s"(${property}) <deleted V${n.nodeKind}_${n.seq} >" }
 
   def debugDump(g: Graph): String = {
     val sb = new java.lang.StringBuilder(0)
     val numstr =
-      g._nodes.map { _.size }.zipWithIndex.map { case (nodeKind, sz) => s"${nodeKind}: ${sz}" }.mkString(", ")
+      g._nodes.map { _.size }.zipWithIndex.map { case (sz, nodeKind) => s"(${nodeKind}: ${sz})" }.mkString(", ")
     sb.append(s"#Node numbers (kindId, nnodes) ${numstr}, total ${g._nodes.iterator.map { _.size }.sum}\n")
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       sb.append(s"Node kind ${nodeKind}. (eid, nEdgesOut, nEdgesIn):")
@@ -103,6 +116,23 @@ object DebugDump {
       sb.append("\n")
 
       for (n <- g._nodes(nodeKind)) {
+        val properties = mutable.ArrayBuffer.empty[String]
+        for (propertyKind <- Range(0, g.schema.getNumberOfProperties)) {
+          val p = Accessors.getNodeProperty(n, propertyKind)
+          if (p.nonEmpty)
+            properties.append(
+              s"$propertyKind: [" + p
+                .map {
+                  case null     => "null"
+                  case n: GNode => printNode(n)
+                  case other    => other.toString
+                }
+                .mkString(", ") + "]"
+            )
+        }
+        if (properties.nonEmpty) {
+          sb.append(s"   ${printNode(n)}       : " + properties.mkString(", ") + "\n")
+        }
 
         for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
           val edgesOut = Accessors.getEdgesOut(n, edgeKind)
@@ -130,6 +160,7 @@ object Graph {
   // neighbors, and one array containing edge properties
   val NeighborsSlotSize  = 3
   val NumberOfDirections = 2
+  val PropertySlotSize   = 2
 }
 
 class Graph(val schema: Schema) {
@@ -137,6 +168,8 @@ class Graph(val schema: Schema) {
 
   val _neighbors: Array[AnyRef] =
     new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfEdgeKinds * NeighborsSlotSize * NumberOfDirections)
+
+  val _properties = new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
 
   for (
     nodeKind <- Range(0, schema.getNumberOfNodeKinds);
