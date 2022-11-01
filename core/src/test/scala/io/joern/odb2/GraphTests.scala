@@ -711,8 +711,6 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_2       : 1: [b]
         |Node kind 1. (eid, nEdgesOut, nEdgesIn):
         |""".stripMargin
-      println(DebugDump.debugDump(g))
-
     }
 
   }
