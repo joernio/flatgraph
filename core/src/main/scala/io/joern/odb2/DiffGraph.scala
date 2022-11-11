@@ -468,7 +468,8 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       case other           => other
     }
     val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[_]]).asInstanceOf[mutable.ArraySeq[Any]]
-    val default  = graph.schema.edgePropertyDefaultValue(nodeKind, inout, edgeKind).default
+    // this will fail if the edge doesn't support properties. todo: better error message
+    val default = graph.schema.allocateEdgeProperty(nodeKind, inout, edgeKind, 1)(0)
     for (edgeRepr <- setEdgeProperties(pos)) {
       val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
       propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
@@ -571,7 +572,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
     val newProperty =
       if (hasNewProp || oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, inout, edgeKind, newNeighbors.size) else null
-    val newPropertyView = if (newProperty != null) mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]] else null
+    val newPropertyView = mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]]
 
     var insertionCounter = 0
     var copyStartSeq     = 0

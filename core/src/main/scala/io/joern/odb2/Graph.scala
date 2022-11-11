@@ -89,9 +89,14 @@ object Accessors {
 object DebugDump {
 
   def printNode(n: GNode): String = printNode(n, null)
-  def printNode(n: GNode, property: Any): String =
-    if (!AccessHelpers.isDeleted(n)) { if (property == null) s"V${n.nodeKind}_${n.seq}" else s"(${property}) V${n.nodeKind}_${n.seq}" }
-    else { if (property == null) s"<deleted V${n.nodeKind}_${n.seq}>" else s"(${property}) <deleted V${n.nodeKind}_${n.seq} >" }
+  def printNode(n: GNode, edgeproperty: Any): String = {
+    val nodeLabel = n.graph.schema.getNodeLabel(n.nodeKind)
+    if (!AccessHelpers.isDeleted(n)) {
+      if (edgeproperty == null) s"${nodeLabel}_${n.seq}" else s"(${edgeproperty}) ${nodeLabel}_${n.seq}"
+    } else {
+      if (edgeproperty == null) s"<deleted ${nodeLabel}_${n.seq}>" else s"(${edgeproperty}) <deleted ${nodeLabel}_${n.seq} >"
+    }
+  }
 
   def debugDump(g: Graph): String = {
     val sb = new java.lang.StringBuilder(0)
@@ -118,10 +123,11 @@ object DebugDump {
       for (n <- g._nodes(nodeKind)) {
         val properties = mutable.ArrayBuffer.empty[String]
         for (propertyKind <- Range(0, g.schema.getNumberOfProperties)) {
-          val p = Accessors.getNodeProperty(n, propertyKind)
+          val propertyLabel = g.schema.getEdgeLabel(nodeKind, propertyKind)
+          val p             = Accessors.getNodeProperty(n, propertyKind)
           if (p.nonEmpty)
             properties.append(
-              s"$propertyKind: [" + p
+              s"$propertyLabel: [" + p
                 .map {
                   case null     => "null"
                   case n: GNode => printNode(n)
@@ -135,17 +141,19 @@ object DebugDump {
         }
 
         for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
-          val edgesOut = Accessors.getEdgesOut(n, edgeKind)
+          val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
+          val edgesOut  = Accessors.getEdgesOut(n, edgeKind)
           assert(Accessors.getNeighborsOut(n, edgeKind).sameElements(edgesOut.map { _.dst }))
           if (edgesOut.nonEmpty) {
-            sb.append(s"   ${printNode(n)}   [${edgeKind}] -> " + edgesOut.map { e => printNode(e.dst, e.property) }.mkString(", ") + "\n")
+            sb.append(s"   ${printNode(n)}   [${edgeLabel}] -> " + edgesOut.map { e => printNode(e.dst, e.property) }.mkString(", ") + "\n")
           }
         }
         for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
-          val edgesIn = Accessors.getEdgesIn(n, edgeKind)
+          val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
+          val edgesIn   = Accessors.getEdgesIn(n, edgeKind)
           assert(Accessors.getNeighborsIn(n, edgeKind) == (edgesIn.map { _.src }))
           if (edgesIn.nonEmpty) {
-            sb.append(s"   ${printNode(n)}   [${edgeKind}] <- " + edgesIn.map { e => printNode(e.src, e.property) }.mkString(", ") + "\n")
+            sb.append(s"   ${printNode(n)}   [${edgeLabel}] <- " + edgesIn.map { e => printNode(e.src, e.property) }.mkString(", ") + "\n")
           }
         }
       }
@@ -176,8 +184,9 @@ class Graph(val schema: Schema) {
     inout    <- Range(0, 2);
     edgeKind <- Range(0, schema.getNumberOfEdgeKinds)
   ) {
-    val pos = schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
-    _neighbors(pos + 2) = schema.edgePropertyDefaultValue(nodeKind, inout, edgeKind)
+    val pos             = schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
+    val propertyDefault = schema.allocateEdgeProperty(nodeKind, inout, edgeKind, 1)
+    _neighbors(pos + 2) = if (propertyDefault == null) null else new DefaultValue(propertyDefault(0))
   }
 
   val nnodes: Array[Int] = new Array[Int](schema.getNumberOfNodeKinds)

@@ -8,15 +8,20 @@ class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0)
 
   override def getNumberOfEdgeKinds: Int = nEdgeKinds
 
-  override def getNumberOfProperties: Int                           = nProperties
+  override def getNumberOfProperties: Int = nProperties
+
+  override def getNodeLabel(nodeKind: Int): String = s"V${nodeKind}"
+
+  def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = s"${edgeKind}"
+
+  def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = s"${propertyKind}"
+
   override def makeNode(g: Graph, nodeKind: Short, seq: Int): GNode = new GNode(g, nodeKind, seq)
 
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
     new Edge(src, dst, edgeKind, subSeq, property)
 
   override def allocateEdgeProperty(nodeKind: Int, edgeKind: Int, inout: Int, size: Int): Array[_] = new Array[String](size)
-
-  override def edgePropertyDefaultValue(nodeKind: Int, edgeKind: Int, inout: Int): DefaultValue = new DefaultValue(null)
 
   override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = ???
 }
@@ -552,8 +557,6 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     "support edge properties with primitives and default values" in {
       val schema = new TestSchema(1, 1) {
-        override def edgePropertyDefaultValue(nodeKind: Int, edgeKind: Int, inout: Int): DefaultValue = new DefaultValue((-1).toShort)
-
         override def allocateEdgeProperty(nodeKind: Int, edgeKind: Int, inout: Int, size: Int): Array[_] = Array.fill(size)((-1).toShort)
       }
       val V0_0 = new GenericDNode(0)
@@ -711,8 +714,6 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_2       : 1: [b]
         |Node kind 1. (eid, nEdgesOut, nEdgesIn):
         |""".stripMargin
-      println(DebugDump.debugDump(g))
-
     }
 
   }

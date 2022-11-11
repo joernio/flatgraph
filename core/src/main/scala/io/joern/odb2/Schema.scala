@@ -1,11 +1,18 @@
 package io.joern.odb2
 
 object DefaultValue
+object NoProperty
 final class DefaultValue(val default: Any)
 trait Schema {
   def getNumberOfNodeKinds: Int
 
   def getNumberOfEdgeKinds: Int
+
+  def getNodeLabel(nodeKind: Int): String
+
+  def getEdgeLabel(nodeKind: Int, edgeKind: Int): String
+
+  def getPropertyLabel(nodeKind: Int, propertyKind: Int): String
 
   def getNumberOfProperties: Int
   def neighborOffsetArrayIndex(nodeKind: Int, inout: Int, edgeKind: Int): Int = {
@@ -22,8 +29,6 @@ trait Schema {
   def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge
 
   def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_]
-
-  def edgePropertyDefaultValue(nodeKind: Int, inout: Int, edgeKind: Int): DefaultValue
 
   def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_]
 }
