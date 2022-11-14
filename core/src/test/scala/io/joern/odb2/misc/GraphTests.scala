@@ -3,6 +3,8 @@ package io.joern.odb2
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+
+
 class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0) extends Schema {
   override def getNumberOfNodeKinds: Int = nKinds
 
@@ -27,6 +29,15 @@ class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0)
 }
 
 class GraphTests extends AnyWordSpec with Matchers {
+  def testSerialization(g: Graph):Unit = {
+    val orig = DebugDump.debugDump(g)
+    val copy = new Graph(g.schema)
+    val ser = Serialization.serialize(g, null)
+    Serialization.deserialize(g, ser)
+    val copydeb = DebugDump.debugDump(copy)
+    orig shouldBe copydeb
+  }
+
   // General tip: If a test fails, add println(DebugDump.debugDump(g)) in front, in order to get untruncated "actual" for copy-paste
   "Graphs and diffs" should {
     "basically work for construction" in {
@@ -114,6 +125,8 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_4   [0] <- V0_1
           |""".stripMargin
       g._neighbors(0).asInstanceOf[Array[Int]].length shouldBe 6
+
+      testSerialization(g)
     }
 
     "basically work with multiple edge and node types" in {

@@ -3,131 +3,131 @@ import io.joern.odb2.StorageManifest._
 
 import scala.collection.mutable
 
+object StorageTyp {
+  val Bool   = "bool"
+  val Byte   = "byte"
+  val Short  = "short"
+  val Int    = "int"
+  val Long   = "long"
+  val Ref    = "ref"
+  val String = "string"
+  val Double = "double"
+  val Float  = "float"
+
+}
 object StorageManifest {
 
   // the Box class exists in lieu of taking the address of contents, i.e. such that we can later update it in place for asynchronous storage
   class Box[T](var contents: T = null) {}
 
-  class StorageWrap(
-    val nodes: Array[NodeItem],
-    val edges: Array[EdgeItem],
-    val properties: Array[PropertyItem],
-    val stringpool: Box[StringPool] = new Box
+  class GraphStorage(
+    var nodes: Array[NodeItem],
+    var edges: Array[EdgeItem],
+    var properties: Array[PropertyItem],
+    val stringpool: StringPool
   )
 
-  class NodeItem(val nodeLabel: String, val nnodes: Int, var deletions: Box[IntArray] = new Box)
+  class NodeItem(val nodeLabel: String, val nnodes: Int, var deletions: StorageContainer[Int])
 
   class EdgeItem(
     val nodeLabel: String,
     val edgeLabel: String,
     val inout: Int,
-    val qty: Box[IntArray] = new Box(),
-    val neighbors: Box[RefArray] = new Box(),
-    val property: Box[AnyArray] = new Box()
+    var qty: StorageContainer[Int],
+    var neighbors: StorageContainer[Long],
+    var property: StorageContainer[_]
   )
 
-  class PropertyItem(
-    val nodeLabel: String,
-    val propertyLabel: String,
-    val qty: Box[IntArray] = new Box(),
-    val values: Box[AnyArray] = new Box()
-  )
+  class PropertyItem(val nodeLabel: String, val propertyLabel: String, var qty: StorageContainer[Int], var property: StorageContainer[_])
 
-  sealed trait AnyArray
-
-  // same for: bool, byte, short, long, float, double
-
-  sealed trait BoolArray                                                                          extends AnyArray
-  class InlineBoolArray(val bools: Array[Boolean])                                                extends BoolArray
-  class ConstBoolArray(val value: Boolean, val size: Int)                                         extends BoolArray
-  class ExternalBoolArray(val start: Long, val end: Long, val size: Int, val compression: String) extends BoolArray
-
-  sealed trait ByteArray                                                                         extends AnyArray
-  class InlineByteArray(val bytes: Array[Byte])                                                  extends ByteArray
-  class ConstByteArray(val value: Byte, val size: Int)                                           extends ByteArray
-  class ExternalByterray(val start: Long, val end: Long, val size: Int, val compression: String) extends ByteArray
-
-  sealed trait ShortArray                                                                          extends AnyArray
-  class InlineShortArray(val shorts: Array[Short])                                                 extends ShortArray
-  class ConstShortArray(val value: Short, val size: Int)                                           extends ShortArray
-  class ExternalShortArray(val start: Long, val end: Long, val size: Int, val compression: String) extends ShortArray
-
-  sealed trait IntArray extends AnyArray {
-    def get: Array[Int]
+  trait StorageContainer[T] {
+    def typ: String
+    def contents: Array[T]
   }
-  class InlineIntArray(val ints: Array[Int]) extends IntArray {
-    override def get: Array[Int] = ints
-  }
-
-  sealed trait LongArray extends AnyArray
-  // fixme: this may need splitting in top-and-bottomn for json in order to help JS (because int64 support sucks)
-  // that's not an issue for noderef or file offsets -- they may overflow int32, but are effectively int48,
-  // and definitely won't overflow the available int53
-  class InlineLongArray(val longs: Array[Long])                                                   extends LongArray
-  class ConstLongArray(val value: Long, val size: Int)                                            extends LongArray
-  class ExternalLongArray(val start: Long, val end: Long, val size: Int, val compression: String) extends LongArray
-
-  sealed trait FloatArray                          extends AnyArray
-  class InlineFloatArray(val floats: Array[Float]) extends FloatArray
-
-  sealed trait DoubleArray                            extends AnyArray
-  class InlineDoubleArray(val doubles: Array[Double]) extends DoubleArray
-
-  sealed trait StringArray                                 extends AnyArray
-  class ConstStringArray(val value: String, val size: Int) extends StringArray
-  class InlineStringArray(val strings: Array[String])      extends StringArray
-  class PoolRefArray(val poolRefs: IntArray)               extends StringArray
-
-  sealed trait RefArray                                                                          extends AnyArray
-  class InlineRefArray(val kinds: Array[Short], val seqs: Array[Int])                            extends RefArray
-  class ExternalRefArray(val start: Long, val end: Long, val size: Int, val compression: String) extends RefArray
-
+  class InlineStorage[T](val typ: String, val contents: Array[T]) extends StorageContainer[T]
   sealed trait StringPool
-  class InlineStringPool(val strings: Array[String]) extends StringPool
 }
 
 class StorageConfig
 
-object Foo {
+object Serialization {
 
-  def encodeRefs(nodes: Array[GNode], config: StorageConfig): RefArray = {
+  def encodeRefs(nodes: Array[GNode], config: StorageConfig): StorageContainer[Long] = {
     if (nodes == null) null
     else {
-      val len   = nodes.length
-      val kinds = new Array[Short](len)
-      val seqs  = new Array[Int](len)
+      val len = nodes.length
+      val res = new Array[Long](len)
       for (idx <- Range(0, len)) {
-        kinds(idx) = nodes(idx).nodeKind
-        seqs(idx) = nodes(idx).seq()
+        res(idx) = (nodes(idx).nodeKind.toLong << 32) + nodes(idx).seq()
       }
-      new InlineRefArray(kinds, seqs)
+      new InlineStorage[Long](StorageTyp.Ref, res)
     }
   }
-  def encodeQty(nnodes: Int, qty: Array[Int], config: StorageConfig): IntArray = {
+
+  def decodeRefs(nodes: Array[Array[GNode]], refs: StorageContainer[Long]): Array[GNode] = {
+    assert(refs.typ == StorageTyp.Ref)
+    val refLongs = refs.contents
+    val res      = new Array[GNode](refLongs.length)
+    for (idx <- Range(0, res.length)) {
+      val kind = (refLongs(idx) >> 32).toShort
+      val seq  = refLongs(idx).toInt
+      res(idx) = nodes(kind)(seq)
+    }
+    res
+  }
+
+  def encodeQty(nnodes: Int, qty: Array[Int], config: StorageConfig): StorageContainer[Int] = {
     val intermediate = new Array[Int](nnodes + 1)
     for (idx <- Range(0, scala.math.min(intermediate.length - 1, qty.length - 1))) {
       intermediate(idx) = qty(idx + 1) - qty(idx)
     }
-    new InlineIntArray(intermediate)
+    new InlineStorage[Int](StorageTyp.Int, intermediate)
   }
 
-  def encodeAny(item: Any, config: StorageConfig): AnyArray = {
+  def decodeQty(lens: StorageContainer[Int]): Array[Int] = {
+    val res     = lens.contents.clone()
+    var idx     = 0
+    var counter = 0
+    while (idx < res.length) {
+      val tmp = res(idx)
+      res(idx) = counter
+      counter += tmp
+      idx += 1
+    }
+    res
+  }
+
+  def encodeAny(item: Any, config: StorageConfig): StorageContainer[_] = {
     item match {
       case null                   => null
-      case bools: Array[Boolean]  => new InlineBoolArray(bools)
-      case bytes: Array[Byte]     => new InlineByteArray(bytes)
-      case shorts: Array[Short]   => new InlineShortArray(shorts)
-      case ints: Array[Int]       => new InlineIntArray(ints)
-      case longs: Array[Long]     => new InlineLongArray(longs)
-      case floats: Array[Float]   => new InlineFloatArray(floats)
-      case doubles: Array[Double] => new InlineDoubleArray(doubles)
+      case bools: Array[Boolean]  => new InlineStorage(StorageTyp.Bool, bools)
+      case bytes: Array[Byte]     => new InlineStorage(StorageTyp.Byte, bytes)
+      case shorts: Array[Short]   => new InlineStorage(StorageTyp.Short, shorts)
+      case ints: Array[Int]       => new InlineStorage(StorageTyp.Int, ints)
+      case longs: Array[Long]     => new InlineStorage(StorageTyp.Long, longs)
+      case floats: Array[Float]   => new InlineStorage(StorageTyp.Float, floats)
+      case doubles: Array[Double] => new InlineStorage(StorageTyp.Double, doubles)
       case refs: Array[GNode]     => encodeRefs(refs, config)
-      case strings: Array[String] => new InlineStringArray(strings)
+      case strings: Array[String] => new InlineStorage(StorageTyp.String, strings)
+    }
+  }
+
+  def decodeAny(nodes: Array[Array[GNode]], item: StorageContainer[_]): AnyRef = {
+    if (item == null) return null
+    item.typ match {
+      case StorageTyp.Ref    => decodeRefs(nodes, item.asInstanceOf[StorageContainer[Long]])
+      case StorageTyp.Bool   => item.contents.asInstanceOf[Array[Boolean]]
+      case StorageTyp.Byte   => item.contents.asInstanceOf[Array[Byte]]
+      case StorageTyp.Short  => item.contents.asInstanceOf[Array[Short]]
+      case StorageTyp.Int    => item.contents.asInstanceOf[Array[Int]]
+      case StorageTyp.Long   => item.contents.asInstanceOf[Array[Long]]
+      case StorageTyp.Float  => item.contents.asInstanceOf[Array[Float]]
+      case StorageTyp.Double => item.contents.asInstanceOf[Array[Double]]
 
     }
   }
 
-  def serialize(g: Graph, config: StorageConfig): StorageManifest.StorageWrap = {
+  def serialize(g: Graph, config: StorageConfig): StorageManifest.GraphStorage = {
     val nodes      = mutable.ArrayBuffer.empty[NodeItem]
     val edges      = mutable.ArrayBuffer.empty[EdgeItem]
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
@@ -141,8 +141,7 @@ object Foo {
         }
         .toArray
       val size = g._nodes(nodeKind).size
-      nodes.addOne(new StorageManifest.NodeItem(nodeLabel, size, new StorageManifest.Box(new InlineIntArray(deletions))))
-
+      nodes.addOne(new StorageManifest.NodeItem(nodeLabel, size, new InlineStorage[Int](StorageTyp.Int, deletions)))
     }
     for (
       nodeKind <- Range(0, g.schema.getNumberOfNodeKinds);
@@ -153,11 +152,11 @@ object Foo {
       if (g._neighbors(pos) != null) {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
         val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
-        val edgeItem  = new StorageManifest.EdgeItem(nodeLabel, edgeLabel, inout)
+        val edgeItem  = new StorageManifest.EdgeItem(nodeLabel, edgeLabel, inout, null, null, null)
         edges.addOne(edgeItem)
-        edgeItem.qty.contents = encodeQty(g._nodes(nodeKind).length, g._neighbors(pos).asInstanceOf[Array[Int]], config)
-        edgeItem.neighbors.contents = encodeRefs(g._neighbors(pos + 1).asInstanceOf[Array[GNode]], config)
-        edgeItem.property.contents = encodeAny(g._neighbors(pos + 1), config)
+        edgeItem.qty = encodeQty(g._nodes(nodeKind).length, g._neighbors(pos).asInstanceOf[Array[Int]], config)
+        edgeItem.neighbors = encodeRefs(g._neighbors(pos + 1).asInstanceOf[Array[GNode]], config)
+        edgeItem.property = encodeAny(g._neighbors(pos + 2), config)
       }
     }
     for (
@@ -168,20 +167,20 @@ object Foo {
       if (g._properties(pos) != null) {
         val nodeLabel     = g.schema.getNodeLabel(nodeKind)
         val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
-        val propertyItem  = new StorageManifest.PropertyItem(nodeLabel, propertyLabel)
+        val propertyItem  = new StorageManifest.PropertyItem(nodeLabel, propertyLabel, null, null)
         properties.addOne(propertyItem)
-        propertyItem.qty.contents = encodeQty(g._nodes(nodeKind).length, g._properties(pos).asInstanceOf[Array[Int]], config)
-        propertyItem.values.contents = encodeAny(g._properties(pos), config)
+        propertyItem.qty = encodeQty(g._nodes(nodeKind).length, g._properties(pos).asInstanceOf[Array[Int]], config)
+        propertyItem.property = encodeAny(g._properties(pos), config)
       }
     }
-    val stringpool = new StorageManifest.InlineStringPool(new Array[String](0))
-    new StorageWrap(nodes.toArray, edges.toArray, properties.toArray, new Box(stringpool))
+    new GraphStorage(nodes.toArray, edges.toArray, properties.toArray, null)
   }
 
-  def deserialize(g: Graph, manifest: StorageWrap): Unit = {
+  def deserialize(g: Graph, manifest: GraphStorage): Unit = {
     val nodekinds = mutable.HashMap[String, Short]()
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
     val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
+    val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
     for ((nodeItem, idx) <- manifest.nodes.zipWithIndex) {
       val nodeKind = nodekinds.get(nodeItem.nodeLabel)
       if (nodeKind.isDefined) {
@@ -189,7 +188,8 @@ object Foo {
         val nodes = new Array[GNode](nodeItem.nnodes)
         for (seq <- Range(0, nodes.length)) nodes(seq) = g.schema.makeNode(g, nodeKind.get, seq)
         g._nodes(nodeKind.get) = nodes
-        for (del <- nodeItem.deletions.contents.get) {
+        nodeRemapper(idx) = nodes
+        for (del <- nodeItem.deletions.contents) {
           AccessHelpers.markDeleted(nodes(del))
         }
       }
@@ -208,11 +208,18 @@ object Foo {
     }
 
     for (edgeItem <- manifest.edges) {
-      val qty = edgeItem.qty.contents.get
-
+      val nodeKind  = nodekinds.get(edgeItem.nodeLabel)
+      val edgeKind  = edgeKinds.get(edgeItem.nodeLabel, edgeItem.edgeLabel)
+      val direction = edgeItem.inout
+      if (nodeKind.isDefined && edgeKind.isDefined) {
+        val pos = g.schema.neighborOffsetArrayIndex(nodeKind.get, direction, edgeKind.get)
+        g._neighbors(pos) = decodeQty(edgeItem.qty)
+        g._neighbors(pos + 1) = decodeRefs(nodeRemapper, edgeItem.neighbors)
+        g._neighbors(pos + 2) = decodeAny(nodeRemapper, edgeItem.neighbors)
+      }
     }
 
-    val propertykinds = mutable.HashMap[(String, String), Short]()
+    val propertykinds = mutable.HashMap[(String, String), Int]()
     for (
       nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds);
       propertyKind <- Range(0, g.schema.getNumberOfProperties)
@@ -220,7 +227,17 @@ object Foo {
       val nodeLabel     = g.schema.getNodeLabel(nodeKind)
       val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
       if (propertyLabel != null) {
-        propertykinds((nodeLabel, propertyLabel)) = null
+        propertykinds((nodeLabel, propertyLabel)) = propertyKind
+      }
+    }
+
+    for (property <- manifest.properties) {
+      val nodeKind     = nodekinds.get(property.nodeLabel)
+      val propertyKind = propertykinds.get((property.nodeLabel, property.propertyLabel))
+      if (nodeKind.isDefined && propertyKind.isDefined) {
+        val pos = g.schema.propertyOffsetArrayIndex(nodeKind.get, propertyKind.get)
+        g._properties(pos) = decodeQty(property.qty)
+        g._properties(pos + 1) = decodeAny(nodeRemapper, property.property)
       }
     }
 

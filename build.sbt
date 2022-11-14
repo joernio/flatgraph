@@ -15,11 +15,11 @@ ThisBuild / scalacOptions ++= Seq("-deprecation", "-feature") ++ (
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((3, _)) =>
       Seq(
-        "-Xtarget:8"
+//        "-Xtarget:8"
       )
     case _ =>
       Seq(
-        "-target:jvm-1.8"
+//        "-target:jvm-1.8"
       )
   }
 )
