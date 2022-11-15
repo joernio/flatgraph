@@ -3,8 +3,6 @@ package io.joern.odb2
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-
-
 class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0) extends Schema {
   override def getNumberOfNodeKinds: Int = nKinds
 
@@ -29,11 +27,11 @@ class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0)
 }
 
 class GraphTests extends AnyWordSpec with Matchers {
-  def testSerialization(g: Graph):Unit = {
+  def testSerialization(g: Graph): Unit = {
     val orig = DebugDump.debugDump(g)
     val copy = new Graph(g.schema)
-    val ser = Serialization.serialize(g, null)
-    Serialization.deserialize(g, ser)
+    val ser  = Serialization.serialize(g, null)
+    Serialization.deserialize(copy, ser)
     val copydeb = DebugDump.debugDump(copy)
     orig shouldBe copydeb
   }
@@ -342,6 +340,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .removeEdge(Accessors.getEdgesOut(g._nodes(0)(0), 0).toList(1))
       )
       DebugDump.debugDump(g) shouldBe expectation
+      testSerialization(g)
     }
     "permit a different edge deletion" in {
       var g = mkGraph()
@@ -451,6 +450,8 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_3   [0] <- V0_0
           |""".stripMargin
 
+      testSerialization(g)
+
       g = mkGraph()
       DiffGraphApplier.applyDiff(
         g,
@@ -464,6 +465,8 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_0   [0] -> V0_1, V0_1
           |   V0_1   [0] <- V0_0, V0_0
           |""".stripMargin
+
+      testSerialization(g)
     }
 
     "support edge properties" in {
@@ -498,6 +501,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_3   [0] <- (C) V0_2
           |""".stripMargin
 
+      testSerialization(g)
       DiffGraphApplier.applyDiff(
         g,
         (new DiffGraphBuilder)
@@ -551,6 +555,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_3   [0] -> (D) V0_0
           |   V0_3   [0] <- (C) V0_2
           |""".stripMargin
+      testSerialization(g)
 
       DiffGraphApplier.applyDiff(
         g,
@@ -566,6 +571,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_1   [0] <- V0_0
           |   V0_3   [0] -> (D) V0_0
           |""".stripMargin
+      testSerialization(g)
     }
 
     "support edge properties with primitives and default values" in {
@@ -612,6 +618,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V0_1   [0] -> (2) V0_1
           |   V0_1   [0] <- (-1) V0_0, (-1) V0_0, (2) V0_1
           |""".stripMargin
+      testSerialization(g)
     }
 
     "support node properties" in {
@@ -664,7 +671,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |   V1_0       : 0: [0]
           |   V1_1       : 0: [0, 1]
           |""".stripMargin
-
+      testSerialization(g)
       DiffGraphApplier.applyDiff(
         g,
         (new DiffGraphBuilder)
@@ -680,6 +687,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |Node kind 1. (eid, nEdgesOut, nEdgesIn):
           |   V1_1       : 0: [0, 1]
           |""".stripMargin
+      testSerialization(g)
     }
 
     "Support custom domain classes for detached nodes" in {
@@ -727,6 +735,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_2       : 1: [b]
         |Node kind 1. (eid, nEdgesOut, nEdgesIn):
         |""".stripMargin
+      testSerialization(g)
     }
 
   }

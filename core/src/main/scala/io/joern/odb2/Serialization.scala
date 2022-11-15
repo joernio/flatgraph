@@ -13,7 +13,6 @@ object StorageTyp {
   val String = "string"
   val Double = "double"
   val Float  = "float"
-
 }
 object StorageManifest {
 
@@ -58,7 +57,10 @@ object Serialization {
       val len = nodes.length
       val res = new Array[Long](len)
       for (idx <- Range(0, len)) {
-        res(idx) = (nodes(idx).nodeKind.toLong << 32) + nodes(idx).seq()
+        res(idx) = nodes(idx) match {
+          case null        => 0x0000ffffffffffffL // -1 in 48 bit
+          case node: GNode => (node.nodeKind.toLong << 32) + node.seq()
+        }
       }
       new InlineStorage[Long](StorageTyp.Ref, res)
     }
@@ -71,7 +73,7 @@ object Serialization {
     for (idx <- Range(0, res.length)) {
       val kind = (refLongs(idx) >> 32).toShort
       val seq  = refLongs(idx).toInt
-      res(idx) = nodes(kind)(seq)
+      res(idx) = if (kind >= 0) nodes(kind)(seq) else null
     }
     res
   }
@@ -99,6 +101,7 @@ object Serialization {
 
   def encodeAny(item: Any, config: StorageConfig): StorageContainer[_] = {
     item match {
+      case default: DefaultValue  => null
       case null                   => null
       case bools: Array[Boolean]  => new InlineStorage(StorageTyp.Bool, bools)
       case bytes: Array[Byte]     => new InlineStorage(StorageTyp.Byte, bytes)
@@ -123,7 +126,7 @@ object Serialization {
       case StorageTyp.Long   => item.contents.asInstanceOf[Array[Long]]
       case StorageTyp.Float  => item.contents.asInstanceOf[Array[Float]]
       case StorageTyp.Double => item.contents.asInstanceOf[Array[Double]]
-
+      case StorageTyp.String => item.contents.asInstanceOf[Array[String]]
     }
   }
 
@@ -161,7 +164,7 @@ object Serialization {
     }
     for (
       nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds);
-      propertyKind <- Range(9, g.schema.getNumberOfProperties)
+      propertyKind <- Range(0, g.schema.getNumberOfProperties)
     ) {
       val pos = g.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
       if (g._properties(pos) != null) {
@@ -170,7 +173,7 @@ object Serialization {
         val propertyItem  = new StorageManifest.PropertyItem(nodeLabel, propertyLabel, null, null)
         properties.addOne(propertyItem)
         propertyItem.qty = encodeQty(g._nodes(nodeKind).length, g._properties(pos).asInstanceOf[Array[Int]], config)
-        propertyItem.property = encodeAny(g._properties(pos), config)
+        propertyItem.property = encodeAny(g._properties(pos + 1), config)
       }
     }
     new GraphStorage(nodes.toArray, edges.toArray, properties.toArray, null)
@@ -215,7 +218,9 @@ object Serialization {
         val pos = g.schema.neighborOffsetArrayIndex(nodeKind.get, direction, edgeKind.get)
         g._neighbors(pos) = decodeQty(edgeItem.qty)
         g._neighbors(pos + 1) = decodeRefs(nodeRemapper, edgeItem.neighbors)
-        g._neighbors(pos + 2) = decodeAny(nodeRemapper, edgeItem.neighbors)
+        val property = decodeAny(nodeRemapper, edgeItem.property)
+        if (property != null)
+          g._neighbors(pos + 2) = property
       }
     }
 
