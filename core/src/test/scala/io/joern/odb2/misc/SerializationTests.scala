@@ -6,10 +6,7 @@ import io.joern.odb2.StorageManifest
 
 class SerializationTests extends AnyWordSpec with Matchers {
   "foo" should {
-    "bar" in {
-      val testString = """{"foo":1, "bar": [1,2,3]}"""
-
-    }
+    "bar" in {}
   }
 
 }

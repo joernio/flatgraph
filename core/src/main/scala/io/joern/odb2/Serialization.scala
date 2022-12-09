@@ -1,6 +1,9 @@
 package io.joern.odb2
 import io.joern.odb2.StorageManifest._
+import io.joern.odb2.jsonSerialization.readStorageContainer
 
+import java.nio.channels.FileChannel
+import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
 
 object StorageTyp {
@@ -15,15 +18,11 @@ object StorageTyp {
   val Float  = "float"
 }
 object StorageManifest {
-
-  // the Box class exists in lieu of taking the address of contents, i.e. such that we can later update it in place for asynchronous storage
-  class Box[T](var contents: T = null) {}
-
   class GraphStorage(
     var nodes: Array[NodeItem],
     var edges: Array[EdgeItem],
     var properties: Array[PropertyItem],
-    val stringpool: StringPool
+    val stringpool: StorageContainer[String]
   )
 
   class NodeItem(val nodeLabel: String, val nnodes: Int, var deletions: StorageContainer[Int])
@@ -44,12 +43,57 @@ object StorageManifest {
     def contents: Array[T]
   }
   class InlineStorage[T](val typ: String, val contents: Array[T]) extends StorageContainer[T]
-  sealed trait StringPool
 }
 
 class StorageConfig
 
+object jsonSerialization {
+  def readStorageContainer(serialized: ujson.Value): StorageContainer[_] = {
+    if (serialized.isNull) return null
+    val typ = serialized.obj("type").str
+    if (serialized("encoding") != "inline") ???
+    val values = serialized("values").arr
+    typ match {
+      case StorageTyp.Bool   => new InlineStorage[Boolean](typ, values.map { _.bool }.toArray)
+      case StorageTyp.Byte   => new InlineStorage[Byte](typ, values.map { _.num.toByte }.toArray)
+      case StorageTyp.Short  => new InlineStorage[Short](typ, values.map { _.num.toShort }.toArray)
+      case StorageTyp.Int    => new InlineStorage[Int](typ, values.map { _.num.toInt }.toArray)
+      case StorageTyp.Long   => new InlineStorage[Long](typ, values.map { _.num.toLong }.toArray)
+      case StorageTyp.Float  => new InlineStorage[Float](typ, values.map { _.num.toFloat }.toArray)
+      case StorageTyp.Double => new InlineStorage[Double](typ, values.map { _.num }.toArray)
+      case StorageTyp.String => new InlineStorage[String](typ, values.map { _.str }.toArray)
+      case StorageTyp.Ref    => new InlineStorage[Long](typ, values.map { _.num.toLong }.toArray)
+    }
+  }
+
+}
 object Serialization {
+
+  def readContainer()
+
+  def read(serialized: ujson.Obj): GraphStorage = {
+    val version = serialized.obj.get("version")
+
+    val nodes = serialized("nodes").arr.toArray.map { nodeItemJ =>
+      val label  = nodeItemJ("nodelabel").str
+      val nnodes = nodeItemJ("nnodes").num.toInt
+      val del    = readStorageContainer(nodeItemJ("deletions")).asInstanceOf[StorageContainer[Int]]
+      new NodeItem(label, nnodes, del)
+    }
+
+    val edgeItems = serialized("edges").arr.toArray.map { edgeItemJ =>
+      val nodelabel = edgeItemJ("nodelabel").str
+      val edgelabel = edgeItemJ("edgelabel").str
+      val inout     = edgeItemJ("inout").num.toInt
+      val qty       = readStorageContainer(edgeItemJ("qty")).asInstanceOf[StorageContainer[Int]]
+      val neighbors = readStorageContainer(edgeItemJ("neighbors")).asInstanceOf[StorageContainer[Long]]
+      val property  = readStorageContainer(edgeItemJ("property"))
+      new EdgeItem(nodelabel, edgelabel, inout, qty = qty, neighbors = neighbors, property = property)
+
+    }
+
+    null
+  }
 
   def encodeRefs(nodes: Array[GNode], config: StorageConfig): StorageContainer[Long] = {
     if (nodes == null) null
@@ -130,7 +174,7 @@ object Serialization {
     }
   }
 
-  def serialize(g: Graph, config: StorageConfig): StorageManifest.GraphStorage = {
+  def serialize(g: Graph, filename: String, config: StorageConfig): StorageManifest.GraphStorage = {
     val nodes      = mutable.ArrayBuffer.empty[NodeItem]
     val edges      = mutable.ArrayBuffer.empty[EdgeItem]
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
