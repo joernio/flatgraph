@@ -82,11 +82,12 @@ object Bench {
     box.histo = new Histogramer().createHistogram()
     val cpgBox    = measure { loadCopyFile(args(0)) }
     val nodecount = cpgBox.result.asInstanceOf[Cpg].graph.nodeCount()
+    val callcount = cpgBox.result.asInstanceOf[Cpg].graph.nodeCount("CALL")
     val indexify  = measure { makeIndices(cpgBox.result.asInstanceOf[Cpg]) }
     val touch1    = measure { touchGraph(cpgBox.result.asInstanceOf[Cpg]) }
     val touch2    = measure { touchGraph(cpgBox.result.asInstanceOf[Cpg]) }
     val close     = measure { cpgBox.result.asInstanceOf[Cpg].close() }
-    println(s"Graph with ${nodecount} nodes and ${touch1.result} edges at ${args(0)}")
+    println(s"Graph with ${nodecount} nodes (${callcount} calls) and ${touch1.result} edges at ${args(0)}")
     val histoAfter = new Histogramer().createHistogram()
     box.histo = histoAfter.diff(box.histo)
     val free = measure { cpgBox.result = null }
