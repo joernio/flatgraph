@@ -112,3 +112,12 @@ Via implicits, an external property can be made to look like a "real" property o
 on the same node races against itself) with only O(1) total synchronization events, as opposed to hashmaps that require 
 synchronization of some kind on every access (typically via atomics).
 
+# Odbv1 / Joern benchmarks.
+After `sbt clean compile stage` you can run an analogue of `./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G ./cpg.bin`
+to generate some benchmarks (timing and memory consumption). This relies on `jcmd`, so make sure you have the full jdk installed, not
+just the jre. For this you need an example graph that you can conveniently generate with joern and take from the workspace 
+(don't forget to save). Since this uses joern domain classes, it is incompatible with ocular/codescience graphs. It is also
+incompatible with the legacy proto format (just load in joern and save).
+
+Feel free to add more benchmarks or prettify the output! E.g. https://github.com/shipilev/java-object-layout looks attractive
+for figuring out why some classes are so damn large. 
