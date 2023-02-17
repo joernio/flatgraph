@@ -6,6 +6,7 @@ import io.shiftleft.codepropertygraph.generated.Cpg
 import overflowdb.Config
 
 import scala.jdk.CollectionConverters.IteratorHasAsScala
+import scala.util.{Success, Try}
 
 object Bench {
 
@@ -99,6 +100,22 @@ object Bench {
     printHisto("count edges again", touch2, nodecount)
     printHisto("close graph", close, nodecount)
     printHisto("free memory", free, nodecount)
+
+    println(s"VM details according to JOL: ${org.openjdk.jol.vm.VM.current().details()}. Layout of top consumers: \n\n")
+    println(
+      box.histo
+        .iterator()
+        .asScala
+        .toBuffer
+        .sortBy { e: HistogramEntry => -scala.math.abs(e.getSize) }
+        .take(20)
+        .flatMap { e => Try(Class.forName(e.getClassName)) match { case Success(v) => Some(v); case _ => None } }
+        .iterator
+        .map { c =>
+          org.openjdk.jol.info.ClassLayout.parseClass(c).toPrintable
+        }
+        .mkString("\n\n")
+    )
 
   }
 
