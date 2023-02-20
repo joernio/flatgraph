@@ -119,5 +119,4 @@ just the jre. For this you need an example graph that you can conveniently gener
 (don't forget to save). Since this uses joern domain classes, it is incompatible with ocular/codescience graphs. It is also
 incompatible with the legacy proto format (just load in joern and save).
 
-Feel free to add more benchmarks or prettify the output! E.g. https://github.com/shipilev/java-object-layout looks attractive
-for figuring out why some classes are so damn large. 
+Feel free to add more benchmarks or prettify the output!
