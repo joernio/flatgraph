@@ -5,9 +5,10 @@ ThisBuild / crossScalaVersions := Seq("2.13.8", "3.1.2")
 publish / skip := true
 
 lazy val core = project.in(file("core"))
+lazy val benchJoern = project.in(file("benchJoern"))
 
 ThisBuild / libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-simple" % "1.7.36" % Test,
+  "org.slf4j" % "slf4j-simple" % "2.0.6" % Test,
   "org.scalatest" %% "scalatest" % "3.2.12" % Test,
 )
 
