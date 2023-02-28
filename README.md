@@ -126,6 +126,9 @@ Feel free to add more benchmarks or prettify the output!
 ### Odbv1
 benchJoern allowed us to discover some inefficiencies in odb1. Before https://github.com/ShiftLeftSecurity/overflowdbv2/pull/11 we saw:
 
+<details>
+  <summary>click to see details of old odb1 benchmarks</summary>
+
 ```
 [bruhns@bruhnsWS overflowdbv2]$ ./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.bin 
 
@@ -508,7 +511,13 @@ OFF  SZ                TYPE DESCRIPTION               VALUE
 Instance size: 40 bytes
 Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
 ```
-After merging the improvements upstream (https://github.com/ShiftLeftSecurity/overflowdbv2/pull/13) we now reached:
+
+</details>
+
+After merging the improvements upstream (https://github.com/ShiftLeftSecurity/overflowdbv2/pull/13) we obtain a 10% reduction of heap memory usage:
+
+<details>
+  <summary>click to see details of new odb1 benchmarks</summary>
 
 ```
 [bruhns@bruhnsWS overflowdbv2]$ ./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.bin
@@ -523,70 +532,70 @@ VM is version 19.0.2+7 with max heap 20480 mb.
 [main] INFO overflowdb.Graph - shutdown finished
 Graph with 2387850 nodes (709958 calls) and 20220777 edges at ./cpg.bin.
 On disk 294252544 bytes = 123.22907385304772 bytes/node.
-Loading data from disk at 61.94665582228577 ns/byte and filling the heap at 15.756243154127658 ns/byte.
+Loading data from disk at 61.01362233252264 ns/byte and filling the heap at 17.225882177043133 ns/byte.
 
 <=========
-Running complete benchmark in 18227961068 ns  == 18227.961068 ms == 7.633629025273782 us/node and costing 1156872288 bytes == 1103.2793884277344 MB == 484.4828142471261 bytes/node.
-Top 20 account for 92.3453697596048%:
+Running complete benchmark in 17953413590 ns  == 17953.41359 ms == 7.5186521724563935 us/node and costing 1042234784 bytes == 993.9525451660156 MB == 436.4741436857424 bytes/node.
+Top 20 account for 94.14840101901646%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
-Object[], 2389530, 425952688, 1.000703561781519,  178.25793691646476, 178.38335238813158
-byte[], 3031330, 189734360, 1.2694809137927425,  62.591126667172496, 79.45824067675943
+Object[], 2389531, 425952712, 1.0007039805682936,  178.25787236072685, 178.38336243901418
+byte[], 3033497, 189814472, 1.2703884247335469,  62.5728233784309, 79.49179052285528
 overflowdb.AdjacentNodes, 2387850, 57308400, 1.0,  24.0, 24.0
-io.shiftleft.codepropertygraph.generated.nodes.Call, 1419916, 56796640, 0.5946420420043135,  40.0, 23.78568168017254
 io.shiftleft.codepropertygraph.generated.nodes.CallDb, 709958, 51116976, 0.29732102100215674,  72.0, 21.407113512155288
-io.shiftleft.codepropertygraph.generated.nodes.Identifier, 1097266, 43890640, 0.45952048914295285,  40.0, 18.380819565718113
 long[], 5, 42029408, 2.0939338735682726E-6,  8405881.6, 17.60136021944427
 io.shiftleft.codepropertygraph.generated.nodes.IdentifierDb, 548633, 35112512, 0.22976024457147642,  64.0, 14.704655652574491
 Integer, 1799008, 28784128, 0.7534007580040623,  16.0, 12.054412128064996
-int[], 456, 21088024, 1.9096676926942647E-4,  46245.666666666664, 8.83138555604414
-String, 681180, 16348320, 0.2852691751994472,  24.0, 6.846460204786733
-io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, 401658, 16066320, 0.16820905835793706,  40.0, 6.728362334317482
-io.shiftleft.codepropertygraph.generated.nodes.Literal, 358342, 14333680, 0.1500688904244404,  40.0, 6.002755616977616
-io.shiftleft.codepropertygraph.generated.nodes.Block, 303730, 12149200, 0.1271981070837783,  40.0, 5.087924283351132
+io.shiftleft.codepropertygraph.generated.nodes.Call, 709958, 22718656, 0.29732102100215674,  32.0, 9.514272672069016
+int[], 458, 21088296, 1.9180434281885377E-4,  46044.31441048035, 8.831499466046862
+io.shiftleft.codepropertygraph.generated.nodes.Identifier, 548633, 17556256, 0.22976024457147642,  32.0, 7.352327826287246
+String, 681158, 16347792, 0.2852599618904035,  24.0, 6.846239085369684
 overflowdb.Node[], 1, 11676976, 4.1878677471365454E-7,  1.1676976E7, 4.8901631174487505
 io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifierDb, 200829, 11246424, 0.08410452917896853,  56.0, 4.709853634022237
 io.shiftleft.codepropertygraph.generated.nodes.LiteralDb, 179171, 10033576, 0.0750344452122202,  56.0, 4.201928931884331
 java.util.concurrent.ConcurrentHashMap$Node[], 50719, 8843120, 0.021240446426701844,  174.35517261775666, 3.703381703205813
 io.shiftleft.codepropertygraph.generated.nodes.BlockDb, 151865, 8504440, 0.06359905354188915,  56.0, 3.561546998345792
-io.shiftleft.codepropertygraph.generated.nodes.MethodParameterIn, 182554, 7302160, 0.07645120087107649,  40.0, 3.05804803484306
+io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, 200829, 6426528, 0.08410452917896853,  32.0, 2.691344933726993
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterInDb, 91277, 5841728, 0.03822560043553824,  64.0, 2.4464384278744475
+io.shiftleft.codepropertygraph.generated.nodes.Literal, 179171, 5733472, 0.0750344452122202,  32.0, 2.4011022467910466
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterOutDb, 91277, 5111512, 0.03822560043553824,  56.0, 2.1406336243901416
 =========>
 
 
 
 <=========
-Running copy and load cpg file in 2973993679 ns  == 2973.9936789999997 ms == 1.2454692208472056 us/node and costing 212900928 bytes == 203.03814697265625 MB == 89.16009297066398 bytes/node.
-Top 20 account for 95.25372101712962%:
+Running copy and load cpg file in 3031893062 ns  == 3031.8930619999996 ms == 1.2697167167116863 us/node and costing 193806496 bytes == 184.82827758789062 MB == 81.16359737839478 bytes/node.
+Top 20 account for 95.39694685982043%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
 long[], 13970, 42436376, 0.005850451242749754,  3037.6790264853257, 17.771793035575936
-io.shiftleft.codepropertygraph.generated.nodes.Call, 709958, 28398320, 0.29732102100215674,  40.0, 11.89284084008627
-io.shiftleft.codepropertygraph.generated.nodes.Identifier, 548633, 21945320, 0.22976024457147642,  40.0, 9.190409782859057
+io.shiftleft.codepropertygraph.generated.nodes.Call, 709958, 22718656, 0.29732102100215674,  32.0, 9.514272672069016
 int[], 397, 21020552, 1.6625834956132085E-4,  52948.49370277078, 8.803129174780661
-byte[], 81840, 12458096, 0.03427350964256549,  152.22502443792766, 5.217285842913081
-Object[], 3964, 12416152, 0.0016600707749649267,  3132.22805247225, 5.199720250434491
+io.shiftleft.codepropertygraph.generated.nodes.Identifier, 548633, 17556256, 0.22976024457147642,  32.0, 7.352327826287246
+byte[], 81834, 12457696, 0.03427099692191721,  152.23129750470466, 5.217118328203195
+Object[], 3966, 12416256, 0.0016609083485143539,  3130.674735249622, 5.199763804259062
 overflowdb.Node[], 1, 11676976, 4.1878677471365454E-7,  1.1676976E7, 4.8901631174487505
-io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, 200829, 8033160, 0.08410452917896853,  40.0, 3.364181167158741
-io.shiftleft.codepropertygraph.generated.nodes.Literal, 179171, 7166840, 0.0750344452122202,  40.0, 3.001377808488808
-io.shiftleft.codepropertygraph.generated.nodes.Block, 151865, 6074600, 0.06359905354188915,  40.0, 2.543962141675566
+io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, 200829, 6426528, 0.08410452917896853,  32.0, 2.691344933726993
+io.shiftleft.codepropertygraph.generated.nodes.Literal, 179171, 5733472, 0.0750344452122202,  32.0, 2.4011022467910466
+io.shiftleft.codepropertygraph.generated.nodes.Block, 151865, 4859680, 0.06359905354188915,  32.0, 2.0351697133404527
 java.util.concurrent.ConcurrentHashMap$Node[], 50719, 4648944, 0.021240446426701844,  91.66079772866185, 1.946916263584396
-java.util.concurrent.ConcurrentHashMap$Node, 139732, 4471424, 0.058517913604288374,  32.0, 1.872573235337228
-io.shiftleft.codepropertygraph.generated.nodes.MethodParameterIn, 91277, 3651080, 0.03822560043553824,  40.0, 1.52902401742153
-io.shiftleft.codepropertygraph.generated.nodes.MethodParameterOut, 91277, 3651080, 0.03822560043553824,  40.0, 1.52902401742153
+java.util.concurrent.ConcurrentHashMap$Node, 139745, 4471840, 0.05852335783235965,  32.0, 1.8727474506355088
 java.util.concurrent.ConcurrentHashMap, 50724, 3246336, 0.021242540360575414,  64.0, 1.3595225830768265
-io.shiftleft.codepropertygraph.generated.nodes.ControlStructure, 80994, 3239760, 0.03391921603115774,  40.0, 1.3567686412463094
-io.shiftleft.codepropertygraph.generated.nodes.Local, 56877, 2275080, 0.02381933538538853,  40.0, 0.9527734154155412
-io.shiftleft.codepropertygraph.generated.nodes.Method, 55929, 2237160, 0.023422325522959985,  40.0, 0.9368930209183994
-io.shiftleft.codepropertygraph.generated.nodes.MethodReturn, 55929, 2237160, 0.023422325522959985,  40.0, 0.9368930209183994
-io.shiftleft.codepropertygraph.generated.nodes.Binding, 37791, 1511640, 0.015826371003203717,  40.0, 0.6330548401281487
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterIn, 91277, 2920864, 0.03822560043553824,  32.0, 1.2232192139372238
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterOut, 91277, 2920864, 0.03822560043553824,  32.0, 1.2232192139372238
+io.shiftleft.codepropertygraph.generated.nodes.ControlStructure, 80994, 2591808, 0.03391921603115774,  32.0, 1.0854149129970476
+io.shiftleft.codepropertygraph.generated.nodes.Local, 56877, 1820064, 0.02381933538538853,  32.0, 0.762218732332433
+io.shiftleft.codepropertygraph.generated.nodes.Method, 55929, 1789728, 0.023422325522959985,  32.0, 0.7495144167347195
+io.shiftleft.codepropertygraph.generated.nodes.MethodReturn, 55929, 1789728, 0.023422325522959985,  32.0, 0.7495144167347195
+String, 57619, 1382856, 0.02413007517222606,  24.0, 0.5791218041334255
 =========>
 
 
 
 <=========
-Running load/create indexes in 104386 ns  == 0.10438599999999999 ms == 4.371547626525954E-5 us/node and costing 89176 bytes == 0.08504486083984375 MB == 0.03734572942186486 bytes/node.
+Running load/create indexes in 39038 ns  == 0.039037999999999996 ms == 1.6348598111271648E-5 us/node and costing 89352 bytes == 0.08521270751953125 MB == 0.03741943589421446 bytes/node.
 Top 20 account for 100.0%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
-byte[], 1045, 64896, 4.37632179575769E-4,  62.10143540669856, 0.027177586531817326
-String, 1045, 25080, 4.37632179575769E-4,  24.0, 0.010503172309818455
+byte[], 1047, 65024, 4.384697531251963E-4,  62.10506208213945, 0.027231191238980674
+String, 1047, 25128, 4.384697531251963E-4,  24.0, 0.010523274075004712
 jdk.internal.ref.CleanerImpl$PhantomCleanableRef, -10, -480, -4.187867747136545E-6,  48.0, -2.0101765186255417E-4
 java.lang.invoke.MethodHandleNatives$CallSiteContext, -10, -320, -4.187867747136545E-6,  32.0, -1.3401176790836945E-4
 =========>
@@ -594,39 +603,38 @@ java.lang.invoke.MethodHandleNatives$CallSiteContext, -10, -320, -4.187867747136
 
 
 <=========
-Running count edges (force complete loading) in 14849426954 ns  == 14849.426953999999 ms == 6.218743620411668 us/node and costing 969217736 bytes == 924.3180618286133 MB == 405.8955696547103 bytes/node.
-Top 20 account for 95.2247287393841%:
+Running count edges (force complete loading) in 14586411546 ns  == 14586.411546 ms == 6.108596245995352 us/node and costing 873648352 bytes == 833.1759948730469 MB == 365.8723755679796 bytes/node.
+Top 20 account for 98.75642505647399%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
 Object[], 2389000, 413926328, 1.0004816047909206,  173.2634273754709, 173.34687187218628
-byte[], 2992005, 180425664, 1.253012123877128,  60.302594414113614, 75.55988190212953
+byte[], 2994203, 180507832, 1.2539326172079486,  60.28576953533211, 75.5942927738342
 overflowdb.AdjacentNodes, 2387850, 57308400, 1.0,  24.0, 24.0
 io.shiftleft.codepropertygraph.generated.nodes.CallDb, 709958, 51116976, 0.29732102100215674,  72.0, 21.407113512155288
 io.shiftleft.codepropertygraph.generated.nodes.IdentifierDb, 548633, 35112512, 0.22976024457147642,  64.0, 14.704655652574491
 Integer, 1798992, 28783872, 0.7533940574156668,  16.0, 12.054304918650669
-io.shiftleft.codepropertygraph.generated.nodes.Call, 709958, 28398320, 0.29732102100215674,  40.0, 11.89284084008627
-io.shiftleft.codepropertygraph.generated.nodes.Identifier, 548633, 21945320, 0.22976024457147642,  40.0, 9.190409782859057
 java.util.concurrent.ConcurrentHashMap$Node, 622977, 19935264, 0.2608945285507884,  32.0, 8.348624913625228
-String, 623335, 14960040, 0.26104445421613587,  24.0, 6.265066901187261
+String, 623344, 14960256, 0.26104822329710825,  24.0, 6.2651573591305985
 io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifierDb, 200829, 11246424, 0.08410452917896853,  56.0, 4.709853634022237
 io.shiftleft.codepropertygraph.generated.nodes.LiteralDb, 179171, 10033576, 0.0750344452122202,  56.0, 4.201928931884331
 io.shiftleft.codepropertygraph.generated.nodes.BlockDb, 151865, 8504440, 0.06359905354188915,  56.0, 3.561546998345792
-io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, 200829, 8033160, 0.08410452917896853,  40.0, 3.364181167158741
-io.shiftleft.codepropertygraph.generated.nodes.Literal, 179171, 7166840, 0.0750344452122202,  40.0, 3.001377808488808
-io.shiftleft.codepropertygraph.generated.nodes.Block, 151865, 6074600, 0.06359905354188915,  40.0, 2.543962141675566
 io.shiftleft.codepropertygraph.generated.nodes.MethodParameterInDb, 91277, 5841728, 0.03822560043553824,  64.0, 2.4464384278744475
 io.shiftleft.codepropertygraph.generated.nodes.MethodParameterOutDb, 91277, 5111512, 0.03822560043553824,  56.0, 2.1406336243901416
 io.shiftleft.codepropertygraph.generated.nodes.ControlStructureDb, 80994, 4535664, 0.03391921603115774,  56.0, 1.8994760977448333
 io.shiftleft.codepropertygraph.generated.nodes.MethodDb, 55929, 4474320, 0.023422325522959985,  80.0, 1.8737860418367989
+short[], 35518, 3468504, 0.014874468664279583,  97.6548229066952, 1.4525636032414095
+io.shiftleft.codepropertygraph.generated.nodes.LocalDb, 56877, 3185112, 0.02381933538538853,  56.0, 1.3338827815817575
+io.shiftleft.codepropertygraph.generated.nodes.MethodReturnDb, 55929, 3132024, 0.023422325522959985,  56.0, 1.3116502292857593
+io.shiftleft.codepropertygraph.generated.nodes.MemberDb, 28556, 1599136, 0.011958875138723119,  56.0, 0.6696970077684947
 =========>
 
 
 
 <=========
-Running count edges again in 404436049 ns  == 404.43604899999997 ms == 0.16937246853864354 us/node and costing 96688 bytes == 0.0922088623046875 MB == 0.04049165567351383 bytes/node.
+Running count edges again in 335069944 ns  == 335.06994399999996 ms == 0.14032286115124484 us/node and costing 96864 bytes == 0.092376708984375 MB == 0.04056536214586343 bytes/node.
 Top 20 account for 100.0%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
-byte[], 1112, 70064, 4.6569089348158385E-4,  63.007194244604314, 0.029341876583537492
-String, 1112, 26688, 4.6569089348158385E-4,  24.0, 0.011176581443558013
+byte[], 1114, 70192, 4.6652846703101116E-4,  63.00897666068223, 0.02939548129070084
+String, 1114, 26736, 4.6652846703101116E-4,  24.0, 0.011196683208744267
 jdk.internal.ref.CleanerImpl$PhantomCleanableRef, -1, -48, -4.1878677471365454E-7,  48.0, -2.010176518625542E-5
 java.lang.invoke.MethodHandleNatives$CallSiteContext, -1, -32, -4.1878677471365454E-7,  32.0, -1.3401176790836945E-5
 Integer, 1, 16, 4.1878677471365454E-7,  16.0, 6.700588395418473E-6
@@ -635,69 +643,71 @@ Integer, 1, 16, 4.1878677471365454E-7,  16.0, 6.700588395418473E-6
 
 
 <=========
-Running close graph in 1362850024 ns  == 1362.8500239999998 ms == 0.5707435659693867 us/node and costing -25225656 bytes == -24.05706024169922 MB == -10.564171116276148 bytes/node.
-Top 20 account for 99.64134926758693%:
+Running close graph in 366691356 ns  == 366.691356 ms == 0.1535654902946165 us/node and costing -25196864 bytes == -24.02960205078125 MB == -10.552113407458592 bytes/node.
+Top 20 account for 99.76981262430118%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
-java.util.concurrent.ConcurrentHashMap$Node, -622938, -19934016, -0.2608781958665745,  32.0, -8.348102267730384
-byte[], -41538, -3083984, -0.017395565048055783,  74.24488420241707, -1.2915317126285153
+java.util.concurrent.ConcurrentHashMap$Node, -622941, -19934112, -0.2608794522268987,  32.0, -8.348142471260758
+byte[], -41536, -3083808, -0.017394727474506357,  74.2442218798151, -1.2914580061561656
 Long, -44511, -1068264, -0.018640618129279477,  24.0, -0.4473748351027075
 org.h2.mvstore.cache.CacheLongKeyLIRS$Entry, -7742, -433552, -0.0032422472098331133,  56.0, -0.18156584375065435
-Object[], -3612, -395736, -0.0015126578302657203,  109.56146179401993, -0.1657290030780828
+Object[], -3613, -395816, -0.0015130766170404339,  109.55327982286188, -0.16576250602005987
 java.lang.ref.WeakReference, -5889, -188448, -0.0024662353162887116,  32.0, -0.07891953012123877
 org.h2.mvstore.Page$Leaf, -1780, -85440, -7.454404589903051E-4,  48.0, -0.035781142031534645
 int[], 4, 65600, 1.6751470988546182E-6,  16400.0, 0.027472412421215738
 org.h2.mvstore.Page$PageReference, -1875, -60000, -7.852252025881023E-4,  32.0, -0.025127206482819273
-java.nio.ByteBuffer[], 12, 49344, 5.025441296563855E-6,  4112.0, 0.02066461461147057
-String, 1201, 28824, 5.029629164310991E-4,  24.0, 0.012071109994346378
+java.nio.ByteBuffer[], 11, 45232, 4.6066545218502E-6,  4112.0, 0.018942563393848023
+String, 1203, 28872, 5.038004899805264E-4,  24.0, 0.012091211759532634
 org.h2.mvstore.Chunk, -232, -25984, -9.715853173356786E-5,  112.0, -0.0108817555541596
 org.h2.mvstore.Page$PageReference[], -68, -8680, -2.847750068052851E-5,  127.6470588235294, -0.0036350692045145215
 Class, 56, 6352, 2.3452059383964653E-5,  113.42857142857143, 0.0026601335929811337
 org.h2.mvstore.Page$NonLeaf, -68, -3808, -2.847750068052851E-5,  56.0, -0.0015947400381095965
 Integer, -216, -3456, -9.045794333814938E-5,  16.0, -0.00144732709341039
-java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry, 71, 2272, 2.9733861004669472E-5,  32.0, 9.514835521494231E-4
-org.h2.mvstore.MVStore$RemovedPageInfo, 88, 2112, 3.68532361748016E-5,  24.0, 8.844776681952384E-4
+org.h2.mvstore.MVStore$RemovedPageInfo, 108, 2592, 4.522897166907469E-5,  24.0, 0.0010854953200577927
+java.lang.invoke.MethodType$ConcurrentWeakInternSet$WeakEntry, 68, 2176, 2.847750068052851E-5,  32.0, 9.112800217769123E-4
 jdk.internal.ref.CleanerImpl$PhantomCleanableRef, 35, 1680, 1.4657537114977908E-5,  48.0, 7.035617815189396E-4
 =========>
 
 
 
 <=========
-Running free memory in 9200 ns  == 0.0092 ms == 3.852838327365622E-6 us/node and costing -1155442488 bytes == -1101.9158248901367 MB == -483.8840329166405 bytes/node.
-Top 20 account for 92.39267441582952%:
+Running free memory in 8209 ns  == 0.008209 ms == 3.43782063362439E-6 us/node and costing -1040803712 bytes == -992.5877685546875 MB == -435.87482965847937 bytes/node.
+Top 20 account for 94.20368093383587%:
 Class, #instances, total size, instances/node, bytes/instance, bytes/node
 Object[], -2388659, -425891760, -1.0003387985007433,  178.29742964567149, -178.35783654752183
-byte[], -3022512, -189265128, -1.2657880520133173,  62.6184868744938, -79.261732520887
+byte[], -3024699, -189346584, -1.2667039386896162,  62.60014103882733, -79.29584521640807
 overflowdb.AdjacentNodes, -2387850, -57308400, -1.0,  24.0, -24.0
-io.shiftleft.codepropertygraph.generated.nodes.Call, -1419916, -56796640, -0.5946420420043135,  40.0, -23.78568168017254
 io.shiftleft.codepropertygraph.generated.nodes.CallDb, -709958, -51116976, -0.29732102100215674,  72.0, -21.407113512155288
-io.shiftleft.codepropertygraph.generated.nodes.Identifier, -1097266, -43890640, -0.45952048914295285,  40.0, -18.380819565718113
 long[], -3, -42029376, -1.2563603241409637E-6,  1.4009792E7, -17.60134681826748
 io.shiftleft.codepropertygraph.generated.nodes.IdentifierDb, -548633, -35112512, -0.22976024457147642,  64.0, -14.704655652574491
 Integer, -1798992, -28783872, -0.7533940574156668,  16.0, -12.054304918650669
-int[], -11, -21072552, -4.6066545218502E-6,  1915686.5454545454, -8.82490608706577
-String, -672380, -16137120, -0.281583851581967,  24.0, -6.758012437967209
-io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, -401658, -16066320, -0.16820905835793706,  40.0, -6.728362334317482
-io.shiftleft.codepropertygraph.generated.nodes.Literal, -358342, -14333680, -0.1500688904244404,  40.0, -6.002755616977616
-io.shiftleft.codepropertygraph.generated.nodes.Block, -303730, -12149200, -0.1271981070837783,  40.0, -5.087924283351132
+io.shiftleft.codepropertygraph.generated.nodes.Call, -709958, -22718656, -0.29732102100215674,  32.0, -9.514272672069016
+int[], -13, -21072824, -5.444228071277509E-6,  1620986.4615384615, -8.825019997068493
+io.shiftleft.codepropertygraph.generated.nodes.Identifier, -548633, -17556256, -0.22976024457147642,  32.0, -7.352327826287246
+String, -672378, -16137072, -0.2815830140084176,  24.0, -6.757992336202022
 overflowdb.Node[], -1, -11676976, -4.1878677471365454E-7,  1.1676976E7, -4.8901631174487505
 io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifierDb, -200829, -11246424, -0.08410452917896853,  56.0, -4.709853634022237
 io.shiftleft.codepropertygraph.generated.nodes.LiteralDb, -179171, -10033576, -0.0750344452122202,  56.0, -4.201928931884331
 java.util.concurrent.ConcurrentHashMap$Node[], -50682, -8826464, -0.021224951316037438,  174.15382186969734, -3.696406390686182
 io.shiftleft.codepropertygraph.generated.nodes.BlockDb, -151865, -8504440, -0.06359905354188915,  56.0, -3.561546998345792
-io.shiftleft.codepropertygraph.generated.nodes.MethodParameterIn, -182554, -7302160, -0.07645120087107649,  40.0, -3.05804803484306
+io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier, -200829, -6426528, -0.08410452917896853,  32.0, -2.691344933726993
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterInDb, -91277, -5841728, -0.03822560043553824,  64.0, -2.4464384278744475
+io.shiftleft.codepropertygraph.generated.nodes.Literal, -179171, -5733472, -0.0750344452122202,  32.0, -2.4011022467910466
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterOutDb, -91277, -5111512, -0.03822560043553824,  56.0, -2.1406336243901416
 =========>
 
 
 # WARNING: Unable to attach Serviceability Agent. You can try again with escalated privileges. Two options: a) use -Djol.tryWithSudo=true to try with sudo; b) echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-VM details according to JOL: # Running 64-bit HotSpot VM.
-# Using compressed oop with 3-bit shift.
-# Using compressed klass with 3-bit shift.
+VM details according to JOL: # VM mode: 64 bits
+# Compressed references (oops): 3-bit shift
+# Compressed class pointers: 3-bit shift
 # WARNING | Compressed references base/shifts are guessed by the experiment!
 # WARNING | Therefore, computed addresses are just guesses, and ARE NOT RELIABLE.
 # WARNING | Make sure to attach Serviceability Agent to get the reliable addresses.
-# Objects are 8 bytes aligned.
-# Field sizes by type: 4, 1, 1, 2, 2, 4, 4, 8, 8 [bytes]
-# Array element sizes: 4, 1, 1, 2, 2, 4, 4, 8, 8 [bytes]
+# Object alignment: 8 bytes
+#                       ref, bool, byte, char, shrt,  int,  flt,  lng,  dbl
+# Field sizes:            4,    1,    1,    2,    2,    4,    4,    8,    8
+# Array element sizes:    4,    1,    1,    2,    2,    4,    4,    8,    8
+# Array base offsets:    16,   16,   16,   16,   16,   16,   16,   16,   16
 . Layout of top consumers: 
 
 
@@ -710,19 +720,6 @@ OFF  SZ                 TYPE DESCRIPTION                             VALUE
  20   4                      (object alignment gap)                  
 Instance size: 24 bytes
 Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
-
-
-io.shiftleft.codepropertygraph.generated.nodes.Call object internals:
-OFF  SZ                TYPE DESCRIPTION               VALUE
-  0   8                     (object header: mark)     N/A
-  8   4                     (object header: class)    N/A
- 12   4    overflowdb.Graph NodeRef.graph             N/A
- 16   8                long NodeRef.id                N/A
- 24   4   overflowdb.NodeDb NodeRef.node              N/A
- 28   4                     (alignment/padding gap)   
- 32   8                long Call.id                   N/A
-Instance size: 40 bytes
-Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
 
 
 io.shiftleft.codepropertygraph.generated.nodes.CallDb object internals:
@@ -749,19 +746,6 @@ Instance size: 72 bytes
 Space losses: 3 bytes internal + 0 bytes external = 3 bytes total
 
 
-io.shiftleft.codepropertygraph.generated.nodes.Identifier object internals:
-OFF  SZ                TYPE DESCRIPTION               VALUE
-  0   8                     (object header: mark)     N/A
-  8   4                     (object header: class)    N/A
- 12   4    overflowdb.Graph NodeRef.graph             N/A
- 16   8                long NodeRef.id                N/A
- 24   4   overflowdb.NodeDb NodeRef.node              N/A
- 28   4                     (alignment/padding gap)   
- 32   8                long Identifier.id             N/A
-Instance size: 40 bytes
-Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
-
-
 io.shiftleft.codepropertygraph.generated.nodes.IdentifierDb object internals:
 OFF  SZ                                    TYPE DESCRIPTION                             VALUE
   0   8                                         (object header: mark)                   N/A
@@ -784,43 +768,28 @@ Instance size: 64 bytes
 Space losses: 3 bytes internal + 4 bytes external = 7 bytes total
 
 
-io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier object internals:
+io.shiftleft.codepropertygraph.generated.nodes.Call object internals:
 OFF  SZ                TYPE DESCRIPTION               VALUE
   0   8                     (object header: mark)     N/A
   8   4                     (object header: class)    N/A
  12   4    overflowdb.Graph NodeRef.graph             N/A
  16   8                long NodeRef.id                N/A
  24   4   overflowdb.NodeDb NodeRef.node              N/A
- 28   4                     (alignment/padding gap)   
- 32   8                long FieldIdentifier.id        N/A
-Instance size: 40 bytes
-Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
+ 28   4                     (object alignment gap)    
+Instance size: 32 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 
 
-io.shiftleft.codepropertygraph.generated.nodes.Literal object internals:
+io.shiftleft.codepropertygraph.generated.nodes.Identifier object internals:
 OFF  SZ                TYPE DESCRIPTION               VALUE
   0   8                     (object header: mark)     N/A
   8   4                     (object header: class)    N/A
  12   4    overflowdb.Graph NodeRef.graph             N/A
  16   8                long NodeRef.id                N/A
  24   4   overflowdb.NodeDb NodeRef.node              N/A
- 28   4                     (alignment/padding gap)   
- 32   8                long Literal.id                N/A
-Instance size: 40 bytes
-Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
-
-
-io.shiftleft.codepropertygraph.generated.nodes.Block object internals:
-OFF  SZ                TYPE DESCRIPTION               VALUE
-  0   8                     (object header: mark)     N/A
-  8   4                     (object header: class)    N/A
- 12   4    overflowdb.Graph NodeRef.graph             N/A
- 16   8                long NodeRef.id                N/A
- 24   4   overflowdb.NodeDb NodeRef.node              N/A
- 28   4                     (alignment/padding gap)   
- 32   8                long Block.id                  N/A
-Instance size: 40 bytes
-Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
+ 28   4                     (object alignment gap)    
+Instance size: 32 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 
 
 io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifierDb object internals:
@@ -883,18 +852,74 @@ Instance size: 56 bytes
 Space losses: 3 bytes internal + 0 bytes external = 3 bytes total
 
 
-io.shiftleft.codepropertygraph.generated.nodes.MethodParameterIn object internals:
+io.shiftleft.codepropertygraph.generated.nodes.FieldIdentifier object internals:
 OFF  SZ                TYPE DESCRIPTION               VALUE
   0   8                     (object header: mark)     N/A
   8   4                     (object header: class)    N/A
  12   4    overflowdb.Graph NodeRef.graph             N/A
  16   8                long NodeRef.id                N/A
  24   4   overflowdb.NodeDb NodeRef.node              N/A
- 28   4                     (alignment/padding gap)   
- 32   8                long MethodParameterIn.id      N/A
-Instance size: 40 bytes
-Space losses: 4 bytes internal + 0 bytes external = 4 bytes total
+ 28   4                     (object alignment gap)    
+Instance size: 32 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+
+
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterInDb object internals:
+OFF  SZ                                    TYPE DESCRIPTION                                    VALUE
+  0   8                                         (object header: mark)                          N/A
+  8   4                                         (object header: class)                         N/A
+ 12   1                                 boolean NodeDb.dirty                                   N/A
+ 13   1                                 boolean MethodParameterInDb._isVariadic                N/A
+ 14   2                                         (alignment/padding gap)                        
+ 16   4                      overflowdb.NodeRef NodeDb.ref                                     N/A
+ 20   4                overflowdb.AdjacentNodes NodeDb.adjacentNodes                           N/A
+ 24   4                                     int MethodParameterInDb._index                     N/A
+ 28   4                                     int MethodParameterInDb._order                     N/A
+ 32   4                        java.lang.String MethodParameterInDb._code                      N/A
+ 36   4                       java.lang.Integer MethodParameterInDb._columnNumber              N/A
+ 40   4   scala.collection.immutable.IndexedSeq MethodParameterInDb._dynamicTypeHintFullName   N/A
+ 44   4                        java.lang.String MethodParameterInDb._evaluationStrategy        N/A
+ 48   4                       java.lang.Integer MethodParameterInDb._lineNumber                N/A
+ 52   4                        java.lang.String MethodParameterInDb._name                      N/A
+ 56   4                        java.lang.String MethodParameterInDb._typeFullName              N/A
+ 60   4                                         (object alignment gap)                         
+Instance size: 64 bytes
+Space losses: 2 bytes internal + 4 bytes external = 6 bytes total
+
+
+io.shiftleft.codepropertygraph.generated.nodes.Literal object internals:
+OFF  SZ                TYPE DESCRIPTION               VALUE
+  0   8                     (object header: mark)     N/A
+  8   4                     (object header: class)    N/A
+ 12   4    overflowdb.Graph NodeRef.graph             N/A
+ 16   8                long NodeRef.id                N/A
+ 24   4   overflowdb.NodeDb NodeRef.node              N/A
+ 28   4                     (object alignment gap)    
+Instance size: 32 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+
+
+io.shiftleft.codepropertygraph.generated.nodes.MethodParameterOutDb object internals:
+OFF  SZ                       TYPE DESCRIPTION                                VALUE
+  0   8                            (object header: mark)                      N/A
+  8   4                            (object header: class)                     N/A
+ 12   1                    boolean NodeDb.dirty                               N/A
+ 13   1                    boolean MethodParameterOutDb._isVariadic           N/A
+ 14   2                            (alignment/padding gap)                    
+ 16   4         overflowdb.NodeRef NodeDb.ref                                 N/A
+ 20   4   overflowdb.AdjacentNodes NodeDb.adjacentNodes                       N/A
+ 24   4                        int MethodParameterOutDb._index                N/A
+ 28   4                        int MethodParameterOutDb._order                N/A
+ 32   4           java.lang.String MethodParameterOutDb._code                 N/A
+ 36   4          java.lang.Integer MethodParameterOutDb._columnNumber         N/A
+ 40   4           java.lang.String MethodParameterOutDb._evaluationStrategy   N/A
+ 44   4          java.lang.Integer MethodParameterOutDb._lineNumber           N/A
+ 48   4           java.lang.String MethodParameterOutDb._name                 N/A
+ 52   4           java.lang.String MethodParameterOutDb._typeFullName         N/A
+Instance size: 56 bytes
+Space losses: 2 bytes internal + 0 bytes external = 2 bytes total
 ```
+</details>
 
 ## Odbv2
 We can convert odbv1 files to the current serialization format via 
@@ -902,7 +927,11 @@ We can convert odbv1 files to the current serialization format via
 ./odbConvert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > out.json
 ```
 (or pipe to `/dev/null` if we don't care to look at the storage manifest json for debugging)
-That allows us to benchmark loading time and memory consumption via
+That allows us to benchmark loading time and memory consumption:
+
+<details>
+  <summary>click to see details of odb2 benchmarks without generated schema</summary>
+
 ```
 [bruhns@bruhnsWS overflowdbv2]$ ./benchOdb2/target/universal/stage/bin/bench-odb2 -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.fg 
 VM is version 19.0.2+7 with max heap 20480 mb.
@@ -1150,6 +1179,7 @@ OFF  SZ   TYPE DESCRIPTION               VALUE
 Instance size: 16 bytes
 Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 ```
+</details>
 
 The resulting memory consumption, load speed and file-size are all quite promising.
 
