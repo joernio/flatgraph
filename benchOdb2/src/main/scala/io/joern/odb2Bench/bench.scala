@@ -1,10 +1,7 @@
-package io.joern.joernBench
-import better.files.Dsl.cp
-import com.jerolba.jmnemohistosyne.{HistogramEntry, Histogramer, MemoryHistogram}
-import io.shiftleft.codepropertygraph.cpgloading.{CpgLoader, CpgLoaderConfig}
-import io.shiftleft.codepropertygraph.generated.Cpg
-import overflowdb.Config
+package io.joern.odb2Bench
 
+import io.joern.odb2
+import com.jerolba.jmnemohistosyne.{HistogramEntry, Histogramer, MemoryHistogram}
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 import scala.util.{Success, Try}
 
@@ -32,20 +29,20 @@ object Bench {
     box
   }
 
-  def loadCopyFile(filename: String): Cpg = {
-    val newLoc = better.files.File(filename + ".tmp")
-    cp(better.files.File(filename), newLoc)
-    val odbConfig = Config.withDefaults.withStorageLocation(newLoc.toString())
-    val config    = CpgLoaderConfig.withDefaults.doNotCreateIndexesOnLoad.withOverflowConfig(odbConfig)
-    CpgLoader.loadFromOverflowDb(config)
+  def touchGraph(graph: odb2.Graph): Int = {
+    var count = 0
+    for (
+      nodesArray <- graph._nodes;
+      edgeKind   <- Range(0, graph.schema.getNumberOfEdgeKinds).iterator;
+      node       <- nodesArray
+    ) {
+      count += odb2.Accessors.getNeighborsOut(node, edgeKind).length
+    }
+    count
   }
 
-  def makeIndices(cpg: Cpg): Unit = {
-    CpgLoader.createIndexes(cpg)
-  }
-
-  def touchGraph(cpg: Cpg): Int = {
-    cpg.graph.edgeCount()
+  def loadFile(filename: String): odb2.Graph = {
+    odb2.ReadGraph.readGraph(filename, null)
   }
 
   def modHisto(histo: MemoryHistogram, top: Int, nodecount: Int): (Long, String) = {
@@ -81,29 +78,29 @@ object Bench {
     )
     val box = new MeasurementBox
     box.histo = new Histogramer().createHistogram()
-    val cpgBox    = measure { loadCopyFile(args(0)) }
-    val nodecount = cpgBox.result.asInstanceOf[Cpg].graph.nodeCount()
-    val callcount = cpgBox.result.asInstanceOf[Cpg].graph.nodeCount("CALL")
-    val indexify  = measure { makeIndices(cpgBox.result.asInstanceOf[Cpg]) }
-    val touch1    = measure { touchGraph(cpgBox.result.asInstanceOf[Cpg]) }
-    val touch2    = measure { touchGraph(cpgBox.result.asInstanceOf[Cpg]) }
-    val close     = measure { cpgBox.result.asInstanceOf[Cpg].close() }
+    val cpgBox    = measure { loadFile(args(0)) }
+    val touch1    = measure { touchGraph(cpgBox.result.asInstanceOf[odb2.Graph]) }
+    val touch2    = measure { touchGraph(cpgBox.result.asInstanceOf[odb2.Graph]) }
+    val nodecount = cpgBox.result.asInstanceOf[odb2.Graph].nnodes.sum
     val filesize  = new java.io.File(args(0)).length()
-    println(s"Graph with ${nodecount} nodes (${callcount} calls) and ${touch1.result} edges at ${args(0)}.")
+    val (nnodeKinds, npropKinds, nEdgeKinds) = Some(cpgBox.result.asInstanceOf[odb2.Graph].schema).map { s =>
+      (s.getNumberOfNodeKinds, s.getNumberOfProperties, s.getNumberOfEdgeKinds)
+    }.get
+    println(
+      s"Graph with ${nodecount} nodes and ${touch1.result} edges at ${args(0)}. There are ${nnodeKinds} node kinds, ${npropKinds} property kinds and ${nEdgeKinds} edge kinds."
+    )
     val histoAfter = new Histogramer().createHistogram()
     box.histo = histoAfter.diff(box.histo)
     val free = measure { cpgBox.result = null }
-    box.timeNanos = cpgBox.timeNanos + indexify.timeNanos + touch1.timeNanos + touch2.timeNanos
+    box.timeNanos = cpgBox.timeNanos + touch1.timeNanos + touch2.timeNanos
     println(
       s"On disk ${filesize} bytes = ${filesize * 1.0 / nodecount} bytes/node.\n" +
         s"Loading data from disk at ${box.timeNanos * 1.0 / filesize} ns/byte and filling the heap at ${box.timeNanos * 1.0 / box.histo.getTotalMemory} ns/byte."
     )
     printHisto("complete benchmark", box, nodecount)
-    printHisto("copy and load cpg file", cpgBox, nodecount)
-    printHisto("load/create indexes", indexify, nodecount)
+    printHisto("load flat cpg file", cpgBox, nodecount)
     printHisto("count edges (force complete loading)", touch1, nodecount)
     printHisto("count edges again", touch2, nodecount)
-    printHisto("close graph", close, nodecount)
     printHisto("free memory", free, nodecount)
 
     println(s"VM details according to JOL: ${org.openjdk.jol.vm.VM.current().details()}. Layout of top consumers: \n\n")

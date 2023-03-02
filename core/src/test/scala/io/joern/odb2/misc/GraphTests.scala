@@ -29,11 +29,11 @@ class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0)
 class GraphTests extends AnyWordSpec with Matchers {
   def testSerialization(g: Graph): Unit = {
     val orig = DebugDump.debugDump(g)
-    val fn = "/tmp/foo.fg"
+    val fn   = "/tmp/foo.fg"
     StoreGraph.writeGraph(g, fn)
     val deserialized = ReadGraph.readGraph(fn, g.schema)
-    val newdump = DebugDump.debugDump(deserialized)
-    if(newdump != orig){
+    val newdump      = DebugDump.debugDump(deserialized)
+    if (newdump != orig) {
       1 + 1 // for easier breakpoints
     }
     orig shouldBe newdump
@@ -712,6 +712,8 @@ class GraphTests extends AnyWordSpec with Matchers {
           interface.emplaceProperty(this, 1, strings)
         }
       }
+
+      class CustomNodeStored(g: Graph, nk: Short, s: Int) extends GNode(g, nk, s) {}
       val schema = new TestSchema(2, 0, 2) {
         override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = {
           propertyKind match {
