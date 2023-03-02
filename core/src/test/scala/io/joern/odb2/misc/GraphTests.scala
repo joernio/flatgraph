@@ -1,5 +1,6 @@
 package io.joern.odb2
 
+import io.joern.odb2.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -23,8 +24,8 @@ class GraphTests extends AnyWordSpec with Matchers {
   def testSerialization(g: Graph): Unit = {
     val orig = DebugDump.debugDump(g)
     val fn   = "/tmp/foo.fg"
-    StoreGraph.writeGraph(g, fn)
-    val deserialized = ReadGraph.readGraph(fn, g.schema)
+    Serialization.writeGraph(g, fn)
+    val deserialized = Deserialization.readGraph(fn, g.schema)
     val newdump      = DebugDump.debugDump(deserialized)
     if (newdump != orig) {
       1 + 1 // for easier breakpoints

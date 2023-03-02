@@ -1,14 +1,13 @@
-package io.joern.odb2
+package io.joern.odb2.storage
+
 import com.github.luben.zstd.Zstd
-import io.joern.odb2.ReadGraph.freeSchemaFromManifest
-import io.joern.odb2.StorageManifest.GraphStorage.write
-import io.joern.odb2.StorageManifest._
+import io.joern.odb2.storage.StorageManifest._
+import io.joern.odb2._
 
 import java.io.ByteArrayOutputStream
-import java.nio.{ByteBuffer, ByteOrder}
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
-import java.nio.file.Path
+import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
 
@@ -47,8 +46,8 @@ object Keys {
 }
 
 object StorageManifest {
-  object GraphStorage {
-    def read(item: ujson.Value): GraphStorage = {
+  object GraphItem {
+    def read(item: ujson.Value): GraphItem = {
       val version = item.obj(Keys.version).num.toInt
       if (version != 0) throw new RuntimeException()
       val nodes           = item.obj(Keys.nodes).arr.map(NodeItem.read).toArray
@@ -56,11 +55,11 @@ object StorageManifest {
       val properties      = item.obj(Keys.properties).arr.map(PropertyItem.read).toArray
       val stringpoolLens  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.stringpoolLens))
       val stringpoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.stringpoolBytes))
-      val res             = new GraphStorage(nodes, edges, properties, stringpoolLens, stringpoolBytes)
+      val res             = new GraphItem(nodes, edges, properties, stringpoolLens, stringpoolBytes)
       res.version = version
       res
     }
-    def write(item: GraphStorage): ujson.Value = {
+    def write(item: GraphItem): ujson.Value = {
       val res = ujson.Obj()
       res(Keys.version) = 0
       res(Keys.nodes) = ujson.Arr(item.nodes.map(NodeItem.write): _*)
@@ -72,7 +71,7 @@ object StorageManifest {
 
     }
   }
-  class GraphStorage(
+  class GraphItem(
     var nodes: Array[NodeItem],
     var edges: Array[EdgeItem],
     var properties: Array[PropertyItem],
@@ -191,7 +190,7 @@ object StorageManifest {
   }
 }
 
-object StoreGraph {
+object Serialization {
   def writeGraph(g: Graph, filename: String = "/tmp/foo.fg"): Unit = {
     val fileOffset = new AtomicLong(16)
 
@@ -285,8 +284,8 @@ object StoreGraph {
       headPos += fileChannel.write(headerBuf, headPos)
     }
 
-    val manifest    = new GraphStorage(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
-    val manifestObj = GraphStorage.write(manifest)
+    val manifest    = new GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
+    val manifestObj = GraphItem.write(manifest)
     val buf         = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
 
     while (buf.hasRemaining()) {
@@ -377,9 +376,9 @@ object StoreGraph {
   }
 }
 
-object ReadGraph {
+object Deserialization {
 
-  def freeSchemaFromManifest(manifest: StorageManifest.GraphStorage): FreeSchema = {
+  def freeSchemaFromManifest(manifest: StorageManifest.GraphItem): FreeSchema = {
     val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
     val nodePropNames = mutable.LinkedHashMap[String, AnyRef]()
     for (prop <- manifest.properties) {
@@ -420,6 +419,7 @@ object ReadGraph {
     val fileChannel =
       new java.io.RandomAccessFile(filename, "r").getChannel
     try {
+      // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
       val manifest  = readManifest(fileChannel)
       val pool      = readPool(manifest, fileChannel)
       val g         = new Graph(if (schema != null) schema else freeSchemaFromManifest(manifest))
@@ -497,7 +497,7 @@ object ReadGraph {
     } finally fileChannel.close()
   }
 
-  def readManifest(channel: FileChannel): GraphStorage = {
+  def readManifest(channel: FileChannel): GraphItem = {
     val header    = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
     while (readBytes < 16) {
@@ -515,10 +515,10 @@ object ReadGraph {
     }
     manifestBytes.flip()
     val jsonObj = ujson.read(manifestBytes)
-    GraphStorage.read(jsonObj)
+    GraphItem.read(jsonObj)
   }
 
-  def readPool(manifest: GraphStorage, fileChannel: FileChannel): Array[String] = {
+  def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
     val stringPoolLens = Zstd
       .decompress(
         fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringpoolLens.startOffset, manifest.stringpoolLens.compressedLength),
