@@ -1,5 +1,6 @@
 package io.joern.odb2
 import com.github.luben.zstd.Zstd
+import io.joern.odb2.ReadGraph.freeSchemaFromManifest
 import io.joern.odb2.StorageManifest.GraphStorage.write
 import io.joern.odb2.StorageManifest._
 
@@ -43,81 +44,6 @@ object Keys {
   val stringpoolLens     = "stringpoolLens"
   val stringpoolBytes    = "stringpoolBytes"
   val HEADER             = 0xdeadbeefdeadbeefL
-}
-
-object FreeSchema {
-  def fromManifest(manifest: StorageManifest.GraphStorage): FreeSchema = {
-    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
-    val nodePropNames = mutable.LinkedHashMap[String, Array[_]]()
-    for (prop <- manifest.properties) {
-      nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
-    }
-    val propertyLabels         = nodePropNames.keysIterator.toArray
-    val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
-
-    val edgePropNames = mutable.LinkedHashMap[String, Array[_]]()
-    for (edge <- manifest.edges) {
-      edgePropNames.get(edge.edgeLabel) match {
-        case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
-        case _                 =>
-      }
-    }
-    val edgeLabels             = edgePropNames.keysIterator.toArray
-    val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
-
-    new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
-  }
-  def protoFromOutline(outline: OutlineStorage): Array[_] = {
-    if (outline == null) return null
-    outline.typ match {
-      case StorageTyp.Bool   => new Array[Boolean](0)
-      case StorageTyp.Byte   => new Array[Byte](0)
-      case StorageTyp.Short  => new Array[Short](0)
-      case StorageTyp.Int    => new Array[Int](0)
-      case StorageTyp.Long   => new Array[Long](0)
-      case StorageTyp.Float  => new Array[Float](0)
-      case StorageTyp.Double => new Array[Double](0)
-      case StorageTyp.Ref    => new Array[GNode](0)
-      case StorageTyp.String => new Array[String](0)
-    }
-  }
-}
-
-class FreeSchema(
-  val nodeLabels: Array[String],
-  val propertyLabels: Array[String],
-  val nodePropertyPrototypes: Array[Array[_]],
-  val edgeLabels: Array[String],
-  val edgePropertyPrototypes: Array[Array[_]]
-) extends Schema {
-  private def similar(proto: Array[_], size: Int): Array[_] = {
-    proto match {
-      case null              => null
-      case _: Array[Boolean] => new Array[Boolean](size)
-      case _: Array[Byte]    => new Array[Byte](size)
-      case _: Array[Short]   => new Array[Short](size)
-      case _: Array[Int]     => new Array[Int](size)
-      case _: Array[Long]    => new Array[Long](size)
-      case _: Array[Float]   => new Array[Float](size)
-      case _: Array[Double]  => new Array[Double](size)
-      case _: Array[String]  => new Array[String](size)
-      case _: Array[GNode]   => new Array[GNode](size)
-      case _                 => ???
-    }
-  }
-  override def getNumberOfNodeKinds: Int                                  = nodeLabels.length
-  override def getNumberOfEdgeKinds: Int                                  = edgeLabels.length
-  override def getNodeLabel(nodeKind: Int): String                        = nodeLabels(nodeKind)
-  override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String         = edgeLabels(edgeKind)
-  override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
-  override def getNumberOfProperties: Int                                 = propertyLabels.length
-  override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
-  override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
-    new Edge(src, dst, edgeKind, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_] =
-    similar(edgePropertyPrototypes(edgeKind), size)
-  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] =
-    similar(nodePropertyPrototypes(propertyKind), size)
 }
 
 object StorageManifest {
@@ -452,13 +378,51 @@ object StoreGraph {
 }
 
 object ReadGraph {
+
+  def freeSchemaFromManifest(manifest: StorageManifest.GraphStorage): FreeSchema = {
+    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
+    val nodePropNames = mutable.LinkedHashMap[String, AnyRef]()
+    for (prop <- manifest.properties) {
+      nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
+    }
+    val propertyLabels         = nodePropNames.keysIterator.toArray
+    val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
+
+    val edgePropNames = mutable.LinkedHashMap[String, AnyRef]()
+    for (edge <- manifest.edges) {
+      edgePropNames.get(edge.edgeLabel) match {
+        case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
+        case _                 =>
+      }
+    }
+    val edgeLabels             = edgePropNames.keysIterator.toArray
+    val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
+
+    new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
+  }
+
+  def protoFromOutline(outline: OutlineStorage): AnyRef = {
+    if (outline == null) return null
+    outline.typ match {
+      case StorageTyp.Bool   => new Array[Boolean](0)
+      case StorageTyp.Byte   => new Array[Byte](0)
+      case StorageTyp.Short  => new Array[Short](0)
+      case StorageTyp.Int    => new Array[Int](0)
+      case StorageTyp.Long   => new Array[Long](0)
+      case StorageTyp.Float  => new Array[Float](0)
+      case StorageTyp.Double => new Array[Double](0)
+      case StorageTyp.Ref    => new Array[GNode](0)
+      case StorageTyp.String => new Array[String](0)
+    }
+  }
+
   def readGraph(filename: String, schema: Schema): Graph = {
     val fileChannel =
       new java.io.RandomAccessFile(filename, "r").getChannel
     try {
       val manifest  = readManifest(fileChannel)
       val pool      = readPool(manifest, fileChannel)
-      val g         = new Graph(if (schema != null) schema else FreeSchema.fromManifest(manifest))
+      val g         = new Graph(if (schema != null) schema else freeSchemaFromManifest(manifest))
       val nodekinds = mutable.HashMap[String, Short]()
       for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
       val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
