@@ -83,7 +83,12 @@ object Bench {
     val touch2    = measure { touchGraph(cpgBox.result.asInstanceOf[odb2.Graph]) }
     val nodecount = cpgBox.result.asInstanceOf[odb2.Graph].nnodes.sum
     val filesize  = new java.io.File(args(0)).length()
-    println(s"Graph with ${nodecount} nodes and ${touch1.result} edges at ${args(0)}.")
+    val (nnodeKinds, npropKinds, nEdgeKinds) = Some(cpgBox.result.asInstanceOf[odb2.Graph].schema).map { s =>
+      (s.getNumberOfNodeKinds, s.getNumberOfProperties, s.getNumberOfEdgeKinds)
+    }.get
+    println(
+      s"Graph with ${nodecount} nodes and ${touch1.result} edges at ${args(0)}. There are ${nnodeKinds} node kinds, ${npropKinds} property kinds and ${nEdgeKinds} edge kinds."
+    )
     val histoAfter = new Histogramer().createHistogram()
     box.histo = histoAfter.diff(box.histo)
     val free = measure { cpgBox.result = null }
