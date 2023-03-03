@@ -1,37 +1,31 @@
 package io.joern.odb2
 
+import io.joern.odb2.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TestSchema(val nKinds: Int, val nEdgeKinds: Int, val nProperties: Int = 0) extends Schema {
-  override def getNumberOfNodeKinds: Int = nKinds
-
-  override def getNumberOfEdgeKinds: Int = nEdgeKinds
-
-  override def getNumberOfProperties: Int = nProperties
-
-  override def getNodeLabel(nodeKind: Int): String = s"V${nodeKind}"
-
-  def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = s"${edgeKind}"
-
-  def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = s"${propertyKind}"
-
-  override def makeNode(g: Graph, nodeKind: Short, seq: Int): GNode = new GNode(g, nodeKind, seq)
-
-  override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
-    new Edge(src, dst, edgeKind, subSeq, property)
-
-  override def allocateEdgeProperty(nodeKind: Int, edgeKind: Int, inout: Int, size: Int): Array[_] = new Array[String](size)
-
-  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = ???
+object TestSchema {
+  def make(
+    nKinds: Int,
+    nEdgeKinds: Int,
+    nProperties: Int = 0,
+    edgePropertyPrototypes: Array[AnyRef] = null,
+    nodePropertyPrototypes: Array[AnyRef] = null
+  ) = new FreeSchema(
+    nodeLabels = Range(0, nKinds).map { id => s"V${id}" }.toArray,
+    edgeLabels = Range(0, nEdgeKinds).map { id => s"${id}" }.toArray,
+    propertyLabels = Range(0, nProperties).map { id => s"${id}" }.toArray,
+    edgePropertyPrototypes = if (edgePropertyPrototypes != null) edgePropertyPrototypes else new Array[AnyRef](nEdgeKinds),
+    nodePropertyPrototypes = if (nodePropertyPrototypes != null) nodePropertyPrototypes else new Array[AnyRef](nProperties)
+  )
 }
 
 class GraphTests extends AnyWordSpec with Matchers {
   def testSerialization(g: Graph): Unit = {
     val orig = DebugDump.debugDump(g)
     val fn   = "/tmp/foo.fg"
-    StoreGraph.writeGraph(g, fn)
-    val deserialized = ReadGraph.readGraph(fn, g.schema)
+    Serialization.writeGraph(g, fn)
+    val deserialized = Deserialization.readGraph(fn, g.schema)
     val newdump      = DebugDump.debugDump(deserialized)
     if (newdump != orig) {
       1 + 1 // for easier breakpoints
@@ -42,7 +36,7 @@ class GraphTests extends AnyWordSpec with Matchers {
   // General tip: If a test fails, add println(DebugDump.debugDump(g)) in front, in order to get untruncated "actual" for copy-paste
   "Graphs and diffs" should {
     "basically work for construction" in {
-      val schema = new TestSchema(1, 1)
+      val schema = TestSchema.make(1, 1)
       val g      = new Graph(schema)
       // empty graph
       DebugDump.debugDump(g) shouldBe
@@ -131,7 +125,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     }
 
     "basically work with multiple edge and node types" in {
-      val schema = new TestSchema(3, 2)
+      val schema = TestSchema.make(3, 2)
       val g      = new Graph(schema)
       // empty graph
       DebugDump.debugDump(g) shouldBe
@@ -170,7 +164,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           |""".stripMargin
     }
 
-    val schema = new TestSchema(1, 1)
+    val schema = TestSchema.make(1, 1)
 
     def mkGraph(): Graph = {
       val g    = new Graph(schema)
@@ -473,7 +467,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     }
 
     "support edge properties" in {
-      val schema = new TestSchema(1, 1)
+      val schema = TestSchema.make(1, 1, edgePropertyPrototypes = Array(new Array[String](0)))
       val g      = new Graph(schema)
       val V0_0   = new GenericDNode(0)
       val V0_1   = new GenericDNode(0)
@@ -578,12 +572,10 @@ class GraphTests extends AnyWordSpec with Matchers {
     }
 
     "support edge properties with primitives and default values" in {
-      val schema = new TestSchema(1, 1) {
-        override def allocateEdgeProperty(nodeKind: Int, edgeKind: Int, inout: Int, size: Int): Array[_] = Array.fill(size)((-1).toShort)
-      }
-      val V0_0 = new GenericDNode(0)
-      val V0_1 = new GenericDNode(0)
-      val g    = new Graph(schema)
+      val schema = TestSchema.make(1, 1, edgePropertyPrototypes = Array(Array(-1.toShort)))
+      val V0_0   = new GenericDNode(0)
+      val V0_1   = new GenericDNode(0)
+      val g      = new Graph(schema)
 
       g._neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0).addNode(V0_1).addEdge(V0_0, V0_1, 0).addEdge(V0_0, V0_1, 0))
@@ -625,15 +617,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     }
 
     "support node properties" in {
-      val schema = new TestSchema(2, 0, 2) {
-        override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = {
-          (nodeKind, propertyKind) match {
-            case (0, 1) => new Array[GNode](size)
-            case (1, 0) => new Array[Short](size)
-          }
-        }
-      }
-      val g = new Graph(schema)
+      val schema = TestSchema.make(2, 0, 2, nodePropertyPrototypes = Array(new Array[Short](0), new Array[GNode](0)))
+      val g      = new Graph(schema)
 
       val V0_0 = new GenericDNode(0)
       val V0_1 = new GenericDNode(0)
@@ -713,15 +698,6 @@ class GraphTests extends AnyWordSpec with Matchers {
         }
       }
 
-      class CustomNodeStored(g: Graph, nk: Short, s: Int) extends GNode(g, nk, s) {}
-      val schema = new TestSchema(2, 0, 2) {
-        override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = {
-          propertyKind match {
-            case 0 => new Array[GNode](size)
-            case 1 => new Array[String](size)
-          }
-        }
-      }
       val V0_0 = new CustomNode
       val V0_1 = new CustomNode
       val V0_2 = new CustomNode
@@ -729,8 +705,8 @@ class GraphTests extends AnyWordSpec with Matchers {
       V0_1.nodes = V0_1 :: V0_2 :: Nil
       V0_2.strings = "b" :: Nil
       V0_1.strings = "c" :: Nil
-
-      val g = new Graph(schema)
+      val schema = TestSchema.make(2, 0, 2, nodePropertyPrototypes = Array(new Array[GNode](0), new Array[String](0)))
+      val g      = new Graph(schema)
       DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0))
       DebugDump.debugDump(g) shouldBe
         """#Node numbers (kindId, nnodes) (0: 3), (1: 0), total 3

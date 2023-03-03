@@ -6,7 +6,8 @@ import overflowdb.storage.{OdbStorage, ValueTypes}
 
 import scala.collection.mutable
 import io.joern.odb2
-import io.joern.odb2.StorageManifest
+import io.joern.odb2.storage
+import io.joern.odb2.storage.{Keys, StorageManifest, StorageTyp, Serialization}
 
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
@@ -79,10 +80,10 @@ object Convert {
         ((prefix, key), quantity) <- node.quantities.iterator
       ) {
         val deltaEncoded   = quantity.addOne(0).toArray
-        val qty            = odb2.StoreGraph.encodeAny(deltaEncoded, filePtr, null, fileChannel)
+        val qty            = Serialization.encodeAny(deltaEncoded, filePtr, null, fileChannel)
         val (valtyp, vals) = homogenize(node.values((prefix, key)))
         if (valtyp != null) {
-          val values = odb2.StoreGraph.encodeAny(vals, filePtr, null, fileChannel)
+          val values = storage.Serialization.encodeAny(vals, filePtr, null, fileChannel)
           values.typ = valtyp
           prefix match {
             case NodeStuff.NODEPROPERTY =>
@@ -96,7 +97,7 @@ object Convert {
                 case Some(propvalues) =>
                   val (ptype, pval) = homogenize(propvalues)
                   if (ptype != null) {
-                    val stored = odb2.StoreGraph.encodeAny(pval, filePtr, null, fileChannel)
+                    val stored = storage.Serialization.encodeAny(pval, filePtr, null, fileChannel)
                     stored.typ = ptype
                     edgeItem.property = stored
                   }
@@ -112,22 +113,22 @@ object Convert {
         poolBytes.write(bytes);
         poolLenBuffer.put(bytes.length)
       }
-      val poolLensStored  = new StorageManifest.OutlineStorage(odb2.StorageTyp.Int)
-      val poolBytesStored = new StorageManifest.OutlineStorage(odb2.StorageTyp.Byte)
-      odb2.StoreGraph.write(poolLenBytes, poolLensStored, filePtr, fileChannel)
-      odb2.StoreGraph.write(poolBytes.toByteArray, poolBytesStored, filePtr, fileChannel)
+      val poolLensStored  = new StorageManifest.OutlineStorage(StorageTyp.Int)
+      val poolBytesStored = new StorageManifest.OutlineStorage(storage.StorageTyp.Byte)
+      storage.Serialization.write(poolLenBytes, poolLensStored, filePtr, fileChannel)
+      storage.Serialization.write(poolBytes.toByteArray, poolBytesStored, filePtr, fileChannel)
 
       var pos       = filePtr.get()
       val header    = new Array[Byte](16)
       val headerBuf = ByteBuffer.wrap(header)
-      headerBuf.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(odb2.Keys.HEADER).put(pos)
+      headerBuf.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(Keys.HEADER).put(pos)
       headerBuf.position(0)
       var headPos = 0L
       while (headerBuf.hasRemaining()) {
         headPos += fileChannel.write(headerBuf, headPos)
       }
-      val manifest    = new StorageManifest.GraphStorage(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
-      val manifestObj = StorageManifest.GraphStorage.write(manifest)
+      val manifest    = new StorageManifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
+      val manifestObj = StorageManifest.GraphItem.write(manifest)
       val buf         = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
       while (buf.hasRemaining()) {
         pos += fileChannel.write(buf, pos)
@@ -143,18 +144,18 @@ object Convert {
   def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
     items.find { _ != null } match {
       case None             => (null, null)
-      case Some(_: Boolean) => (odb2.StorageTyp.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)
-      case Some(_: Byte)    => (odb2.StorageTyp.Byte, items.asInstanceOf[mutable.ArrayBuffer[Byte]].toArray)
-      case Some(_: Short)   => (odb2.StorageTyp.Short, items.asInstanceOf[mutable.ArrayBuffer[Short]].toArray)
-      case Some(_: Int)     => (odb2.StorageTyp.Int, items.asInstanceOf[mutable.ArrayBuffer[Int]].toArray)
-      case Some(_: Long)    => (odb2.StorageTyp.Long, items.asInstanceOf[mutable.ArrayBuffer[Long]].toArray)
-      case Some(_: Float)   => (odb2.StorageTyp.Float, items.asInstanceOf[mutable.ArrayBuffer[Float]].toArray)
-      case Some(_: Double)  => (odb2.StorageTyp.Double, items.asInstanceOf[mutable.ArrayBuffer[Double]].toArray)
+      case Some(_: Boolean) => (storage.StorageTyp.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)
+      case Some(_: Byte)    => (storage.StorageTyp.Byte, items.asInstanceOf[mutable.ArrayBuffer[Byte]].toArray)
+      case Some(_: Short)   => (storage.StorageTyp.Short, items.asInstanceOf[mutable.ArrayBuffer[Short]].toArray)
+      case Some(_: Int)     => (storage.StorageTyp.Int, items.asInstanceOf[mutable.ArrayBuffer[Int]].toArray)
+      case Some(_: Long)    => (storage.StorageTyp.Long, items.asInstanceOf[mutable.ArrayBuffer[Long]].toArray)
+      case Some(_: Float)   => (storage.StorageTyp.Float, items.asInstanceOf[mutable.ArrayBuffer[Float]].toArray)
+      case Some(_: Double)  => (storage.StorageTyp.Double, items.asInstanceOf[mutable.ArrayBuffer[Double]].toArray)
       case Some(_: StringRef) =>
-        (odb2.StorageTyp.String, items.asInstanceOf[mutable.ArrayBuffer[StringRef]].map { ref => if (ref == null) -1 else ref.idx }.toArray)
+        (storage.StorageTyp.String, items.asInstanceOf[mutable.ArrayBuffer[StringRef]].map { ref => if (ref == null) -1 else ref.idx }.toArray)
       case Some(_: NodeRefTmp) =>
         (
-          odb2.StorageTyp.Ref,
+          storage.StorageTyp.Ref,
           items.asInstanceOf[mutable.ArrayBuffer[NodeRefTmp]].map { ref => if (ref == null) 0x0000ffffffffffffL else ref.newId }.toArray
         )
     }

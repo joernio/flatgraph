@@ -1,13 +1,13 @@
-package io.joern.odb2
+package io.joern.odb2.storage
+
 import com.github.luben.zstd.Zstd
-import io.joern.odb2.StorageManifest.GraphStorage.write
-import io.joern.odb2.StorageManifest._
+import io.joern.odb2.storage.StorageManifest._
+import io.joern.odb2._
 
 import java.io.ByteArrayOutputStream
-import java.nio.{ByteBuffer, ByteOrder}
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
-import java.nio.file.Path
+import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
 
@@ -45,84 +45,9 @@ object Keys {
   val HEADER             = 0xdeadbeefdeadbeefL
 }
 
-object FreeSchema {
-  def fromManifest(manifest: StorageManifest.GraphStorage): FreeSchema = {
-    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
-    val nodePropNames = mutable.LinkedHashMap[String, Array[_]]()
-    for (prop <- manifest.properties) {
-      nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
-    }
-    val propertyLabels         = nodePropNames.keysIterator.toArray
-    val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
-
-    val edgePropNames = mutable.LinkedHashMap[String, Array[_]]()
-    for (edge <- manifest.edges) {
-      edgePropNames.get(edge.edgeLabel) match {
-        case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
-        case _                 =>
-      }
-    }
-    val edgeLabels             = edgePropNames.keysIterator.toArray
-    val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
-
-    new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
-  }
-  def protoFromOutline(outline: OutlineStorage): Array[_] = {
-    if (outline == null) return null
-    outline.typ match {
-      case StorageTyp.Bool   => new Array[Boolean](0)
-      case StorageTyp.Byte   => new Array[Byte](0)
-      case StorageTyp.Short  => new Array[Short](0)
-      case StorageTyp.Int    => new Array[Int](0)
-      case StorageTyp.Long   => new Array[Long](0)
-      case StorageTyp.Float  => new Array[Float](0)
-      case StorageTyp.Double => new Array[Double](0)
-      case StorageTyp.Ref    => new Array[GNode](0)
-      case StorageTyp.String => new Array[String](0)
-    }
-  }
-}
-
-class FreeSchema(
-  val nodeLabels: Array[String],
-  val propertyLabels: Array[String],
-  val nodePropertyPrototypes: Array[Array[_]],
-  val edgeLabels: Array[String],
-  val edgePropertyPrototypes: Array[Array[_]]
-) extends Schema {
-  private def similar(proto: Array[_], size: Int): Array[_] = {
-    proto match {
-      case null              => null
-      case _: Array[Boolean] => new Array[Boolean](size)
-      case _: Array[Byte]    => new Array[Byte](size)
-      case _: Array[Short]   => new Array[Short](size)
-      case _: Array[Int]     => new Array[Int](size)
-      case _: Array[Long]    => new Array[Long](size)
-      case _: Array[Float]   => new Array[Float](size)
-      case _: Array[Double]  => new Array[Double](size)
-      case _: Array[String]  => new Array[String](size)
-      case _: Array[GNode]   => new Array[GNode](size)
-      case _                 => ???
-    }
-  }
-  override def getNumberOfNodeKinds: Int                                  = nodeLabels.length
-  override def getNumberOfEdgeKinds: Int                                  = edgeLabels.length
-  override def getNodeLabel(nodeKind: Int): String                        = nodeLabels(nodeKind)
-  override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String         = edgeLabels(edgeKind)
-  override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
-  override def getNumberOfProperties: Int                                 = propertyLabels.length
-  override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
-  override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
-    new Edge(src, dst, edgeKind, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_] =
-    similar(edgePropertyPrototypes(edgeKind), size)
-  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] =
-    similar(nodePropertyPrototypes(propertyKind), size)
-}
-
 object StorageManifest {
-  object GraphStorage {
-    def read(item: ujson.Value): GraphStorage = {
+  object GraphItem {
+    def read(item: ujson.Value): GraphItem = {
       val version = item.obj(Keys.version).num.toInt
       if (version != 0) throw new RuntimeException()
       val nodes           = item.obj(Keys.nodes).arr.map(NodeItem.read).toArray
@@ -130,11 +55,11 @@ object StorageManifest {
       val properties      = item.obj(Keys.properties).arr.map(PropertyItem.read).toArray
       val stringpoolLens  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.stringpoolLens))
       val stringpoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.stringpoolBytes))
-      val res             = new GraphStorage(nodes, edges, properties, stringpoolLens, stringpoolBytes)
+      val res             = new GraphItem(nodes, edges, properties, stringpoolLens, stringpoolBytes)
       res.version = version
       res
     }
-    def write(item: GraphStorage): ujson.Value = {
+    def write(item: GraphItem): ujson.Value = {
       val res = ujson.Obj()
       res(Keys.version) = 0
       res(Keys.nodes) = ujson.Arr(item.nodes.map(NodeItem.write): _*)
@@ -146,7 +71,7 @@ object StorageManifest {
 
     }
   }
-  class GraphStorage(
+  class GraphItem(
     var nodes: Array[NodeItem],
     var edges: Array[EdgeItem],
     var properties: Array[PropertyItem],
@@ -265,7 +190,7 @@ object StorageManifest {
   }
 }
 
-object StoreGraph {
+object Serialization {
   def writeGraph(g: Graph, filename: String = "/tmp/foo.fg"): Unit = {
     val fileOffset = new AtomicLong(16)
 
@@ -359,8 +284,8 @@ object StoreGraph {
       headPos += fileChannel.write(headerBuf, headPos)
     }
 
-    val manifest    = new GraphStorage(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
-    val manifestObj = GraphStorage.write(manifest)
+    val manifest    = new GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
+    val manifestObj = GraphItem.write(manifest)
     val buf         = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
 
     while (buf.hasRemaining()) {
@@ -451,14 +376,53 @@ object StoreGraph {
   }
 }
 
-object ReadGraph {
+object Deserialization {
+
+  def freeSchemaFromManifest(manifest: StorageManifest.GraphItem): FreeSchema = {
+    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
+    val nodePropNames = mutable.LinkedHashMap[String, AnyRef]()
+    for (prop <- manifest.properties) {
+      nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
+    }
+    val propertyLabels         = nodePropNames.keysIterator.toArray
+    val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
+
+    val edgePropNames = mutable.LinkedHashMap[String, AnyRef]()
+    for (edge <- manifest.edges) {
+      edgePropNames.get(edge.edgeLabel) match {
+        case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
+        case _                 =>
+      }
+    }
+    val edgeLabels             = edgePropNames.keysIterator.toArray
+    val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
+
+    new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
+  }
+
+  def protoFromOutline(outline: OutlineStorage): AnyRef = {
+    if (outline == null) return null
+    outline.typ match {
+      case StorageTyp.Bool   => new Array[Boolean](0)
+      case StorageTyp.Byte   => new Array[Byte](0)
+      case StorageTyp.Short  => new Array[Short](0)
+      case StorageTyp.Int    => new Array[Int](0)
+      case StorageTyp.Long   => new Array[Long](0)
+      case StorageTyp.Float  => new Array[Float](0)
+      case StorageTyp.Double => new Array[Double](0)
+      case StorageTyp.Ref    => new Array[GNode](0)
+      case StorageTyp.String => new Array[String](0)
+    }
+  }
+
   def readGraph(filename: String, schema: Schema): Graph = {
     val fileChannel =
       new java.io.RandomAccessFile(filename, "r").getChannel
     try {
+      // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
       val manifest  = readManifest(fileChannel)
       val pool      = readPool(manifest, fileChannel)
-      val g         = new Graph(if (schema != null) schema else FreeSchema.fromManifest(manifest))
+      val g         = new Graph(if (schema != null) schema else freeSchemaFromManifest(manifest))
       val nodekinds = mutable.HashMap[String, Short]()
       for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
       val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
@@ -533,7 +497,7 @@ object ReadGraph {
     } finally fileChannel.close()
   }
 
-  def readManifest(channel: FileChannel): GraphStorage = {
+  def readManifest(channel: FileChannel): GraphItem = {
     val header    = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
     while (readBytes < 16) {
@@ -551,10 +515,10 @@ object ReadGraph {
     }
     manifestBytes.flip()
     val jsonObj = ujson.read(manifestBytes)
-    GraphStorage.read(jsonObj)
+    GraphItem.read(jsonObj)
   }
 
-  def readPool(manifest: GraphStorage, fileChannel: FileChannel): Array[String] = {
+  def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
     val stringPoolLens = Zstd
       .decompress(
         fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringpoolLens.startOffset, manifest.stringpoolLens.compressedLength),

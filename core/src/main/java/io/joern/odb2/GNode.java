@@ -23,4 +23,8 @@ public class GNode implements DNodeOrNode {
         this._seqId = seqId;
         this.graph = graph;
     }
+
+    public String label() {
+        return graph.schema().getNodeLabel(nodeKind);
+    }
 }
