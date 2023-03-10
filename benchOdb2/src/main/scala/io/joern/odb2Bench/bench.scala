@@ -2,6 +2,7 @@ package io.joern.odb2Bench
 
 import io.joern.odb2
 import com.jerolba.jmnemohistosyne.{HistogramEntry, Histogramer, MemoryHistogram}
+import io.joern.odb2.Schema
 import io.joern.odb2.storage.Deserialization
 
 import scala.jdk.CollectionConverters.IteratorHasAsScala
@@ -43,8 +44,8 @@ object Bench {
     count
   }
 
-  def loadFile(filename: String): odb2.Graph = {
-    Deserialization.readGraph(filename, null)
+  def loadFile(filename: String, schema: Schema): odb2.Graph = {
+    Deserialization.readGraph(filename, schema)
   }
 
   def modHisto(histo: MemoryHistogram, top: Int, nodecount: Int): (Long, String) = {
@@ -80,7 +81,7 @@ object Bench {
     )
     val box = new MeasurementBox
     box.histo = new Histogramer().createHistogram()
-    val cpgBox    = measure { loadFile(args(0)) }
+    val cpgBox    = measure { loadFile(args(0), null) }
     val touch1    = measure { touchGraph(cpgBox.result.asInstanceOf[odb2.Graph]) }
     val touch2    = measure { touchGraph(cpgBox.result.asInstanceOf[odb2.Graph]) }
     val nodecount = cpgBox.result.asInstanceOf[odb2.Graph].nnodes.sum
