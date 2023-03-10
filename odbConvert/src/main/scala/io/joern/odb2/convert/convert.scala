@@ -152,7 +152,10 @@ object Convert {
       case Some(_: Float)   => (storage.StorageTyp.Float, items.asInstanceOf[mutable.ArrayBuffer[Float]].toArray)
       case Some(_: Double)  => (storage.StorageTyp.Double, items.asInstanceOf[mutable.ArrayBuffer[Double]].toArray)
       case Some(_: StringRef) =>
-        (storage.StorageTyp.String, items.asInstanceOf[mutable.ArrayBuffer[StringRef]].map { ref => if (ref == null) -1 else ref.idx }.toArray)
+        (
+          storage.StorageTyp.String,
+          items.asInstanceOf[mutable.ArrayBuffer[StringRef]].map { ref => if (ref == null) -1 else ref.idx }.toArray
+        )
       case Some(_: NodeRefTmp) =>
         (
           storage.StorageTyp.Ref,

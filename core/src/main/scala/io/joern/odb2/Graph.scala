@@ -1,6 +1,7 @@
 package io.joern.odb2
 import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
 import misc.ISeq
+import scala.reflect.ClassTag
 
 import scala.collection.mutable
 
@@ -82,6 +83,35 @@ object Accessors {
     if (qty == null || seq + 1 >= qty.length) return ISeq.empty
     val vals = graph._properties(pos + 1)
     ISeq.from(vals, qty(seq), qty(seq + 1))
+  }
+
+  // this is cheating. It relies on the fact that all reference types are collapsed into one and the array-cast is unchecked.
+  def getNodePropertySingle[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit evidence: ClassTag[T]): T = {
+    val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    if (qty == null || seq + 1 >= qty.length || qty(seq + 1) - qty(seq) != 1) ???
+    val vals = graph._properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
+    vals(qty(seq))
+  }
+  def getNodePropertyOption[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit
+    evidence: ClassTag[T]
+  ): Option[T] = {
+    val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    if (qty == null || seq + 1 >= qty.length || qty(seq) == qty(seq + 1)) return None
+    if (qty(seq + 1) - qty(seq) != 1) ???
+    val vals = graph._properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
+    Some(vals(qty(seq)))
+  }
+
+  def getNodePropertyMulti[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit
+    evidence: ClassTag[T]
+  ): ISeq[T] = {
+    val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    if (qty == null || seq + 1 >= qty.length) return ISeq.empty
+    val vals = graph._properties(pos + 1).asInstanceOf[Array[T]]
+    new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
 }
