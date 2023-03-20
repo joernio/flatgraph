@@ -86,10 +86,11 @@ object Accessors {
   }
 
   // this is cheating. It relies on the fact that all reference types are collapsed into one and the array-cast is unchecked.
-  def getNodePropertySingle[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit evidence: ClassTag[T]): T = {
+  def getNodePropertySingle[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int, default: T): T = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val qty = graph._properties(pos).asInstanceOf[Array[Int]]
-    if (qty == null || seq + 1 >= qty.length || qty(seq + 1) - qty(seq) != 1) ???
+    if (qty == null || seq + 1 >= qty.length || qty(seq + 1) == qty(seq)) return default
+    if (qty(seq + 1) - qty(seq) > 1) ???
     val vals = graph._properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
     vals(qty(seq))
   }

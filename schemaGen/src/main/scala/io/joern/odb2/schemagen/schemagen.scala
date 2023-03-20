@@ -2,7 +2,7 @@ package io.joern.odb2.schemagen
 
 import overflowdb.codegen.Helpers
 import overflowdb.schema.Property
-import overflowdb.schema.Property.{Cardinality, ValueType}
+import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
 
@@ -13,7 +13,7 @@ object SchemaGen {
       case "cs"  => io.shiftleft.codepropertygraph.schema.CpgExtSchema.instance
     }
     val outputDir   = better.files.File(args(0))
-    val basePackage = schema.basePackage
+    val basePackage = schema.basePackage + ".v2"
 
     val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
     val kindByNode = nodeTypes.zipWithIndex.toMap
@@ -143,6 +143,7 @@ object SchemaGen {
         val accessors = newProperties
           .map { p =>
             val pre = s"def ${Helpers.camelCase(p.name)}: ${typeForProperty(p)}"
+            /*
             val access = p.cardinality match {
               case Cardinality.ZeroOrOne =>
                 s" = odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}]((this: StoredNode).graph, (this: StoredNode).nodeKind, ${idByProperty(p)}, (this: StoredNode).seq)"
@@ -150,7 +151,7 @@ object SchemaGen {
                 s" = odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}]((this: StoredNode).graph, (this: StoredNode).nodeKind, ${idByProperty(p)}, (this: StoredNode).seq)"
               case _: Cardinality.One[_] =>
                 s" = odb2.Accessors.getNodePropertySingle[${unpackTypeUnboxed(p.valueType, true, false)}]((this: StoredNode).graph, (this: StoredNode).nodeKind, ${idByProperty(p)}, (this: StoredNode).seq)"
-            }
+            } */
             pre // + access
           }
           .mkString("\n")
@@ -239,8 +240,8 @@ object SchemaGen {
                 s" = odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
               case Cardinality.List =>
                 s" = odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
-              case _: Cardinality.One[_] =>
-                s" = odb2.Accessors.getNodePropertySingle[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
+              case one: Cardinality.One[_] =>
+                s" = odb2.Accessors.getNodePropertySingle(graph, nodeKind, ${idByProperty(p)}, seq, ${unpackDefault(p.valueType, one.default)})"
             }
             pre + access
           }
@@ -251,7 +252,9 @@ object SchemaGen {
                 case Cardinality.ZeroOrOne =>
                   s"Option[${contained.nodeType.className}] = odb2.Accessors.getNodePropertyOption[${contained.nodeType.className}](graph, nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, seq)"
                 case _: Cardinality.One[_] =>
-                  s"${contained.nodeType.className} = odb2.Accessors.getNodePropertySingle[${contained.nodeType.className}](graph, nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, seq)"
+                  s"${contained.nodeType.className} = odb2.Accessors.getNodePropertySingle(graph, nodeKind, ${actualProperties.size + containedIndexByName(
+                      contained.localName
+                    )}, seq, null: ${contained.nodeType.className})"
                 case Cardinality.List =>
                   s"IndexedSeq[${contained.nodeType.className}] = odb2.Accessors.getNodePropertyMulti[${contained.nodeType.className}](graph, nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, seq)"
               }}""".stripMargin
@@ -347,6 +350,7 @@ object SchemaGen {
          |}""".stripMargin
     outputDir.createChild("GraphSchema.scala").write(schemaFile)
 
+    /*
     val containedAccessorClassesAndNode = mutable.ArrayBuffer[(String, String)]()
     val containedAccessors = nodeTypes
       .flatMap { nt =>
@@ -421,6 +425,7 @@ object SchemaGen {
          |
          |
          |}""".stripMargin
+     */
 
     // for now, let's skip accessors.
     // outputDir.createChild("Accessors.scala").write(accessors)
@@ -455,6 +460,23 @@ if (containedNodes.size != containedNodes.map { _.localName }.size) {
     }
   }
 
+  def unpackDefault(typ: ValueType[_], default: Default[_]): String = {
+    import org.apache.commons.text.StringEscapeUtils.escapeJava
+    typ match {
+      case ValueType.Boolean                                            => s"${default.value}: Boolean"
+      case ValueType.String if default.value == null                    => "null: String"
+      case ValueType.String                                             => s"\"${escapeJava(default.value.asInstanceOf[String])}\": String"
+      case ValueType.Byte                                               => s"${default.value}.toByte"
+      case ValueType.Short                                              => s"${default.value}.toShort"
+      case ValueType.Int                                                => s"${default.value}: Int"
+      case ValueType.Long                                               => s"${default.value}L: Long"
+      case ValueType.Float if default.value.asInstanceOf[Float].isNaN   => "Float.NaN"
+      case ValueType.Float                                              => s"${default.value}f: Float"
+      case ValueType.Double if default.value.asInstanceOf[Double].isNaN => "Double.NaN"
+      case ValueType.Double                                             => s"${default.value}d: Double"
+      case _                                                            => ???
+    }
+  }
   def unpackTypeUnboxed(tpe: ValueType[_], isStored: Boolean, raised: Boolean = false): String = {
     tpe match {
       case ValueType.Boolean             => "Boolean"

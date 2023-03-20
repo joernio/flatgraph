@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.nodes
+package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
 trait AstNodeBase extends AbstractNode
 // new properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
@@ -16,7 +16,7 @@ trait AstNodeNew extends NewNode with AstNodeBase
 
 trait CallReprBase extends AbstractNode with CfgNodeBase
 // new properties: NAME, SIGNATURE
-// inherited properties: overflowdb.schema.Property@221af3c0, overflowdb.schema.Property@23a5fd2, overflowdb.schema.Property@62bd765, overflowdb.schema.Property@19dc67c2
+// inherited properties: overflowdb.schema.Property@23a5fd2, overflowdb.schema.Property@dd3b207, overflowdb.schema.Property@78a2da20, overflowdb.schema.Property@62bd765
 // inherited interfaces: AST_NODE
 // implementing nodes: CALL
 trait CallRepr extends StoredNode with CallReprBase with CfgNode {
@@ -28,7 +28,7 @@ trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew
 
 trait CfgNodeBase extends AbstractNode with AstNodeBase
 // new properties:
-// inherited properties: overflowdb.schema.Property@221af3c0, overflowdb.schema.Property@23a5fd2, overflowdb.schema.Property@62bd765, overflowdb.schema.Property@19dc67c2
+// inherited properties: overflowdb.schema.Property@23a5fd2, overflowdb.schema.Property@dd3b207, overflowdb.schema.Property@78a2da20, overflowdb.schema.Property@62bd765
 // inherited interfaces:
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, JUMP_TARGET, LITERAL, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT, METHOD_REF, METHOD_RETURN, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
 trait CfgNode extends StoredNode with CfgNodeBase with AstNode {}
@@ -48,7 +48,7 @@ trait DeclarationNew extends NewNode with DeclarationBase
 
 trait ExpressionBase extends AbstractNode with CfgNodeBase
 // new properties: ARGUMENT_INDEX, ARGUMENT_NAME
-// inherited properties: overflowdb.schema.Property@221af3c0, overflowdb.schema.Property@23a5fd2, overflowdb.schema.Property@62bd765, overflowdb.schema.Property@19dc67c2
+// inherited properties: overflowdb.schema.Property@23a5fd2, overflowdb.schema.Property@dd3b207, overflowdb.schema.Property@78a2da20, overflowdb.schema.Property@62bd765
 // inherited interfaces: AST_NODE
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, LITERAL, METHOD_REF, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
 trait Expression extends StoredNode with ExpressionBase with CfgNode {
@@ -56,4 +56,4 @@ trait Expression extends StoredNode with ExpressionBase with CfgNode {
   def argumentName: Option[String]
 }
 
-trait ExpressionNew extends NewNode with ExpressionBase with AstNodeNew with CfgNodeNew
+trait ExpressionNew extends NewNode with ExpressionBase with CfgNodeNew with AstNodeNew
