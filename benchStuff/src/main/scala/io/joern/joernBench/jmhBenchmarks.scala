@@ -260,6 +260,7 @@ class Odb2Generated {
 
   @Benchmark
   def orderSumVirtual(blackhole: Blackhole): Int = {
+    import v2.accessors.Lang._
     var sumOrder = 0
     for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.AstNode]]) {
       sumOrder += node.order

@@ -1,84 +1,180 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
-trait AstNodeBase extends AbstractNode
+
+trait AstNodeT extends AnyRef with HasCodeT with HasColumnNumberT with HasLineNumberT with HasOrderT
+
+trait AstNodeBase extends AbstractNode with StaticType[AstNodeT]
 // new properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
 // inherited properties:
 // inherited interfaces:
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ANNOTATION_PARAMETER, ANNOTATION_PARAMETER_ASSIGN, ARRAY_INITIALIZER, BLOCK, CALL, COMMENT, CONTROL_STRUCTURE, FIELD_IDENTIFIER, FILE, IDENTIFIER, IMPLICIT_CALL, IMPORT, JUMP_LABEL, JUMP_TARGET, LITERAL, LOCAL, MEMBER, METHOD, METHOD_INST, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT, METHOD_REF, METHOD_RETURN, MODIFIER, NAMESPACE, NAMESPACE_BLOCK, POST_EXECUTION_CALL, RETURN, TEMPLATE_DOM, TYPE_ARGUMENT, TYPE_DECL, TYPE_PARAMETER, TYPE_REF, UNKNOWN
-trait AstNode extends StoredNode with AstNodeBase {
-  def code: String
-  def columnNumber: Option[Int]
-  def lineNumber: Option[Int]
-  def order: Int
+trait AstNode extends StoredNode with AstNodeBase with StaticType[AstNodeT] {
+//{accessors}
 }
 
-trait AstNodeNew extends NewNode with AstNodeBase
+trait AstNodeNew extends NewNode with AstNodeBase with StaticType[AstNodeT]
 
-trait CallReprBase extends AbstractNode with CfgNodeBase
+trait CallReprT extends AnyRef with CfgNodeT with HasNameT with HasSignatureT
+
+trait CallReprBase extends AbstractNode with CfgNodeBase with StaticType[CallReprT]
 // new properties: NAME, SIGNATURE
-// inherited properties: overflowdb.schema.Property@6b1274d2, overflowdb.schema.Property@70b0b186, overflowdb.schema.Property@1460a8c0, overflowdb.schema.Property@79ca92b9, overflowdb.schema.Property@7bc1a03d, overflowdb.schema.Property@58fdd99
+// inherited properties: CODE, COLUMN_NUMBER, DEPTH_FIRST_ORDER, INTERNAL_FLAGS, LINE_NUMBER, ORDER
 // inherited interfaces: AST_NODE, TRACKING_POINT
 // implementing nodes: CALL, IMPLICIT_CALL, POST_EXECUTION_CALL
-trait CallRepr extends StoredNode with CallReprBase with CfgNode {
-  def name: String
-  def signature: String
+trait CallRepr extends StoredNode with CallReprBase with CfgNode with StaticType[CallReprT] {
+//{accessors}
 }
 
-trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew
+trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew with StaticType[CallReprT]
 
-trait CfgNodeBase extends AbstractNode with AstNodeBase with TrackingPointBase
+trait CfgNodeT extends AnyRef with AstNodeT with TrackingPointT with HasDepthFirstOrderT with HasInternalFlagsT
+
+trait CfgNodeBase extends AbstractNode with AstNodeBase with TrackingPointBase with StaticType[CfgNodeT]
 // new properties: DEPTH_FIRST_ORDER, INTERNAL_FLAGS
-// inherited properties: overflowdb.schema.Property@6b1274d2, overflowdb.schema.Property@70b0b186, overflowdb.schema.Property@7bc1a03d, overflowdb.schema.Property@58fdd99
+// inherited properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
 // inherited interfaces:
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, IMPLICIT_CALL, JUMP_TARGET, LITERAL, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT, METHOD_REF, METHOD_RETURN, POST_EXECUTION_CALL, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
-trait CfgNode extends StoredNode with CfgNodeBase with AstNode with TrackingPoint {
-  def depthFirstOrder: Int
-  def internalFlags: Int
+trait CfgNode extends StoredNode with CfgNodeBase with AstNode with TrackingPoint with StaticType[CfgNodeT] {
+//{accessors}
 }
 
-trait CfgNodeNew extends NewNode with CfgNodeBase with AstNodeNew with TrackingPointNew
+trait CfgNodeNew extends NewNode with CfgNodeBase with AstNodeNew with TrackingPointNew with StaticType[CfgNodeT]
 
-trait DeclarationBase extends AbstractNode
+trait DeclarationT extends AnyRef with HasNameT
+
+trait DeclarationBase extends AbstractNode with StaticType[DeclarationT]
 // new properties: NAME
 // inherited properties:
 // inherited interfaces:
 // implementing nodes: LOCAL, MEMBER, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT
-trait Declaration extends StoredNode with DeclarationBase {
-  def name: String
+trait Declaration extends StoredNode with DeclarationBase with StaticType[DeclarationT] {
+//{accessors}
 }
 
-trait DeclarationNew extends NewNode with DeclarationBase
+trait DeclarationNew extends NewNode with DeclarationBase with StaticType[DeclarationT]
 
-trait ExpressionBase extends AbstractNode with CfgNodeBase
+trait ExpressionT extends AnyRef with CfgNodeT with HasArgumentIndexT with HasArgumentNameT
+
+trait ExpressionBase extends AbstractNode with CfgNodeBase with StaticType[ExpressionT]
 // new properties: ARGUMENT_INDEX, ARGUMENT_NAME
-// inherited properties: overflowdb.schema.Property@6b1274d2, overflowdb.schema.Property@70b0b186, overflowdb.schema.Property@1460a8c0, overflowdb.schema.Property@79ca92b9, overflowdb.schema.Property@7bc1a03d, overflowdb.schema.Property@58fdd99
+// inherited properties: CODE, COLUMN_NUMBER, DEPTH_FIRST_ORDER, INTERNAL_FLAGS, LINE_NUMBER, ORDER
 // inherited interfaces: AST_NODE, TRACKING_POINT
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, LITERAL, METHOD_REF, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
-trait Expression extends StoredNode with ExpressionBase with CfgNode {
-  def argumentIndex: Int
-  def argumentName: Option[String]
+trait Expression extends StoredNode with ExpressionBase with CfgNode with StaticType[ExpressionT] {
+//{accessors}
 }
 
-trait ExpressionNew extends NewNode with ExpressionBase with CfgNodeNew with AstNodeNew with TrackingPointNew
+trait ExpressionNew extends NewNode with ExpressionBase with CfgNodeNew with AstNodeNew with TrackingPointNew with StaticType[ExpressionT]
 
-trait LocalLikeBase extends AbstractNode
+trait LocalLikeT extends AnyRef with HasNameT
+
+trait LocalLikeBase extends AbstractNode with StaticType[LocalLikeT]
 // new properties: NAME
 // inherited properties:
 // inherited interfaces:
 // implementing nodes: IDENTIFIER, LOCAL, METHOD_PARAMETER_IN
-trait LocalLike extends StoredNode with LocalLikeBase {
-  def name: String
+trait LocalLike extends StoredNode with LocalLikeBase with StaticType[LocalLikeT] {
+//{accessors}
 }
 
-trait LocalLikeNew extends NewNode with LocalLikeBase
+trait LocalLikeNew extends NewNode with LocalLikeBase with StaticType[LocalLikeT]
 
-trait TrackingPointBase extends AbstractNode with TrackingPointMarker
+trait TrackingPointT extends AnyRef with HasCodeT
+
+trait TrackingPointBase extends AbstractNode with TrackingPointMarker with StaticType[TrackingPointT]
 // new properties: CODE
 // inherited properties:
 // inherited interfaces:
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONFIG_FILE, CONTROL_STRUCTURE, DOM_NODE, FIELD_IDENTIFIER, IDENTIFIER, IMPLICIT_CALL, JUMP_TARGET, LITERAL, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT, METHOD_REF, METHOD_RETURN, POST_EXECUTION_CALL, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
-trait TrackingPoint extends StoredNode with TrackingPointBase with TrackingPointMarker {
-  def code: String
+trait TrackingPoint extends StoredNode with TrackingPointBase with TrackingPointMarker with StaticType[TrackingPointT] {
+//{accessors}
 }
 
-trait TrackingPointNew extends NewNode with TrackingPointBase with TrackingPointMarker
+trait TrackingPointNew extends NewNode with TrackingPointBase with TrackingPointMarker with StaticType[TrackingPointT]
+
+trait TrackingBase
+trait TrackingPointMarker
+trait HasAliasTypeFullNameT
+trait HasAnnotationFullNameT
+trait HasAnnotationNameT
+trait HasArgumentIndexT
+trait HasArgumentNameT
+trait HasAstParentFullNameT
+trait HasAstParentTypeT
+trait HasBinarySignatureT
+trait HasCanonicalNameT
+trait HasCategoriesT
+trait HasCategoryT
+trait HasClassNameT
+trait HasClassShortNameT
+trait HasClosureBindingIdT
+trait HasClosureOriginalNameT
+trait HasCodeT
+trait HasColumnNumberT
+trait HasColumnNumberEndT
+trait HasContainedRefT
+trait HasContentT
+trait HasControlStructureTypeT
+trait HasDependencyGroupIdT
+trait HasDependencyTypeT
+trait HasDepthFirstOrderT
+trait HasDescriptionT
+trait HasDispatchNameT
+trait HasDispatchTypeT
+trait HasDynamicTypeHintFullNameT
+trait HasEvaluationStrategyT
+trait HasEvaluationTypeT
+trait HasEvalTypeT
+trait HasExplicitAsT
+trait HasFilenameT
+trait HasFingerprintT
+trait HasFullNameT
+trait HasHashT
+trait HasHasMappingT
+trait HasImportedAsT
+trait HasImportedEntityT
+trait HasIndexT
+trait HasInheritsFromTypeFullNameT
+trait HasInternalFlagsT
+trait HasIsExplicitT
+trait HasIsExternalT
+trait HasIsMethodNeverOverriddenT
+trait HasIsStaticT
+trait HasIsVariadicT
+trait HasIsWildcardT
+trait HasKeyT
+trait HasLanguageT
+trait HasLineNumberT
+trait HasLineNumberEndT
+trait HasLiteralsToSinkT
+trait HasMethodFullNameT
+trait HasMethodInstFullNameT
+trait HasMethodShortNameT
+trait HasMlAssistedT
+trait HasModifierTypeT
+trait HasNameT
+trait HasNodeLabelT
+trait HasOrderT
+trait HasOverlaysT
+trait HasPackageNameT
+trait HasParameterIndexT
+trait HasParserTypeNameT
+trait HasPathT
+trait HasPatternT
+trait HasPolicyDirectoriesT
+trait HasResolvedT
+trait HasRootT
+trait HasScoreT
+trait HasSignatureT
+trait HasSinkTypeT
+trait HasSourceTypeT
+trait HasSpidT
+trait HasStructuredFingerprintT
+trait HasSymbolT
+trait HasTypeDeclFullNameT
+trait HasTypeFullNameT
+trait HasUrlT
+trait HasValueT
+trait HasVarargParameterT
+trait HasVarTypeT
+trait HasVersionT
