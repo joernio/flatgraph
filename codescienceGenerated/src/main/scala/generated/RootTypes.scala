@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.nodes
+package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
 
 trait AbstractNode extends odb2.DNodeOrNode

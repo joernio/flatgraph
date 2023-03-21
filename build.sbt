@@ -5,12 +5,11 @@ ThisBuild / crossScalaVersions := Seq("2.13.8", "3.1.2")
 publish / skip                 := true
 
 lazy val core                 = project.in(file("core"))
-lazy val benchJoern           = project.in(file("benchJoern"))
-lazy val benchOdb2            = project.in(file("benchOdb2")).dependsOn(core)
 lazy val schemaGen            = project.in(file("schemaGen")).dependsOn(core)
 lazy val odbConvert           = project.in(file("odbConvert")).dependsOn(core)
 lazy val joernGenerated       = project.in(file("joernGenerated")).dependsOn(core)
 lazy val codescienceGenerated = project.in(file("codescienceGenerated")).dependsOn(core)
+lazy val benchStuff           = project.in(file("benchStuff")).dependsOn(core).dependsOn(joernGenerated)
 
 ThisBuild / libraryDependencies ++= Seq("org.slf4j" % "slf4j-simple" % "2.0.6" % Test, "org.scalatest" %% "scalatest" % "3.2.12" % Test)
 

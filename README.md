@@ -112,26 +112,588 @@ Via implicits, an external property can be made to look like a "real" property o
 on the same node races against itself) with only O(1) total synchronization events, as opposed to hashmaps that require 
 synchronization of some kind on every access (typically via atomics).
 
-# Odbv1 / Joern benchmarks.
-After `sbt clean compile stage` you can run an analogue of `./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G -Djdk.attach.allowAttachSelf ./cpg.bin`
-to generate some benchmarks (timing and memory consumption). This relies on `jcmd`, so make sure you have the full jdk installed, not
-just the jre. For this you need an example graph that you can conveniently generate with joern and take from the workspace 
+# Benchmarks
+All benchmarks are run via the `runBenchmarks.sh` script. The script expects a test graph for overflowdb to be placed in `./cpg.bin`,
+and a test graph for odbv2 to be placed in `./cpg.fg`. Then outputs of the script are placed in `./jmhResults.txt` for iteration
+over the graph, and for graph loading and memory consumption in `./odb1Results.txt` and `./odb2Results.txt`. 
+
+For this you need an example graph that you can conveniently generate with joern and take from the workspace 
 (don't forget to save). Since this uses joern domain classes, it is incompatible with ocular/codescience graphs. It is also
-incompatible with the legacy proto format (just load in joern and save).
+incompatible with the legacy proto format (just load in joern and save). The graph in the new format can be generated via
+the `odbConvert` tool.
+
+The memory benchmarks rely on `jcmd`, so make sure to have the full sdk installed. 
+
+
+## JMH benchmarks
+The jmh `perfnorm` profiler relies on linux `perf`, so make sure to have that installed. For the `perfasm` profiler in jmh 
+(the one that shows the actual instructions that eat our time), it is good to have:
+1. debug symbols for the jdk (under archlinux, you get them by installing the `sources` package of the jdk)
+2. hsdis (hotspot disassembler). This is super annoying because of GPL issues with binutils. You need to ensure presence of 
+`/usr/lib/jvm/java-19-openjdk/lib/hsdis-amd64.so` (or analogue on your distro). You can either google for instructions and build it 
+from the openjdk tree or download a binary somewhere.
+
+As of now, all profilers are disabled by default. Enable them by uncommenting the relevant lines in 
+`benchStuff/src/main/scala/io/joern/joernBench/jmhBenchmarks.scala`. Main reason for that the output somewhat too verbose 
+for one-glance comparisons. But when trying to understand what goes right or wrong, the output of especially perfnorm
+is super important!
+
+We benchmark three operations:
+1. `astDFS` descend the AST in depth-first-order, starting from all AST roots, normalized by number of `_astOut` calls. Roughly
+```scala
+  def astDFS(): Unit = {
+    val stack = scala.collection.mutable.ArrayDeque[StoredNode]()
+    stack.addAll(nodeStart)
+    while (stack.nonEmpty) {
+      val nx = stack.removeLast()
+      stack.appendAll(nx._astOut)
+    }
+  }
+  ```
+2. `astUp` ascend the AST to a root, starting from each node, normalized by number of `_astIn` calls. Roughly
+```scala
+  def astUp(): Unit = {
+    for (node <- nodeStart) {
+      var p = node
+      while (p != null) {
+        p = p._astIn.nextOption.orNull
+      }
+    }
+  }
+  ```
+3. look at the `order` field of all ast-nodes, normalized by number of `order` calls. Roughly
+```scala
+  def orderSum(): Int = {
+    var sumOrder = 0
+    for (node <- nodeStart) {
+      sumOrder += node.order
+    }
+    sumOrder
+  }
+  ```
+We benchmark with either the default iterator order, or with the nodes shuffled into random order (the `shuffle` parameter).
+The three kinds of graph we test are `JoernLegacy`, which uses the generic Tinkerpop-like graph API, `JoernGenerated` which uses
+the API belonging to the generated domain classes, and `Odb2Generated` which runs on the generated domain classes for odb2.
+For the `orderSum` benchmark in odb2, we have two variants: `orderSumVirtual` uses the same kind of structure as odbv1 generated
+domain classes, i.e. interfaces/traits declare a method that is then implemented by the actual domain class. 
+The `orderSumDevirtualized` instead uses the fact that there is no need for dynamic dispatch on the JVM level, since we have our own
+type-tags. Part of the point of these benchmarks is to help us decide whether to make an effort to integrate the devirtualized variant.
+
+Basic results (without profiler output) are:
+```
+Benchmark                                       (shuffled)  Mode  Cnt    Score    Error  Units
+joernBench.JoernGenerated.astDFS                      true  avgt    5   72.803 ±  2.541  ns/op
+joernBench.JoernGenerated.astDFS                     false  avgt    5   67.674 ±  2.515  ns/op
+joernBench.JoernGenerated.astUp                       true  avgt    5  107.353 ± 26.428  ns/op
+joernBench.JoernGenerated.astUp                      false  avgt    5   36.184 ±  0.904  ns/op
+joernBench.JoernGenerated.orderSum                    true  avgt    5   82.620 ±  2.324  ns/op
+joernBench.JoernGenerated.orderSum                   false  avgt    5   34.356 ±  1.342  ns/op
+joernBench.JoernLegacy.astDFS                         true  avgt    5   87.619 ±  2.442  ns/op
+joernBench.JoernLegacy.astDFS                        false  avgt    5   82.099 ±  4.998  ns/op
+joernBench.JoernLegacy.astUp                          true  avgt    5  109.195 ±  8.609  ns/op
+joernBench.JoernLegacy.astUp                         false  avgt    5   40.012 ±  1.361  ns/op
+joernBench.JoernLegacy.orderSum                       true  avgt    5   58.692 ±  0.553  ns/op
+joernBench.JoernLegacy.orderSum                      false  avgt    5   29.085 ±  0.511  ns/op
+joernBench.Odb2Generated.astDFS                       true  avgt    5   22.514 ±  0.099  ns/op
+joernBench.Odb2Generated.astDFS                      false  avgt    5   22.969 ±  0.339  ns/op
+joernBench.Odb2Generated.astUp                        true  avgt    5   43.458 ±  2.394  ns/op
+joernBench.Odb2Generated.astUp                       false  avgt    5   10.905 ±  0.624  ns/op
+joernBench.Odb2Generated.orderSumDevirtualized        true  avgt    5   49.812 ±  2.499  ns/op
+joernBench.Odb2Generated.orderSumDevirtualized       false  avgt    5    5.504 ±  0.082  ns/op
+joernBench.Odb2Generated.orderSumVirtual              true  avgt    5   99.325 ±  2.615  ns/op
+joernBench.Odb2Generated.orderSumVirtual             false  avgt    5   10.972 ±  0.449  ns/op
+```
+Lengthy results with some profiler info are:
+<details>
+  <summary>see benchmarks with profilers</summary>
+```
+Benchmark                                                               (shuffled)  Mode  Cnt     Score     Error   Units
+joernBench.JoernGenerated.astDFS                                              true  avgt    5    73.328 ±   9.234   ns/op
+joernBench.JoernGenerated.astDFS:L1-dcache-load-misses:u                      true  avgt          5.372              #/op
+joernBench.JoernGenerated.astDFS:L1-dcache-loads:u                            true  avgt        181.450              #/op
+joernBench.JoernGenerated.astDFS:L1-dcache-stores:u                           true  avgt         57.831              #/op
+joernBench.JoernGenerated.astDFS:L1-icache-load-misses:u                      true  avgt          0.145              #/op
+joernBench.JoernGenerated.astDFS:LLC-load-misses:u                            true  avgt          0.872              #/op
+joernBench.JoernGenerated.astDFS:LLC-loads:u                                  true  avgt          1.203              #/op
+joernBench.JoernGenerated.astDFS:LLC-store-misses:u                           true  avgt          0.010              #/op
+joernBench.JoernGenerated.astDFS:LLC-stores:u                                 true  avgt          0.307              #/op
+joernBench.JoernGenerated.astDFS:branch-misses:u                              true  avgt          1.006              #/op
+joernBench.JoernGenerated.astDFS:branches:u                                   true  avgt        125.973              #/op
+joernBench.JoernGenerated.astDFS:cycles:u                                     true  avgt        441.988              #/op
+joernBench.JoernGenerated.astDFS:dTLB-load-misses:u                           true  avgt          0.007              #/op
+joernBench.JoernGenerated.astDFS:dTLB-loads:u                                 true  avgt        179.804              #/op
+joernBench.JoernGenerated.astDFS:dTLB-store-misses:u                          true  avgt         ≈ 10⁻³              #/op
+joernBench.JoernGenerated.astDFS:dTLB-stores:u                                true  avgt         57.372              #/op
+joernBench.JoernGenerated.astDFS:iTLB-load-misses:u                           true  avgt          0.001              #/op
+joernBench.JoernGenerated.astDFS:iTLB-loads:u                                 true  avgt          0.023              #/op
+joernBench.JoernGenerated.astDFS:instructions:u                               true  avgt        656.155              #/op
+joernBench.JoernGenerated.astDFS:·asm                                         true  avgt            NaN               ---
+joernBench.JoernGenerated.astDFS:·gc.alloc.rate                               true  avgt    5   733.567 ±  91.285  MB/sec
+joernBench.JoernGenerated.astDFS:·gc.alloc.rate.norm                          true  avgt    5    56.367 ±   0.005    B/op
+joernBench.JoernGenerated.astDFS:·gc.count                                    true  avgt    5     6.000            counts
+joernBench.JoernGenerated.astDFS:·gc.time                                     true  avgt    5    33.000                ms
+joernBench.JoernGenerated.astDFS                                             false  avgt    5    67.930 ±   0.347   ns/op
+joernBench.JoernGenerated.astDFS:L1-dcache-load-misses:u                     false  avgt          4.582              #/op
+joernBench.JoernGenerated.astDFS:L1-dcache-loads:u                           false  avgt        135.749              #/op
+joernBench.JoernGenerated.astDFS:L1-dcache-stores:u                          false  avgt         40.849              #/op
+joernBench.JoernGenerated.astDFS:L1-icache-load-misses:u                     false  avgt          0.210              #/op
+joernBench.JoernGenerated.astDFS:LLC-load-misses:u                           false  avgt          0.829              #/op
+joernBench.JoernGenerated.astDFS:LLC-loads:u                                 false  avgt          0.980              #/op
+joernBench.JoernGenerated.astDFS:LLC-store-misses:u                          false  avgt          0.011              #/op
+joernBench.JoernGenerated.astDFS:LLC-stores:u                                false  avgt          0.072              #/op
+joernBench.JoernGenerated.astDFS:branch-misses:u                             false  avgt          0.731              #/op
+joernBench.JoernGenerated.astDFS:branches:u                                  false  avgt         97.037              #/op
+joernBench.JoernGenerated.astDFS:cycles:u                                    false  avgt        344.708              #/op
+joernBench.JoernGenerated.astDFS:dTLB-load-misses:u                          false  avgt          0.001              #/op
+joernBench.JoernGenerated.astDFS:dTLB-loads:u                                false  avgt        135.121              #/op
+joernBench.JoernGenerated.astDFS:dTLB-store-misses:u                         false  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernGenerated.astDFS:dTLB-stores:u                               false  avgt         40.563              #/op
+joernBench.JoernGenerated.astDFS:iTLB-load-misses:u                          false  avgt          0.001              #/op
+joernBench.JoernGenerated.astDFS:iTLB-loads:u                                false  avgt          0.027              #/op
+joernBench.JoernGenerated.astDFS:instructions:u                              false  avgt        498.202              #/op
+joernBench.JoernGenerated.astDFS:·asm                                        false  avgt            NaN               ---
+joernBench.JoernGenerated.astDFS:·gc.alloc.rate                              false  avgt    5   678.973 ±   3.473  MB/sec
+joernBench.JoernGenerated.astDFS:·gc.alloc.rate.norm                         false  avgt    5    48.367 ±   0.001    B/op
+joernBench.JoernGenerated.astDFS:·gc.count                                   false  avgt    5     5.000            counts
+joernBench.JoernGenerated.astDFS:·gc.time                                    false  avgt    5    54.000                ms
+joernBench.JoernGenerated.astUp                                               true  avgt    5   100.319 ±   3.275   ns/op
+joernBench.JoernGenerated.astUp:L1-dcache-load-misses:u                       true  avgt          6.995              #/op
+joernBench.JoernGenerated.astUp:L1-dcache-loads:u                             true  avgt        131.878              #/op
+joernBench.JoernGenerated.astUp:L1-dcache-stores:u                            true  avgt         61.061              #/op
+joernBench.JoernGenerated.astUp:L1-icache-load-misses:u                       true  avgt          0.124              #/op
+joernBench.JoernGenerated.astUp:LLC-load-misses:u                             true  avgt          1.302              #/op
+joernBench.JoernGenerated.astUp:LLC-loads:u                                   true  avgt          2.422              #/op
+joernBench.JoernGenerated.astUp:LLC-store-misses:u                            true  avgt          0.033              #/op
+joernBench.JoernGenerated.astUp:LLC-stores:u                                  true  avgt          0.143              #/op
+joernBench.JoernGenerated.astUp:branch-misses:u                               true  avgt          0.964              #/op
+joernBench.JoernGenerated.astUp:branches:u                                    true  avgt        107.250              #/op
+joernBench.JoernGenerated.astUp:cycles:u                                      true  avgt        516.283              #/op
+joernBench.JoernGenerated.astUp:dTLB-load-misses:u                            true  avgt          0.004              #/op
+joernBench.JoernGenerated.astUp:dTLB-loads:u                                  true  avgt        130.741              #/op
+joernBench.JoernGenerated.astUp:dTLB-store-misses:u                           true  avgt         ≈ 10⁻³              #/op
+joernBench.JoernGenerated.astUp:dTLB-stores:u                                 true  avgt         60.688              #/op
+joernBench.JoernGenerated.astUp:iTLB-load-misses:u                            true  avgt          0.010              #/op
+joernBench.JoernGenerated.astUp:iTLB-loads:u                                  true  avgt          0.229              #/op
+joernBench.JoernGenerated.astUp:instructions:u                                true  avgt        497.647              #/op
+joernBench.JoernGenerated.astUp:·asm                                          true  avgt            NaN               ---
+joernBench.JoernGenerated.astUp:·gc.alloc.rate                                true  avgt    5   803.151 ±  26.255  MB/sec
+joernBench.JoernGenerated.astUp:·gc.alloc.rate.norm                           true  avgt    5    84.485 ±   0.001    B/op
+joernBench.JoernGenerated.astUp:·gc.count                                     true  avgt    5     9.000            counts
+joernBench.JoernGenerated.astUp:·gc.time                                      true  avgt    5   102.000                ms
+joernBench.JoernGenerated.astUp                                              false  avgt    5    35.348 ±   0.352   ns/op
+joernBench.JoernGenerated.astUp:L1-dcache-load-misses:u                      false  avgt          2.193              #/op
+joernBench.JoernGenerated.astUp:L1-dcache-loads:u                            false  avgt        121.876              #/op
+joernBench.JoernGenerated.astUp:L1-dcache-stores:u                           false  avgt         57.830              #/op
+joernBench.JoernGenerated.astUp:L1-icache-load-misses:u                      false  avgt          0.092              #/op
+joernBench.JoernGenerated.astUp:LLC-load-misses:u                            false  avgt          0.022              #/op
+joernBench.JoernGenerated.astUp:LLC-loads:u                                  false  avgt          0.076              #/op
+joernBench.JoernGenerated.astUp:LLC-store-misses:u                           false  avgt          0.015              #/op
+joernBench.JoernGenerated.astUp:LLC-stores:u                                 false  avgt          0.111              #/op
+joernBench.JoernGenerated.astUp:branch-misses:u                              false  avgt          0.836              #/op
+joernBench.JoernGenerated.astUp:branches:u                                   false  avgt        101.540              #/op
+joernBench.JoernGenerated.astUp:cycles:u                                     false  avgt        177.633              #/op
+joernBench.JoernGenerated.astUp:dTLB-load-misses:u                           false  avgt          0.001              #/op
+joernBench.JoernGenerated.astUp:dTLB-loads:u                                 false  avgt        121.472              #/op
+joernBench.JoernGenerated.astUp:dTLB-store-misses:u                          false  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernGenerated.astUp:dTLB-stores:u                                false  avgt         57.524              #/op
+joernBench.JoernGenerated.astUp:iTLB-load-misses:u                           false  avgt          0.002              #/op
+joernBench.JoernGenerated.astUp:iTLB-loads:u                                 false  avgt          0.075              #/op
+joernBench.JoernGenerated.astUp:instructions:u                               false  avgt        462.513              #/op
+joernBench.JoernGenerated.astUp:·asm                                         false  avgt            NaN               ---
+joernBench.JoernGenerated.astUp:·gc.alloc.rate                               false  avgt    5  2279.195 ±  22.798  MB/sec
+joernBench.JoernGenerated.astUp:·gc.alloc.rate.norm                          false  avgt    5    84.485 ±   0.001    B/op
+joernBench.JoernGenerated.astUp:·gc.count                                    false  avgt    5    18.000            counts
+joernBench.JoernGenerated.astUp:·gc.time                                     false  avgt    5    54.000                ms
+joernBench.JoernGenerated.orderSum                                            true  avgt    5    80.179 ±   1.155   ns/op
+joernBench.JoernGenerated.orderSum:L1-dcache-load-misses:u                    true  avgt          4.541              #/op
+joernBench.JoernGenerated.orderSum:L1-dcache-loads:u                          true  avgt         54.169              #/op
+joernBench.JoernGenerated.orderSum:L1-dcache-stores:u                         true  avgt         13.989              #/op
+joernBench.JoernGenerated.orderSum:L1-icache-load-misses:u                    true  avgt          0.130              #/op
+joernBench.JoernGenerated.orderSum:LLC-load-misses:u                          true  avgt          2.067              #/op
+joernBench.JoernGenerated.orderSum:LLC-loads:u                                true  avgt          2.226              #/op
+joernBench.JoernGenerated.orderSum:LLC-store-misses:u                         true  avgt          0.001              #/op
+joernBench.JoernGenerated.orderSum:LLC-stores:u                               true  avgt          0.002              #/op
+joernBench.JoernGenerated.orderSum:branch-misses:u                            true  avgt          0.973              #/op
+joernBench.JoernGenerated.orderSum:branches:u                                 true  avgt         46.639              #/op
+joernBench.JoernGenerated.orderSum:cycles:u                                   true  avgt        386.726              #/op
+joernBench.JoernGenerated.orderSum:dTLB-load-misses:u                         true  avgt          0.002              #/op
+joernBench.JoernGenerated.orderSum:dTLB-loads:u                               true  avgt         53.827              #/op
+joernBench.JoernGenerated.orderSum:dTLB-store-misses:u                        true  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernGenerated.orderSum:dTLB-stores:u                              true  avgt         14.052              #/op
+joernBench.JoernGenerated.orderSum:iTLB-load-misses:u                         true  avgt          0.002              #/op
+joernBench.JoernGenerated.orderSum:iTLB-loads:u                               true  avgt          0.009              #/op
+joernBench.JoernGenerated.orderSum:instructions:u                             true  avgt        192.206              #/op
+joernBench.JoernGenerated.orderSum:·asm                                       true  avgt            NaN               ---
+joernBench.JoernGenerated.orderSum:·gc.alloc.rate                             true  avgt    5    ≈ 10⁻³            MB/sec
+joernBench.JoernGenerated.orderSum:·gc.alloc.rate.norm                        true  avgt    5    ≈ 10⁻⁴              B/op
+joernBench.JoernGenerated.orderSum:·gc.count                                  true  avgt    5       ≈ 0            counts
+joernBench.JoernGenerated.orderSum                                           false  avgt    5    38.929 ±   2.984   ns/op
+joernBench.JoernGenerated.orderSum:L1-dcache-load-misses:u                   false  avgt          2.729              #/op
+joernBench.JoernGenerated.orderSum:L1-dcache-loads:u                         false  avgt         53.786              #/op
+joernBench.JoernGenerated.orderSum:L1-dcache-stores:u                        false  avgt         13.742              #/op
+joernBench.JoernGenerated.orderSum:L1-icache-load-misses:u                   false  avgt          0.056              #/op
+joernBench.JoernGenerated.orderSum:LLC-load-misses:u                         false  avgt          1.083              #/op
+joernBench.JoernGenerated.orderSum:LLC-loads:u                               false  avgt          1.146              #/op
+joernBench.JoernGenerated.orderSum:LLC-store-misses:u                        false  avgt         ≈ 10⁻³              #/op
+joernBench.JoernGenerated.orderSum:LLC-stores:u                              false  avgt          0.001              #/op
+joernBench.JoernGenerated.orderSum:branch-misses:u                           false  avgt          0.498              #/op
+joernBench.JoernGenerated.orderSum:branches:u                                false  avgt         44.705              #/op
+joernBench.JoernGenerated.orderSum:cycles:u                                  false  avgt        185.453              #/op
+joernBench.JoernGenerated.orderSum:dTLB-load-misses:u                        false  avgt          0.001              #/op
+joernBench.JoernGenerated.orderSum:dTLB-loads:u                              false  avgt         52.988              #/op
+joernBench.JoernGenerated.orderSum:dTLB-store-misses:u                       false  avgt         ≈ 10⁻⁵              #/op
+joernBench.JoernGenerated.orderSum:dTLB-stores:u                             false  avgt         13.462              #/op
+joernBench.JoernGenerated.orderSum:iTLB-load-misses:u                        false  avgt          0.001              #/op
+joernBench.JoernGenerated.orderSum:iTLB-loads:u                              false  avgt          0.013              #/op
+joernBench.JoernGenerated.orderSum:instructions:u                            false  avgt        184.719              #/op
+joernBench.JoernGenerated.orderSum:·asm                                      false  avgt            NaN               ---
+joernBench.JoernGenerated.orderSum:·gc.alloc.rate                            false  avgt    5     0.001 ±   0.001  MB/sec
+joernBench.JoernGenerated.orderSum:·gc.alloc.rate.norm                       false  avgt    5    ≈ 10⁻⁴              B/op
+joernBench.JoernGenerated.orderSum:·gc.count                                 false  avgt    5       ≈ 0            counts
+joernBench.JoernLegacy.astDFS                                                 true  avgt    5    87.663 ±   4.408   ns/op
+joernBench.JoernLegacy.astDFS:L1-dcache-load-misses:u                         true  avgt          5.933              #/op
+joernBench.JoernLegacy.astDFS:L1-dcache-loads:u                               true  avgt        159.098              #/op
+joernBench.JoernLegacy.astDFS:L1-dcache-stores:u                              true  avgt         67.541              #/op
+joernBench.JoernLegacy.astDFS:L1-icache-load-misses:u                         true  avgt          0.160              #/op
+joernBench.JoernLegacy.astDFS:LLC-load-misses:u                               true  avgt          0.958              #/op
+joernBench.JoernLegacy.astDFS:LLC-loads:u                                     true  avgt          1.126              #/op
+joernBench.JoernLegacy.astDFS:LLC-store-misses:u                              true  avgt          0.027              #/op
+joernBench.JoernLegacy.astDFS:LLC-stores:u                                    true  avgt          0.150              #/op
+joernBench.JoernLegacy.astDFS:branch-misses:u                                 true  avgt          0.764              #/op
+joernBench.JoernLegacy.astDFS:branches:u                                      true  avgt         94.133              #/op
+joernBench.JoernLegacy.astDFS:cycles:u                                        true  avgt        455.639              #/op
+joernBench.JoernLegacy.astDFS:dTLB-load-misses:u                              true  avgt          0.004              #/op
+joernBench.JoernLegacy.astDFS:dTLB-loads:u                                    true  avgt        156.190              #/op
+joernBench.JoernLegacy.astDFS:dTLB-store-misses:u                             true  avgt         ≈ 10⁻³              #/op
+joernBench.JoernLegacy.astDFS:dTLB-stores:u                                   true  avgt         65.595              #/op
+joernBench.JoernLegacy.astDFS:iTLB-load-misses:u                              true  avgt          0.002              #/op
+joernBench.JoernLegacy.astDFS:iTLB-loads:u                                    true  avgt          0.008              #/op
+joernBench.JoernLegacy.astDFS:instructions:u                                  true  avgt        552.828              #/op
+joernBench.JoernLegacy.astDFS:·asm                                            true  avgt            NaN               ---
+joernBench.JoernLegacy.astDFS:·gc.alloc.rate                                  true  avgt    5   787.273 ±  39.012  MB/sec
+joernBench.JoernLegacy.astDFS:·gc.alloc.rate.norm                             true  avgt    5    72.368 ±   0.002    B/op
+joernBench.JoernLegacy.astDFS:·gc.count                                       true  avgt    5     7.000            counts
+joernBench.JoernLegacy.astDFS:·gc.time                                        true  avgt    5    87.000                ms
+joernBench.JoernLegacy.astDFS                                                false  avgt    5    80.337 ±   6.176   ns/op
+joernBench.JoernLegacy.astDFS:L1-dcache-load-misses:u                        false  avgt          5.395              #/op
+joernBench.JoernLegacy.astDFS:L1-dcache-loads:u                              false  avgt        146.102              #/op
+joernBench.JoernLegacy.astDFS:L1-dcache-stores:u                             false  avgt         61.269              #/op
+joernBench.JoernLegacy.astDFS:L1-icache-load-misses:u                        false  avgt          0.135              #/op
+joernBench.JoernLegacy.astDFS:LLC-load-misses:u                              false  avgt          0.898              #/op
+joernBench.JoernLegacy.astDFS:LLC-loads:u                                    false  avgt          1.056              #/op
+joernBench.JoernLegacy.astDFS:LLC-store-misses:u                             false  avgt          0.018              #/op
+joernBench.JoernLegacy.astDFS:LLC-stores:u                                   false  avgt          0.089              #/op
+joernBench.JoernLegacy.astDFS:branch-misses:u                                false  avgt          0.745              #/op
+joernBench.JoernLegacy.astDFS:branches:u                                     false  avgt         89.065              #/op
+joernBench.JoernLegacy.astDFS:cycles:u                                       false  avgt        398.708              #/op
+joernBench.JoernLegacy.astDFS:dTLB-load-misses:u                             false  avgt          0.005              #/op
+joernBench.JoernLegacy.astDFS:dTLB-loads:u                                   false  avgt        145.621              #/op
+joernBench.JoernLegacy.astDFS:dTLB-store-misses:u                            false  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernLegacy.astDFS:dTLB-stores:u                                  false  avgt         62.002              #/op
+joernBench.JoernLegacy.astDFS:iTLB-load-misses:u                             false  avgt          0.001              #/op
+joernBench.JoernLegacy.astDFS:iTLB-loads:u                                   false  avgt          0.006              #/op
+joernBench.JoernLegacy.astDFS:instructions:u                                 false  avgt        496.625              #/op
+joernBench.JoernLegacy.astDFS:·asm                                           false  avgt            NaN               ---
+joernBench.JoernLegacy.astDFS:·gc.alloc.rate                                 false  avgt    5   669.165 ±  50.865  MB/sec
+joernBench.JoernLegacy.astDFS:·gc.alloc.rate.norm                            false  avgt    5    56.367 ±   0.001    B/op
+joernBench.JoernLegacy.astDFS:·gc.count                                      false  avgt    5     5.000            counts
+joernBench.JoernLegacy.astDFS:·gc.time                                       false  avgt    5    42.000                ms
+joernBench.JoernLegacy.astUp                                                  true  avgt    5   120.644 ±   6.956   ns/op
+joernBench.JoernLegacy.astUp:L1-dcache-load-misses:u                          true  avgt          7.977              #/op
+joernBench.JoernLegacy.astUp:L1-dcache-loads:u                                true  avgt        190.646              #/op
+joernBench.JoernLegacy.astUp:L1-dcache-stores:u                               true  avgt         88.977              #/op
+joernBench.JoernLegacy.astUp:L1-icache-load-misses:u                          true  avgt          0.152              #/op
+joernBench.JoernLegacy.astUp:LLC-load-misses:u                                true  avgt          1.478              #/op
+joernBench.JoernLegacy.astUp:LLC-loads:u                                      true  avgt          2.496              #/op
+joernBench.JoernLegacy.astUp:LLC-store-misses:u                               true  avgt          0.039              #/op
+joernBench.JoernLegacy.astUp:LLC-stores:u                                     true  avgt          0.380              #/op
+joernBench.JoernLegacy.astUp:branch-misses:u                                  true  avgt          1.252              #/op
+joernBench.JoernLegacy.astUp:branches:u                                       true  avgt        120.464              #/op
+joernBench.JoernLegacy.astUp:cycles:u                                         true  avgt        670.547              #/op
+joernBench.JoernLegacy.astUp:dTLB-load-misses:u                               true  avgt          0.024              #/op
+joernBench.JoernLegacy.astUp:dTLB-loads:u                                     true  avgt        193.305              #/op
+joernBench.JoernLegacy.astUp:dTLB-store-misses:u                              true  avgt         ≈ 10⁻³              #/op
+joernBench.JoernLegacy.astUp:dTLB-stores:u                                    true  avgt         88.871              #/op
+joernBench.JoernLegacy.astUp:iTLB-load-misses:u                               true  avgt          0.002              #/op
+joernBench.JoernLegacy.astUp:iTLB-loads:u                                     true  avgt          0.096              #/op
+joernBench.JoernLegacy.astUp:instructions:u                                   true  avgt        637.889              #/op
+joernBench.JoernLegacy.astUp:·asm                                             true  avgt            NaN               ---
+joernBench.JoernLegacy.astUp:·gc.alloc.rate                                   true  avgt    5   857.631 ±  49.799  MB/sec
+joernBench.JoernLegacy.astUp:·gc.alloc.rate.norm                              true  avgt    5   108.485 ±   0.002    B/op
+joernBench.JoernLegacy.astUp:·gc.count                                        true  avgt    5    13.000            counts
+joernBench.JoernLegacy.astUp:·gc.time                                         true  avgt    5    93.000                ms
+joernBench.JoernLegacy.astUp                                                 false  avgt    5    41.847 ±   2.183   ns/op
+joernBench.JoernLegacy.astUp:L1-dcache-load-misses:u                         false  avgt          2.905              #/op
+joernBench.JoernLegacy.astUp:L1-dcache-loads:u                               false  avgt        145.826              #/op
+joernBench.JoernLegacy.astUp:L1-dcache-stores:u                              false  avgt         78.800              #/op
+joernBench.JoernLegacy.astUp:L1-icache-load-misses:u                         false  avgt          0.080              #/op
+joernBench.JoernLegacy.astUp:LLC-load-misses:u                               false  avgt          0.030              #/op
+joernBench.JoernLegacy.astUp:LLC-loads:u                                     false  avgt          0.096              #/op
+joernBench.JoernLegacy.astUp:LLC-store-misses:u                              false  avgt          0.031              #/op
+joernBench.JoernLegacy.astUp:LLC-stores:u                                    false  avgt          0.282              #/op
+joernBench.JoernLegacy.astUp:branch-misses:u                                 false  avgt          0.948              #/op
+joernBench.JoernLegacy.astUp:branches:u                                      false  avgt         97.692              #/op
+joernBench.JoernLegacy.astUp:cycles:u                                        false  avgt        212.716              #/op
+joernBench.JoernLegacy.astUp:dTLB-load-misses:u                              false  avgt          0.018              #/op
+joernBench.JoernLegacy.astUp:dTLB-loads:u                                    false  avgt        146.292              #/op
+joernBench.JoernLegacy.astUp:dTLB-store-misses:u                             false  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernLegacy.astUp:dTLB-stores:u                                   false  avgt         78.614              #/op
+joernBench.JoernLegacy.astUp:iTLB-load-misses:u                              false  avgt         ≈ 10⁻³              #/op
+joernBench.JoernLegacy.astUp:iTLB-loads:u                                    false  avgt          0.035              #/op
+joernBench.JoernLegacy.astUp:instructions:u                                  false  avgt        508.648              #/op
+joernBench.JoernLegacy.astUp:·asm                                            false  avgt            NaN               ---
+joernBench.JoernLegacy.astUp:·gc.alloc.rate                                  false  avgt    5  2472.044 ± 131.577  MB/sec
+joernBench.JoernLegacy.astUp:·gc.alloc.rate.norm                             false  avgt    5   108.485 ±   0.001    B/op
+joernBench.JoernLegacy.astUp:·gc.count                                       false  avgt    5    22.000            counts
+joernBench.JoernLegacy.astUp:·gc.time                                        false  avgt    5    88.000                ms
+joernBench.JoernLegacy.orderSum                                               true  avgt    5    62.751 ±   3.546   ns/op
+joernBench.JoernLegacy.orderSum:L1-dcache-load-misses:u                       true  avgt          4.108              #/op
+joernBench.JoernLegacy.orderSum:L1-dcache-loads:u                             true  avgt         32.402              #/op
+joernBench.JoernLegacy.orderSum:L1-dcache-stores:u                            true  avgt         17.030              #/op
+joernBench.JoernLegacy.orderSum:L1-icache-load-misses:u                       true  avgt          0.074              #/op
+joernBench.JoernLegacy.orderSum:LLC-load-misses:u                             true  avgt          2.391              #/op
+joernBench.JoernLegacy.orderSum:LLC-loads:u                                   true  avgt          2.513              #/op
+joernBench.JoernLegacy.orderSum:LLC-store-misses:u                            true  avgt          0.002              #/op
+joernBench.JoernLegacy.orderSum:LLC-stores:u                                  true  avgt          0.005              #/op
+joernBench.JoernLegacy.orderSum:branch-misses:u                               true  avgt          0.856              #/op
+joernBench.JoernLegacy.orderSum:branches:u                                    true  avgt         15.991              #/op
+joernBench.JoernLegacy.orderSum:cycles:u                                      true  avgt        299.418              #/op
+joernBench.JoernLegacy.orderSum:dTLB-load-misses:u                            true  avgt          0.002              #/op
+joernBench.JoernLegacy.orderSum:dTLB-loads:u                                  true  avgt         32.304              #/op
+joernBench.JoernLegacy.orderSum:dTLB-store-misses:u                           true  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernLegacy.orderSum:dTLB-stores:u                                 true  avgt         16.825              #/op
+joernBench.JoernLegacy.orderSum:iTLB-load-misses:u                            true  avgt          0.001              #/op
+joernBench.JoernLegacy.orderSum:iTLB-loads:u                                  true  avgt          0.004              #/op
+joernBench.JoernLegacy.orderSum:instructions:u                                true  avgt         92.793              #/op
+joernBench.JoernLegacy.orderSum:·asm                                          true  avgt            NaN               ---
+joernBench.JoernLegacy.orderSum:·gc.alloc.rate                                true  avgt    5     1.414 ±   0.081  MB/sec
+joernBench.JoernLegacy.orderSum:·gc.alloc.rate.norm                           true  avgt    5     0.093 ±   0.001    B/op
+joernBench.JoernLegacy.orderSum:·gc.count                                     true  avgt    5       ≈ 0            counts
+joernBench.JoernLegacy.orderSum                                              false  avgt    5    30.762 ±   3.670   ns/op
+joernBench.JoernLegacy.orderSum:L1-dcache-load-misses:u                      false  avgt          2.766              #/op
+joernBench.JoernLegacy.orderSum:L1-dcache-loads:u                            false  avgt         31.819              #/op
+joernBench.JoernLegacy.orderSum:L1-dcache-stores:u                           false  avgt         16.562              #/op
+joernBench.JoernLegacy.orderSum:L1-icache-load-misses:u                      false  avgt          0.041              #/op
+joernBench.JoernLegacy.orderSum:LLC-load-misses:u                            false  avgt          1.127              #/op
+joernBench.JoernLegacy.orderSum:LLC-loads:u                                  false  avgt          1.248              #/op
+joernBench.JoernLegacy.orderSum:LLC-store-misses:u                           false  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernLegacy.orderSum:LLC-stores:u                                 false  avgt          0.002              #/op
+joernBench.JoernLegacy.orderSum:branch-misses:u                              false  avgt          0.450              #/op
+joernBench.JoernLegacy.orderSum:branches:u                                   false  avgt         16.797              #/op
+joernBench.JoernLegacy.orderSum:cycles:u                                     false  avgt        145.943              #/op
+joernBench.JoernLegacy.orderSum:dTLB-load-misses:u                           false  avgt          0.001              #/op
+joernBench.JoernLegacy.orderSum:dTLB-loads:u                                 false  avgt         31.415              #/op
+joernBench.JoernLegacy.orderSum:dTLB-store-misses:u                          false  avgt         ≈ 10⁻⁴              #/op
+joernBench.JoernLegacy.orderSum:dTLB-stores:u                                false  avgt         16.418              #/op
+joernBench.JoernLegacy.orderSum:iTLB-load-misses:u                           false  avgt          0.001              #/op
+joernBench.JoernLegacy.orderSum:iTLB-loads:u                                 false  avgt          0.002              #/op
+joernBench.JoernLegacy.orderSum:instructions:u                               false  avgt         95.739              #/op
+joernBench.JoernLegacy.orderSum:·asm                                         false  avgt            NaN               ---
+joernBench.JoernLegacy.orderSum:·gc.alloc.rate                               false  avgt    5     2.885 ±   0.343  MB/sec
+joernBench.JoernLegacy.orderSum:·gc.alloc.rate.norm                          false  avgt    5     0.093 ±   0.001    B/op
+joernBench.JoernLegacy.orderSum:·gc.count                                    false  avgt    5       ≈ 0            counts
+joernBench.Odb2Generated.astDFS                                               true  avgt    5    24.639 ±   1.235   ns/op
+joernBench.Odb2Generated.astDFS:L1-dcache-load-misses:u                       true  avgt          1.598              #/op
+joernBench.Odb2Generated.astDFS:L1-dcache-loads:u                             true  avgt         90.303              #/op
+joernBench.Odb2Generated.astDFS:L1-dcache-stores:u                            true  avgt         31.932              #/op
+joernBench.Odb2Generated.astDFS:L1-icache-load-misses:u                       true  avgt          0.035              #/op
+joernBench.Odb2Generated.astDFS:LLC-load-misses:u                             true  avgt          0.067              #/op
+joernBench.Odb2Generated.astDFS:LLC-loads:u                                   true  avgt          0.112              #/op
+joernBench.Odb2Generated.astDFS:LLC-store-misses:u                            true  avgt          0.021              #/op
+joernBench.Odb2Generated.astDFS:LLC-stores:u                                  true  avgt          0.092              #/op
+joernBench.Odb2Generated.astDFS:branch-misses:u                               true  avgt          0.465              #/op
+joernBench.Odb2Generated.astDFS:branches:u                                    true  avgt         42.033              #/op
+joernBench.Odb2Generated.astDFS:cycles:u                                      true  avgt        117.122              #/op
+joernBench.Odb2Generated.astDFS:dTLB-load-misses:u                            true  avgt          0.004              #/op
+joernBench.Odb2Generated.astDFS:dTLB-loads:u                                  true  avgt         89.476              #/op
+joernBench.Odb2Generated.astDFS:dTLB-store-misses:u                           true  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astDFS:dTLB-stores:u                                 true  avgt         31.626              #/op
+joernBench.Odb2Generated.astDFS:iTLB-load-misses:u                            true  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astDFS:iTLB-loads:u                                  true  avgt          0.003              #/op
+joernBench.Odb2Generated.astDFS:instructions:u                                true  avgt        294.430              #/op
+joernBench.Odb2Generated.astDFS:·asm                                          true  avgt            NaN               ---
+joernBench.Odb2Generated.astDFS:·gc.alloc.rate                                true  avgt    5  2324.650 ± 115.149  MB/sec
+joernBench.Odb2Generated.astDFS:·gc.alloc.rate.norm                           true  avgt    5    60.058 ±   0.001    B/op
+joernBench.Odb2Generated.astDFS:·gc.count                                     true  avgt    5    10.000            counts
+joernBench.Odb2Generated.astDFS:·gc.time                                      true  avgt    5     8.000                ms
+joernBench.Odb2Generated.astDFS                                              false  avgt    5    24.050 ±   0.962   ns/op
+joernBench.Odb2Generated.astDFS:L1-dcache-load-misses:u                      false  avgt          1.618              #/op
+joernBench.Odb2Generated.astDFS:L1-dcache-loads:u                            false  avgt         85.310              #/op
+joernBench.Odb2Generated.astDFS:L1-dcache-stores:u                           false  avgt         31.508              #/op
+joernBench.Odb2Generated.astDFS:L1-icache-load-misses:u                      false  avgt          0.047              #/op
+joernBench.Odb2Generated.astDFS:LLC-load-misses:u                            false  avgt          0.069              #/op
+joernBench.Odb2Generated.astDFS:LLC-loads:u                                  false  avgt          0.114              #/op
+joernBench.Odb2Generated.astDFS:LLC-store-misses:u                           false  avgt          0.020              #/op
+joernBench.Odb2Generated.astDFS:LLC-stores:u                                 false  avgt          0.090              #/op
+joernBench.Odb2Generated.astDFS:branch-misses:u                              false  avgt          0.469              #/op
+joernBench.Odb2Generated.astDFS:branches:u                                   false  avgt         38.985              #/op
+joernBench.Odb2Generated.astDFS:cycles:u                                     false  avgt        114.464              #/op
+joernBench.Odb2Generated.astDFS:dTLB-load-misses:u                           false  avgt          0.002              #/op
+joernBench.Odb2Generated.astDFS:dTLB-loads:u                                 false  avgt         84.254              #/op
+joernBench.Odb2Generated.astDFS:dTLB-store-misses:u                          false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astDFS:dTLB-stores:u                                false  avgt         31.372              #/op
+joernBench.Odb2Generated.astDFS:iTLB-load-misses:u                           false  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.astDFS:iTLB-loads:u                                 false  avgt          0.002              #/op
+joernBench.Odb2Generated.astDFS:instructions:u                               false  avgt        285.293              #/op
+joernBench.Odb2Generated.astDFS:·asm                                         false  avgt            NaN               ---
+joernBench.Odb2Generated.astDFS:·gc.alloc.rate                               false  avgt    5  2381.549 ±  95.245  MB/sec
+joernBench.Odb2Generated.astDFS:·gc.alloc.rate.norm                          false  avgt    5    60.058 ±   0.001    B/op
+joernBench.Odb2Generated.astDFS:·gc.count                                    false  avgt    5    10.000            counts
+joernBench.Odb2Generated.astDFS:·gc.time                                     false  avgt    5     8.000                ms
+joernBench.Odb2Generated.astUp                                                true  avgt    5    51.126 ±   2.087   ns/op
+joernBench.Odb2Generated.astUp:L1-dcache-load-misses:u                        true  avgt          3.073              #/op
+joernBench.Odb2Generated.astUp:L1-dcache-loads:u                              true  avgt         48.538              #/op
+joernBench.Odb2Generated.astUp:L1-dcache-stores:u                             true  avgt         24.058              #/op
+joernBench.Odb2Generated.astUp:L1-icache-load-misses:u                        true  avgt          0.039              #/op
+joernBench.Odb2Generated.astUp:LLC-load-misses:u                              true  avgt          0.501              #/op
+joernBench.Odb2Generated.astUp:LLC-loads:u                                    true  avgt          1.455              #/op
+joernBench.Odb2Generated.astUp:LLC-store-misses:u                             true  avgt          0.087              #/op
+joernBench.Odb2Generated.astUp:LLC-stores:u                                   true  avgt          0.092              #/op
+joernBench.Odb2Generated.astUp:branch-misses:u                                true  avgt          0.086              #/op
+joernBench.Odb2Generated.astUp:branches:u                                     true  avgt         23.548              #/op
+joernBench.Odb2Generated.astUp:cycles:u                                       true  avgt        241.344              #/op
+joernBench.Odb2Generated.astUp:dTLB-load-misses:u                             true  avgt          0.001              #/op
+joernBench.Odb2Generated.astUp:dTLB-loads:u                                   true  avgt         48.297              #/op
+joernBench.Odb2Generated.astUp:dTLB-store-misses:u                            true  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astUp:dTLB-stores:u                                  true  avgt         24.023              #/op
+joernBench.Odb2Generated.astUp:iTLB-load-misses:u                             true  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.astUp:iTLB-loads:u                                   true  avgt          0.001              #/op
+joernBench.Odb2Generated.astUp:instructions:u                                 true  avgt        167.927              #/op
+joernBench.Odb2Generated.astUp:·asm                                           true  avgt            NaN               ---
+joernBench.Odb2Generated.astUp:·gc.alloc.rate                                 true  avgt    5   691.490 ±  28.495  MB/sec
+joernBench.Odb2Generated.astUp:·gc.alloc.rate.norm                            true  avgt    5    37.069 ±   0.001    B/op
+joernBench.Odb2Generated.astUp:·gc.count                                      true  avgt    5     5.000            counts
+joernBench.Odb2Generated.astUp:·gc.time                                       true  avgt    5     3.000                ms
+joernBench.Odb2Generated.astUp                                               false  avgt    5    11.290 ±   0.538   ns/op
+joernBench.Odb2Generated.astUp:L1-dcache-load-misses:u                       false  avgt          0.721              #/op
+joernBench.Odb2Generated.astUp:L1-dcache-loads:u                             false  avgt         48.132              #/op
+joernBench.Odb2Generated.astUp:L1-dcache-stores:u                            false  avgt         23.818              #/op
+joernBench.Odb2Generated.astUp:L1-icache-load-misses:u                       false  avgt          0.012              #/op
+joernBench.Odb2Generated.astUp:LLC-load-misses:u                             false  avgt          0.017              #/op
+joernBench.Odb2Generated.astUp:LLC-loads:u                                   false  avgt          0.034              #/op
+joernBench.Odb2Generated.astUp:LLC-store-misses:u                            false  avgt          0.007              #/op
+joernBench.Odb2Generated.astUp:LLC-stores:u                                  false  avgt          0.047              #/op
+joernBench.Odb2Generated.astUp:branch-misses:u                               false  avgt          0.052              #/op
+joernBench.Odb2Generated.astUp:branches:u                                    false  avgt         22.532              #/op
+joernBench.Odb2Generated.astUp:cycles:u                                      false  avgt         53.816              #/op
+joernBench.Odb2Generated.astUp:dTLB-load-misses:u                            false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astUp:dTLB-loads:u                                  false  avgt         49.023              #/op
+joernBench.Odb2Generated.astUp:dTLB-store-misses:u                           false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astUp:dTLB-stores:u                                 false  avgt         24.276              #/op
+joernBench.Odb2Generated.astUp:iTLB-load-misses:u                            false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.astUp:iTLB-loads:u                                  false  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.astUp:instructions:u                                false  avgt        167.074              #/op
+joernBench.Odb2Generated.astUp:·asm                                          false  avgt            NaN               ---
+joernBench.Odb2Generated.astUp:·gc.alloc.rate                                false  avgt    5  3131.364 ± 149.103  MB/sec
+joernBench.Odb2Generated.astUp:·gc.alloc.rate.norm                           false  avgt    5    37.069 ±   0.001    B/op
+joernBench.Odb2Generated.astUp:·gc.count                                     false  avgt    5    18.000            counts
+joernBench.Odb2Generated.astUp:·gc.time                                      false  avgt    5    11.000                ms
+joernBench.Odb2Generated.orderSumDevirtualized                                true  avgt    5    54.588 ±   5.040   ns/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-dcache-load-misses:u        true  avgt          4.808              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-dcache-loads:u              true  avgt         22.524              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-dcache-stores:u             true  avgt          3.601              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-icache-load-misses:u        true  avgt          0.056              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-load-misses:u              true  avgt          2.443              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-loads:u                    true  avgt          3.222              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-store-misses:u             true  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-stores:u                   true  avgt          0.002              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:branch-misses:u                true  avgt          0.008              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:branches:u                     true  avgt         13.411              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:cycles:u                       true  avgt        258.512              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-load-misses:u             true  avgt          0.001              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-loads:u                   true  avgt         22.663              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-store-misses:u            true  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-stores:u                  true  avgt          3.375              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:iTLB-load-misses:u             true  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:iTLB-loads:u                   true  avgt          0.002              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:instructions:u                 true  avgt         78.990              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:·asm                           true  avgt            NaN               ---
+joernBench.Odb2Generated.orderSumDevirtualized:·gc.alloc.rate                 true  avgt    5    ≈ 10⁻³            MB/sec
+joernBench.Odb2Generated.orderSumDevirtualized:·gc.alloc.rate.norm            true  avgt    5    ≈ 10⁻⁵              B/op
+joernBench.Odb2Generated.orderSumDevirtualized:·gc.count                      true  avgt    5       ≈ 0            counts
+joernBench.Odb2Generated.orderSumDevirtualized                               false  avgt    5     5.793 ±   0.187   ns/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-dcache-load-misses:u       false  avgt          0.579              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-dcache-loads:u             false  avgt         22.239              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-dcache-stores:u            false  avgt          3.067              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:L1-icache-load-misses:u       false  avgt          0.006              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-load-misses:u             false  avgt          0.018              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-loads:u                   false  avgt          0.031              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-store-misses:u            false  avgt         ≈ 10⁻⁵              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:LLC-stores:u                  false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:branch-misses:u               false  avgt          0.002              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:branches:u                    false  avgt         13.198              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:cycles:u                      false  avgt         27.628              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-load-misses:u            false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-loads:u                  false  avgt         22.235              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-store-misses:u           false  avgt         ≈ 10⁻⁵              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:dTLB-stores:u                 false  avgt          3.079              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:iTLB-load-misses:u            false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:iTLB-loads:u                  false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:instructions:u                false  avgt         76.140              #/op
+joernBench.Odb2Generated.orderSumDevirtualized:·asm                          false  avgt            NaN               ---
+joernBench.Odb2Generated.orderSumDevirtualized:·gc.alloc.rate                false  avgt    5     0.003 ±   0.001  MB/sec
+joernBench.Odb2Generated.orderSumDevirtualized:·gc.alloc.rate.norm           false  avgt    5    ≈ 10⁻⁵              B/op
+joernBench.Odb2Generated.orderSumDevirtualized:·gc.count                     false  avgt    5       ≈ 0            counts
+joernBench.Odb2Generated.orderSumVirtual                                      true  avgt    5   109.399 ±  11.084   ns/op
+joernBench.Odb2Generated.orderSumVirtual:L1-dcache-load-misses:u              true  avgt          5.923              #/op
+joernBench.Odb2Generated.orderSumVirtual:L1-dcache-loads:u                    true  avgt         56.632              #/op
+joernBench.Odb2Generated.orderSumVirtual:L1-dcache-stores:u                   true  avgt         10.871              #/op
+joernBench.Odb2Generated.orderSumVirtual:L1-icache-load-misses:u              true  avgt          0.113              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-load-misses:u                    true  avgt          2.594              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-loads:u                          true  avgt          3.258              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-store-misses:u                   true  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-stores:u                         true  avgt          0.002              #/op
+joernBench.Odb2Generated.orderSumVirtual:branch-misses:u                      true  avgt          0.870              #/op
+joernBench.Odb2Generated.orderSumVirtual:branches:u                           true  avgt         34.907              #/op
+joernBench.Odb2Generated.orderSumVirtual:cycles:u                             true  avgt        518.218              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-load-misses:u                   true  avgt          0.002              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-loads:u                         true  avgt         56.516              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-store-misses:u                  true  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-stores:u                        true  avgt         10.704              #/op
+joernBench.Odb2Generated.orderSumVirtual:iTLB-load-misses:u                   true  avgt          0.001              #/op
+joernBench.Odb2Generated.orderSumVirtual:iTLB-loads:u                         true  avgt          0.005              #/op
+joernBench.Odb2Generated.orderSumVirtual:instructions:u                       true  avgt        174.542              #/op
+joernBench.Odb2Generated.orderSumVirtual:·asm                                 true  avgt            NaN               ---
+joernBench.Odb2Generated.orderSumVirtual:·gc.alloc.rate                       true  avgt    5    ≈ 10⁻³            MB/sec
+joernBench.Odb2Generated.orderSumVirtual:·gc.alloc.rate.norm                  true  avgt    5    ≈ 10⁻⁴              B/op
+joernBench.Odb2Generated.orderSumVirtual:·gc.count                            true  avgt    5       ≈ 0            counts
+joernBench.Odb2Generated.orderSumVirtual                                     false  avgt    5    11.494 ±   0.427   ns/op
+joernBench.Odb2Generated.orderSumVirtual:L1-dcache-load-misses:u             false  avgt          0.601              #/op
+joernBench.Odb2Generated.orderSumVirtual:L1-dcache-loads:u                   false  avgt         55.116              #/op
+joernBench.Odb2Generated.orderSumVirtual:L1-dcache-stores:u                  false  avgt         10.199              #/op
+joernBench.Odb2Generated.orderSumVirtual:L1-icache-load-misses:u             false  avgt          0.016              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-load-misses:u                   false  avgt          0.020              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-loads:u                         false  avgt          0.035              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-store-misses:u                  false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumVirtual:LLC-stores:u                        false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumVirtual:branch-misses:u                     false  avgt          0.004              #/op
+joernBench.Odb2Generated.orderSumVirtual:branches:u                          false  avgt         33.225              #/op
+joernBench.Odb2Generated.orderSumVirtual:cycles:u                            false  avgt         54.684              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-load-misses:u                  false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-loads:u                        false  avgt         55.749              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-store-misses:u                 false  avgt         ≈ 10⁻⁵              #/op
+joernBench.Odb2Generated.orderSumVirtual:dTLB-stores:u                       false  avgt         10.179              #/op
+joernBench.Odb2Generated.orderSumVirtual:iTLB-load-misses:u                  false  avgt         ≈ 10⁻⁴              #/op
+joernBench.Odb2Generated.orderSumVirtual:iTLB-loads:u                        false  avgt         ≈ 10⁻³              #/op
+joernBench.Odb2Generated.orderSumVirtual:instructions:u                      false  avgt        170.058              #/op
+joernBench.Odb2Generated.orderSumVirtual:·asm                                false  avgt            NaN               ---
+joernBench.Odb2Generated.orderSumVirtual:·gc.alloc.rate                      false  avgt    5     0.002 ±   0.001  MB/sec
+joernBench.Odb2Generated.orderSumVirtual:·gc.alloc.rate.norm                 false  avgt    5    ≈ 10⁻⁵              B/op
+joernBench.Odb2Generated.orderSumVirtual:·gc.count                           false  avgt    5       ≈ 0            counts
+```
+
+</details>
+
 
 Feel free to add more benchmarks or prettify the output!
 
-## Benchmarks
-
-### Odbv1
+## Odbv1 loading and memory
 benchJoern allowed us to discover some inefficiencies in odb1. Before https://github.com/ShiftLeftSecurity/overflowdbv2/pull/11 we saw:
 
 <details>
   <summary>click to see details of old odb1 benchmarks</summary>
 
 ```
-[bruhns@bruhnsWS overflowdbv2]$ ./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.bin 
-
 VM is version 19.0.2+7 with max heap 20480 mb.
 
 
@@ -520,7 +1082,6 @@ After merging the improvements upstream (https://github.com/ShiftLeftSecurity/ov
   <summary>click to see details of new odb1 benchmarks</summary>
 
 ```
-[bruhns@bruhnsWS overflowdbv2]$ ./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.bin
 VM is version 19.0.2+7 with max heap 20480 mb.
 
 
@@ -921,7 +1482,7 @@ Space losses: 2 bytes internal + 0 bytes external = 2 bytes total
 ```
 </details>
 
-## Odbv2
+## Odbv2 loading and memory
 We can convert odbv1 files to the current serialization format via 
 ```
 ./odbConvert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > out.json
@@ -933,7 +1494,6 @@ That allows us to benchmark loading time and memory consumption:
   <summary>click to see details of odb2 benchmarks without generated schema</summary>
 
 ```
-[bruhns@bruhnsWS overflowdbv2]$ ./benchOdb2/target/universal/stage/bin/bench-odb2 -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.fg 
 VM is version 19.0.2+7 with max heap 20480 mb.
 
 

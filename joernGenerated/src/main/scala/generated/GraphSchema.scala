@@ -1,7 +1,7 @@
-package io.shiftleft.codepropertygraph.generated
+package io.shiftleft.codepropertygraph.generated.v2
 import io.joern.odb2
-import io.shiftleft.codepropertygraph.generated.nodes
-import io.shiftleft.codepropertygraph.generated.edges
+import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.v2.edges
 
 object GraphSchema extends odb2.Schema {
   val nodeLabels = Array(
