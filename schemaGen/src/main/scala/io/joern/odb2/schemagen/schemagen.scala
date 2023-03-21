@@ -434,6 +434,7 @@ object SchemaGen {
          |import Accessors._
          |${propertyBaseConversions}
          |}""".stripMargin
+     */
 
     // for now, let's skip accessors.
     outputDir.createChild("Accessors.scala").write(accessors)
