@@ -687,17 +687,13 @@ joernBench.Odb2Generated.orderSumVirtual:·gc.count                           fa
 
 Feel free to add more benchmarks or prettify the output!
 
-## Benchmarks
-
-### Odbv1
+## Odbv1 loading and memory
 benchJoern allowed us to discover some inefficiencies in odb1. Before https://github.com/ShiftLeftSecurity/overflowdbv2/pull/11 we saw:
 
 <details>
   <summary>click to see details of old odb1 benchmarks</summary>
 
 ```
-[bruhns@bruhnsWS overflowdbv2]$ ./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.bin 
-
 VM is version 19.0.2+7 with max heap 20480 mb.
 
 
@@ -1086,7 +1082,6 @@ After merging the improvements upstream (https://github.com/ShiftLeftSecurity/ov
   <summary>click to see details of new odb1 benchmarks</summary>
 
 ```
-[bruhns@bruhnsWS overflowdbv2]$ ./benchJoern/target/universal/stage/bin/bench-joern -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.bin
 VM is version 19.0.2+7 with max heap 20480 mb.
 
 
@@ -1487,7 +1482,7 @@ Space losses: 2 bytes internal + 0 bytes external = 2 bytes total
 ```
 </details>
 
-## Odbv2
+## Odbv2 loading and memory
 We can convert odbv1 files to the current serialization format via 
 ```
 ./odbConvert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > out.json
@@ -1499,7 +1494,6 @@ That allows us to benchmark loading time and memory consumption:
   <summary>click to see details of odb2 benchmarks without generated schema</summary>
 
 ```
-[bruhns@bruhnsWS overflowdbv2]$ ./benchOdb2/target/universal/stage/bin/bench-odb2 -J-Xmx20G  -Djdk.attach.allowAttachSelf ./cpg.fg 
 VM is version 19.0.2+7 with max heap 20480 mb.
 
 
