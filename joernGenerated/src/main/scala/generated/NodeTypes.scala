@@ -1,476 +1,443 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
 
-class Annotation(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 0.toShort, seq_4762) with Expression {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def fullName: String             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 22, seq, "<empty>": String)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait AnnotationT extends AnyRef with ExpressionT with HasFullNameT with HasNameT
+class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 0.toShort, seq_4762)
+    with Expression
+    with StaticType[AnnotationT] {
+//{propAccess}
 
 }
 
-class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 1.toShort, seq_4762) with Expression {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait AnnotationLiteralT extends AnyRef with ExpressionT with HasNameT
+class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 1.toShort, seq_4762)
+    with Expression
+    with StaticType[AnnotationLiteralT] {
+//{propAccess}
 
 }
 
-class AnnotationParameter(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 2.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait AnnotationParameterT extends AnyRef with AstNodeT
+class AnnotationParameter(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 2.toShort, seq_4762)
+    with AstNode
+    with StaticType[AnnotationParameterT] {
+//{propAccess}
 
 }
 
-class AnnotationParameterAssign(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 3.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait AnnotationParameterAssignT extends AnyRef with AstNodeT
+class AnnotationParameterAssign(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 3.toShort, seq_4762)
+    with AstNode
+    with StaticType[AnnotationParameterAssignT] {
+//{propAccess}
 
 }
 
+trait ArrayInitializerT extends AnyRef with ExpressionT
 class ArrayInitializer(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 4.toShort, seq_4762)
     with Expression
-    with AstNode {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+    with StaticType[ArrayInitializerT] {
+//{propAccess}
 
 }
 
-class Binding(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 5.toShort, seq_4762) {
-  def methodFullName: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 36, seq, "<empty>": String)
-  def name: String           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def signature: String      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 46, seq, "": String)
+trait BindingT                                       extends AnyRef with HasMethodFullNameT with HasNameT with HasSignatureT
+class Binding(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 5.toShort, seq_4762) with StaticType[BindingT] {
+//{propAccess}
 
 }
 
-class Block(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 6.toShort, seq_4762) with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait BlockT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+class Block(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 6.toShort, seq_4762)
+    with Expression
+    with StaticType[BlockT] {
+//{propAccess}
 
 }
 
-class Call(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 7.toShort, seq_4762) with CallRepr with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dispatchType: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 17, seq, "<empty>": String)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def methodFullName: String                      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 36, seq, "<empty>": String)
-  def name: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def signature: String                           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 46, seq, "": String)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait CallT
+    extends AnyRef
+    with CallReprT
+    with ExpressionT
+    with HasDispatchTypeT
+    with HasDynamicTypeHintFullNameT
+    with HasMethodFullNameT
+    with HasTypeFullNameT
+class Call(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 7.toShort, seq_4762)
+    with CallRepr
+    with Expression
+    with StaticType[CallT] {
+//{propAccess}
 
 }
 
-class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 8.toShort, seq_4762) {
-  def closureBindingId: Option[String]    = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 8, seq)
-  def closureOriginalName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 9, seq)
-  def evaluationStrategy: String          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 19, seq, "<empty>": String)
+trait ClosureBindingT extends AnyRef with HasClosureBindingIdT with HasClosureOriginalNameT with HasEvaluationStrategyT
+class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 8.toShort, seq_4762)
+    with StaticType[ClosureBindingT] {
+//{propAccess}
 
 }
 
-class Comment(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 9.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def filename: String          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 21, seq, "<empty>": String)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait CommentT extends AnyRef with AstNodeT with HasFilenameT
+class Comment(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 9.toShort, seq_4762)
+    with AstNode
+    with StaticType[CommentT] {
+//{propAccess}
 
 }
 
-class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 10.toShort, seq_4762) {
-  def content: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 14, seq, "<empty>": String)
-  def name: String    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
+trait ConfigFileT                                       extends AnyRef with HasContentT with HasNameT
+class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 10.toShort, seq_4762) with StaticType[ConfigFileT] {
+//{propAccess}
 
 }
 
-class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 11.toShort, seq_4762) with Expression {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def controlStructureType: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 15, seq, "<empty>": String)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def parserTypeName: String       = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 44, seq, "<empty>": String)
+trait ControlStructureT extends AnyRef with ExpressionT with HasControlStructureTypeT with HasParserTypeNameT
+class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 11.toShort, seq_4762)
+    with Expression
+    with StaticType[ControlStructureT] {
+//{propAccess}
 
 }
 
-class Dependency(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 12.toShort, seq_4762) {
-  def dependencyGroupId: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 16, seq)
-  def name: String                      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def version: String                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 51, seq, "<empty>": String)
+trait DependencyT                                       extends AnyRef with HasDependencyGroupIdT with HasNameT with HasVersionT
+class Dependency(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 12.toShort, seq_4762) with StaticType[DependencyT] {
+//{propAccess}
 
 }
 
-class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 13.toShort, seq_4762) with Expression {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def canonicalName: String        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 5, seq, "<empty>": String)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait FieldIdentifierT extends AnyRef with ExpressionT with HasCanonicalNameT
+class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 13.toShort, seq_4762)
+    with Expression
+    with StaticType[FieldIdentifierT] {
+//{propAccess}
 
 }
 
-class File(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 14.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def hash: Option[String]      = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 23, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait FileT                                       extends AnyRef with AstNodeT with HasHashT with HasNameT
+class File(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 14.toShort, seq_4762) with AstNode with StaticType[FileT] {
+//{propAccess}
 
 }
 
-class Finding(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 15.toShort, seq_4762) {
-
+trait FindingT                                       extends AnyRef
+class Finding(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 15.toShort, seq_4762) with StaticType[FindingT] {
+//{propAccess}
   def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 52, seq)
   def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 53, seq)
 }
 
-class Identifier(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 16.toShort, seq_4762) with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait IdentifierT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasNameT with HasTypeFullNameT
+class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 16.toShort, seq_4762)
+    with Expression
+    with StaticType[IdentifierT] {
+//{propAccess}
 
 }
 
-class Import(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 17.toShort, seq_4762) with AstNode {
-  def code: String                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def explicitAs: Option[Boolean]    = odb2.Accessors.getNodePropertyOption[Boolean](graph, nodeKind, 20, seq)
-  def importedAs: Option[String]     = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 24, seq)
-  def importedEntity: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 25, seq)
-  def isExplicit: Option[Boolean]    = odb2.Accessors.getNodePropertyOption[Boolean](graph, nodeKind, 28, seq)
-  def isWildcard: Option[Boolean]    = odb2.Accessors.getNodePropertyOption[Boolean](graph, nodeKind, 31, seq)
-  def lineNumber: Option[Int]        = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                     = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait ImportT
+    extends AnyRef
+    with AstNodeT
+    with HasExplicitAsT
+    with HasImportedAsT
+    with HasImportedEntityT
+    with HasIsExplicitT
+    with HasIsWildcardT
+class Import(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 17.toShort, seq_4762)
+    with AstNode
+    with StaticType[ImportT] {
+//{propAccess}
 
 }
 
-class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 18.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def parserTypeName: String    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 44, seq, "<empty>": String)
+trait JumpLabelT extends AnyRef with AstNodeT with HasNameT with HasParserTypeNameT
+class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 18.toShort, seq_4762)
+    with AstNode
+    with StaticType[JumpLabelT] {
+//{propAccess}
 
 }
 
-class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 19.toShort, seq_4762) with CfgNode with AstNode {
-  def argumentIndex: Int        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def parserTypeName: String    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 44, seq, "<empty>": String)
+trait JumpTargetT extends AnyRef with CfgNodeT with HasArgumentIndexT with HasNameT with HasParserTypeNameT
+class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 19.toShort, seq_4762)
+    with CfgNode
+    with StaticType[JumpTargetT] {
+//{propAccess}
 
 }
 
-class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 20.toShort, seq_4762) {
-  def key: String   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 32, seq, "<empty>": String)
-  def value: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 50, seq, "": String)
+trait KeyValuePairT extends AnyRef with HasKeyT with HasValueT
+class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 20.toShort, seq_4762)
+    with StaticType[KeyValuePairT] {
+//{propAccess}
 
 }
 
-class Literal(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 21.toShort, seq_4762) with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait LiteralT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+class Literal(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 21.toShort, seq_4762)
+    with Expression
+    with StaticType[LiteralT] {
+//{propAccess}
 
 }
 
-class Local(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 22.toShort, seq_4762) with Declaration with AstNode {
-  def closureBindingId: Option[String]            = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 8, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait LocalT extends AnyRef with AstNodeT with DeclarationT with HasClosureBindingIdT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+class Local(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 22.toShort, seq_4762)
+    with AstNode
+    with Declaration
+    with StaticType[LocalT] {
+//{propAccess}
 
 }
 
-class Location(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 23.toShort, seq_4762) {
-  def className: String        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 6, seq, "<empty>": String)
-  def classShortName: String   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 7, seq, "<empty>": String)
-  def filename: String         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 21, seq, "<empty>": String)
-  def lineNumber: Option[Int]  = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def methodFullName: String   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 36, seq, "<empty>": String)
-  def methodShortName: String  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 37, seq, "<empty>": String)
-  def nodeLabel: String        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 40, seq, "<empty>": String)
-  def packageName: String      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 43, seq, "<empty>": String)
-  def symbol: String           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 47, seq, "<empty>": String)
+trait LocationT
+    extends AnyRef
+    with HasClassNameT
+    with HasClassShortNameT
+    with HasFilenameT
+    with HasLineNumberT
+    with HasMethodFullNameT
+    with HasMethodShortNameT
+    with HasNodeLabelT
+    with HasPackageNameT
+    with HasSymbolT
+class Location(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 23.toShort, seq_4762) with StaticType[LocationT] {
+//{propAccess}
   def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 52, seq)
 }
 
-class Member(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 24.toShort, seq_4762) with Declaration with AstNode {
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait MemberT extends AnyRef with AstNodeT with DeclarationT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+class Member(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 24.toShort, seq_4762)
+    with AstNode
+    with Declaration
+    with StaticType[MemberT] {
+//{propAccess}
 
 }
 
-class MetaData(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 25.toShort, seq_4762) {
-  def hash: Option[String]         = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 23, seq)
-  def language: String             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 33, seq, "<empty>": String)
-  def overlays: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 42, seq)
-  def root: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 45, seq, "<empty>": String)
-  def version: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 51, seq, "<empty>": String)
+trait MetaDataT extends AnyRef with HasHashT with HasLanguageT with HasOverlaysT with HasRootT with HasVersionT
+class MetaData(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 25.toShort, seq_4762) with StaticType[MetaDataT] {
+//{propAccess}
 
 }
 
+trait MethodT
+    extends AnyRef
+    with CfgNodeT
+    with DeclarationT
+    with HasAstParentFullNameT
+    with HasAstParentTypeT
+    with HasColumnNumberEndT
+    with HasFilenameT
+    with HasFullNameT
+    with HasHashT
+    with HasIsExternalT
+    with HasLineNumberEndT
+    with HasSignatureT
 class Method(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 26.toShort, seq_4762)
     with CfgNode
     with Declaration
-    with AstNode {
-  def astParentFullName: String    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 3, seq, "<empty>": String)
-  def astParentType: String        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 4, seq, "<empty>": String)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def columnNumberEnd: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 12, seq)
-  def filename: String             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 21, seq, "<empty>": String)
-  def fullName: String             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 22, seq, "<empty>": String)
-  def hash: Option[String]         = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 23, seq)
-  def isExternal: Boolean          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 29, seq, false: Boolean)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def lineNumberEnd: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 35, seq)
-  def name: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def signature: String            = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 46, seq, "": String)
+    with StaticType[MethodT] {
+//{propAccess}
 
 }
 
+trait MethodParameterInT
+    extends AnyRef
+    with CfgNodeT
+    with DeclarationT
+    with HasDynamicTypeHintFullNameT
+    with HasEvaluationStrategyT
+    with HasIndexT
+    with HasIsVariadicT
+    with HasTypeFullNameT
 class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 27.toShort, seq_4762)
     with CfgNode
     with Declaration
-    with AstNode {
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def evaluationStrategy: String                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 19, seq, "<empty>": String)
-  def index: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 26, seq, -1: Int)
-  def isVariadic: Boolean                         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 30, seq, false: Boolean)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+    with StaticType[MethodParameterInT] {
+//{propAccess}
 
 }
 
+trait MethodParameterOutT
+    extends AnyRef
+    with CfgNodeT
+    with DeclarationT
+    with HasEvaluationStrategyT
+    with HasIndexT
+    with HasIsVariadicT
+    with HasTypeFullNameT
 class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 28.toShort, seq_4762)
     with CfgNode
     with Declaration
-    with AstNode {
-  def code: String               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]  = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def evaluationStrategy: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 19, seq, "<empty>": String)
-  def index: Int                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 26, seq, -1: Int)
-  def isVariadic: Boolean        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 30, seq, false: Boolean)
-  def lineNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String       = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+    with StaticType[MethodParameterOutT] {
+//{propAccess}
 
 }
 
-class MethodRef(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 29.toShort, seq_4762) with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def methodFullName: String                      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 36, seq, "<empty>": String)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait MethodRefT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasMethodFullNameT with HasTypeFullNameT
+class MethodRef(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 29.toShort, seq_4762)
+    with Expression
+    with StaticType[MethodRefT] {
+//{propAccess}
 
 }
 
-class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 30.toShort, seq_4762) with CfgNode {
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def evaluationStrategy: String                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 19, seq, "<empty>": String)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait MethodReturnT extends AnyRef with CfgNodeT with HasDynamicTypeHintFullNameT with HasEvaluationStrategyT with HasTypeFullNameT
+class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 30.toShort, seq_4762)
+    with CfgNode
+    with StaticType[MethodReturnT] {
+//{propAccess}
 
 }
 
-class Modifier(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 31.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def modifierType: String      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 38, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait ModifierT extends AnyRef with AstNodeT with HasModifierTypeT
+class Modifier(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 31.toShort, seq_4762)
+    with AstNode
+    with StaticType[ModifierT] {
+//{propAccess}
 
 }
 
-class Namespace(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 32.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait NamespaceT extends AnyRef with AstNodeT with HasNameT
+class Namespace(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 32.toShort, seq_4762)
+    with AstNode
+    with StaticType[NamespaceT] {
+//{propAccess}
 
 }
 
-class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 33.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def filename: String          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 21, seq, "<empty>": String)
-  def fullName: String          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 22, seq, "<empty>": String)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait NamespaceBlockT extends AnyRef with AstNodeT with HasFilenameT with HasFullNameT with HasNameT
+class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 33.toShort, seq_4762)
+    with AstNode
+    with StaticType[NamespaceBlockT] {
+//{propAccess}
 
 }
 
-class Return(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 34.toShort, seq_4762) with Expression {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait ReturnT extends AnyRef with ExpressionT
+class Return(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 34.toShort, seq_4762)
+    with Expression
+    with StaticType[ReturnT] {
+//{propAccess}
 
 }
 
-class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) {
-  def name: String  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def value: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 50, seq, "": String)
+trait TagT                                       extends AnyRef with HasNameT with HasValueT
+class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with StaticType[TagT] {
+//{propAccess}
 
 }
 
-class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 36.toShort, seq_4762) {
-
+trait TagNodePairT extends AnyRef
+class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 36.toShort, seq_4762)
+    with StaticType[TagNodePairT] {
+//{propAccess}
   def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 52, seq, null: StoredNode)
   def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 53, seq, null: Tag)
 }
 
-class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 37.toShort, seq_4762) with Expression {
-  def argumentIndex: Int           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait TemplateDomT extends AnyRef with ExpressionT with HasNameT
+class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 37.toShort, seq_4762)
+    with Expression
+    with StaticType[TemplateDomT] {
+//{propAccess}
 
 }
 
-class Type(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 38.toShort, seq_4762) {
-  def fullName: String         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 22, seq, "<empty>": String)
-  def name: String             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def typeDeclFullName: String = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 48, seq, "<empty>": String)
+trait TypeT                                       extends AnyRef with HasFullNameT with HasNameT with HasTypeDeclFullNameT
+class Type(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 38.toShort, seq_4762) with StaticType[TypeT] {
+//{propAccess}
 
 }
 
-class TypeArgument(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 39.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait TypeArgumentT extends AnyRef with AstNodeT
+class TypeArgument(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 39.toShort, seq_4762)
+    with AstNode
+    with StaticType[TypeArgumentT] {
+//{propAccess}
 
 }
 
-class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 40.toShort, seq_4762) with AstNode {
-  def aliasTypeFullName: Option[String]            = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 0, seq)
-  def astParentFullName: String                    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 3, seq, "<empty>": String)
-  def astParentType: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 4, seq, "<empty>": String)
-  def code: String                                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                    = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def filename: String                             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 21, seq, "<empty>": String)
-  def fullName: String                             = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 22, seq, "<empty>": String)
-  def inheritsFromTypeFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 27, seq)
-  def isExternal: Boolean                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 29, seq, false: Boolean)
-  def lineNumber: Option[Int]                      = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String                                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                                   = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait TypeDeclT
+    extends AnyRef
+    with AstNodeT
+    with HasAliasTypeFullNameT
+    with HasAstParentFullNameT
+    with HasAstParentTypeT
+    with HasFilenameT
+    with HasFullNameT
+    with HasInheritsFromTypeFullNameT
+    with HasIsExternalT
+    with HasNameT
+class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 40.toShort, seq_4762)
+    with AstNode
+    with StaticType[TypeDeclT] {
+//{propAccess}
 
 }
 
-class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 41.toShort, seq_4762) with AstNode {
-  def code: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def lineNumber: Option[Int]   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def name: String              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 39, seq, "<empty>": String)
-  def order: Int                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
+trait TypeParameterT extends AnyRef with AstNodeT with HasNameT
+class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 41.toShort, seq_4762)
+    with AstNode
+    with StaticType[TypeParameterT] {
+//{propAccess}
 
 }
 
-class TypeRef(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 42.toShort, seq_4762) with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait TypeRefT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+class TypeRef(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 42.toShort, seq_4762)
+    with Expression
+    with StaticType[TypeRefT] {
+//{propAccess}
 
 }
 
-class Unknown(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 43.toShort, seq_4762) with Expression {
-  def argumentIndex: Int                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 1, seq, -1: Int)
-  def argumentName: Option[String]                = odb2.Accessors.getNodePropertyOption[String](graph, nodeKind, 2, seq)
-  def code: String                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 10, seq, "<empty>": String)
-  def columnNumber: Option[Int]                   = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 11, seq)
-  def containedRef: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 13, seq, "<empty>": String)
-  def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](graph, nodeKind, 18, seq)
-  def lineNumber: Option[Int]                     = odb2.Accessors.getNodePropertyOption[Int](graph, nodeKind, 34, seq)
-  def order: Int                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 41, seq, -1: Int)
-  def parserTypeName: String                      = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 44, seq, "<empty>": String)
-  def typeFullName: String                        = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 49, seq, "<empty>": String)
+trait UnknownT
+    extends AnyRef
+    with ExpressionT
+    with HasContainedRefT
+    with HasDynamicTypeHintFullNameT
+    with HasParserTypeNameT
+    with HasTypeFullNameT
+class Unknown(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 43.toShort, seq_4762)
+    with Expression
+    with StaticType[UnknownT] {
+//{propAccess}
 
 }

@@ -216,7 +216,7 @@ class Odb2Generated {
           _.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode]]
         }
         JmhMain.setOps(params, astUp(null))
-      case name if name.endsWith("orderSumVirtual") | name.endsWith("orderSumDevirtualized") =>
+      case name if name.contains("orderSum") =>
         nodeStart = cpg._nodes.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case astNode: v2.nodes.AstNode =>
             astNode.asInstanceOf[v2.nodes.StoredNode]
@@ -259,9 +259,11 @@ class Odb2Generated {
   }
 
   @Benchmark
-  def orderSumVirtual(blackhole: Blackhole): Int = {
+  def orderSumChecked(blackhole: Blackhole): Int = {
+    import v2.accessors.Lang._
     var sumOrder = 0
     for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.AstNode]]) {
+      // we use a checked cast to ensure that our node is an AST-node (i.e. implements the AstNode interface)
       sumOrder += node.order
     }
     if (blackhole != null) blackhole.consume(sumOrder)
@@ -269,7 +271,21 @@ class Odb2Generated {
   }
 
   @Benchmark
-  def orderSumDevirtualized(blackhole: Blackhole): Int = {
+  def orderSumUnchecked(blackhole: Blackhole): Int = {
+    import v2.accessors.Lang._
+    var sumOrder = 0
+    for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode with v2.nodes.StaticType[v2.nodes.AstNodeT]]]) {
+      // we use an unchecked cast to claim that our node is an AST-node.
+      // the difference is type-erased so that should be a no-op.
+      // on the other hand, we won't get classCast exceptions on mistakes, only silent type confusion bugs.
+      sumOrder += node.order
+    }
+    if (blackhole != null) blackhole.consume(sumOrder)
+    sumOrder
+  }
+
+  @Benchmark
+  def orderSumExplicit(blackhole: Blackhole): Int = {
     var sumOrder = 0
     val prop     = nodeStart.head.graph.schema.getPropertyIdByLabel("ORDER")
     for (node <- nodeStart) {

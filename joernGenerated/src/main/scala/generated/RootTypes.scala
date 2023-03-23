@@ -1,7 +1,9 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
 
-trait AbstractNode extends odb2.DNodeOrNode
+trait StaticType[+T]
+
+trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef]
 
 abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int)
     extends odb2.GNode(graph_4762, kind_4762, seq_4762)
