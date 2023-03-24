@@ -106,7 +106,7 @@ object SchemaGen {
       .sorted
       .mkString("\n")
 
-    val basefile =
+    val rootTypes =
       s"""package ${basePackage}.nodes
          |import io.joern.odb2
          |
@@ -120,7 +120,7 @@ object SchemaGen {
          |
          |abstract class NewNode extends AbstractNode with odb2.DNode
          |""".stripMargin
-    outputDir.createChild("RootTypes.scala").write(basefile)
+    outputDir.createChild("RootTypes.scala").write(rootTypes)
 
     val propertyMarkers = actualProperties.map { p => s"trait Has${p.className}T" }.mkString("\n")
     val basetypefile = schema.nodeBaseTypes
@@ -251,24 +251,64 @@ object SchemaGen {
           (s"""trait ${nodeType.className}T extends AnyRef""" +: newExtendz.map { b => s"${b.className}T" } ++: newProperties.map { p =>
             s"Has${p.className}T"
           }).mkString(" with ")
+
+        // fixme
+        val base = (s"""trait ${nodeType.className}Base extends AbstractNode""" +: newExtendz
+          .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
+
         val stored =
           (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" +: newExtendz
             .map { base => base.className } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
         // val base = (s"""class ${nodeType.className}""")
-        val propAccess = nodeType.properties
-          .map { p =>
-            val pre = s"def ${Helpers.camelCase(p.name)}: ${typeForProperty(p)}"
-            val access = p.cardinality match {
-              case Cardinality.ZeroOrOne =>
-                s" = odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
-              case Cardinality.List =>
-                s" = odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
-              case one: Cardinality.One[_] =>
-                s" = odb2.Accessors.getNodePropertySingle(graph, nodeKind, ${idByProperty(p)}, seq, ${unpackDefault(p.valueType, one.default)})"
-            }
-            pre + access
+        val newNodeProps  = mutable.ArrayBuffer[String]()
+        val newNodeFluent = mutable.ArrayBuffer[String]()
+
+        for (p <- nodeType.properties) {
+          val pname = Helpers.camelCase(p.name)
+          val ptyp  = unpackTypeUnboxed(p.valueType, false, false)
+          p.cardinality match {
+            case Cardinality.List =>
+              newNodeProps.append(s"var ${pname}: IndexedSeq[${ptyp}] = ArraySeq.empty")
+              newNodeFluent.append(
+                s"def ${pname}(value: IterableOnce[${ptyp}]): this.type = {this.${pname} = value.iterator.to(ArraySeq); this }"
+              )
+            case Cardinality.ZeroOrOne =>
+              newNodeProps.append(s"var ${pname}: Option[${ptyp}] = None")
+              newNodeFluent.append(s"def ${pname}(value: Option[${ptyp}]): this.type = {this.${pname} = value; this }")
+              newNodeFluent.append(
+                s"def ${pname}(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.${pname} = Option(value); this }"
+              )
+            case one: Cardinality.One[_] =>
+              newNodeProps.append(s"var ${pname}: ${ptyp} = ${unpackDefault(p.valueType, one.default)}")
+              newNodeFluent.append(s"def ${pname}(value: ${ptyp}): this.type = {this.${pname} = value; this }")
           }
-          .mkString("\n")
+        }
+        for (c <- nodeType.containedNodes) {
+          val pname = c.localName
+          val ptyp  = c.nodeType.className + "Base"
+          c.cardinality match {
+            case Cardinality.List =>
+              newNodeProps.append(s"var ${pname}: IndexedSeq[${ptyp}] = ArraySeq.empty")
+              newNodeFluent.append(
+                s"def ${pname}(value: IterableOnce[${ptyp}]): this.type = {this.${pname} = value.iterator.to(ArraySeq); this }"
+              )
+            case Cardinality.ZeroOrOne =>
+              newNodeProps.append(s"var ${pname}: Option[${ptyp}] = None")
+              newNodeFluent.append(s"def ${pname}(value: Option[${ptyp}]): this.type = {this.${pname} = value; this }")
+              newNodeFluent.append(s"def ${pname}(value: ${ptyp}): this.type = {this.${pname} = Option(value); this }")
+            case one: Cardinality.One[_] =>
+              newNodeProps.append(s"var ${pname}: ${ptyp} = null")
+              newNodeFluent.append(s"def ${pname}(value: ${ptyp}): this.type = {this.${pname} = value; this }")
+          }
+        }
+
+        val newNode =
+          s"""object New${nodeType.className}{def apply():  New${nodeType.className} = new  New${nodeType.className}}
+             |class New${nodeType.className}{
+             |${newNodeProps.sorted.mkString("\n")}
+             |${newNodeFluent.sorted.mkString("\n")}
+             |}""".stripMargin
+
         val containedAccess = nodeType.containedNodes
           .map { contained =>
             s"""def ${contained.localName}: ${contained.cardinality match {
@@ -286,13 +326,15 @@ object SchemaGen {
 
         s"""${staticTyp}
            |${stored} {
-           |//{propAccess}
            |${containedAccess}
-           |}""".stripMargin
+           |}
+           |${newNode}
+           |""".stripMargin
       }
       .mkString(
         s"""package ${basePackage}.nodes
            |import io.joern.odb2
+           |import scala.collection.immutable.{IndexedSeq, ArraySeq}
            |
            |""".stripMargin,
         "\n\n",
