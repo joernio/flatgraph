@@ -81,6 +81,24 @@ object SchemaGen {
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
+    val newPropsAtNodeSet = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
+      n -> (n.properties.toSet &~ n.extendzRecursively.flatMap { _.properties }.toSet)
+    }.toMap
+    val newPropsAtNodeList = newPropsAtNodeSet.map { case (k -> v) => k -> v.toList.sortBy(_.name) }
+    val newExtendzMap = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
+      n -> (n.extendz.toSet &~ n.extendzRecursively.flatMap {
+        _.extendz
+      }.toSet).toList.sortBy(_.name)
+    }.toMap
+
+    val prioStages = mutable.ArrayBuffer[mutable.ArrayBuffer[overflowdb.schema.NodeBaseType]]()
+    for (baseType <- schema.nodeBaseTypes) {
+      val props = newPropsAtNodeSet(baseType)
+      val dst   = prioStages.find { stage => stage.forall(other => (newPropsAtNodeSet(other) & props).isEmpty) }
+      if (dst.isDefined) { dst.get.addOne(baseType) }
+      else prioStages.addOne(mutable.ArrayBuffer(baseType))
+    }
+
     // base file
     val edgeAccess = edgeTypes
       .map { et =>
@@ -106,39 +124,41 @@ object SchemaGen {
       .sorted
       .mkString("\n")
 
-    val basefile =
+    val rootTypes =
       s"""package ${basePackage}.nodes
          |import io.joern.odb2
          |
          |trait StaticType[+T]
          |
-         |trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef]
+         |trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] {
+         |  def label: String
+         |}
          |
          |abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int) extends odb2.GNode(graph_4762, kind_4762, seq_4762) with AbstractNode {
          |${edgeAccess}
          |}
          |
-         |abstract class NewNode extends AbstractNode with odb2.DNode
+         |abstract class NewNode(val nodeKind:Short) extends AbstractNode with odb2.DNode {
+         |type RelatedStored <: StoredNode
+         |private /* volatile? */ var _storedRef: RelatedStored = null.asInstanceOf[RelatedStored]
+         |override def storedRef:Option[RelatedStored] = Option(this._storedRef)
+         |override def storedRef_=(stored: Option[odb2.GNode]):Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
+         |def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = ???
+         |}
          |""".stripMargin
-    outputDir.createChild("RootTypes.scala").write(basefile)
+    outputDir.createChild("RootTypes.scala").write(rootTypes)
 
     val propertyMarkers = actualProperties.map { p => s"trait Has${p.className}T" }.mkString("\n")
     val basetypefile = schema.nodeBaseTypes
       .map { baseType =>
-        val newExtendz = (baseType.extendz.toSet &~ baseType.extendz.flatMap { p => p.extendzRecursively }.toSet).toList.sortBy {
-          _.name
-        }
+        val newExtendz = newExtendzMap(baseType)
         val mixinsBase = List("AbstractNode") ++ newExtendz.map(_.className + "Base") ++ baseType.markerTraits.map(_.name)
 
         val mixinsStored =
           List("StoredNode", s"${baseType.className}Base") ++ newExtendz.map(_.className) ++ baseType.markerTraits.map(_.name)
         val mixinsNew =
           List("NewNode", s"${baseType.className}Base") ++ baseType.extendz.map(_.className + "New") ++ baseType.markerTraits.map(_.name)
-        val newProperties = (baseType.properties.toSet &~ baseType.extendzRecursively.flatMap {
-          _.properties
-        }.toSet).toList.sortBy {
-          _.name
-        }
+        val newProperties = newPropsAtNodeList(baseType)
         val mixinsT =
           (List("AnyRef") ++ newExtendz.map { _.className + "T" } ++ newProperties.map { p => s"Has${p.className}T" }).mkString(" with ")
         val oldProperties = (baseType.properties.toSet &~ newProperties.toSet).toList.sortBy {
@@ -147,21 +167,28 @@ object SchemaGen {
         val oldExtendz = (baseType.extendzRecursively.toSet &~ newExtendz.toSet).toList.sortBy {
           _.name
         }
-        val accessors = newProperties
-          .map { p =>
-            val pre = s"def ${Helpers.camelCase(p.name)}: ${typeForProperty(p)}"
-            /*
-            val access = p.cardinality match {
-              case Cardinality.ZeroOrOne =>
-                s" = odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}]((this: StoredNode).graph, (this: StoredNode).nodeKind, ${idByProperty(p)}, (this: StoredNode).seq)"
-              case Cardinality.List =>
-                s" = odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}]((this: StoredNode).graph, (this: StoredNode).nodeKind, ${idByProperty(p)}, (this: StoredNode).seq)"
-              case _: Cardinality.One[_] =>
-                s" = odb2.Accessors.getNodePropertySingle[${unpackTypeUnboxed(p.valueType, true, false)}]((this: StoredNode).graph, (this: StoredNode).nodeKind, ${idByProperty(p)}, (this: StoredNode).seq)"
-            } */
-            pre // + access
+
+        val newNodeDefs = mutable.ArrayBuffer[String]()
+
+        for (p <- newProperties) {
+          val pname = Helpers.camelCase(p.name)
+          val ptyp  = unpackTypeUnboxed(p.valueType, false, false)
+          p.cardinality match {
+            case Cardinality.List =>
+              newNodeDefs.append(s"def ${pname}: IndexedSeq[${ptyp}]")
+              newNodeDefs.append(s"def ${pname}_=(value: IndexedSeq[${ptyp}]): Unit")
+              newNodeDefs.append(s"def ${pname}(value: IterableOnce[${ptyp}]): this.type")
+            case Cardinality.ZeroOrOne =>
+              newNodeDefs.append(s"def ${pname}: Option[${ptyp}]")
+              newNodeDefs.append(s"def ${pname}_=(value: Option[${ptyp}]): Unit")
+              newNodeDefs.append(s"def ${pname}(value: Option[${ptyp}]): this.type")
+              newNodeDefs.append(s"def ${pname}(value: ${ptyp}): this.type")
+            case one: Cardinality.One[_] =>
+              newNodeDefs.append(s"def ${pname}: ${ptyp}")
+              newNodeDefs.append(s"def ${pname}_=(value: ${ptyp}): Unit")
+              newNodeDefs.append(s"def ${pname}(value: ${ptyp}): this.type")
           }
-          .mkString("\n")
+        }
 
         s"""trait ${baseType.className}T extends ${mixinsT}
            |
@@ -180,11 +207,12 @@ object SchemaGen {
             }
             .mkString(", ")}
            |trait ${baseType.className} extends ${mixinsStored
-            .mkString(" with ")} with StaticType[${baseType.className}T] {
-            |//{accessors}
-            |}
+            .mkString(" with ")} with StaticType[${baseType.className}T]
            |
-           |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}T]
+           |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}T]{
+           |  type RelatedStored <:  ${baseType.className}
+           |  ${newNodeDefs.mkString("\n")}
+           |}
            |""".stripMargin
       }
       .mkString(
@@ -239,60 +267,104 @@ object SchemaGen {
 
     val concreteNodes = nodeTypes.iterator.zipWithIndex
       .map { case (nodeType, kind) =>
-        val newExtendz = (nodeType.extendz.toSet &~ nodeType.extendz.flatMap { p => p.extendzRecursively }.toSet).toList.sortBy {
-          _.name
-        }
-        val newProperties = (nodeType.properties.toSet &~ nodeType.extendzRecursively.flatMap {
-          _.properties
-        }.toSet).toList.sortBy {
-          _.name
-        }
+        val newExtendz    = newExtendzMap(nodeType)
+        val newProperties = newPropsAtNodeList(nodeType)
         val staticTyp =
           (s"""trait ${nodeType.className}T extends AnyRef""" +: newExtendz.map { b => s"${b.className}T" } ++: newProperties.map { p =>
             s"Has${p.className}T"
           }).mkString(" with ")
+
+        val base = (s"""trait ${nodeType.className}Base extends AbstractNode""" +: newExtendz
+          .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
+
         val stored =
-          (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" +: newExtendz
+          (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
             .map { base => base.className } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
         // val base = (s"""class ${nodeType.className}""")
-        val propAccess = nodeType.properties
-          .map { p =>
-            val pre = s"def ${Helpers.camelCase(p.name)}: ${typeForProperty(p)}"
-            val access = p.cardinality match {
-              case Cardinality.ZeroOrOne =>
-                s" = odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
-              case Cardinality.List =>
-                s" = odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](graph, nodeKind, ${idByProperty(p)}, seq)"
-              case one: Cardinality.One[_] =>
-                s" = odb2.Accessors.getNodePropertySingle(graph, nodeKind, ${idByProperty(p)}, seq, ${unpackDefault(p.valueType, one.default)})"
-            }
-            pre + access
+        val newNodeProps    = mutable.ArrayBuffer[String]()
+        val newNodeFluent   = mutable.ArrayBuffer[String]()
+        val storedNodeProps = mutable.ArrayBuffer[String]()
+        val baseNodeProps   = mutable.ArrayBuffer[String]()
+
+        for (p <- nodeType.properties) {
+          val pname = Helpers.camelCase(p.name)
+          val ptyp  = unpackTypeUnboxed(p.valueType, false, false)
+          p.cardinality match {
+            case Cardinality.List =>
+              newNodeProps.append(s"var ${pname}: IndexedSeq[${ptyp}] = ArraySeq.empty")
+              newNodeFluent.append(
+                s"def ${pname}(value: IterableOnce[${ptyp}]): this.type = {this.${pname} = value.iterator.to(ArraySeq); this }"
+              )
+            case Cardinality.ZeroOrOne =>
+              newNodeProps.append(s"var ${pname}: Option[${ptyp}] = None")
+              newNodeFluent.append(s"def ${pname}(value: Option[${ptyp}]): this.type = {this.${pname} = value; this }")
+              newNodeFluent.append(
+                s"def ${pname}(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.${pname} = Option(value); this }"
+              )
+            case one: Cardinality.One[_] =>
+              newNodeProps.append(s"var ${pname}: ${ptyp} = ${unpackDefault(p.valueType, one.default)}")
+              newNodeFluent.append(s"def ${pname}(value: ${ptyp}): this.type = {this.${pname} = value; this }")
           }
-          .mkString("\n")
-        val containedAccess = nodeType.containedNodes
-          .map { contained =>
-            s"""def ${contained.localName}: ${contained.cardinality match {
-                case Cardinality.ZeroOrOne =>
-                  s"Option[${contained.nodeType.className}] = odb2.Accessors.getNodePropertyOption[${contained.nodeType.className}](graph, nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, seq)"
-                case _: Cardinality.One[_] =>
-                  s"${contained.nodeType.className} = odb2.Accessors.getNodePropertySingle(graph, nodeKind, ${actualProperties.size + containedIndexByName(
-                      contained.localName
-                    )}, seq, null: ${contained.nodeType.className})"
-                case Cardinality.List =>
-                  s"IndexedSeq[${contained.nodeType.className}] = odb2.Accessors.getNodePropertyMulti[${contained.nodeType.className}](graph, nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, seq)"
-              }}""".stripMargin
+        }
+        for (c <- nodeType.containedNodes) {
+          val pname = c.localName
+          val ptyp  = classNameToBase(c.nodeType.className)
+          val styp  = c.nodeType.className
+          val index = actualProperties.size + containedIndexByName(c.localName)
+          c.cardinality match {
+            case Cardinality.List =>
+              newNodeProps.append(s"var ${pname}: IndexedSeq[${ptyp}] = ArraySeq.empty")
+              newNodeFluent.append(
+                s"def ${pname}(value: IterableOnce[${ptyp}]): this.type = {this.${pname} = value.iterator.to(ArraySeq); this }"
+              )
+              baseNodeProps.append(s"def ${pname}: IndexedSeq[${ptyp}]")
+              storedNodeProps.append(
+                s"def ${pname}: IndexedSeq[${styp}] = odb2.Accessors.getNodePropertyMulti[$styp](graph, nodeKind, $index, seq)"
+              )
+
+            case Cardinality.ZeroOrOne =>
+              newNodeProps.append(s"var ${pname}: Option[${ptyp}] = None")
+              newNodeFluent.append(s"def ${pname}(value: Option[${ptyp}]): this.type = {this.${pname} = value; this }")
+              newNodeFluent.append(s"def ${pname}(value: ${ptyp}): this.type = {this.${pname} = Option(value); this }")
+              baseNodeProps.append(s"def ${pname}: Option[${ptyp}]")
+              storedNodeProps.append(
+                s"def ${pname}: Option[${styp}] = odb2.Accessors.getNodePropertyOption[$styp](graph, nodeKind, $index, seq)"
+              )
+
+            case one: Cardinality.One[_] =>
+              newNodeProps.append(s"var ${pname}: ${ptyp} = null")
+              newNodeFluent.append(s"def ${pname}(value: ${ptyp}): this.type = {this.${pname} = value; this }")
+              baseNodeProps.append(s"def ${pname}: ${ptyp}")
+              storedNodeProps.append(
+                s"def ${pname}: ${styp} = odb2.Accessors.getNodePropertySingle(graph, nodeKind, $index, seq, null: ${styp})"
+              )
+
           }
-          .mkString("\n")
+        }
+
+        val newNode =
+          s"""object New${nodeType.className}{def apply():  New${nodeType.className} = new  New${nodeType.className}}
+             |class New${nodeType.className} extends NewNode(${kindByNode(nodeType)}.toShort) with ${nodeType.className}Base {
+             |type RelatedStored = ${nodeType.className}
+             |override def label: String = "${nodeType.name}"
+             |${newNodeProps.sorted.mkString("\n")}
+             |${newNodeFluent.sorted.mkString("\n")}
+             |}""".stripMargin
 
         s"""${staticTyp}
+           |${base}{
+           |${baseNodeProps.mkString("\n")}
+           |}
            |${stored} {
-           |//{propAccess}
-           |${containedAccess}
-           |}""".stripMargin
+           |${storedNodeProps.mkString("\n")}
+           |}
+           |${newNode}
+           |""".stripMargin
       }
       .mkString(
         s"""package ${basePackage}.nodes
            |import io.joern.odb2
+           |import scala.collection.immutable.{IndexedSeq, ArraySeq}
            |
            |""".stripMargin,
         "\n\n",
@@ -374,36 +446,68 @@ object SchemaGen {
          |}""".stripMargin
     outputDir.createChild("GraphSchema.scala").write(schemaFile)
 
-    /*
-    val containedAccessorClassesAndNode = mutable.ArrayBuffer[(String, String)]()
-    val containedAccessors = nodeTypes
-      .flatMap { nt =>
-        nt.containedNodes.map {
-          (nt, _)
-        }
-      }
-      .map { case (node, contained) =>
-        val cc = s"Access_contained_${contained.localName}_${node.name}"
-        containedAccessorClassesAndNode.append((cc, node.name))
-        s"""class ${cc}(val containingNode: nodes.StoredNode) extends AnyVal {
-           |  def ${contained.localName}: ${contained.cardinality match {
+    val concreteStoredAccess = mutable.ArrayBuffer[String]()
+    val concreteStoredConv   = mutable.ArrayBuffer[String]()
+    val baseAccess           = mutable.ArrayBuffer[String]()
+    val baseConvert          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
+
+    for (p <- actualProperties) {
+      val funName = Helpers.camelCase(p.name)
+      concreteStoredAccess.addOne(
+        s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
+           |  def ${funName}: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
-              s"Option[nodes.${contained.nodeType.className}] = odb2.Accessors.getNodePropertyOption[nodes.${contained.nodeType.className}](containingNode.graph, containingNode.nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, containingNode.seq)"
-            case _: Cardinality.One[_] =>
-              s"nodes.${contained.nodeType.className} = odb2.Accessors.getNodePropertySingle[nodes.${contained.nodeType.className}](containingNode.graph, containingNode.nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, containingNode.seq)"
+              s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
             case Cardinality.List =>
-              s"IndexedSeq[nodes.${contained.nodeType.className}] = odb2.Accessors.getNodePropertyMulti[nodes.${contained.nodeType.className}](containingNode.graph, containingNode.nodeKind, ${actualProperties.size + containedIndexByName(contained.localName)}, containingNode.seq)"
+              s"odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
+            case one: Cardinality.One[_] =>
+              s"odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, ${idByProperty(p)}, node.seq(), ${unpackDefault(p.valueType, one.default)})"
           }}
            |}""".stripMargin
-      }
-      .mkString("\n")
-     */
+      )
+      concreteStoredConv.addOne(
+        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+      )
+    }
 
-    val propertyBaseConversions = actualProperties
-      .map { p =>
-        s"implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_property_${p.name} = new Access_property_${p.name}(node)"
+    for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
+      for (baseType <- stage) {
+        val extensionClass = s"Access_${baseType.className}Base"
+        convertForStage.addOne(
+          s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
+        )
+        val newName = if (baseType.isInstanceOf[overflowdb.schema.NodeBaseType]) { baseType.className + "New" }
+        else { "New" + baseType.className }
+        val accessors = mutable.ArrayBuffer[String]()
+        for (p <- newPropsAtNodeList(baseType)) {
+          val funName = Helpers.camelCase(p.name)
+          accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
+          | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
+          | case newNode: nodes.${newName} => newNode.${funName}
+          |}""".stripMargin)
+        }
+        baseAccess.addOne(
+          accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
+        )
       }
-      .mkString("\n")
+    }
+    val convtraits = mutable.ArrayBuffer[String]()
+    for (idx <- Range(0, baseConvert.length + 1)) {
+      val (tname, tparent, conv) = idx match {
+        case 0 => ("ConcreteStoredConversions", Some("ConcreteBaseConversions"), concreteStoredConv.toBuffer)
+        case 1 => ("ConcreteBaseConversions", if (baseConvert.length > 1) Some("AbstractBaseConversions0") else None, baseConvert(0))
+        case _ =>
+          (
+            s"AbstractBaseConversions${idx - 2}",
+            if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None,
+            baseConvert(idx - 1)
+          )
+      }
+      convtraits.addOne(s"""trait ${tname} ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
+           |import Accessors._
+           |${conv.mkString("\n")}
+           |}""".stripMargin)
+    }
 
     val accessors =
       s"""package ${basePackage}.accessors
@@ -412,52 +516,19 @@ object SchemaGen {
          |import scala.collection.immutable.IndexedSeq
          |
          |object Accessors {
-         |  ${actualProperties
-          .map { p =>
-            val pre =
-              s"class Access_property_${p.name}(val node: nodes.StoredNode) extends AnyVal {\n  def ${Helpers.camelCase(p.name)}: ${typeForProperty(p)}  ="
-            val access = p.cardinality match {
-              case Cardinality.ZeroOrOne =>
-                s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
-              case Cardinality.List =>
-                s"odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
-              case one: Cardinality.One[_] =>
-                s"odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, ${idByProperty(p)}, node.seq(), ${unpackDefault(p.valueType, one.default)})"
-            }
-            pre + "\n    " + access + "\n}"
-          }
-          .mkString("\n\n")}
+         |  ${concreteStoredAccess.mkString("\n")}
+         |  //
+         |  ${baseAccess.mkString("\n")}
          |}
          |
-         |object Lang extends ImplicitAccessors
-         |trait ImplicitAccessors{
-         |import Accessors._
-         |${propertyBaseConversions}
-         |}""".stripMargin
+         |object Lang extends ConcreteStoredConversions {}
+         |
+         |${convtraits.mkString("\n\n")}
+         |""".stripMargin
 
-    // for now, let's skip accessors.
     outputDir.createChild("Accessors.scala").write(accessors)
 
-    /*
-if (containedNodes.size != containedNodes.map { _.localName }.size) {
-  println(containedNodes.toList.sortBy {
-    _.localName
-  })
-  println(
-    containedNodes
-      .map {
-        _.localName
-      }
-      .toList
-      .sorted
-  )
-  throw new RuntimeException()
-}
-     */
-
-    // val properties = schema.properties.filter{schema.nodeTypes.exists{nt => nt.}}
-
-  }
+  } // end generate
 
   def typeForProperty(p: Property[_]): String = {
     val typ = unpackTypeUnboxed(p.valueType, true, false)
@@ -468,6 +539,12 @@ if (containedNodes.size != containedNodes.map { _.localName }.size) {
     }
   }
 
+  def classNameToBase(classname: String): String = {
+    classname match {
+      case "StoredNode" => "AbstractNode"
+      case other        => other + "Base"
+    }
+  }
   def unpackDefault(typ: ValueType[_], default: Default[_]): String = {
     import org.apache.commons.text.StringEscapeUtils.escapeJava
     typ match {

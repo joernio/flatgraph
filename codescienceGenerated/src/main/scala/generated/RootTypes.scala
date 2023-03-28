@@ -3,7 +3,9 @@ import io.joern.odb2
 
 trait StaticType[+T]
 
-trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef]
+trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] {
+  def label: String
+}
 
 abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int)
     extends odb2.GNode(graph_4762, kind_4762, seq_4762)
@@ -175,4 +177,10 @@ abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: In
 
 }
 
-abstract class NewNode extends AbstractNode with odb2.DNode
+abstract class NewNode(val nodeKind: Short) extends AbstractNode with odb2.DNode {
+  type RelatedStored <: StoredNode
+  private /* volatile? */ var _storedRef: RelatedStored               = null.asInstanceOf[RelatedStored]
+  override def storedRef: Option[RelatedStored]                       = Option(this._storedRef)
+  override def storedRef_=(stored: Option[odb2.GNode]): Unit          = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
+  def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = ???
+}
