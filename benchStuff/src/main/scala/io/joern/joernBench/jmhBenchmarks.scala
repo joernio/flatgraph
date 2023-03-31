@@ -18,10 +18,10 @@ object JmhMain {
       // .addProfiler(classOf[profile.GCProfiler])
       // .addProfiler(classOf[profile.LinuxPerfNormProfiler])
       // .addProfiler(classOf[profile.LinuxPerfAsmProfiler], "tooBigThreshold=5000")
-      .warmupIterations(2)
-      .warmupTime(TimeValue.seconds(2))
-      .measurementTime(TimeValue.seconds(2))
-      .measurementIterations(5)
+      .warmupIterations(1)
+      .warmupTime(TimeValue.seconds(1))
+      .measurementTime(TimeValue.seconds(1))
+      .measurementIterations(3)
       .mode(Mode.AverageTime)
       .timeUnit(TimeUnit.NANOSECONDS)
       .forks(1)
@@ -51,7 +51,7 @@ object JmhMain {
 @State(Scope.Benchmark)
 class JoernGenerated {
   import io.shiftleft.codepropertygraph.generated.Cpg
-  import io.shiftleft.codepropertygraph.generated.nodes.{StoredNode, AstNode}
+  import io.shiftleft.codepropertygraph.generated.nodes.{StoredNode, AstNode, Call}
 
   @Param(Array("true", "false"))
   var shuffled: Boolean = _
@@ -70,8 +70,11 @@ class JoernGenerated {
       case name if name.endsWith("astUp") =>
         nodeStart = cpg.graph.nodes().collect { case astNode: StoredNode => astNode }.toArray
         JmhMain.setOps(params, astUp(null))
-      case name if name.endsWith("orderSum") =>
+      case name if name.contains("orderSum") =>
         nodeStart = cpg.graph.nodes().collect { case astNode: AstNode => astNode.asInstanceOf[StoredNode] }.toArray
+        JmhMain.setOps(params, nodeStart.length)
+      case name if name.contains("callOrder") =>
+        nodeStart = cpg.graph.nodes().collect { case node: Call => node.asInstanceOf[StoredNode] }.toArray
         JmhMain.setOps(params, nodeStart.length)
     }
     if (shuffled) {
@@ -115,6 +118,26 @@ class JoernGenerated {
     }
     if (blackhole != null) blackhole.consume(sumOrder)
     sumOrder
+  }
+
+  @Benchmark
+  def callOrderTrav(blackhole: Blackhole): Int = {
+    import io.shiftleft.semanticcpg.language._
+    import overflowdb.traversal
+    val res = traversal.Traversal.from(nodeStart.iterator.asInstanceOf[Iterator[Call]]).orderGt(2).count.next()
+    if (blackhole != null) blackhole.consume(res)
+    res
+  }
+
+  @Benchmark
+  def callOrderExplicit(blackhole: Blackhole): Int = {
+    import io.shiftleft.semanticcpg.language._
+    var res = 0
+    for (node <- nodeStart.iterator.asInstanceOf[Iterator[Call]]) {
+      if (node.order > 2) res += 1
+    }
+    if (blackhole != null) blackhole.consume(res)
+    res
   }
 }
 
@@ -223,6 +246,13 @@ class Odb2Generated {
           }
         }.toArray
         JmhMain.setOps(params, nodeStart.length)
+      case name if name.contains("callOrder") =>
+        nodeStart = cpg._nodes.iterator.flatMap { nodesOfKind =>
+          nodesOfKind.iterator.collect { case node: v2.nodes.Call =>
+            node.asInstanceOf[v2.nodes.StoredNode]
+          }
+        }.toArray
+        JmhMain.setOps(params, nodeStart.length)
     }
 
     if (shuffled) {
@@ -294,4 +324,24 @@ class Odb2Generated {
     if (blackhole != null) blackhole.consume(sumOrder)
     sumOrder
   }
+
+  @Benchmark
+  def callOrderTrav(blackhole: Blackhole): Int = {
+    import v2.traversals.Lang._
+    val res = nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.Call]].orderGt(2).size
+    if (blackhole != null) blackhole.consume(res)
+    res
+  }
+
+  @Benchmark
+  def callOrderExplicit(blackhole: Blackhole): Int = {
+    import v2.accessors.Lang._
+    var res = 0
+    for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.Call]]) {
+      if (node.order > 2) res += 1
+    }
+    if (blackhole != null) blackhole.consume(res)
+    res
+  }
+
 }
