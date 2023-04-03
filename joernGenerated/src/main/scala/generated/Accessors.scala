@@ -3,6 +3,8 @@ import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.nodes
 import scala.collection.immutable.IndexedSeq
 
+object Lang extends ConcreteStoredConversions {}
+
 object Accessors {
   final class Access_Property_ALIAS_TYPE_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
     def aliasTypeFullName: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 0, node.seq)
@@ -736,8 +738,6 @@ object Accessors {
     }
   }
 }
-
-object Lang extends ConcreteStoredConversions {}
 
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
   import Accessors._

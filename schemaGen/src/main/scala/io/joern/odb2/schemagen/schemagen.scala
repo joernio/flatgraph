@@ -446,10 +446,17 @@ object SchemaGen {
          |}""".stripMargin
     outputDir.createChild("GraphSchema.scala").write(schemaFile)
 
+    // Accessors and traversals
+
     val concreteStoredAccess = mutable.ArrayBuffer[String]()
     val concreteStoredConv   = mutable.ArrayBuffer[String]()
     val baseAccess           = mutable.ArrayBuffer[String]()
     val baseConvert          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
+
+    val concreteStoredAccessTrav = mutable.ArrayBuffer[String]()
+    val concreteStoredConvTrav   = mutable.ArrayBuffer[String]()
+    val baseAccessTrav           = mutable.ArrayBuffer[String]()
+    val baseConvertTrav          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
 
     for (p <- actualProperties) {
       val funName = Helpers.camelCase(p.name)
@@ -468,6 +475,14 @@ object SchemaGen {
       concreteStoredConv.addOne(
         s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
+      concreteStoredAccessTrav.addOne(
+        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
+          generatePropertyTraversals(p) + "}"
+      )
+      concreteStoredConvTrav.addOne(
+        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
+      )
+
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
@@ -491,21 +506,45 @@ object SchemaGen {
         )
       }
     }
-    val convtraits = mutable.ArrayBuffer[String]()
-    for (idx <- Range(0, baseConvert.length + 1)) {
-      val (tname, tparent, conv) = idx match {
-        case 0 => ("ConcreteStoredConversions", Some("ConcreteBaseConversions"), concreteStoredConv.toBuffer)
-        case 1 => ("ConcreteBaseConversions", if (baseConvert.length > 1) Some("AbstractBaseConversions0") else None, baseConvert(0))
-        case _ =>
-          (
-            s"AbstractBaseConversions${idx - 2}",
-            if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None,
-            baseConvert(idx - 1)
+    for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
+      for (baseType <- stage) {
+        val extensionClass = s"Traversal_${baseType.className}Base"
+        convertForStage.addOne(
+          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
+        )
+        val elems = mutable.ArrayBuffer[String]()
+        for (p <- newPropsAtNodeList(baseType)) {
+          elems.addOne(generatePropertyTraversals(p))
+        }
+        baseAccessTrav.addOne(
+          elems.mkString(
+            s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
+            "\n",
+            "}"
           )
+        )
+      }
+    }
+
+    val convtraits     = mutable.ArrayBuffer[String]()
+    val convtraitsTrav = mutable.ArrayBuffer[String]()
+
+    val convBuffer     = concreteStoredConv +: baseConvert
+    val convBufferTrav = concreteStoredConvTrav +: baseConvertTrav
+    for (idx <- Range(0, baseConvert.length + 1)) {
+      val (tname, tparent) = idx match {
+        case 0 => ("ConcreteStoredConversions", Some("ConcreteBaseConversions"))
+        case 1 => ("ConcreteBaseConversions", if (baseConvert.length > 1) Some("AbstractBaseConversions0") else None)
+        case _ =>
+          (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
       }
       convtraits.addOne(s"""trait ${tname} ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
            |import Accessors._
-           |${conv.mkString("\n")}
+           |${convBuffer(idx).mkString("\n")}
+           |}""".stripMargin)
+      convtraitsTrav.addOne(s"""trait ${tname} ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
+           |import Accessors._
+           |${convBufferTrav(idx).mkString("\n")}
            |}""".stripMargin)
     }
 
@@ -515,18 +554,37 @@ object SchemaGen {
          |import ${basePackage}.nodes
          |import scala.collection.immutable.IndexedSeq
          |
+         |object Lang extends ConcreteStoredConversions {}
+         |
          |object Accessors {
          |  ${concreteStoredAccess.mkString("\n")}
          |  //
          |  ${baseAccess.mkString("\n")}
          |}
          |
-         |object Lang extends ConcreteStoredConversions {}
-         |
          |${convtraits.mkString("\n\n")}
          |""".stripMargin
 
     outputDir.createChild("Accessors.scala").write(accessors)
+
+    // fixme: Also generate edge accessors
+    val traversals =
+      s"""package $basePackage.traversals
+         |import io.joern.odb2
+         |import ${basePackage}.nodes
+         |
+         |object Lang extends ConcreteStoredConversions {}
+         |
+         |object Accessors {
+         |  import $basePackage.accessors.Lang._
+         |  import odb2.misc.Misc
+         |  ${concreteStoredAccessTrav.mkString("\n")}
+         |  //
+         |  ${baseAccessTrav.mkString("\n")}
+         |}
+         |${convtraitsTrav.mkString("\n\n")}
+         |""".stripMargin
+    outputDir.createChild("Traversals.scala").write(traversals)
 
   } // end generate
 
@@ -544,6 +602,245 @@ object SchemaGen {
       case "StoredNode" => "AbstractNode"
       case other        => other + "Base"
     }
+  }
+
+  def generatePropertyTraversals(property: overflowdb.schema.Property[_]): String = {
+    // fixme: also generate negated filters
+    val nameCamelCase = Helpers.camelCase(property.name)
+    val baseType      = unpackTypeUnboxed(property.valueType, false, false)
+    val cardinality   = property.cardinality
+    val Traversal     = "Iterator"
+
+    val mapOrFlatMap = cardinality match {
+      case Cardinality.One(_)                       => "map"
+      case Cardinality.ZeroOrOne | Cardinality.List => "flatMap"
+    }
+
+    val filterStepsForSingleString =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
+         |  * */
+         |def $nameCamelCase(pattern: $baseType): $Traversal[NodeType] =
+         |  if(!Misc.isRegex(pattern)){
+         |    ${nameCamelCase}Exact(pattern)
+         |  } else {
+         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    traversal.filter{item => matcher.reset(item.${nameCamelCase}).matches}
+         |  }
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
+         |  * */
+         |def $nameCamelCase(patterns: $baseType*): $Traversal[NodeType] = {
+         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |   traversal.filter{item => matchers.exists{_.reset(item.$nameCamelCase).matches}}
+         | }
+         |/**
+         |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
+         |  * */
+         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.${nameCamelCase} == value}
+         |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
+         |  * */
+         |def ${nameCamelCase}Exact(values: $baseType*): $Traversal[NodeType] =
+         |  if(values.length == 1) ${nameCamelCase}Exact(values.head) else {
+         |  val valueSet = values.toSet
+         |  traversal.filter{item => valueSet.contains(item.${nameCamelCase})}
+         |  }
+         |
+         |
+         |""".stripMargin
+
+    val filterStepsForOptionalString =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
+         |  * */
+         |def $nameCamelCase(pattern: $baseType): $Traversal[NodeType] =
+         |  if(!Misc.isRegex(pattern)){
+         |    ${nameCamelCase}Exact(pattern)
+         |  } else {
+         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    traversal.filter{ item =>  val tmp = item.${nameCamelCase}; tmp.isDefined && matcher.reset(tmp.get).matches}
+         |  }
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
+         |  * */
+         |def $nameCamelCase(patterns: $baseType*): $Traversal[NodeType] = {
+         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |   traversal.filter{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
+         | }
+         |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
+         |  * */
+         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
+         |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
+         |  * */
+         |def ${nameCamelCase}Exact(values: $baseType*): $Traversal[NodeType] = 
+         |  if(values.length == 1) ${nameCamelCase}Exact(values.head) else {
+         |  val valueSet = values.toSet
+         |  traversal.filter{item => val tmp = item.$nameCamelCase; tmp.isDefined && valueSet.contains(tmp.get)}
+         |  }
+         |""".stripMargin
+
+    val filterStepsForSingleBoolean =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
+         |  * */
+         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase == value}
+         |
+         |""".stripMargin
+
+    val filterStepsForOptionalBoolean =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
+         |  * */
+         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => node.${nameCamelCase}.isDefined && node.$nameCamelCase.get == value}
+         |""".stripMargin
+
+    val filterStepsForSingleInt =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
+         |  * */
+         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase == value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
+         |  * */
+         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => vset.contains(node.$nameCamelCase)}
+         |}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
+         |  * */
+         |def ${nameCamelCase}Gt(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase > value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is greater than or equal the given `value`
+         |  * */
+         |def ${nameCamelCase}Gte(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase >= value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is less than the given `value`
+         |  * */
+         |def ${nameCamelCase}Lt(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase < value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is less than or equal the given `value`
+         |  * */
+         |def ${nameCamelCase}Lte(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase <= value}
+         |
+         |""".stripMargin
+
+    val filterStepsForOptionalInt =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
+         |  * */
+         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
+         |  * */
+         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && vset.contains(tmp.get)}
+         |}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
+         |  * */
+         |def ${nameCamelCase}Gt(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get > value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is greater than or equal the given `value`
+         |  * */
+         |def ${nameCamelCase}Gte(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get >= value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is less than the given `value`
+         |  * */
+         |def ${nameCamelCase}Lt(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get < value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is less than or equal the given `value`
+         |  * */
+         |def ${nameCamelCase}Lte(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get <= value}
+         |
+         |""".stripMargin
+
+    val filterStepsGenericSingle =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
+         |  * */
+         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{_.$nameCamelCase == value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
+         |  * */
+         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => !vset.contains(node.$nameCamelCase)}
+         |}
+         |
+         |""".stripMargin
+
+    val filterStepsGenericOption =
+      s"""/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
+         |  * */
+         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |  traversal.filter{node => node.$nameCamelCase.isDefined && node.$nameCamelCase.get == value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
+         |  * */
+         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => node.$nameCamelCase.isDefined && !vset.contains(node.$nameCamelCase.get)}
+         |}
+         |""".stripMargin
+
+    val filterSteps = (cardinality, property.valueType) match {
+      case (Cardinality.List, _)                      => ""
+      case (Cardinality.One(_), ValueType.String)     => filterStepsForSingleString
+      case (Cardinality.ZeroOrOne, ValueType.String)  => filterStepsForOptionalString
+      case (Cardinality.One(_), ValueType.Boolean)    => filterStepsForSingleBoolean
+      case (Cardinality.ZeroOrOne, ValueType.Boolean) => filterStepsForOptionalBoolean
+      case (Cardinality.One(_), ValueType.Int)        => filterStepsForSingleInt
+      case (Cardinality.ZeroOrOne, ValueType.Int)     => filterStepsForOptionalInt
+      case (Cardinality.One(_), _)                    => filterStepsGenericSingle
+      case (Cardinality.ZeroOrOne, _)                 => filterStepsGenericOption
+      case _                                          => ""
+    }
+
+    s"""/** Traverse to $nameCamelCase property */
+       |def $nameCamelCase: $Traversal[$baseType] =
+       |  traversal.$mapOrFlatMap(_.$nameCamelCase)
+       |
+       |$filterSteps
+       |""".stripMargin
+
   }
   def unpackDefault(typ: ValueType[_], default: Default[_]): String = {
     import org.apache.commons.text.StringEscapeUtils.escapeJava
