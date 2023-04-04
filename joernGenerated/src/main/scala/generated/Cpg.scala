@@ -5,6 +5,6 @@ object Cpg {
   def empty: Cpg = new Cpg(new odb2.Graph(GraphSchema))
 }
 class Cpg(val graph: odb2.Graph) {
-  assert(graph.schema eq GraphSchema)
+  assert(graph.schema == GraphSchema)
 
 }
