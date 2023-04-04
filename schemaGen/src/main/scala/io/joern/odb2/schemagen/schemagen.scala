@@ -617,7 +617,7 @@ object SchemaGen {
          |  def empty: ${schema.domainShortName} = new ${schema.domainShortName}(new odb2.Graph(GraphSchema))
          |}
          |class ${schema.domainShortName}(val graph: odb2.Graph){
-         |assert(graph.schema eq GraphSchema)
+         |assert(graph.schema == GraphSchema)
          |
          |
          |
