@@ -1,8 +1,9 @@
 package io.joern.odb2
 import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
 import misc.ISeq
-import scala.reflect.ClassTag
 
+import java.lang.ref.SoftReference
+import scala.reflect.ClassTag
 import scala.collection.mutable
 
 object Accessors {
@@ -209,6 +210,8 @@ class Graph(val schema: Schema) {
     new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfEdgeKinds * NeighborsSlotSize * NumberOfDirections)
 
   val _properties = new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
+
+  @volatile var _index = new SoftReference[String]("a")
 
   for (
     nodeKind <- Range(0, schema.getNumberOfNodeKinds);
