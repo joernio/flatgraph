@@ -4,6 +4,7 @@ import overflowdb.codegen.Helpers
 import overflowdb.schema.Property
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
+import java.util.concurrent.atomic.AtomicReferenceArray
 import scala.collection.mutable
 
 object SchemaGen {
@@ -609,6 +610,18 @@ object SchemaGen {
          |""".stripMargin
     outputDir.createChild("Traversals.scala").write(traversals)
 
+    val strmapping = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(s => s)
+    val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
+      s"""def ${strmapping(
+          Helpers.camelCase(typ.name)
+        )}: Iterator[nodes.${typ.className}] = wrappedGraph.graph.nodes(${idx}).asInstanceOf[Iterator[nodes.${typ.className}]]"""
+    }.toList
+    val baseStarters = schema.nodeBaseTypes.iterator.map { basetyp =>
+      s"""def ${strmapping(Helpers.camelCase(basetyp.name))}: Iterator[nodes.${basetyp.className}] = Iterator(${nodeTypes
+          .filter { _.extendzRecursively.contains(basetyp) }
+          .map { t => "this." + strmapping(Helpers.camelCase(t.name)) }
+          .mkString(", ")}).flatten"""
+    }.toList
     val domainMain =
       s"""package ${basePackage}
          |import io.joern.odb2
@@ -618,9 +631,12 @@ object SchemaGen {
          |}
          |class ${schema.domainShortName}(val graph: odb2.Graph){
          |assert(graph.schema == GraphSchema)
+         |}
          |
+         |class ${schema.domainShortName}GeneratedNodeStarters(val wrappedGraph: ${schema.domainShortName}) extends AnyVal {
+         |${concreteStarters.mkString("\n")}
          |
-         |
+         |${baseStarters.mkString("\n")}
          |}
          |""".stripMargin
     outputDir.createChild(s"${schema.domainShortName}.scala").write(domainMain)
