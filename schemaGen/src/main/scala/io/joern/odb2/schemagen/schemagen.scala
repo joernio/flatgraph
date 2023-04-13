@@ -501,7 +501,7 @@ object SchemaGen {
       )
       concreteStoredAccessTrav.addOne(
         s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
-          generatePropertyTraversals(p) + "}"
+          generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
         s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
@@ -538,7 +538,7 @@ object SchemaGen {
         )
         val elems = mutable.ArrayBuffer[String]()
         for (p <- newPropsAtNodeList(baseType)) {
-          elems.addOne(generatePropertyTraversals(p))
+          elems.addOne(generatePropertyTraversals(p, idByProperty(p)))
         }
         baseAccessTrav.addOne(
           elems.mkString(
@@ -659,7 +659,7 @@ object SchemaGen {
     }
   }
 
-  def generatePropertyTraversals(property: overflowdb.schema.Property[_]): String = {
+  def generatePropertyTraversals(property: overflowdb.schema.Property[_], propertyId:Int): String = {
     // fixme: also generate negated filters
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, false, false)
@@ -693,8 +693,12 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
-         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.${nameCamelCase} == value}
+         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
+         |    case init: odb2.misc.InitNodeIterator if init.isVirgin && init.hasNext =>
+         |      val someNode = init.next
+         |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
+         |    case _ => traversal.filter{_.${nameCamelCase} == value}
+         |  }
          |
          |/**
          |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
@@ -731,8 +735,12 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
-         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
+         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
+         |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
+         |      val someNode = init.next
+         |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
+         |     case _ => traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
+         |}
          |
          |/**
          |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.

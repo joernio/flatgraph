@@ -6,6 +6,7 @@ private[odb2] class MultiDictIndex[K <: AnyRef, V <: AnyRef] {
   private var keys: Array[AnyRef]   = _
   private var values: Array[AnyRef] = _
   private var size                  = 0
+  private var finished = false
   def initForSize(sizehint: Int): Unit = {
     size = sizehint + sizehint >> 2
     keys = new Array[AnyRef](size)
@@ -25,6 +26,7 @@ private[odb2] class MultiDictIndex[K <: AnyRef, V <: AnyRef] {
 
   def insert(key: K, value: V): Unit = {
     if (key == null) return
+    if(finished) throw new RuntimeException("Cannot insert into finished index")
     var pos = hashToPos(key.hashCode())
     while (true) {
       if (pos >= size) pos = 0
@@ -54,9 +56,11 @@ private[odb2] class MultiDictIndex[K <: AnyRef, V <: AnyRef] {
       }
       idx += 1
     }
+    finished = true
   }
   def get(key: K): Iterator[V] = {
     if (key == null) return null
+    if(!finished) throw new RuntimeException("Cannot lookup in unfinished index")
     var pos = hashToPos(key.hashCode())
     while (true) {
       if (pos >= size) pos = 0
