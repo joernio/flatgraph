@@ -1,4 +1,5 @@
 package io.joern.joernBench
+import io.shiftleft.codepropertygraph.generated.v2.Cpg
 import org.openjdk.jmh.runner.Runner
 import org.openjdk.jmh.annotations._
 import org.openjdk.jmh.infra.{BenchmarkParams, Blackhole}
@@ -12,6 +13,7 @@ object JmhMain {
 
   def jmhMain(): Unit = {
     val opt = new OptionsBuilder()
+      // .include(".*indexed.*")
       .include(classOf[JoernGenerated].getSimpleName)
       .include(classOf[JoernLegacy].getSimpleName)
       .include(classOf[Odb2Generated].getSimpleName)
@@ -46,99 +48,6 @@ object JmhMain {
     field.setInt(params, ops)
   }
 
-}
-
-@State(Scope.Benchmark)
-class JoernGenerated {
-  import io.shiftleft.codepropertygraph.generated.Cpg
-  import io.shiftleft.codepropertygraph.generated.nodes.{StoredNode, AstNode, Call}
-
-  @Param(Array("true", "false"))
-  var shuffled: Boolean = _
-
-  private var cpg: Cpg                     = _
-  private var nodeStart: Array[StoredNode] = null
-
-  @Setup
-  def setupFun(params: BenchmarkParams): Unit = {
-    cpg = Bench.loadCopyFile("./cpg.bin")
-    params.getBenchmark match {
-      case name if name.endsWith("astDFS") =>
-        nodeStart =
-          cpg.graph.nodes().collect { case astNode: StoredNode if !astNode._astIn.hasNext && astNode._astOut.hasNext => astNode }.toArray
-        JmhMain.setOps(params, astDFS(null))
-      case name if name.endsWith("astUp") =>
-        nodeStart = cpg.graph.nodes().collect { case astNode: StoredNode => astNode }.toArray
-        JmhMain.setOps(params, astUp(null))
-      case name if name.contains("orderSum") =>
-        nodeStart = cpg.graph.nodes().collect { case astNode: AstNode => astNode.asInstanceOf[StoredNode] }.toArray
-        JmhMain.setOps(params, nodeStart.length)
-      case name if name.contains("callOrder") =>
-        nodeStart = cpg.graph.nodes().collect { case node: Call => node.asInstanceOf[StoredNode] }.toArray
-        JmhMain.setOps(params, nodeStart.length)
-    }
-    if (shuffled) {
-      nodeStart = new Random(1234).shuffle(nodeStart.iterator).toArray
-    }
-  }
-
-  @Benchmark
-  def astDFS(blackhole: Blackhole): Int = {
-    val stack = scala.collection.mutable.ArrayDeque[StoredNode]()
-    stack.addAll(nodeStart)
-    var nnodes = nodeStart.size
-    while (stack.nonEmpty) {
-      val nx = stack.removeLast()
-      stack.appendAll(nx._astOut)
-      nnodes += 1
-    }
-    if (blackhole != null) blackhole.consume(nnodes)
-    nnodes
-  }
-
-  @Benchmark
-  def astUp(blackhole: Blackhole): Int = {
-    var sumDepth = 0
-    for (node <- nodeStart) {
-      var p = node
-      while (p != null) {
-        sumDepth += 1
-        p = p._astIn.nextOption.orNull
-      }
-    }
-    if (blackhole != null) blackhole.consume(sumDepth)
-    sumDepth
-  }
-
-  @Benchmark
-  def orderSum(blackhole: Blackhole): Int = {
-    var sumOrder = 0
-    for (node <- nodeStart.iterator.asInstanceOf[Iterator[AstNode]]) {
-      sumOrder += node.order
-    }
-    if (blackhole != null) blackhole.consume(sumOrder)
-    sumOrder
-  }
-
-  @Benchmark
-  def callOrderTrav(blackhole: Blackhole): Int = {
-    import io.shiftleft.semanticcpg.language._
-    import overflowdb.traversal
-    val res = traversal.Traversal.from(nodeStart.iterator.asInstanceOf[Iterator[Call]]).orderGt(2).count.next()
-    if (blackhole != null) blackhole.consume(res)
-    res
-  }
-
-  @Benchmark
-  def callOrderExplicit(blackhole: Blackhole): Int = {
-    import io.shiftleft.semanticcpg.language._
-    var res = 0
-    for (node <- nodeStart.iterator.asInstanceOf[Iterator[Call]]) {
-      if (node.order > 2) res += 1
-    }
-    if (blackhole != null) blackhole.consume(res)
-    res
-  }
 }
 
 @State(Scope.Benchmark)
@@ -213,6 +122,129 @@ class JoernLegacy {
 }
 
 @State(Scope.Benchmark)
+class JoernGenerated {
+
+  import io.shiftleft.codepropertygraph.generated.Cpg
+  import io.shiftleft.codepropertygraph.generated.nodes.{StoredNode, AstNode, Call}
+
+  @Param(Array("true", "false"))
+  var shuffled: Boolean = _
+
+  private var cpg: Cpg                     = _
+  private var nodeStart: Array[StoredNode] = new Array[StoredNode](0)
+  private var fullnames: Array[String]     = _
+
+  @Setup
+  def setupFun(params: BenchmarkParams): Unit = {
+    cpg = Bench.loadCopyFile("./cpg.bin")
+    params.getBenchmark match {
+      case name if name.endsWith("astDFS") =>
+        nodeStart =
+          cpg.graph.nodes().collect { case astNode: StoredNode if !astNode._astIn.hasNext && astNode._astOut.hasNext => astNode }.toArray
+        JmhMain.setOps(params, astDFS(null))
+      case name if name.endsWith("astUp") =>
+        nodeStart = cpg.graph.nodes().collect { case astNode: StoredNode => astNode }.toArray
+        JmhMain.setOps(params, astUp(null))
+      case name if name.contains("orderSum") =>
+        nodeStart = cpg.graph.nodes().collect { case astNode: AstNode => astNode.asInstanceOf[StoredNode] }.toArray
+        JmhMain.setOps(params, nodeStart.length)
+      case name if name.contains("callOrder") =>
+        nodeStart = cpg.graph.nodes().collect { case node: Call => node.asInstanceOf[StoredNode] }.toArray
+        JmhMain.setOps(params, nodeStart.length)
+      case name if name.contains("MethodFullName") =>
+        import io.shiftleft.semanticcpg.language._
+        if (shuffled)
+          fullnames = new Random(1234).shuffle(cpg.method.fullName.iterator).toArray
+        else
+          fullnames = new Random(1234).shuffle(cpg.method.fullName.iterator.map { name => name + "lolnope" }).toArray
+        fullnames = fullnames.slice(0, math.min(1000, fullnames.length))
+        JmhMain.setOps(params, fullnames.length)
+    }
+    if (shuffled) {
+      nodeStart = new Random(1234).shuffle(nodeStart.iterator).toArray
+    }
+  }
+
+  @Benchmark
+  def astDFS(blackhole: Blackhole): Int = {
+    val stack = scala.collection.mutable.ArrayDeque[StoredNode]()
+    stack.addAll(nodeStart)
+    var nnodes = nodeStart.size
+    while (stack.nonEmpty) {
+      val nx = stack.removeLast()
+      stack.appendAll(nx._astOut)
+      nnodes += 1
+    }
+    if (blackhole != null) blackhole.consume(nnodes)
+    nnodes
+  }
+
+  @Benchmark
+  def astUp(blackhole: Blackhole): Int = {
+    var sumDepth = 0
+    for (node <- nodeStart) {
+      var p = node
+      while (p != null) {
+        sumDepth += 1
+        p = p._astIn.nextOption.orNull
+      }
+    }
+    if (blackhole != null) blackhole.consume(sumDepth)
+    sumDepth
+  }
+
+  @Benchmark
+  def orderSum(blackhole: Blackhole): Int = {
+    var sumOrder = 0
+    for (node <- nodeStart.iterator.asInstanceOf[Iterator[AstNode]]) {
+      sumOrder += node.order
+    }
+    if (blackhole != null) blackhole.consume(sumOrder)
+    sumOrder
+  }
+
+  @Benchmark
+  def callOrderTrav(blackhole: Blackhole): Int = {
+    import io.shiftleft.semanticcpg.language._
+    import overflowdb.traversal
+    val res = traversal.Traversal.from(nodeStart.iterator.asInstanceOf[Iterator[Call]]).orderGt(2).count.next()
+    if (blackhole != null) blackhole.consume(res)
+    res
+  }
+
+  @Benchmark
+  def callOrderExplicit(blackhole: Blackhole): Int = {
+    var res = 0
+    for (node <- nodeStart.iterator.asInstanceOf[Iterator[Call]]) {
+      if (node.order > 2) res += 1
+    }
+    if (blackhole != null) blackhole.consume(res)
+    res
+  }
+  @Benchmark
+  def indexedMethodFullName(bh: Blackhole): Unit = {
+    import io.shiftleft.semanticcpg.language._
+
+    for (
+      str   <- fullnames;
+      found <- cpg.method.fullNameExact(str)
+    ) {
+      bh.consume(found)
+    }
+  }
+  @Benchmark
+  def unindexedMethodFullName(bh: Blackhole): Unit = {
+    import io.shiftleft.semanticcpg.language._
+    for (
+      str   <- fullnames;
+      found <- cpg.method.filter { _ => true }.fullNameExact(str)
+    ) {
+      bh.consume(found)
+    }
+  }
+}
+
+@State(Scope.Benchmark)
 class Odb2Generated {
   import io.shiftleft.codepropertygraph.generated.v2
   import io.joern.odb2
@@ -220,39 +252,48 @@ class Odb2Generated {
   @Param(Array("true", "false"))
   var shuffled: Boolean = _
 
-  private var cpg: odb2.Graph                       = _
-  private var nodeStart: Array[v2.nodes.StoredNode] = null
-
+  private var cpg: v2.Cpg                           = _
+  private var nodeStart: Array[v2.nodes.StoredNode] = new Array[v2.nodes.StoredNode](0)
+  private var fullnames: Array[String]              = _
   @Setup
   def setupFun(params: BenchmarkParams): Unit = {
-    cpg = odb2.storage.Deserialization.readGraph("./cpg.fg", v2.GraphSchema)
+    cpg = new Cpg(odb2.storage.Deserialization.readGraph("./cpg.fg", v2.GraphSchema))
     params.getBenchmark match {
       case name if name.endsWith("astDFS") =>
-        nodeStart = cpg._nodes.iterator.flatMap { nodesOfKind =>
+        nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect {
             case astNode: v2.nodes.StoredNode if astNode._astIn.isEmpty && astNode._astOut.nonEmpty => astNode
           }
         }.toArray
         JmhMain.setOps(params, astDFS(null))
       case name if name.endsWith("astUp") =>
-        nodeStart = cpg._nodes.flatMap {
+        nodeStart = cpg.graph._nodes.flatMap {
           _.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode]]
         }
         JmhMain.setOps(params, astUp(null))
       case name if name.contains("orderSum") =>
-        nodeStart = cpg._nodes.iterator.flatMap { nodesOfKind =>
+        nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case astNode: v2.nodes.AstNode =>
             astNode.asInstanceOf[v2.nodes.StoredNode]
           }
         }.toArray
         JmhMain.setOps(params, nodeStart.length)
       case name if name.contains("callOrder") =>
-        nodeStart = cpg._nodes.iterator.flatMap { nodesOfKind =>
+        nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case node: v2.nodes.Call =>
             node.asInstanceOf[v2.nodes.StoredNode]
           }
         }.toArray
         JmhMain.setOps(params, nodeStart.length)
+      case name if name.contains("MethodFullName") =>
+        import v2.traversals.Lang._
+        if (shuffled)
+          fullnames = new Random(1234).shuffle(new v2.CpgGeneratedNodeStarters(cpg).method.fullName.iterator).toArray
+        else
+          fullnames =
+            new Random(1234).shuffle(new v2.CpgGeneratedNodeStarters(cpg).method.fullName.iterator.map { name => name + "lolnope" }).toArray
+        fullnames = fullnames.slice(0, math.min(1000, fullnames.length))
+        JmhMain.setOps(params, fullnames.length)
     }
 
     if (shuffled) {
@@ -342,6 +383,28 @@ class Odb2Generated {
     }
     if (blackhole != null) blackhole.consume(res)
     res
+  }
+
+  @Benchmark
+  def indexedMethodFullName(bh: Blackhole): Unit = {
+    import v2.traversals.Lang._
+    for (
+      str   <- fullnames;
+      found <- new v2.CpgGeneratedNodeStarters(cpg).method.fullNameExact(str)
+    ) {
+      bh.consume(found)
+    }
+  }
+
+  @Benchmark
+  def unindexedMethodFullName(bh: Blackhole): Unit = {
+    import v2.traversals.Lang._
+    for (
+      str   <- fullnames;
+      found <- new v2.CpgGeneratedNodeStarters(cpg).method.filter { _ => true }.fullNameExact(str)
+    ) {
+      bh.consume(found)
+    }
   }
 
 }

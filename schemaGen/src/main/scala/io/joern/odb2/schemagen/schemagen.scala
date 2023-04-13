@@ -659,7 +659,7 @@ object SchemaGen {
     }
   }
 
-  def generatePropertyTraversals(property: overflowdb.schema.Property[_], propertyId:Int): String = {
+  def generatePropertyTraversals(property: overflowdb.schema.Property[_], propertyId: Int): String = {
     // fixme: also generate negated filters
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, false, false)
@@ -694,7 +694,7 @@ object SchemaGen {
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
          |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
-         |    case init: odb2.misc.InitNodeIterator if init.isVirgin && init.hasNext =>
+         |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
          |      val someNode = init.next
          |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
          |    case _ => traversal.filter{_.${nameCamelCase} == value}
