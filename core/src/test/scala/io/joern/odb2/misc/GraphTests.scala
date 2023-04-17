@@ -753,7 +753,7 @@ class GraphTests extends AnyWordSpec with Matchers {
           .setNodeProperty(v1.storedRef.get, 0, "p1")
           .setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
       )
-      (g._inverseIndices.get(0) eq null) shouldBe true
+      g._inverseIndices.get(0) shouldBe null
       DiffGraphApplier.applyDiff(
         g,
         (new DiffGraphBuilder)
