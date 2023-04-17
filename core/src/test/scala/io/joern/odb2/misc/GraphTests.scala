@@ -761,7 +761,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       )
       g._inverseIndices.get(0) shouldBe null
 
-      println(DebugDump.debugDump(g))
+      // println(DebugDump.debugDump(g))
 
     }
   }
