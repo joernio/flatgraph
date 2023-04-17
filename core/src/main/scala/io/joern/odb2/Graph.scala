@@ -1,8 +1,10 @@
 package io.joern.odb2
 import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
-import misc.ISeq
-import scala.reflect.ClassTag
+import misc.{ISeq, MultiDictIndex}
 
+import java.lang.ref.SoftReference
+import java.util.concurrent.atomic.AtomicReferenceArray
+import scala.reflect.ClassTag
 import scala.collection.mutable
 
 object Accessors {
@@ -94,6 +96,7 @@ object Accessors {
     val vals = graph._properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
     vals(qty(seq))
   }
+
   def getNodePropertyOption[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit
     evidence: ClassTag[T]
   ): Option[T] = {
@@ -115,6 +118,68 @@ object Accessors {
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
+  def getInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): misc.MultiDictIndex = {
+    val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    graph._inverseIndices.get(pos) match {
+      case exists: misc.MultiDictIndex if exists != null => exists
+      case _                                             => createInverseIndex(graph, nodeKind, propertyKind)
+    }
+  }
+
+  def getWithInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int, value: String): Iterator[GNode] =
+    getInverseIndex(graph, nodeKind, propertyKind).get(value)
+
+  private class IndexLock {}
+  private def createInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): misc.MultiDictIndex = {
+    val pos            = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val inverseIndices = graph._inverseIndices
+    /* we have 3 states of the slot:
+      null -> IndexLock -> MultiDictIndex
+
+     * */
+    inverseIndices.get(pos) match {
+      case null =>
+        val lock = new IndexLock
+        lock.synchronized {
+          if (inverseIndices.compareAndSet(pos, null, lock)) {
+            // we now own the slot.
+            val inverseIndex = new MultiDictIndex
+            try {
+
+              val numItems = graph._properties(pos).asInstanceOf[Array[Int]]
+              val items    = graph._properties(pos + 1).asInstanceOf[Array[String]]
+              val nodes    = graph._nodes(nodeKind)
+              inverseIndex.initForSize(items.length)
+              for (idx <- Range(0, nodes.length) if idx + 1 < numItems.length) {
+                val node  = nodes(idx)
+                val start = numItems(idx)
+                val end   = numItems(idx + 1)
+                for (idx2 <- Range(start, end)) {
+                  inverseIndex.insert(items(idx2), node)
+                }
+              }
+              inverseIndex.shrinkfit()
+              return inverseIndex
+            } finally {
+              val lock2 = inverseIndices.getAndSet(pos, inverseIndex)
+              assert(lock eq lock2)
+            }
+          }
+        }
+      case _ =>
+    }
+    inverseIndices.get(pos) match {
+      case null => throw new RuntimeException("sync error")
+      case lock: IndexLock if lock != null =>
+        lock.synchronized {}
+      case _ =>
+    }
+    inverseIndices.get(pos) match {
+      case exists: misc.MultiDictIndex if exists != null =>
+        // the slot contains the result
+        exists
+    }
+  }
 }
 
 object DebugDump {
@@ -210,6 +275,8 @@ class Graph(val schema: Schema) {
 
   val _properties = new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
 
+  val _inverseIndices = new AtomicReferenceArray[Object](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
+
   for (
     nodeKind <- Range(0, schema.getNumberOfNodeKinds);
     inout    <- Range(0, 2);
@@ -221,9 +288,9 @@ class Graph(val schema: Schema) {
   }
 
   val nnodes: Array[Int] = new Array[Int](schema.getNumberOfNodeKinds)
-  def nodes(nodeKind: Int): Iterator[GNode] = {
-    if (_nodes(nodeKind).length == nnodes(nodeKind)) _nodes(nodeKind).iterator
-    else _nodes(nodeKind).iterator.filter { !AccessHelpers.isDeleted(_) }
+  def nodes(nodeKind: Int): misc.InitNodeIterator[GNode] = {
+    if (_nodes(nodeKind).length == nnodes(nodeKind)) new misc.InitNodeIteratorArray[GNode](_nodes(nodeKind))
+    else new misc.InitNodeIteratorArrayFiltered[GNode](_nodes(nodeKind))
   }
   for (nodeKind <- Range(0, _nodes.length)) _nodes(nodeKind) = new Array[GNode](0)
 

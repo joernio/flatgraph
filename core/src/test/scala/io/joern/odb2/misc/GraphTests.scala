@@ -718,5 +718,51 @@ class GraphTests extends AnyWordSpec with Matchers {
         |""".stripMargin
       testSerialization(g)
     }
+
+    "support indexed lookups" in {
+      val schema = TestSchema.make(1, 0, 1, nodePropertyPrototypes = Array(new Array[String](0)))
+      val g      = new Graph(schema)
+      val v0     = new GenericDNode(0)
+      val v1     = new GenericDNode(0)
+      val v2     = new GenericDNode(0)
+      val v3     = new GenericDNode(0)
+      DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(v0).addNode(v1).addNode(v2).addNode(v3))
+      DiffGraphApplier.applyDiff(
+        g,
+        (new DiffGraphBuilder)
+          .setNodeProperty(v0.storedRef.get, 0, "p0")
+          .setNodeProperty(v1.storedRef.get, 0, "p1")
+          .setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
+      )
+      DebugDump.debugDump(g) shouldBe
+        """#Node numbers (kindId, nnodes) (0: 4), total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+          |   V0_0       : 0: [p0]
+          |   V0_1       : 0: [p1]
+          |   V0_3       : 0: [p1, p3]
+          |""".stripMargin
+      g._inverseIndices.get(0) shouldBe null
+      Accessors.getWithInverseIndex(g, 0, 0, "p0").toList shouldBe List(v0.storedRef.get)
+      Accessors.getWithInverseIndex(g, 0, 0, "p1").toList shouldBe List(v1.storedRef.get, v3.storedRef.get)
+      Accessors.getWithInverseIndex(g, 0, 0, "p2").toList shouldBe Nil
+      Accessors.getWithInverseIndex(g, 0, 0, "p3").toList shouldBe List(v3.storedRef.get)
+      DiffGraphApplier.applyDiff(
+        g,
+        (new DiffGraphBuilder)
+          .setNodeProperty(v0.storedRef.get, 0, "p0")
+          .setNodeProperty(v1.storedRef.get, 0, "p1")
+          .setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
+      )
+      g._inverseIndices.get(0) shouldBe null
+      DiffGraphApplier.applyDiff(
+        g,
+        (new DiffGraphBuilder)
+          .setNodeProperty(v2.storedRef.get, 0, "p2")
+      )
+      g._inverseIndices.get(0) shouldBe null
+
+      // println(DebugDump.debugDump(g))
+
+    }
   }
 }

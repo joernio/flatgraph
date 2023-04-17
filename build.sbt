@@ -23,8 +23,8 @@ ThisBuild / scalacOptions ++= Seq("-deprecation", "-feature") ++ (
 )
 
 ThisBuild / compile / javacOptions ++= Seq(
-  "-g" // debug symbols
-//  "--release=8"
+  "-g", // debug symbols
+  "--release=8"
 )
 ThisBuild / scalacOptions ++= Seq(
   "-target:jvm-1.8" // "--release", "8"

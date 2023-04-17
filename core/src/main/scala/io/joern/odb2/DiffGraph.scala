@@ -317,6 +317,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       deletedNode  <- delNodes
     ) {
       val pos = graph.schema.propertyOffsetArrayIndex(deletedNode.nodeKind, propertyKind)
+      graph._inverseIndices.set(pos, null)
       graph._properties(pos) match {
         case null =>
         case oldQty: Array[Int] =>
@@ -612,6 +613,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     val propertyBuf = setNodeProperties(pos)
     if (propertyBuf != null) {
       val setPropertyPositions = setNodeProperties(pos + 1).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
+      graph._inverseIndices.set(pos, null)
       setPropertyPositions.sortInPlaceBy(_.node.seq())
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
       val nnodes = graph._nodes(nodeKind).size
