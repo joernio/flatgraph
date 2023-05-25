@@ -40,7 +40,7 @@ object Bench {
       .iterator()
       .asScala
       .toBuffer
-      .sortBy { e: HistogramEntry => -scala.math.abs(e.getSize) }
+      .sortBy(e => -scala.math.abs(e.getSize))
       .take(if (top > 0) top else java.lang.Integer.MAX_VALUE)
       .filter { _.getInstances != 0 }
     val total = lst.iterator.map { e => e.getSize }.sum
@@ -69,7 +69,7 @@ object Bench {
         .iterator()
         .asScala
         .toBuffer
-        .sortBy { e: HistogramEntry => -scala.math.abs(e.getSize) }
+        .sortBy(e => -scala.math.abs(e.getSize))
         .take(20)
         .flatMap { e =>
           Try(Class.forName(e.getClassName)) match {

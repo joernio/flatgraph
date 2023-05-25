@@ -19,7 +19,7 @@ class ISeqTest extends AnyWordSpec with Matchers {
       ISeq.from(a, 0, 3).toList shouldBe List(0, 1, 2)
       ISeq.from(a, 1, 3).toList shouldBe List(1, 2)
       ISeq.from(a, 1, 2).toList shouldBe List(1)
-      ISeq.from(a, 0, 3).getClass.getName shouldBe "io.joern.odb2.misc.ISeq$mcI$sp"
+      ISeq.from(a, 0, 3).getClass.getName shouldBe "io.joern.odb2.misc.ISeq"
     }
 
   }
