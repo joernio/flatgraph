@@ -11,31 +11,28 @@ lazy val joernGenerated       = project.in(file("joernGenerated")).dependsOn(cor
 lazy val codescienceGenerated = project.in(file("codescienceGenerated")).dependsOn(core)
 lazy val benchStuff           = project.in(file("benchStuff")).dependsOn(core).dependsOn(joernGenerated)
 
-ThisBuild / libraryDependencies ++= Seq("org.slf4j" % "slf4j-simple" % "2.0.6" % Test, "org.scalatest" %% "scalatest" % "3.2.12" % Test)
+ThisBuild / libraryDependencies ++= Seq(
+  "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.15" % Test
+)
 
-ThisBuild / scalacOptions ++= Seq("-deprecation", "-feature") ++ (
-  CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((3, _)) =>
-      Seq("-Xtarget:8")
-    case _ =>
-      Seq("-target:jvm-1.8")
-  }
+ThisBuild / scalacOptions ++= Seq(
+  "-deprecation",
+  "-feature",
+  "--release", "8",
+  "-language:implicitConversions"
 )
 
 ThisBuild / compile / javacOptions ++= Seq(
   "-g", // debug symbols
   "--release=8"
 )
-ThisBuild / scalacOptions ++= Seq(
-  "-target:jvm-1.8" // "--release", "8"
-)
 
-ThisBuild / resolvers ++= Seq(Resolver.mavenLocal, "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public")
-
-ThisBuild / Compile / scalacOptions ++= Seq(
-//  "-Xfatal-warnings",
-  "-language:implicitConversions"
-  // "-language:existentials",
+ThisBuild / resolvers ++= Seq(
+  Resolver.mavenLocal,
+  "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public",
+  // TODO take out, we're currently relying on closed source in an open source build (codescience-schema)
+  "Artifactory release local" at "https://shiftleft.jfrog.io/shiftleft/libs-release-local",
 )
 
 Global / cancelable           := true
