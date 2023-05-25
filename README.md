@@ -1781,3 +1781,7 @@ In theory, there are many debates about whether to check generated code into rep
 In this specific case, it is essential to be able to talk about the generated code,
 and track its changes over time. This would be a royal pain if the generated code only existed after a
 successful build.
+
+# What JDK does OverflowDBv2 support?
+The build targets JDK8, so that's the minimum version. The build itself requires JDK11+. 
+However in any case it is highly encouraged to use a modern JVM, such as JDK20. 
