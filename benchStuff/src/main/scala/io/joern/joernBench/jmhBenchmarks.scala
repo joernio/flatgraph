@@ -388,7 +388,7 @@ class Odb2Generated {
   @Benchmark
   def indexedMethodFullName(bh: Blackhole): Unit = {
     import v2.traversals.Lang._
-    fullnames.foreach { fullName => 
+    fullnames.foreach { fullName =>
       new v2.CpgGeneratedNodeStarters(cpg).method.fullNameExact(fullName).foreach(bh.consume)
     }
   }
