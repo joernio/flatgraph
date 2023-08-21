@@ -103,7 +103,7 @@ class JoernLegacy {
       var p = node
       while (p != null) {
         sumDepth += 1
-        p = p.in("AST").nextOption.orNull
+        p = p.in("AST").nextOption().orNull
       }
     }
     if (blackhole != null) blackhole.consume(sumDepth)
@@ -186,7 +186,7 @@ class JoernGenerated {
       var p = node
       while (p != null) {
         sumDepth += 1
-        p = p._astIn.nextOption.orNull
+        p = p._astIn.nextOption().orNull
       }
     }
     if (blackhole != null) blackhole.consume(sumDepth)
