@@ -7,7 +7,6 @@ lazy val core                 = project.in(file("core"))
 lazy val schemaGen            = project.in(file("schemaGen")).dependsOn(core)
 lazy val odbConvert           = project.in(file("odbConvert")).dependsOn(core)
 lazy val joernGenerated       = project.in(file("joernGenerated")).dependsOn(core)
-lazy val codescienceGenerated = project.in(file("codescienceGenerated")).dependsOn(core)
 lazy val benchStuff           = project.in(file("benchStuff")).dependsOn(core).dependsOn(joernGenerated)
 
 ThisBuild / libraryDependencies ++= Seq(
@@ -25,13 +24,6 @@ ThisBuild / scalacOptions ++= Seq(
 ThisBuild / compile / javacOptions ++= Seq(
   "-g", // debug symbols
   "--release=8"
-)
-
-ThisBuild / resolvers ++= Seq(
-  Resolver.mavenLocal,
-  "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public",
-  // TODO take out, we're currently relying on closed source in an open source build (codescience-schema)
-  "Artifactory release local" at "https://shiftleft.jfrog.io/shiftleft/libs-release-local",
 )
 
 Global / cancelable           := true
