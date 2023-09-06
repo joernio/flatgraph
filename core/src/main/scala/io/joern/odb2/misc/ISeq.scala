@@ -48,7 +48,10 @@ class InitNodeIteratorArrayFiltered[T <: GNode](arr: Array[GNode]) extends InitN
   def isVirgin: Boolean = pos - skipped <= 0
 
   override def hasNext: Boolean = {
-    while (pos < arr.length && AccessHelpers.isDeleted(arr(pos))) { skipped += 1; pos += 1 }
+    while (pos < arr.length && AccessHelpers.isDeleted(arr(pos))) {
+      skipped += 1
+      pos += 1
+    }
     pos < arr.length
   }
 

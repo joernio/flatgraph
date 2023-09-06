@@ -1,11 +1,10 @@
 package io.joern.odb2
 import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
-import misc.{ISeq, MultiDictIndex}
+import io.joern.odb2.misc.{ISeq, MultiDictIndex}
 
-import java.lang.ref.SoftReference
 import java.util.concurrent.atomic.AtomicReferenceArray
-import scala.reflect.ClassTag
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 object Accessors {
 
@@ -277,11 +276,11 @@ class Graph(val schema: Schema) {
 
   val _inverseIndices = new AtomicReferenceArray[Object](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
 
-  for (
-    nodeKind <- Range(0, schema.getNumberOfNodeKinds);
-    inout    <- Range(0, 2);
+  for {
+    nodeKind <- Range(0, schema.getNumberOfNodeKinds)
+    inout    <- Range(0, 2)
     edgeKind <- Range(0, schema.getNumberOfEdgeKinds)
-  ) {
+  } {
     val pos             = schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
     val propertyDefault = schema.allocateEdgeProperty(nodeKind, inout, edgeKind, 1)
     _neighbors(pos + 2) = if (propertyDefault == null) null else new DefaultValue(propertyDefault(0))
