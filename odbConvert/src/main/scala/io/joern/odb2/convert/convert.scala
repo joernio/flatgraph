@@ -1,19 +1,16 @@
 package io.joern.odb2.convert
 
-import gnu.trove.map.hash.{TLongLongHashMap, TLongObjectHashMap}
-import org.msgpack.core.{MessagePack, MessageUnpacker}
-import overflowdb.storage.{OdbStorage, ValueTypes}
-
-import scala.collection.mutable
 import io.joern.odb2
 import io.joern.odb2.storage
-import io.joern.odb2.storage.{Keys, StorageManifest, StorageTyp, Serialization}
+import io.joern.odb2.storage.{Keys, Serialization, StorageManifest, StorageTyp}
+import org.msgpack.core.MessagePack
+import overflowdb.storage.{OdbStorage, ValueTypes}
 
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
-import scala.jdk.CollectionConverters.IteratorHasAsScala
+import scala.collection.mutable
 
 object Convert {
 
@@ -75,10 +72,10 @@ object Convert {
       val nodes      = nodeStuff.map { ns => new StorageManifest.NodeItem(ns.label, ns.nextId, null) }
       val edges      = mutable.ArrayBuffer[StorageManifest.EdgeItem]()
       val properties = mutable.ArrayBuffer[StorageManifest.PropertyItem]()
-      for (
-        node                      <- nodeStuff;
+      for {
+        node                      <- nodeStuff
         ((prefix, key), quantity) <- node.quantities.iterator
-      ) {
+      } {
         val deltaEncoded   = quantity.addOne(0).toArray
         val qty            = Serialization.encodeAny(deltaEncoded, filePtr, null, fileChannel)
         val (valtyp, vals) = homogenize(node.values((prefix, key)))
@@ -110,7 +107,7 @@ object Convert {
       val poolBytes     = new ByteArrayOutputStream()
       for (s <- strings) {
         val bytes = s.getBytes(StandardCharsets.UTF_8)
-        poolBytes.write(bytes);
+        poolBytes.write(bytes)
         poolLenBuffer.put(bytes.length)
       }
       val poolLensStored  = new StorageManifest.OutlineStorage(StorageTyp.Int)

@@ -1,9 +1,8 @@
 package io.joern.joernBench
 import io.shiftleft.codepropertygraph.generated.v2.Cpg
-import org.openjdk.jmh.runner.Runner
-import org.openjdk.jmh.annotations._
+import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.{BenchmarkParams, Blackhole}
-import org.openjdk.jmh.profile
+import org.openjdk.jmh.runner.Runner
 import org.openjdk.jmh.runner.options.{OptionsBuilder, TimeValue}
 import overflowdb.traversal.jIteratortoTraversal
 
@@ -52,9 +51,8 @@ object JmhMain {
 
 @State(Scope.Benchmark)
 class JoernLegacy {
-  import io.shiftleft.codepropertygraph.generated.Cpg
-  import io.shiftleft.codepropertygraph.generated.nodes.StoredNode
   import io.shiftleft.codepropertygraph.generated.nodes
+  import io.shiftleft.codepropertygraph.generated.nodes.StoredNode
 
   @Param(Array("true", "false"))
   var shuffled: Boolean = _
@@ -125,7 +123,7 @@ class JoernLegacy {
 class JoernGenerated {
 
   import io.shiftleft.codepropertygraph.generated.Cpg
-  import io.shiftleft.codepropertygraph.generated.nodes.{StoredNode, AstNode, Call}
+  import io.shiftleft.codepropertygraph.generated.nodes.{AstNode, Call, StoredNode}
 
   @Param(Array("true", "false"))
   var shuffled: Boolean = _
@@ -152,7 +150,7 @@ class JoernGenerated {
         nodeStart = cpg.graph.nodes().collect { case node: Call => node.asInstanceOf[StoredNode] }.toArray
         JmhMain.setOps(params, nodeStart.length)
       case name if name.contains("MethodFullName") =>
-        import io.shiftleft.semanticcpg.language._
+        import io.shiftleft.semanticcpg.language.*
         if (shuffled)
           fullnames = new Random(1234).shuffle(cpg.method.fullName.iterator).toArray
         else
@@ -205,7 +203,7 @@ class JoernGenerated {
 
   @Benchmark
   def callOrderTrav(blackhole: Blackhole): Int = {
-    import io.shiftleft.semanticcpg.language._
+    import io.shiftleft.semanticcpg.language.*
     import overflowdb.traversal
     val res = traversal.Traversal.from(nodeStart.iterator.asInstanceOf[Iterator[Call]]).orderGt(2).count.next()
     if (blackhole != null) blackhole.consume(res)
@@ -223,31 +221,27 @@ class JoernGenerated {
   }
   @Benchmark
   def indexedMethodFullName(bh: Blackhole): Unit = {
-    import io.shiftleft.semanticcpg.language._
+    import io.shiftleft.semanticcpg.language.*
 
-    for (
-      str   <- fullnames;
+    for {
+      str   <- fullnames
       found <- cpg.method.fullNameExact(str)
-    ) {
-      bh.consume(found)
-    }
+    } bh.consume(found)
   }
   @Benchmark
   def unindexedMethodFullName(bh: Blackhole): Unit = {
-    import io.shiftleft.semanticcpg.language._
-    for (
-      str   <- fullnames;
+    import io.shiftleft.semanticcpg.language.*
+    for {
+      str   <- fullnames
       found <- cpg.method.filter { _ => true }.fullNameExact(str)
-    ) {
-      bh.consume(found)
-    }
+    } bh.consume(found)
   }
 }
 
 @State(Scope.Benchmark)
 class Odb2Generated {
-  import io.shiftleft.codepropertygraph.generated.v2
   import io.joern.odb2
+  import io.shiftleft.codepropertygraph.generated.v2
 
   @Param(Array("true", "false"))
   var shuffled: Boolean = _
@@ -286,7 +280,7 @@ class Odb2Generated {
         }.toArray
         JmhMain.setOps(params, nodeStart.length)
       case name if name.contains("MethodFullName") =>
-        import v2.traversals.Lang._
+        import v2.traversals.Lang.*
         if (shuffled)
           fullnames = new Random(1234).shuffle(new v2.CpgGeneratedNodeStarters(cpg).method.fullName.iterator).toArray
         else
@@ -331,7 +325,7 @@ class Odb2Generated {
 
   @Benchmark
   def orderSumChecked(blackhole: Blackhole): Int = {
-    import v2.accessors.Lang._
+    import v2.accessors.Lang.*
     var sumOrder = 0
     for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.AstNode]]) {
       // we use a checked cast to ensure that our node is an AST-node (i.e. implements the AstNode interface)
@@ -343,7 +337,7 @@ class Odb2Generated {
 
   @Benchmark
   def orderSumUnchecked(blackhole: Blackhole): Int = {
-    import v2.accessors.Lang._
+    import v2.accessors.Lang.*
     var sumOrder = 0
     for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode with v2.nodes.StaticType[v2.nodes.AstNodeT]]]) {
       // we use an unchecked cast to claim that our node is an AST-node.
@@ -368,7 +362,7 @@ class Odb2Generated {
 
   @Benchmark
   def callOrderTrav(blackhole: Blackhole): Int = {
-    import v2.traversals.Lang._
+    import v2.traversals.Lang.*
     val res = nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.Call]].orderGt(2).size
     if (blackhole != null) blackhole.consume(res)
     res
@@ -376,7 +370,7 @@ class Odb2Generated {
 
   @Benchmark
   def callOrderExplicit(blackhole: Blackhole): Int = {
-    import v2.accessors.Lang._
+    import v2.accessors.Lang.*
     var res = 0
     for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.Call]]) {
       if (node.order > 2) res += 1
@@ -387,7 +381,7 @@ class Odb2Generated {
 
   @Benchmark
   def indexedMethodFullName(bh: Blackhole): Unit = {
-    import v2.traversals.Lang._
+    import v2.traversals.Lang.*
     fullnames.foreach { fullName =>
       new v2.CpgGeneratedNodeStarters(cpg).method.fullNameExact(fullName).foreach(bh.consume)
     }
@@ -395,13 +389,11 @@ class Odb2Generated {
 
   @Benchmark
   def unindexedMethodFullName(bh: Blackhole): Unit = {
-    import v2.traversals.Lang._
-    for (
-      str   <- fullnames;
+    import v2.traversals.Lang.*
+    for {
+      str   <- fullnames
       found <- new v2.CpgGeneratedNodeStarters(cpg).method.filter { _ => true }.fullNameExact(str)
-    ) {
-      bh.consume(found)
-    }
+    } bh.consume(found)
   }
 
 }

@@ -1,6 +1,5 @@
 package io.joern.odb2
 
-import scala.collection.IterableOnce.iterableOnceExtensionMethods
 import scala.collection.{Iterator, mutable}
 
 trait RawUpdate
@@ -24,11 +23,12 @@ class DiffGraphBuilder {
   var buffer = mutable.ArrayDeque[RawUpdate]()
 
   def addNode(newNode: DNode): this.type = {
-    this.buffer.append(newNode); this
+    this.buffer.append(newNode)
+    this
   }
 
   def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind.toShort, property));
+    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind.toShort, property))
     this
   }
 
@@ -52,12 +52,12 @@ class DiffGraphBuilder {
   }
 
   def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 1, property));
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 1, property))
     this
   }
 
   def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 0, property));
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 0, property))
     this
   }
 
@@ -256,17 +256,17 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   def applyUpdate(): Unit = {
     splitUpdate()
     // order: 1. remove edges, 2. add nodes, 3. delete nodes, 4. add edges
-    for (
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds);
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds);
+    for {
+      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
       inout    <- Range(0, 2)
-    ) setEdgeProperty(nodeKind, inout, edgeKind)
+    } setEdgeProperty(nodeKind, inout, edgeKind)
 
-    for (
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds);
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds);
+    for {
+      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
       inout    <- Range(0, 2)
-    ) deleteEdges(nodeKind, inout, edgeKind)
+    } deleteEdges(nodeKind, inout, edgeKind)
 
     for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)) addNodes(nodeKind)
 
@@ -274,16 +274,16 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       deleteNodes()
     }
 
-    for (
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds);
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds);
+    for {
+      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
       inout    <- Range(0, 2)
-    ) addEdges(nodeKind, inout, edgeKind)
+    } addEdges(nodeKind, inout, edgeKind)
 
-    for (
-      nodeKind     <- Range(0, graph.schema.getNumberOfNodeKinds);
+    for {
+      nodeKind     <- Range(0, graph.schema.getNumberOfNodeKinds)
       propertyKind <- Range(0, graph.schema.getNumberOfProperties)
-    ) setNodeProperties(nodeKind, propertyKind)
+    } setNodeProperties(nodeKind, propertyKind)
 
   }
 
@@ -312,10 +312,10 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
 
     // remove properties
-    for (
-      propertyKind <- Range(0, graph.schema.getNumberOfProperties);
+    for {
+      propertyKind <- Range(0, graph.schema.getNumberOfProperties)
       deletedNode  <- delNodes
-    ) {
+    } {
       val pos = graph.schema.propertyOffsetArrayIndex(deletedNode.nodeKind, propertyKind)
       graph._inverseIndices.set(pos, null)
       graph._properties(pos) match {
@@ -328,11 +328,11 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
 
     // delete incident edges
-    for (
-      edgeKind    <- Range(0, graph.schema.getNumberOfEdgeKinds); // this part can run in parallel
-      inout       <- Range(0, 2);
+    for {
+      edgeKind    <- Range(0, graph.schema.getNumberOfEdgeKinds) // this part can run in parallel
+      inout       <- Range(0, 2)
       deletedNode <- delNodes
-    ) {
+    } {
       val pos          = graph.schema.neighborOffsetArrayIndex(deletedNode.nodeKind, inout, edgeKind)
       val oldQty       = graph._neighbors(pos).asInstanceOf[Array[Int]]
       val oldNeighbors = graph._neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -357,11 +357,11 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       }
     }
     // Now replacements is filled with the modifications.
-    for (
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds);
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds);
+    for {
+      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
       inout    <- Range(0, 2)
-    ) {
+    } {
       val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
       if (replacements(pos) != null) {
         val newQty = replacements(pos).asInstanceOf[Array[Int]]

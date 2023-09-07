@@ -1,8 +1,8 @@
 package io.joern.odb2.storage
 
 import com.github.luben.zstd.Zstd
-import io.joern.odb2.storage.StorageManifest._
-import io.joern.odb2._
+import io.joern.odb2.*
+import io.joern.odb2.storage.StorageManifest.*
 
 import java.io.ByteArrayOutputStream
 import java.nio.channels.FileChannel
@@ -204,7 +204,8 @@ object Serialization {
     try {
       innerWriteGraph(g, stringPool, fileOffset, fileChannel)
     } finally {
-      stringPool.clear(); fileChannel.close()
+      stringPool.clear()
+      fileChannel.close()
     }
   }
 
@@ -229,11 +230,11 @@ object Serialization {
       val size = g._nodes(nodeKind).size
       nodes.addOne(new StorageManifest.NodeItem(nodeLabel, size, deletions))
     }
-    for (
-      nodeKind <- Range(0, g.schema.getNumberOfNodeKinds);
-      edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds);
+    for {
+      nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)
+      edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)
       inout    <- Range(0, 2)
-    ) {
+    } {
       val pos = g.schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
       if (g._neighbors(pos) != null) {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
@@ -246,10 +247,10 @@ object Serialization {
         edgeItem.property = encodeAny(g._neighbors(pos + 2), filePtr, stringPool, fileChannel)
       }
     }
-    for (
-      nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds);
+    for {
+      nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds)
       propertyKind <- Range(0, g.schema.getNumberOfProperties)
-    ) {
+    } {
       val pos = g.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
       if (g._properties(pos) != null) {
         val nodeLabel     = g.schema.getNodeLabel(nodeKind)
@@ -267,7 +268,7 @@ object Serialization {
     val poolBytes     = new ByteArrayOutputStream()
     for (s <- stringPool.keysIterator) {
       val bytes = s.getBytes(StandardCharsets.UTF_8)
-      poolBytes.write(bytes);
+      poolBytes.write(bytes)
       poolLenBuffer.put(bytes.length)
     }
     val poolLensStored  = new OutlineStorage(StorageTyp.Int)
@@ -427,10 +428,10 @@ object Deserialization {
       for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
       val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
       val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
-      for (
-        (nodeItem, idx) <- manifest.nodes.zipWithIndex;
+      for {
+        (nodeItem, idx) <- manifest.nodes.zipWithIndex
         nodeKind        <- nodekinds.get(nodeItem.nodeLabel)
-      ) {
+      } {
         kindRemapper(idx) = nodeKind
         val nodes = new Array[GNode](nodeItem.nnodes)
         for (seq <- Range(0, nodes.length)) nodes(seq) = g.schema.makeNode(g, nodeKind, seq)
@@ -447,10 +448,10 @@ object Deserialization {
       }
 
       val edgeKinds = mutable.HashMap[(String, String), Short]()
-      for (
-        nodeKind <- Range(0, g.schema.getNumberOfNodeKinds);
+      for {
+        nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)
         edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)
-      ) {
+      } {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
         val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
         if (edgeLabel != null) {
@@ -473,10 +474,10 @@ object Deserialization {
       }
 
       val propertykinds = mutable.HashMap[(String, String), Int]()
-      for (
-        nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds);
+      for {
+        nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds)
         propertyKind <- Range(0, g.schema.getNumberOfProperties)
-      ) {
+      } {
         val nodeLabel     = g.schema.getNodeLabel(nodeKind)
         val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
         if (propertyLabel != null) {
@@ -493,7 +494,7 @@ object Deserialization {
           g._properties(pos + 1) = readArray(fileChannel, property.property, nodeRemapper, pool)
         }
       }
-      return g
+      g
     } finally fileChannel.close()
   }
 
@@ -501,7 +502,7 @@ object Deserialization {
     val header    = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
     while (readBytes < 16) {
-      readBytes += channel.read(header, readBytes);
+      readBytes += channel.read(header, readBytes)
     }
     header.flip()
 
@@ -567,7 +568,10 @@ object Deserialization {
       case StorageTyp.Bool =>
         val bytes = new Array[Byte](dec.limit())
         dec.get(bytes)
-        bytes.map { case 0 => false; case 1 => true }
+        bytes.map {
+          case 0 => false
+          case 1 => true
+        }
       case StorageTyp.Byte =>
         val bytes = new Array[Byte](dec.limit())
         dec.get(bytes)

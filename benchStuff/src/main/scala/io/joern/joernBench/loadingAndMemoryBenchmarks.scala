@@ -1,10 +1,9 @@
 package io.joern.joernBench
 import better.files.Dsl.cp
-import com.jerolba.jmnemohistosyne.{HistogramEntry, Histogramer, MemoryHistogram}
+import com.jerolba.jmnemohistosyne.{Histogramer, MemoryHistogram}
+import io.joern.odb2
 import io.shiftleft.codepropertygraph.cpgloading.{CpgLoader, CpgLoaderConfig}
 import io.shiftleft.codepropertygraph.generated.Cpg
-import io.joern.odb2
-import org.openjdk.jmh.infra.BenchmarkParams
 import overflowdb.Config
 
 import scala.jdk.CollectionConverters.IteratorHasAsScala
@@ -73,7 +72,7 @@ object Bench {
         .take(20)
         .flatMap { e =>
           Try(Class.forName(e.getClassName)) match {
-            case Success(v) => Some(v);
+            case Success(v) => Some(v)
             case _          => None
           }
         }
@@ -104,13 +103,12 @@ object Bench {
 
   def touchGraph(graph: odb2.Graph): Int = {
     var count = 0
-    for (
-      nodesArray <- graph._nodes;
-      edgeKind   <- Range(0, graph.schema.getNumberOfEdgeKinds).iterator;
+    for {
+      nodesArray <- graph._nodes
+      edgeKind   <- Range(0, graph.schema.getNumberOfEdgeKinds).iterator
       node       <- nodesArray
-    ) {
-      count += odb2.Accessors.getNeighborsOut(node, edgeKind).length
-    }
+    } count += odb2.Accessors.getNeighborsOut(node, edgeKind).length
+
     count
   }
 
