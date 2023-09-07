@@ -1,5 +1,7 @@
 package io.joern.odb2
 
+import io.joern.odb2.Edge.Direction
+
 object DefaultValue
 object NoProperty
 final class DefaultValue(val default: Any)
@@ -19,8 +21,10 @@ abstract class Schema {
   def getPropertyIdByLabel(label: String): Int
 
   def getNumberOfProperties: Int
-  final def neighborOffsetArrayIndex(nodeKind: Int, inout: Int, edgeKind: Int): Int = {
-    3 * (nodeKind + getNumberOfNodeKinds * (inout + 2 * edgeKind))
+
+  final def neighborOffsetArrayIndex(nodeKind: Int, direction: Edge.Direction, edgeKind: Int): Int = {
+    val directionFactor: Int = direction.encoding
+    3 * (nodeKind + getNumberOfNodeKinds * (directionFactor + 2 * edgeKind))
   }
 
   final def propertyOffsetArrayIndex(nodeKind: Int, propertyKind: Int): Int = {
@@ -32,7 +36,7 @@ abstract class Schema {
   // fixme: API will need to change when we add generated edge classes (relevant for edge properties)
   def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge
 
-  def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_]
+  def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_]
 
   def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_]
 }
@@ -74,7 +78,7 @@ class FreeSchema(
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
     new Edge(src, dst, edgeKind, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_] =
+  override def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_] =
     similar(edgePropertyPrototypes(edgeKind), size)
   override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] =
     similar(nodePropertyPrototypes(propertyKind), size)

@@ -1,4 +1,5 @@
 package io.joern.odb2
+import io.joern.odb2.Edge.Direction.{Incoming, Outgoing}
 import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
 import io.joern.odb2.misc.{ISeq, MultiDictIndex}
 
@@ -9,7 +10,7 @@ import scala.reflect.ClassTag
 object Accessors {
 
   def getEdgesOut(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
-    val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 1, edgeKind)
+    val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, Edge.Direction.Outgoing, edgeKind)
     val offsets = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
     if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
     new EdgeView(
@@ -24,7 +25,7 @@ object Accessors {
   }
 
   def getEdgesIn(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
-    val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, 0, edgeKind)
+    val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, Incoming, edgeKind)
     val offsets = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
     if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
     new EdgeView(
@@ -46,9 +47,13 @@ object Accessors {
         case defaultValue: DefaultValue => defaultValue.default
         case a: Array[_]                => a(start + i)
       }
-      if (inout == 0) base.graph.schema.makeEdge(neighbors(start + i), base, edgeKind, -i - 1, property)
-      else
-        base.graph.schema.makeEdge(base, neighbors(start + i), edgeKind, i + 1, property)
+
+      import Edge.Direction
+      val (src, dst, subSeq) = Direction.fromOrdinal(inout) match {
+        case Direction.Incoming => (neighbors(start + i), base, -i - 1)
+        case Direction.Outgoing => (base, neighbors(start + i), i + 1)
+      }
+      base.graph.schema.makeEdge(src, dst, edgeKind, subSeq, property)
     }
 
     override def length: Int = end - start
@@ -61,10 +66,10 @@ object Accessors {
     getNeighborsIn(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
 
   def getNeighborsOut(graph: Graph, nodeKind: Int, seq: Int, edgeKind: Int): IndexedSeq[GNode] =
-    getNeighbors(graph, graph.schema.neighborOffsetArrayIndex(nodeKind, 1, edgeKind), seq)
+    getNeighbors(graph, graph.schema.neighborOffsetArrayIndex(nodeKind, Outgoing, edgeKind), seq)
 
   def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int, edgeKind: Short): IndexedSeq[GNode] =
-    getNeighbors(g, g.schema.neighborOffsetArrayIndex(nodeKind, 0, edgeKind), seq)
+    getNeighbors(g, g.schema.neighborOffsetArrayIndex(nodeKind, Incoming, edgeKind), seq)
 
   private def getNeighbors(g: Graph, pos: Int, seq: Int): IndexedSeq[GNode] = {
     val qty = g._neighbors(pos).asInstanceOf[Array[Int]]
@@ -201,12 +206,12 @@ object DebugDump {
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       sb.append(s"Node kind ${nodeKind}. (eid, nEdgesOut, nEdgesIn):")
       for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
-        val posOut = g.schema.neighborOffsetArrayIndex(nodeKind, 1, edgeKind)
+        val posOut = g.schema.neighborOffsetArrayIndex(nodeKind, Outgoing, edgeKind)
         val neO = g._neighbors(posOut + 1) match {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
         }
-        val posIn = g.schema.neighborOffsetArrayIndex(nodeKind, 0, edgeKind)
+        val posIn = g.schema.neighborOffsetArrayIndex(nodeKind, Incoming, edgeKind)
         val neIn = g._neighbors(posIn + 1) match {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
@@ -277,12 +282,12 @@ class Graph(val schema: Schema) {
   val _inverseIndices = new AtomicReferenceArray[Object](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
 
   for {
-    nodeKind <- Range(0, schema.getNumberOfNodeKinds)
-    inout    <- Range(0, 2)
-    edgeKind <- Range(0, schema.getNumberOfEdgeKinds)
+    nodeKind  <- Range(0, schema.getNumberOfNodeKinds)
+    direction <- Edge.Direction.values
+    edgeKind  <- Range(0, schema.getNumberOfEdgeKinds)
   } {
-    val pos             = schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
-    val propertyDefault = schema.allocateEdgeProperty(nodeKind, inout, edgeKind, 1)
+    val pos             = schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    val propertyDefault = schema.allocateEdgeProperty(nodeKind, direction, edgeKind, 1)
     _neighbors(pos + 2) = if (propertyDefault == null) null else new DefaultValue(propertyDefault(0))
   }
 

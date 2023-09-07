@@ -2,6 +2,7 @@ package io.joern.odb2.storage
 
 import com.github.luben.zstd.Zstd
 import io.joern.odb2.*
+import io.joern.odb2.Edge.Direction
 import io.joern.odb2.storage.StorageManifest.*
 
 import java.io.ByteArrayOutputStream
@@ -113,8 +114,7 @@ object StorageManifest {
     def read(item: ujson.Value): EdgeItem = {
       val nodeLabel = item.obj(Keys.nodeLabel).str
       val edgeLabel = item.obj(Keys.edgeLabel).str
-      val inout     = item.obj(Keys.inout).num.toInt
-      if (inout != 0 && inout != 1) throw new RuntimeException()
+      val inout     = item.obj(Keys.inout).num.toByte
       val qty       = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.qty))
       val neighbors = OutlineStorage.read(StorageTyp.Ref, item.obj(Keys.neighbors))
       val property  = OutlineStorage.read(item.obj(Keys.property))
@@ -134,11 +134,13 @@ object StorageManifest {
   class EdgeItem(
     val nodeLabel: String,
     val edgeLabel: String,
-    val inout: Int,
+    val inout: Byte, // 0: Incoming, 1: Outgoing; see Edge.Direction enum
     var qty: OutlineStorage,
     var neighbors: OutlineStorage,
     var property: OutlineStorage
-  )
+  ) {
+    Edge.Direction.verifyEncodingRange(inout)
+  }
   object PropertyItem {
     def write(item: PropertyItem): ujson.Value = {
       val res = ujson.Obj()
@@ -231,15 +233,15 @@ object Serialization {
       nodes.addOne(new StorageManifest.NodeItem(nodeLabel, size, deletions))
     }
     for {
-      nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)
-      edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)
-      inout    <- Range(0, 2)
+      nodeKind  <- Range(0, g.schema.getNumberOfNodeKinds)
+      edgeKind  <- Range(0, g.schema.getNumberOfEdgeKinds)
+      direction <- Direction.values
     } {
-      val pos = g.schema.neighborOffsetArrayIndex(nodeKind, inout, edgeKind)
+      val pos = g.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
       if (g._neighbors(pos) != null) {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
         val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
-        val edgeItem  = new StorageManifest.EdgeItem(nodeLabel, edgeLabel, inout, null, null, null)
+        val edgeItem  = new StorageManifest.EdgeItem(nodeLabel, edgeLabel, direction.encoding, null, null, null)
         edges.addOne(edgeItem)
         edgeItem.qty =
           encodeAny(deltaEncode(g._nodes(nodeKind).length, g._neighbors(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
@@ -462,7 +464,7 @@ object Deserialization {
       for (edgeItem <- manifest.edges) {
         val nodeKind  = nodekinds.get(edgeItem.nodeLabel)
         val edgeKind  = edgeKinds.get(edgeItem.nodeLabel, edgeItem.edgeLabel)
-        val direction = edgeItem.inout
+        val direction = Direction.fromOrdinal(edgeItem.inout)
         if (nodeKind.isDefined && edgeKind.isDefined) {
           val pos = g.schema.neighborOffsetArrayIndex(nodeKind.get, direction, edgeKind.get)
           g._neighbors(pos) = deltaDecode(readArray(fileChannel, edgeItem.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
