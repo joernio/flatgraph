@@ -7,9 +7,9 @@ The only check is that this code compiles and produces no ambiguity warnings, an
 trait IsStaticT
 object CompileTests {
   import io.shiftleft.codepropertygraph.generated.v2
+  import v2.accessors.Lang.*
   import v2.nodes
-  import v2.accessors.Lang._
-  import v2.traversals.Lang._
+  import v2.traversals.Lang.*
 
   implicit class IsStaticExt[NodeType <: nodes.CallBase](val node: NodeType) extends AnyVal {
     def isStatic: Option[NodeType with nodes.StaticType[IsStaticT]] =

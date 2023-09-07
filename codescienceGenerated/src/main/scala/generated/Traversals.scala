@@ -5,7 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.nodes
 object Lang extends ConcreteStoredConversions {}
 
 object Accessors {
-  import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+  import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
   import odb2.misc.Misc
   final class Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]](
     val traversal: Iterator[NodeType]
@@ -9714,7 +9714,7 @@ object Accessors {
   }
 }
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors._
+  import Accessors.*
   implicit def accessPropertyAliasTypeFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType] = new Traversal_Property_ALIAS_TYPE_FULL_NAME(traversal)
@@ -9971,7 +9971,7 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
-  import Accessors._
+  import Accessors.*
   implicit def traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](
     traversal: Iterator[NodeType]
   ): Traversal_AnnotationBase[NodeType] = new Traversal_AnnotationBase(traversal)
@@ -10163,7 +10163,7 @@ trait ConcreteBaseConversions extends AbstractBaseConversions0 {
 }
 
 trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
-  import Accessors._
+  import Accessors.*
   implicit def traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](traversal: Iterator[NodeType]): Traversal_AstNodeBase[NodeType] =
     new Traversal_AstNodeBase(traversal)
   implicit def traversal_CallReprBase[NodeType <: nodes.CallReprBase](traversal: Iterator[NodeType]): Traversal_CallReprBase[NodeType] =
@@ -10176,7 +10176,7 @@ trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
 }
 
 trait AbstractBaseConversions1 extends AbstractBaseConversions2 {
-  import Accessors._
+  import Accessors.*
   implicit def traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](
     traversal: Iterator[NodeType]
   ): Traversal_DeclarationBase[NodeType] = new Traversal_DeclarationBase(traversal)
@@ -10186,7 +10186,7 @@ trait AbstractBaseConversions1 extends AbstractBaseConversions2 {
 }
 
 trait AbstractBaseConversions2 {
-  import Accessors._
+  import Accessors.*
   implicit def traversal_LocalLikeBase[NodeType <: nodes.LocalLikeBase](traversal: Iterator[NodeType]): Traversal_LocalLikeBase[NodeType] =
     new Traversal_LocalLikeBase(traversal)
 }

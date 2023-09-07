@@ -1,6 +1,7 @@
 package io.shiftleft.codepropertygraph.generated.v2.accessors
 import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.nodes
+
 import scala.collection.immutable.IndexedSeq
 
 object Lang extends ConcreteStoredConversions {}
@@ -1119,7 +1120,7 @@ object Accessors {
 }
 
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors._
+  import Accessors.*
   implicit def accessPropertyAliasTypeFullName(
     node: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]
   ): Access_Property_ALIAS_TYPE_FULL_NAME = new Access_Property_ALIAS_TYPE_FULL_NAME(node)
@@ -1333,7 +1334,7 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
-  import Accessors._
+  import Accessors.*
   implicit def access_AnnotationBase(node: nodes.AnnotationBase): Access_AnnotationBase = new Access_AnnotationBase(node)
   implicit def access_AnnotationLiteralBase(node: nodes.AnnotationLiteralBase): Access_AnnotationLiteralBase =
     new Access_AnnotationLiteralBase(node)
@@ -1430,7 +1431,7 @@ trait ConcreteBaseConversions extends AbstractBaseConversions0 {
 }
 
 trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
-  import Accessors._
+  import Accessors.*
   implicit def access_AstNodeBase(node: nodes.AstNodeBase): Access_AstNodeBase          = new Access_AstNodeBase(node)
   implicit def access_CallReprBase(node: nodes.CallReprBase): Access_CallReprBase       = new Access_CallReprBase(node)
   implicit def access_CfgNodeBase(node: nodes.CfgNodeBase): Access_CfgNodeBase          = new Access_CfgNodeBase(node)
@@ -1438,12 +1439,12 @@ trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
 }
 
 trait AbstractBaseConversions1 extends AbstractBaseConversions2 {
-  import Accessors._
+  import Accessors.*
   implicit def access_DeclarationBase(node: nodes.DeclarationBase): Access_DeclarationBase       = new Access_DeclarationBase(node)
   implicit def access_TrackingPointBase(node: nodes.TrackingPointBase): Access_TrackingPointBase = new Access_TrackingPointBase(node)
 }
 
 trait AbstractBaseConversions2 {
-  import Accessors._
+  import Accessors.*
   implicit def access_LocalLikeBase(node: nodes.LocalLikeBase): Access_LocalLikeBase = new Access_LocalLikeBase(node)
 }
