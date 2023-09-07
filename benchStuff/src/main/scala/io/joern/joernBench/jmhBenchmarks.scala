@@ -1,4 +1,5 @@
 package io.joern.joernBench
+
 import io.shiftleft.codepropertygraph.generated.v2.Cpg
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.{BenchmarkParams, Blackhole}

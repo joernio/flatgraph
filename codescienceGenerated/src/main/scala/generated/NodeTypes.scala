@@ -1,12 +1,13 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
-import scala.collection.immutable.{IndexedSeq, ArraySeq}
+
+import scala.collection.immutable.{ArraySeq, IndexedSeq}
 
 trait AnnotationT extends AnyRef with ExpressionT with HasFullNameT with HasNameT
 trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[AnnotationT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -71,7 +72,7 @@ trait AnnotationLiteralT extends AnyRef with ExpressionT with HasNameT
 trait AnnotationLiteralBase extends AbstractNode with ExpressionBase with StaticType[AnnotationLiteralT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -132,7 +133,7 @@ trait AnnotationParameterT extends AnyRef with AstNodeT
 trait AnnotationParameterBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -172,7 +173,7 @@ trait AnnotationParameterAssignT extends AnyRef with AstNodeT
 trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterAssignT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -212,7 +213,7 @@ trait ArrayInitializerT extends AnyRef with ExpressionT
 trait ArrayInitializerBase extends AbstractNode with ExpressionBase with StaticType[ArrayInitializerT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -269,7 +270,7 @@ trait BindingT extends AnyRef with HasIsMethodNeverOverriddenT with HasMethodFul
 trait BindingBase extends AbstractNode with StaticType[BindingT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.isMethodNeverOverridden.foreach { p => res.put("IS_METHOD_NEVER_OVERRIDDEN", p) }
     res.put("METHOD_FULL_NAME", this.methodFullName)
@@ -307,7 +308,7 @@ trait BlockT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT wi
 trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -383,7 +384,7 @@ trait CallT
 trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with StaticType[CallT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -481,7 +482,7 @@ trait CallChainBase extends AbstractNode with StaticType[CallChainT] {
   def calls: IndexedSeq[CallBase]
   def methods: IndexedSeq[MethodBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res        = new java.util.HashMap[String, Any]()
     val tmpcalls   = this.calls; if (tmpcalls.nonEmpty) res.put("calls", tmpcalls)
     val tmpmethods = this.methods; if (tmpmethods.nonEmpty) res.put("methods", tmpmethods)
@@ -515,7 +516,7 @@ trait CallSiteBase extends AbstractNode with StaticType[CallSiteT] {
   def callerMethod: MethodBase
   def method: MethodBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("call", this.call)
     res.put("callerMethod", this.callerMethod)
@@ -552,7 +553,7 @@ trait ClosureBindingT extends AnyRef with HasClosureBindingIdT with HasClosureOr
 trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.closureBindingId.foreach { p => res.put("CLOSURE_BINDING_ID", p) }
     this.closureOriginalName.foreach { p => res.put("CLOSURE_ORIGINAL_NAME", p) }
@@ -587,7 +588,7 @@ trait CommentT extends AnyRef with AstNodeT with HasFilenameT
 trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -631,7 +632,7 @@ trait ConfigFileT extends AnyRef with TrackingPointT with HasContentT with HasNa
 trait ConfigFileBase extends AbstractNode with TrackingPointBase with StaticType[ConfigFileT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     res.put("CONTENT", this.content)
@@ -665,7 +666,7 @@ trait ControlStructureT extends AnyRef with ExpressionT with HasControlStructure
 trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticType[ControlStructureT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -730,7 +731,7 @@ trait DependencyT extends AnyRef with HasDependencyGroupIdT with HasDependencyTy
 trait DependencyBase extends AbstractNode with StaticType[DependencyT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.dependencyGroupId.foreach { p => res.put("DEPENDENCY_GROUP_ID", p) }
     res.put("DEPENDENCY_TYPE", this.dependencyType)
@@ -768,7 +769,7 @@ trait DomAttributeT extends AnyRef with HasNameT with HasValueT
 trait DomAttributeBase extends AbstractNode with StaticType[DomAttributeT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     res.put("VALUE", this.value)
@@ -797,7 +798,7 @@ trait DomNodeT extends AnyRef with TrackingPointT with HasColumnNumberT with Has
 trait DomNodeBase extends AbstractNode with TrackingPointBase with StaticType[DomNodeT] {
   def attributes: IndexedSeq[DomAttributeBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -843,7 +844,7 @@ trait FieldIdentifierT extends AnyRef with ExpressionT with HasCanonicalNameT
 trait FieldIdentifierBase extends AbstractNode with ExpressionBase with StaticType[FieldIdentifierT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -904,7 +905,7 @@ trait FileT extends AnyRef with AstNodeT with HasHashT with HasNameT
 trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -955,7 +956,7 @@ trait FindingBase extends AbstractNode with StaticType[FindingT] {
   def keyValuePairs: IndexedSeq[KeyValuePairBase]
   def rootCauses: IndexedSeq[FindingBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("STRUCTURED_FINGERPRINT", this.structuredFingerprint)
     val tmpevidence      = this.evidence; if (tmpevidence.nonEmpty) res.put("evidence", tmpevidence)
@@ -1001,7 +1002,7 @@ trait FlowBase extends AbstractNode with StaticType[FlowT] {
   def source: SourceBase
   def transformations: IndexedSeq[TransformationBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res             = new java.util.HashMap[String, Any]()
     val tmpbranchPoints = this.branchPoints; if (tmpbranchPoints.nonEmpty) res.put("branchPoints", tmpbranchPoints)
     val tmpcfgNodes     = this.cfgNodes; if (tmpcfgNodes.nonEmpty) res.put("cfgNodes", tmpcfgNodes)
@@ -1053,7 +1054,7 @@ trait FrameworkT extends AnyRef with HasNameT
 trait FrameworkBase extends AbstractNode with StaticType[FrameworkT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     res
@@ -1078,7 +1079,7 @@ trait FrameworkDataT extends AnyRef with HasContentT with HasNameT
 trait FrameworkDataBase extends AbstractNode with StaticType[FrameworkDataT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CONTENT", this.content)
     res.put("NAME", this.name)
@@ -1107,7 +1108,7 @@ trait IdentifierT extends AnyRef with ExpressionT with LocalLikeT with HasDynami
 trait IdentifierBase extends AbstractNode with ExpressionBase with LocalLikeBase with StaticType[IdentifierT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -1178,7 +1179,7 @@ trait ImplicitCallT extends AnyRef with CallReprT
 trait ImplicitCallBase extends AbstractNode with CallReprBase with StaticType[ImplicitCallT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1241,7 +1242,7 @@ trait ImportT
 trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1317,7 +1318,7 @@ trait IoflowBase extends AbstractNode with StaticType[IoflowT] {
   def transforms: IndexedSeq[TransformBase]
   def triggerMethods: IndexedSeq[MethodBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("FINGERPRINT", this.fingerprint)
     val tmpLiteralsToSink = this.literalsToSink; if (tmpLiteralsToSink.nonEmpty) res.put("LITERALS_TO_SINK", tmpLiteralsToSink)
@@ -1415,7 +1416,7 @@ trait JumpLabelT extends AnyRef with AstNodeT with HasNameT with HasParserTypeNa
 trait JumpLabelBase extends AbstractNode with AstNodeBase with StaticType[JumpLabelT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1463,7 +1464,7 @@ trait JumpTargetT extends AnyRef with CfgNodeT with HasArgumentIndexT with HasNa
 trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpTargetT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     res.put("CODE", this.code)
@@ -1523,7 +1524,7 @@ trait KeyValuePairT extends AnyRef with HasKeyT with HasValueT
 trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("KEY", this.key)
     res.put("VALUE", this.value)
@@ -1552,7 +1553,7 @@ trait LiteralT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT 
 trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[LiteralT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -1625,7 +1626,7 @@ trait LocalT
 trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with LocalLikeBase with StaticType[LocalT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.closureBindingId.foreach { p => res.put("CLOSURE_BINDING_ID", p) }
     res.put("CODE", this.code)
@@ -1695,7 +1696,7 @@ trait LocationT
 trait LocationBase extends AbstractNode with StaticType[LocationT] {
   def node: Option[AbstractNode]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CLASS_NAME", this.className)
     res.put("CLASS_SHORT_NAME", this.classShortName)
@@ -1760,7 +1761,7 @@ trait MatchInfoT extends AnyRef with HasCategoryT with HasPatternT
 trait MatchInfoBase extends AbstractNode with StaticType[MatchInfoT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CATEGORY", this.category)
     res.put("PATTERN", this.pattern)
@@ -1789,7 +1790,7 @@ trait MemberT extends AnyRef with AstNodeT with DeclarationT with HasDynamicType
 trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[MemberT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1851,7 +1852,7 @@ trait MetaDataT
 trait MetaDataBase extends AbstractNode with StaticType[MetaDataT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.hash.foreach { p => res.put("HASH", p) }
     res.put("LANGUAGE", this.language)
@@ -1918,7 +1919,7 @@ trait MethodT
 trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("AST_PARENT_FULL_NAME", this.astParentFullName)
     res.put("AST_PARENT_TYPE", this.astParentType)
@@ -2024,7 +2025,7 @@ trait MethodInstT extends AnyRef with AstNodeT with HasFullNameT with HasMethodF
 trait MethodInstBase extends AbstractNode with AstNodeBase with StaticType[MethodInstT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2094,7 +2095,7 @@ trait MethodParameterInBase
     with StaticType[MethodParameterInT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2176,7 +2177,7 @@ trait MethodParameterOutT
 trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterOutT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2251,7 +2252,7 @@ trait MethodRefT
 trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[MethodRefT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -2326,7 +2327,7 @@ trait MethodReturnT extends AnyRef with CfgNodeT with HasDynamicTypeHintFullName
 trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[MethodReturnT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2399,7 +2400,7 @@ trait MethodSummaryBase extends AbstractNode with StaticType[MethodSummaryT] {
   def routes: IndexedSeq[RouteBase]
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.binarySignature.foreach { p => res.put("BINARY_SIGNATURE", p) }
     res.put("IS_EXTERNAL", this.isExternal)
@@ -2503,7 +2504,7 @@ trait ModifierT extends AnyRef with AstNodeT with HasModifierTypeT
 trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[ModifierT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2547,7 +2548,7 @@ trait NamespaceT extends AnyRef with AstNodeT with HasNameT
 trait NamespaceBase extends AbstractNode with AstNodeBase with StaticType[NamespaceT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2591,7 +2592,7 @@ trait NamespaceBlockT extends AnyRef with AstNodeT with HasFilenameT with HasFul
 trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[NamespaceBlockT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2643,7 +2644,7 @@ trait PackagePrefixT extends AnyRef with HasValueT
 trait PackagePrefixBase extends AbstractNode with StaticType[PackagePrefixT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("VALUE", this.value)
     res
@@ -2668,7 +2669,7 @@ trait PostExecutionCallT extends AnyRef with CallReprT
 trait PostExecutionCallBase extends AbstractNode with CallReprBase with StaticType[PostExecutionCallT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2727,7 +2728,7 @@ trait ProgramPointBase extends AbstractNode with StaticType[ProgramPointT] {
   def methodTags: IndexedSeq[TagBase]
   def paramTags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("elem", this.elem)
     this.method.foreach { p => res.put("method", p) }
@@ -2772,7 +2773,7 @@ trait ReadBase extends AbstractNode with StaticType[ReadT] {
   def source: SourceBase
   def triggerCallChains: IndexedSeq[CallChainBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res                = new java.util.HashMap[String, Any]()
     val tmpdescriptorFlows = this.descriptorFlows; if (tmpdescriptorFlows.nonEmpty) res.put("descriptorFlows", tmpdescriptorFlows)
     res.put("source", this.source)
@@ -2809,7 +2810,7 @@ trait ReturnT extends AnyRef with ExpressionT
 trait ReturnBase extends AbstractNode with ExpressionBase with StaticType[ReturnT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -2866,7 +2867,7 @@ trait RouteT extends AnyRef with HasPathT
 trait RouteBase extends AbstractNode with StaticType[RouteT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("PATH", this.path)
     res
@@ -2892,7 +2893,7 @@ trait SensitiveDataTypeBase extends AbstractNode with StaticType[SensitiveDataTy
   def members: IndexedSeq[SensitiveMemberBase]
   def names: IndexedSeq[MatchInfoBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("FULL_NAME", this.fullName)
     val tmpmembers = this.members; if (tmpmembers.nonEmpty) res.put("members", tmpmembers)
@@ -2928,7 +2929,7 @@ trait SensitiveMemberT extends AnyRef with HasNameT
 trait SensitiveMemberBase extends AbstractNode with StaticType[SensitiveMemberT] {
   def names: IndexedSeq[MatchInfoBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     val tmpnames = this.names; if (tmpnames.nonEmpty) res.put("names", tmpnames)
@@ -2959,7 +2960,7 @@ trait SensitiveReferenceT extends AnyRef
 trait SensitiveReferenceBase extends AbstractNode with StaticType[SensitiveReferenceT] {
   def ioflows: IndexedSeq[IoflowBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res        = new java.util.HashMap[String, Any]()
     val tmpioflows = this.ioflows; if (tmpioflows.nonEmpty) res.put("ioflows", tmpioflows)
     res
@@ -2986,7 +2987,7 @@ trait SensitiveVariableT extends AnyRef with HasCategoriesT with HasEvalTypeT wi
 trait SensitiveVariableBase extends AbstractNode with StaticType[SensitiveVariableT] {
   def node: LocalLikeBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res           = new java.util.HashMap[String, Any]()
     val tmpCategories = this.categories; if (tmpCategories.nonEmpty) res.put("CATEGORIES", tmpCategories)
     res.put("EVAL_TYPE", this.evalType)
@@ -3032,7 +3033,7 @@ trait SinkBase extends AbstractNode with StaticType[SinkT] {
   def parameterIn: Option[MethodParameterInBase]
   def parameterInTags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("SINK_TYPE", this.sinkType)
     res.put("STRUCTURED_FINGERPRINT", this.structuredFingerprint)
@@ -3111,7 +3112,7 @@ trait SourceBase extends AbstractNode with StaticType[SourceT] {
   def nodeType: TypeBase
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("SOURCE_TYPE", this.sourceType)
     res.put("STRUCTURED_FINGERPRINT", this.structuredFingerprint)
@@ -3178,7 +3179,7 @@ trait SpAnnotationParameterT extends AnyRef with HasAnnotationFullNameT with Has
 trait SpAnnotationParameterBase extends AbstractNode with StaticType[SpAnnotationParameterT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ANNOTATION_FULL_NAME", this.annotationFullName)
     res.put("ANNOTATION_NAME", this.annotationName)
@@ -3215,7 +3216,7 @@ trait SpBlacklistT extends AnyRef
 trait SpBlacklistBase extends AbstractNode with StaticType[SpBlacklistT] {
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res     = new java.util.HashMap[String, Any]()
     val tmptags = this.tags; if (tmptags.nonEmpty) res.put("tags", tmptags)
     res
@@ -3242,7 +3243,7 @@ trait TagT extends AnyRef with HasNameT with HasValueT
 trait TagBase extends AbstractNode with StaticType[TagT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     res.put("VALUE", this.value)
@@ -3268,7 +3269,7 @@ trait TagsT extends AnyRef
 trait TagsBase extends AbstractNode with StaticType[TagsT] {
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res     = new java.util.HashMap[String, Any]()
     val tmptags = this.tags; if (tmptags.nonEmpty) res.put("tags", tmptags)
     res
@@ -3296,7 +3297,7 @@ trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairT] {
   def node: AbstractNode
   def tag: TagBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("node", this.node)
     res.put("tag", this.tag)
@@ -3328,7 +3329,7 @@ trait TemplateDomT extends AnyRef with ExpressionT with HasNameT
 trait TemplateDomBase extends AbstractNode with ExpressionBase with StaticType[TemplateDomT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -3392,7 +3393,7 @@ trait TransformBase extends AbstractNode with StaticType[TransformT] {
   def sink: SinkBase
   def triggerCallChains: IndexedSeq[CallChainBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("call", this.call)
     val tmpdescriptorFlows = this.descriptorFlows; if (tmpdescriptorFlows.nonEmpty) res.put("descriptorFlows", tmpdescriptorFlows)
@@ -3434,7 +3435,7 @@ trait TransformationT extends AnyRef
 trait TransformationBase extends AbstractNode with StaticType[TransformationT] {
   def node: TrackingPointBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("node", this.node)
     res
@@ -3461,7 +3462,7 @@ trait TypeT extends AnyRef with HasFullNameT with HasNameT with HasTypeDeclFullN
 trait TypeBase extends AbstractNode with StaticType[TypeT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("FULL_NAME", this.fullName)
     res.put("NAME", this.name)
@@ -3494,7 +3495,7 @@ trait TypeArgumentT extends AnyRef with AstNodeT
 trait TypeArgumentBase extends AbstractNode with AstNodeBase with StaticType[TypeArgumentT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -3544,7 +3545,7 @@ trait TypeDeclT
 trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     this.aliasTypeFullName.foreach { p => res.put("ALIAS_TYPE_FULL_NAME", p) }
     res.put("AST_PARENT_FULL_NAME", this.astParentFullName)
@@ -3620,7 +3621,7 @@ trait TypeParameterT extends AnyRef with AstNodeT with HasNameT
 trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[TypeParameterT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -3664,7 +3665,7 @@ trait TypeRefT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT 
 trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeRefT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -3736,7 +3737,7 @@ trait UnknownT
 trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[UnknownT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -3810,7 +3811,7 @@ trait VariableInfoT extends AnyRef with HasEvaluationTypeT with HasParameterInde
 trait VariableInfoBase extends AbstractNode with StaticType[VariableInfoT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("EVALUATION_TYPE", this.evaluationType)
     this.parameterIndex.foreach { p => res.put("PARAMETER_INDEX", p) }
@@ -3844,7 +3845,7 @@ trait VulnerabilityT extends AnyRef with HasDescriptionT with HasNameT with HasS
 trait VulnerabilityBase extends AbstractNode with StaticType[VulnerabilityT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
     res.put("DESCRIPTION", this.description)
     res.put("NAME", this.name)
@@ -3884,7 +3885,7 @@ trait WriteBase extends AbstractNode with StaticType[WriteT] {
   def sink: SinkBase
   def triggerCallChains: IndexedSeq[CallChainBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res                = new java.util.HashMap[String, Any]()
     val tmpdescriptorFlows = this.descriptorFlows; if (tmpdescriptorFlows.nonEmpty) res.put("descriptorFlows", tmpdescriptorFlows)
     val tmpflows           = this.flows; if (tmpflows.nonEmpty) res.put("flows", tmpflows)

@@ -4,7 +4,6 @@ import overflowdb.codegen.Helpers
 import overflowdb.schema.Property
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
-import java.util.concurrent.atomic.AtomicReferenceArray
 import scala.collection.mutable
 
 object SchemaGen {
