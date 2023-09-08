@@ -9,6 +9,7 @@ import overflowdb.traversal.jIteratortoTraversal
 
 import java.util.concurrent.TimeUnit
 import scala.util.Random
+
 object JmhMain {
 
   def jmhMain(): Unit = {
