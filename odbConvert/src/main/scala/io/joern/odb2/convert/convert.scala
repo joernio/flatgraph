@@ -1,7 +1,7 @@
 package io.joern.odb2.convert
 
 import io.joern.odb2
-import io.joern.odb2.storage
+import io.joern.odb2.{Edge, storage}
 import io.joern.odb2.storage.{Keys, Serialization, StorageManifest, StorageTyp}
 import org.msgpack.core.MessagePack
 import overflowdb.storage.{OdbStorage, ValueTypes}
@@ -86,7 +86,9 @@ object Convert {
             case NodeStuff.NODEPROPERTY =>
               properties.addOne(new StorageManifest.PropertyItem(node.label, key, qty, values))
             case NodeStuff.NEIGHBOR_IN | NodeStuff.NEIGHBOR_OUT =>
-              val inout    = if (prefix == NodeStuff.NEIGHBOR_IN) 0 else 1
+              val inout =
+                if (prefix == NodeStuff.NEIGHBOR_IN) Edge.Direction.Incoming.encoding
+                else Edge.Direction.Outgoing.encoding
               val edgeItem = new StorageManifest.EdgeItem(node.label, key, inout, qty, values, null)
               edges.addOne(edgeItem)
               node.values.get((prefix + NodeStuff.EDGEPROPERTY_SUFFIX, key)) match {
