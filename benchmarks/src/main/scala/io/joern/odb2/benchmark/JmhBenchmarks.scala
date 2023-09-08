@@ -1,4 +1,4 @@
-package io.joern.joernBench
+package io.joern.odb2.benchmark
 
 import io.shiftleft.codepropertygraph.generated.v2.Cpg
 import org.openjdk.jmh.annotations.*
