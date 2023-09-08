@@ -134,7 +134,7 @@ The jmh `perfnorm` profiler relies on linux `perf`, so make sure to have that in
 from the openjdk tree or download a binary somewhere.
 
 As of now, all profilers are disabled by default. Enable them by uncommenting the relevant lines in 
-`benchStuff/src/main/scala/io/joern/joernBench/jmhBenchmarks.scala`. Main reason for that the output somewhat too verbose 
+`benchmarks/src/main/scala/io/joern/odb2/benchmark/JmhBenchmarks.scala`. Main reason for that the output somewhat too verbose 
 for one-glance comparisons. But when trying to understand what goes right or wrong, the output of especially perfnorm
 is super important!
 

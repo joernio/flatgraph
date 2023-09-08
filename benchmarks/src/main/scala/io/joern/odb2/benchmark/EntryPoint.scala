@@ -1,4 +1,4 @@
-package io.joern.joernBench
+package io.joern.odb2.benchmark
 
 object EntryPoint {
   def main(args: Array[String]): Unit = {

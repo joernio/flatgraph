@@ -1,4 +1,4 @@
-package io.joern.joernBench
+package io.joern.odb2.benchmark
 
 /*Here we add some code that uses the existing implicits.
 

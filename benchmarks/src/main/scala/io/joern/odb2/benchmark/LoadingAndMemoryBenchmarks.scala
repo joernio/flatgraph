@@ -1,4 +1,4 @@
-package io.joern.joernBench
+package io.joern.odb2.benchmark
 
 import better.files.Dsl.cp
 import com.jerolba.jmnemohistosyne.{Histogramer, MemoryHistogram}
