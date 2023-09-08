@@ -1,4 +1,5 @@
 package io.joern.joernBench
+
 import better.files.Dsl.cp
 import com.jerolba.jmnemohistosyne.{Histogramer, MemoryHistogram}
 import io.joern.odb2
@@ -9,7 +10,7 @@ import overflowdb.Config
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 import scala.util.{Success, Try}
 
-object Bench {
+object LoadingAndMemoryBenchmarks {
 
   // generic stuff for measuring memory consumption
   class MeasurementBox {

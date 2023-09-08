@@ -10,7 +10,7 @@ import overflowdb.traversal.jIteratortoTraversal
 import java.util.concurrent.TimeUnit
 import scala.util.Random
 
-object JmhMain {
+object JmhBenchmarks {
 
   def jmhMain(): Unit = {
     val opt = new OptionsBuilder()
@@ -64,18 +64,18 @@ class JoernLegacy {
 
   @Setup
   def setupFun(params: BenchmarkParams): Unit = {
-    cpg = Bench.loadCopyFile("./cpg.bin").graph
+    cpg = LoadingAndMemoryBenchmarks.loadCopyFile("./cpg.bin").graph
     params.getBenchmark match {
       case name if name.endsWith("astDFS") =>
         nodeStart =
           cpg.nodes().collect { case astNode: StoredNode if !astNode._astIn.hasNext && astNode._astOut.hasNext => astNode }.toArray
-        JmhMain.setOps(params, astDFS(null))
+        JmhBenchmarks.setOps(params, astDFS(null))
       case name if name.endsWith("astUp") =>
         nodeStart = cpg.nodes().toArray
-        JmhMain.setOps(params, astUp(null))
+        JmhBenchmarks.setOps(params, astUp(null))
       case name if name.endsWith("orderSum") =>
         nodeStart = cpg.nodes().collect { case astNode: nodes.AstNode => astNode.asInstanceOf[StoredNode] }.toArray
-        JmhMain.setOps(params, nodeStart.length)
+        JmhBenchmarks.setOps(params, nodeStart.length)
     }
     if (shuffled) {
       nodeStart = new Random(1234).shuffle(nodeStart.iterator).toArray
@@ -136,21 +136,21 @@ class JoernGenerated {
 
   @Setup
   def setupFun(params: BenchmarkParams): Unit = {
-    cpg = Bench.loadCopyFile("./cpg.bin")
+    cpg = LoadingAndMemoryBenchmarks.loadCopyFile("./cpg.bin")
     params.getBenchmark match {
       case name if name.endsWith("astDFS") =>
         nodeStart =
           cpg.graph.nodes().collect { case astNode: StoredNode if !astNode._astIn.hasNext && astNode._astOut.hasNext => astNode }.toArray
-        JmhMain.setOps(params, astDFS(null))
+        JmhBenchmarks.setOps(params, astDFS(null))
       case name if name.endsWith("astUp") =>
         nodeStart = cpg.graph.nodes().collect { case astNode: StoredNode => astNode }.toArray
-        JmhMain.setOps(params, astUp(null))
+        JmhBenchmarks.setOps(params, astUp(null))
       case name if name.contains("orderSum") =>
         nodeStart = cpg.graph.nodes().collect { case astNode: AstNode => astNode.asInstanceOf[StoredNode] }.toArray
-        JmhMain.setOps(params, nodeStart.length)
+        JmhBenchmarks.setOps(params, nodeStart.length)
       case name if name.contains("callOrder") =>
         nodeStart = cpg.graph.nodes().collect { case node: Call => node.asInstanceOf[StoredNode] }.toArray
-        JmhMain.setOps(params, nodeStart.length)
+        JmhBenchmarks.setOps(params, nodeStart.length)
       case name if name.contains("MethodFullName") =>
         import io.shiftleft.semanticcpg.language.*
         if (shuffled)
@@ -158,7 +158,7 @@ class JoernGenerated {
         else
           fullnames = new Random(1234).shuffle(cpg.method.fullName.iterator.map { name => name + "lolnope" }).toArray
         fullnames = fullnames.slice(0, math.min(1000, fullnames.length))
-        JmhMain.setOps(params, fullnames.length)
+        JmhBenchmarks.setOps(params, fullnames.length)
     }
     if (shuffled) {
       nodeStart = new Random(1234).shuffle(nodeStart.iterator).toArray
@@ -261,26 +261,26 @@ class Odb2Generated {
             case astNode: v2.nodes.StoredNode if astNode._astIn.isEmpty && astNode._astOut.nonEmpty => astNode
           }
         }.toArray
-        JmhMain.setOps(params, astDFS(null))
+        JmhBenchmarks.setOps(params, astDFS(null))
       case name if name.endsWith("astUp") =>
         nodeStart = cpg.graph._nodes.flatMap {
           _.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode]]
         }
-        JmhMain.setOps(params, astUp(null))
+        JmhBenchmarks.setOps(params, astUp(null))
       case name if name.contains("orderSum") =>
         nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case astNode: v2.nodes.AstNode =>
             astNode.asInstanceOf[v2.nodes.StoredNode]
           }
         }.toArray
-        JmhMain.setOps(params, nodeStart.length)
+        JmhBenchmarks.setOps(params, nodeStart.length)
       case name if name.contains("callOrder") =>
         nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case node: v2.nodes.Call =>
             node.asInstanceOf[v2.nodes.StoredNode]
           }
         }.toArray
-        JmhMain.setOps(params, nodeStart.length)
+        JmhBenchmarks.setOps(params, nodeStart.length)
       case name if name.contains("MethodFullName") =>
         import v2.traversals.Lang.*
         if (shuffled)
@@ -289,7 +289,7 @@ class Odb2Generated {
           fullnames =
             new Random(1234).shuffle(new v2.CpgGeneratedNodeStarters(cpg).method.fullName.iterator.map { name => name + "lolnope" }).toArray
         fullnames = fullnames.slice(0, math.min(1000, fullnames.length))
-        JmhMain.setOps(params, fullnames.length)
+        JmhBenchmarks.setOps(params, fullnames.length)
     }
 
     if (shuffled) {
