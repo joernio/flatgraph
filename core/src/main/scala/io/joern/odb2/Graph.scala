@@ -1,4 +1,6 @@
 package io.joern.odb2
+
+import io.joern.odb2.Edge.Direction
 import io.joern.odb2.Edge.Direction.{Incoming, Outgoing}
 import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
 import io.joern.odb2.misc.{ISeq, MultiDictIndex}
@@ -48,10 +50,9 @@ object Accessors {
         case a: Array[_]                => a(start + i)
       }
 
-      import Edge.Direction
       val (src, dst, subSeq) = Direction.fromOrdinal(inout) match {
-        case Direction.Incoming => (neighbors(start + i), base, -i - 1)
-        case Direction.Outgoing => (base, neighbors(start + i), i + 1)
+        case Incoming => (neighbors(start + i), base, -i - 1)
+        case Outgoing => (base, neighbors(start + i), i + 1)
       }
       base.graph.schema.makeEdge(src, dst, edgeKind, subSeq, property)
     }
