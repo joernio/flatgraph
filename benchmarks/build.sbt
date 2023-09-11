@@ -1,4 +1,4 @@
-name := "benchStuff"
+name := "benchmarks"
 enablePlugins(JavaAppPackaging)
 enablePlugins(JmhPlugin)
 

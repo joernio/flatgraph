@@ -1,4 +1,4 @@
-name := "schemaGen"
+name := "schema-gen"
 enablePlugins(JavaAppPackaging)
 
 libraryDependencies ++= Seq(

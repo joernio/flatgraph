@@ -1,2 +1,2 @@
-name := "joernGenerated"
+name := "joern-generated"
 

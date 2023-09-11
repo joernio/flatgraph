@@ -1,1 +1,1 @@
-name := "codescienceGenerated"
+name := "codescience-generated"
