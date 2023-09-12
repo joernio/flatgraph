@@ -15,11 +15,16 @@ import scala.collection.mutable
 object Convert {
 
   def main(args: Array[String]): Unit = {
-    val inputFile  = args(0)
-    val outputFile = args(1)
-    val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(new java.io.File(inputFile), new overflowdb.util.StringInterner)
-    val (nodes, strings) = readOdb(storage)
-    writeData(outputFile, nodes, strings)
+    if (args.length < 2) {
+      System.err.println("Usage: convert [inputfile] [outputfile]")
+      System.err.println("Error: missing input and/or output file - exiting.")
+    } else {
+      val inputFile  = args(0)
+      val outputFile = args(1)
+      val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(new java.io.File(inputFile), new overflowdb.util.StringInterner)
+      val (nodes, strings) = readOdb(storage)
+      writeData(outputFile, nodes, strings)
+    }
   }
 
   class NodeRefTmp(val legacyId: Long) {
@@ -62,7 +67,6 @@ object Convert {
         while (v.length < nNeighbors) v.addOne(null)
       }
     }
-
   }
 
   def writeData(filename: String, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
