@@ -121,11 +121,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (setNodeProperties(pos) == null) setNodeProperties(pos) = mutable.ArrayBuffer.empty
     val buf   = setNodeProperties(pos)
     val start = buf.size
-    for (item <- iter) {
-      item match {
-        case dnode: DNode => buf.addOne(getGNode(dnode))
-        case other        => buf.addOne(other)
-      }
+    iter.foreach {
+      case dnode: DNode => buf.addOne(getGNode(dnode))
+      case other        => buf.addOne(other)
     }
     val bound = new SetPropertyDesc(node, start, buf.size)
     emplace(setNodeProperties, bound, pos + 1)
@@ -165,8 +163,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   def splitUpdate(): Unit = {
-
-    for (item <- diff.buffer) item match {
+    diff.buffer.foreach {
       case delNode: DelNode if !AccessHelpers.isDeleted(delNode.node) =>
         AccessHelpers.markDeleted(delNode.node)
         delNodes.append(delNode.node)
@@ -273,7 +270,8 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       direction <- Edge.Direction.values
     } deleteEdges(nodeKind, direction, edgeKind)
 
-    for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)) addNodes(nodeKind)
+    for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds))
+      addNodes(nodeKind)
 
     if (delNodes.nonEmpty) {
       deleteNodes()
@@ -495,10 +493,12 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     assert(deletions.forall { edge =>
       edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
     })
-    deletions.sortInPlaceBy { edge =>
-      ((edge.src.seq.toLong << 32) + edge.subSeq.toLong)
+    // TODO speak to bernhard, come up with better name
+    def uniqueNumberForEdge(edge: EdgeRepr) = {
+      (edge.src.seq.toLong << 32) + edge.subSeq.toLong
     }
-    dedupBy(deletions, (e: EdgeRepr) => ((e.src.seq.toLong << 32) + e.subSeq.toLong))
+    deletions.sortInPlaceBy(uniqueNumberForEdge)
+    dedupBy(deletions, uniqueNumberForEdge)
     val nnodes       = graph._nodes(nodeKind).size
     val oldQty       = graph._neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph._neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -526,7 +526,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       if (oldProperty != null)
         System.arraycopy(oldProperty, copyStartIndex, newProperty, copyStartIndex - deletionCounter, deletionSeqIndexStart - copyStartIndex)
 
-      for (idx <- Range(copyStartSeq, deletionSeq + 1)) newQty(idx) = get(oldQty, idx) - deletionCounter
+      for (idx <- Range(copyStartSeq, deletionSeq + 1))
+        newQty(idx) = get(oldQty, idx) - deletionCounter
+
       copyStartSeq = deletionSeq + 1
       // we now copy over the non-deleted edges of the critical deletionSeq
       if (deletionCounter < deletions.size) {
@@ -562,9 +564,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       return
     }
 
-    insertions.sortInPlaceBy {
-      _.src.seq
-    }
+    insertions.sortInPlaceBy(_.src.seq)
 
     assert(insertions.nonEmpty)
     assert(insertions.forall(edge => edge.src.nodeKind == nodeKind && edge.edgeKind == edgeKind))
@@ -596,7 +596,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       System.arraycopy(oldNeighbors, copyStartIdx, newNeighbors, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
       if (oldProperty != null)
         System.arraycopy(oldProperty, copyStartIdx, newProperty, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
-      for (idx <- Range(copyStartSeq, insertionSeq + 2)) newQty(idx) = get(oldQty, idx) + insertionCounter
+      for (idx <- Range(copyStartSeq, insertionSeq + 2))
+        newQty(idx) = get(oldQty, idx) + insertionCounter
+
       // insert
       val insertionBaseIndex = newQty(insertionSeq + 1) - insertionCounter
       while (insertionCounter < insertions.size && insertions(insertionCounter).src.seq == insertionSeq) {
@@ -649,11 +651,12 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         System.arraycopy(oldProperty, copyStartIndex, newProperty, outIndex, copyEndIndex - copyStartIndex)
         outIndex += copyEndIndex - copyStartIndex
         assert(newQty(copyStartSeq) == get(oldQty, copyStartSeq) + offset)
-        for (idx <- Range(copyStartSeq + 1, insertionSeq + 1)) newQty(idx) = get(oldQty, idx) + offset
+        for (idx <- Range(copyStartSeq + 1, insertionSeq + 1))
+          newQty(idx) = get(oldQty, idx) + offset
 
-        if (insertion.isDefined) {
-          System.arraycopy(setPropertyValues, insertion.get.start, newProperty, outIndex, insertion.get.length)
-          outIndex += insertion.get.length
+        insertion.foreach { insertion =>
+          System.arraycopy(setPropertyValues, insertion.start, newProperty, outIndex, insertion.length)
+          outIndex += insertion.length
           newQty(insertionSeq + 1) = outIndex
         }
         copyStartSeq = insertionSeq + 1
