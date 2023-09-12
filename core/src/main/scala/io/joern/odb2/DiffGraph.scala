@@ -407,26 +407,27 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  /*returns (out-edge, in-edge) pair*/
+  /** returns (out-edge, in-edge) pair */
   def normalizeRepresentation(edge: Edge): (EdgeRepr, EdgeRepr) = {
+    val kind = edge.edgeKind
+    assert(edge.subSeq != 0, "edge.subSeq must not be 0")
     if (edge.subSeq > 0) {
-      val count    = Accessors.getEdgesOut(edge.src, edge.edgeKind).iterator.take(edge.subSeq).count(_.dst == edge.dst)
-      val reversed = Accessors.getEdgesIn(edge.dst, edge.edgeKind).iterator.filter(_.src == edge.src).drop(count - 1).next()
-      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq < 0)
+      val count    = Accessors.getEdgesOut(edge.src, kind).iterator.take(edge.subSeq).count(_.dst == edge.dst)
+      val reversed = Accessors.getEdgesIn(edge.dst, kind).iterator.filter(_.src == edge.src).drop(count - 1).next()
+      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq < 0, "something went wrong when calculating reversed edge")
       (
-        new EdgeRepr(edge.src, edge.dst, edge.edgeKind, edge.subSeq, edge.property),
-        new EdgeRepr(edge.dst, edge.src, edge.edgeKind, -reversed.subSeq, edge.property)
+        new EdgeRepr(edge.src, edge.dst, kind, edge.subSeq, edge.property),
+        new EdgeRepr(edge.dst, edge.src, kind, -reversed.subSeq, edge.property)
       )
-    } else if (edge.subSeq < 0) {
-      val count    = Accessors.getEdgesIn(edge.dst, edge.edgeKind).iterator.take(-edge.subSeq).count(_.src == edge.src)
-      val reversed = Accessors.getEdgesOut(edge.src, edge.edgeKind).iterator.filter(_.dst == edge.dst).drop(count - 1).next()
-      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq > 0)
+    } else {
+      val count    = Accessors.getEdgesIn(edge.dst, kind).iterator.take(-edge.subSeq).count(_.src == edge.src)
+      val reversed = Accessors.getEdgesOut(edge.src, kind).iterator.filter(_.dst == edge.dst).drop(count - 1).next()
+      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq > 0, "something went wrong when calculating reversed edge")
       (
-        new EdgeRepr(edge.src, edge.dst, edge.edgeKind, reversed.subSeq, edge.property),
-        new EdgeRepr(edge.dst, edge.src, edge.edgeKind, -edge.subSeq, edge.property)
+        new EdgeRepr(edge.src, edge.dst, kind, reversed.subSeq, edge.property),
+        new EdgeRepr(edge.dst, edge.src, kind, -edge.subSeq, edge.property)
       )
-    } else ???
-
+    }
   }
 
   /** in-place turns offset-encoded qty into length-encoded qty */
