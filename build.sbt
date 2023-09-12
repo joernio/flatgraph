@@ -1,7 +1,10 @@
-name                           := "overflowdbv2"
-ThisBuild / organization       := "io.joern"
-ThisBuild / scalaVersion       := "3.3.1"
-publish / skip                 := true
+name := "overflowdbv2"
+ThisBuild / organization := "io.joern"
+ThisBuild / scalaVersion := "3.3.1"
+publish / skip := true
+
+val cpgVersion = "1.3.596"
+val joernVersion = "1.1.1483"
 
 lazy val core                 = project.in(file("core"))
 lazy val schemaGen            = project.in(file("schema-gen")).dependsOn(core)
