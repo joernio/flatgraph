@@ -121,11 +121,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (setNodeProperties(pos) == null) setNodeProperties(pos) = mutable.ArrayBuffer.empty
     val buf   = setNodeProperties(pos)
     val start = buf.size
-    for (item <- iter) {
-      item match {
-        case dnode: DNode => buf.addOne(getGNode(dnode))
-        case other        => buf.addOne(other)
-      }
+    iter.foreach {
+      case dnode: DNode => buf.addOne(getGNode(dnode))
+      case other        => buf.addOne(other)
     }
     val bound = new SetPropertyDesc(node, start, buf.size)
     emplace(setNodeProperties, bound, pos + 1)
@@ -145,12 +143,12 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   def getGNode(node: DNodeOrNode): GNode = {
     node match {
       case already: GNode =>
-        assert(already.graph eq graph)
+        assert(already.graph == graph, "expected a different graph instance")
         already
       case detached: DNode =>
         detached.storedRef match {
           case Some(already: GNode) =>
-            assert(already.graph eq graph)
+            assert(already.graph == graph, "expected a different graph instance")
             already
           case None =>
             val nodekind = detached.nodeKind
@@ -165,8 +163,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   def splitUpdate(): Unit = {
-
-    for (item <- diff.buffer) item match {
+    diff.buffer.foreach {
       case delNode: DelNode if !AccessHelpers.isDeleted(delNode.node) =>
         AccessHelpers.markDeleted(delNode.node)
         delNodes.append(delNode.node)
@@ -252,7 +249,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           emplaceSetProperty(setNodeProperty.node, setNodeProperty.propertyKind, iter)
         case delNode: DelNode =>
           // already processed
-          assert(AccessHelpers.isDeleted(delNode.node))
+          assert(AccessHelpers.isDeleted(delNode.node), s"node should have been deleted already but wasn't: ${delNode.node}")
       }
       drainDeferred()
     }
@@ -273,7 +270,8 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       direction <- Edge.Direction.values
     } deleteEdges(nodeKind, direction, edgeKind)
 
-    for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)) addNodes(nodeKind)
+    for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds))
+      addNodes(nodeKind)
 
     if (delNodes.nonEmpty) {
       deleteNodes()
@@ -396,7 +394,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           }
           idx += 1
         }
-        assert(idxOut == newNeighbors.length)
+        assert(idxOut == newNeighbors.length, s"idxOut was expected to be ${newNeighbors.length}, but instead is $idxOut")
         graph._neighbors(pos) = newQty
         graph._neighbors(pos + 1) = newNeighbors
         graph._neighbors(pos + 2) = newProperty match {
@@ -433,7 +431,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   /** in-place turns offset-encoded qty into length-encoded qty */
   def ranToLen(arr: Array[Int]): Unit = {
     if (arr.length > 0) {
-      assert(arr(0) == 0)
+      assert(arr(0) == 0, s"first element in array was expected to be `0`, but instead is `${arr(0)}`")
       for (idx <- Range(0, arr.length - 1)) {
         arr(idx) = arr(idx + 1) - arr(idx)
       }
@@ -444,7 +442,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   /** in-place turns length-encoded qty into offset-encoded qty */
   def lenToRan(arr: Array[Int]): Unit = {
     if (arr.length > 0) {
-      assert(arr.last == 0)
+      assert(arr.last == 0, s"last element in array was expected to be `0`, but instead is `${arr.last}`")
       var count = 0
       var idx   = 0
       while (idx < arr.length) {
@@ -494,11 +492,10 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (deletions == null) return
     assert(deletions.forall { edge =>
       edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
-    })
-    deletions.sortInPlaceBy { edge =>
-      ((edge.src.seq.toLong << 32) + edge.subSeq.toLong)
-    }
-    dedupBy(deletions, (e: EdgeRepr) => ((e.src.seq.toLong << 32) + e.subSeq.toLong))
+    }, s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind")
+
+    deletions.sortInPlaceBy(numberForEdgeComparison)
+    dedupBy(deletions, numberForEdgeComparison)
     val nnodes       = graph._nodes(nodeKind).size
     val oldQty       = graph._neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph._neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -526,7 +523,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       if (oldProperty != null)
         System.arraycopy(oldProperty, copyStartIndex, newProperty, copyStartIndex - deletionCounter, deletionSeqIndexStart - copyStartIndex)
 
-      for (idx <- Range(copyStartSeq, deletionSeq + 1)) newQty(idx) = get(oldQty, idx) - deletionCounter
+      for (idx <- Range(copyStartSeq, deletionSeq + 1))
+        newQty(idx) = get(oldQty, idx) - deletionCounter
+
       copyStartSeq = deletionSeq + 1
       // we now copy over the non-deleted edges of the critical deletionSeq
       if (deletionCounter < deletions.size) {
@@ -535,7 +534,10 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         while (idx < deletionSeqIndexEnd - deletionSeqIndexStart) {
           if (deletion != null && idx == deletion.subSeq - 1) {
             deletionCounter += 1
-            assert(deletion.dst == oldNeighbors(deletionSeqIndexStart + idx))
+            assert(
+              deletion.dst == oldNeighbors(deletionSeqIndexStart + idx),
+              s"deletion.dst was supposed to be `${oldNeighbors(deletionSeqIndexStart + idx)}`, but instead is ${deletion.dst}"
+            )
             deletion = if (deletionCounter < deletions.size) deletions(deletionCounter) else null
           } else {
             newNeighbors(deletionSeqIndexStart + idx - deletionCounter) = oldNeighbors(deletionSeqIndexStart + idx)
@@ -562,12 +564,13 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       return
     }
 
-    insertions.sortInPlaceBy {
-      _.src.seq
-    }
+    insertions.sortInPlaceBy(_.src.seq)
 
-    assert(insertions.nonEmpty)
-    assert(insertions.forall(edge => edge.src.nodeKind == nodeKind && edge.edgeKind == edgeKind))
+    assert(insertions.nonEmpty, "insertions must be nonEmpty")
+    assert(
+      insertions.forall(edge => edge.src.nodeKind == nodeKind && edge.edgeKind == edgeKind),
+      s"something went wrong while adding edges - values for debugging: nodeKind=$nodeKind; edgeKind=$edgeKind"
+    )
 
     val nnodes       = graph._nodes(nodeKind).size
     val oldQty       = Option(graph._neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
@@ -596,7 +599,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       System.arraycopy(oldNeighbors, copyStartIdx, newNeighbors, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
       if (oldProperty != null)
         System.arraycopy(oldProperty, copyStartIdx, newProperty, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
-      for (idx <- Range(copyStartSeq, insertionSeq + 2)) newQty(idx) = get(oldQty, idx) + insertionCounter
+      for (idx <- Range(copyStartSeq, insertionSeq + 2))
+        newQty(idx) = get(oldQty, idx) + insertionCounter
+
       // insert
       val insertionBaseIndex = newQty(insertionSeq + 1) - insertionCounter
       while (insertionCounter < insertions.size && insertions(insertionCounter).src.seq == insertionSeq) {
@@ -648,12 +653,16 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         val offset         = outIndex - copyStartIndex
         System.arraycopy(oldProperty, copyStartIndex, newProperty, outIndex, copyEndIndex - copyStartIndex)
         outIndex += copyEndIndex - copyStartIndex
-        assert(newQty(copyStartSeq) == get(oldQty, copyStartSeq) + offset)
-        for (idx <- Range(copyStartSeq + 1, insertionSeq + 1)) newQty(idx) = get(oldQty, idx) + offset
+        assert(
+          newQty(copyStartSeq) == get(oldQty, copyStartSeq) + offset,
+          s"something went wrong while copying properties: newQty(copyStartSeq) was supposed to be ${get(oldQty, copyStartSeq) + offset} but instead was ${newQty(copyStartSeq)}"
+        )
+        for (idx <- Range(copyStartSeq + 1, insertionSeq + 1))
+          newQty(idx) = get(oldQty, idx) + offset
 
-        if (insertion.isDefined) {
-          System.arraycopy(setPropertyValues, insertion.get.start, newProperty, outIndex, insertion.get.length)
-          outIndex += insertion.get.length
+        insertion.foreach { insertion =>
+          System.arraycopy(setPropertyValues, insertion.start, newProperty, outIndex, insertion.length)
+          outIndex += insertion.length
           newQty(insertionSeq + 1) = outIndex
         }
         copyStartSeq = insertionSeq + 1
@@ -688,5 +697,16 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       }
     }
     buff.dropRightInPlace(idx - outIdx)
+  }
+
+  /**
+   * Creates a bitstring/integeger for fast comparison where
+   * - the most significicant bits are defined by edge.src.seq
+   * - the least significicant bits are defined by edge.subSeq
+   *
+   * So that we can quickly sort by edge.src.seq, and where those have multiple results, sort by edge.subSeq
+   */
+  private def numberForEdgeComparison(edge: EdgeRepr): Long = {
+    (edge.src.seq.toLong << 32) + edge.subSeq.toLong
   }
 }
