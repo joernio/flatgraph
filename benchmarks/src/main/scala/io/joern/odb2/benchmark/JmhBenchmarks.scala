@@ -255,26 +255,26 @@ class Odb2Generated {
     cpg = new Cpg(odb2.storage.Deserialization.readGraph("./cpg.fg", v2.GraphSchema))
     params.getBenchmark match {
       case name if name.endsWith("astDFS") =>
-        nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
+        nodeStart = cpg.graph.nodesArray.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect {
             case astNode: v2.nodes.StoredNode if astNode._astIn.isEmpty && astNode._astOut.nonEmpty => astNode
           }
         }.toArray
         JmhBenchmarks.setOps(params, astDFS(null))
       case name if name.endsWith("astUp") =>
-        nodeStart = cpg.graph._nodes.flatMap {
+        nodeStart = cpg.graph.nodesArray.flatMap {
           _.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode]]
         }
         JmhBenchmarks.setOps(params, astUp(null))
       case name if name.contains("orderSum") =>
-        nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
+        nodeStart = cpg.graph.nodesArray.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case astNode: v2.nodes.AstNode =>
             astNode.asInstanceOf[v2.nodes.StoredNode]
           }
         }.toArray
         JmhBenchmarks.setOps(params, nodeStart.length)
       case name if name.contains("callOrder") =>
-        nodeStart = cpg.graph._nodes.iterator.flatMap { nodesOfKind =>
+        nodeStart = cpg.graph.nodesArray.iterator.flatMap { nodesOfKind =>
           nodesOfKind.iterator.collect { case node: v2.nodes.Call =>
             node.asInstanceOf[v2.nodes.StoredNode]
           }

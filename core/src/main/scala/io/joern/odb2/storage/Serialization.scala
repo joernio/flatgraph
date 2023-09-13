@@ -52,9 +52,9 @@ object StorageManifest {
     def read(item: ujson.Value): GraphItem = {
       val version = item.obj(Keys.Version).num.toInt
       if (version != 0) throw new RuntimeException()
-      val nodes           = item.obj(Keys.nodes).arr.map(NodeItem.read).toArray
-      val edges           = item.obj(Keys.edges).arr.map(EdgeItem.read).toArray
-      val properties      = item.obj(Keys.properties).arr.map(PropertyItem.read).toArray
+      val nodes           = item.obj(Keys.Nodes).arr.map(NodeItem.read).toArray
+      val edges           = item.obj(Keys.Edges).arr.map(EdgeItem.read).toArray
+      val properties      = item.obj(Keys.Properties).arr.map(PropertyItem.read).toArray
       val stringPoolLength  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.StringPoolLength))
       val stringPoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.StringPoolBytes))
       val res             = new GraphItem(nodes, edges, properties, stringPoolLength, stringPoolBytes)
@@ -222,14 +222,10 @@ object Serialization {
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       val nodeLabel = g.schema.getNodeLabel(nodeKind)
-      val deletions = g
-        ._nodes(nodeKind)
-        .iterator
-        .collect {
-          case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
-        }
-        .toArray
-      val size = g._nodes(nodeKind).size
+      val deletions = g.nodes(nodeKind).collect {
+        case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
+      }.toArray
+      val size = g.nodeCount(nodeKind)
       nodes.addOne(new StorageManifest.NodeItem(nodeLabel, size, deletions))
     }
     for {
@@ -238,15 +234,15 @@ object Serialization {
       direction <- Direction.values
     } {
       val pos = g.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-      if (g._neighbors(pos) != null) {
+      if (g.neighbors(pos) != null) {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
         val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
         val edgeItem  = new StorageManifest.EdgeItem(nodeLabel, edgeLabel, direction.encoding, null, null, null)
         edges.addOne(edgeItem)
         edgeItem.qty =
-          encodeAny(deltaEncode(g._nodes(nodeKind).length, g._neighbors(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
-        edgeItem.neighbors = encodeAny(g._neighbors(pos + 1), filePtr, stringPool, fileChannel)
-        edgeItem.property = encodeAny(g._neighbors(pos + 2), filePtr, stringPool, fileChannel)
+          encodeAny(deltaEncode(g.nodeCount(nodeKind), g.neighbors(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
+        edgeItem.neighbors = encodeAny(g.neighbors(pos + 1), filePtr, stringPool, fileChannel)
+        edgeItem.property = encodeAny(g.neighbors(pos + 2), filePtr, stringPool, fileChannel)
       }
     }
     for {
@@ -254,14 +250,14 @@ object Serialization {
       propertyKind <- Range(0, g.schema.getNumberOfProperties)
     } {
       val pos = g.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-      if (g._properties(pos) != null) {
+      if (g.properties(pos) != null) {
         val nodeLabel     = g.schema.getNodeLabel(nodeKind)
         val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
         val propertyItem  = new StorageManifest.PropertyItem(nodeLabel, propertyLabel, null, null)
         properties.addOne(propertyItem)
         propertyItem.qty =
-          encodeAny(deltaEncode(g._nodes(nodeKind).length, g._properties(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
-        propertyItem.property = encodeAny(g._properties(pos + 1), filePtr, stringPool, fileChannel)
+          encodeAny(deltaEncode(g.nodeCount(nodeKind), g.properties(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
+        propertyItem.property = encodeAny(g.properties(pos + 1), filePtr, stringPool, fileChannel)
       }
     }
 
@@ -437,7 +433,7 @@ object Deserialization {
         kindRemapper(idx) = nodeKind
         val nodes = new Array[GNode](nodeItem.nnodes)
         for (seq <- Range(0, nodes.length)) nodes(seq) = g.schema.makeNode(g, nodeKind, seq)
-        g._nodes(nodeKind) = nodes
+        g.nodesArray(nodeKind) = nodes
         nodeRemapper(idx) = nodes
         if (nodeItem.deletions != null) {
           for (del <- nodeItem.deletions) {
@@ -445,8 +441,8 @@ object Deserialization {
             if (!AccessHelpers.isDeleted(node)) AccessHelpers.markDeleted(nodes(del))
             else throw new RuntimeException()
           }
-          g.nnodes(nodeKind) = nodes.length - nodeItem.deletions.length
-        } else g.nnodes(nodeKind) = nodes.length
+          g.nodeCountByKind(nodeKind) = nodes.length - nodeItem.deletions.length
+        } else g.nodeCountByKind(nodeKind) = nodes.length
       }
 
       val edgeKinds = mutable.HashMap[(String, String), Short]()
@@ -467,11 +463,11 @@ object Deserialization {
         val direction = Direction.fromOrdinal(edgeItem.inout)
         if (nodeKind.isDefined && edgeKind.isDefined) {
           val pos = g.schema.neighborOffsetArrayIndex(nodeKind.get, direction, edgeKind.get)
-          g._neighbors(pos) = deltaDecode(readArray(fileChannel, edgeItem.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
-          g._neighbors(pos + 1) = readArray(fileChannel, edgeItem.neighbors, nodeRemapper, pool)
+          g.neighbors(pos) = deltaDecode(readArray(fileChannel, edgeItem.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
+          g.neighbors(pos + 1) = readArray(fileChannel, edgeItem.neighbors, nodeRemapper, pool)
           val property = readArray(fileChannel, edgeItem.property, nodeRemapper, pool)
           if (property != null)
-            g._neighbors(pos + 2) = property
+            g.neighbors(pos + 2) = property
         }
       }
 
@@ -492,8 +488,8 @@ object Deserialization {
         val propertyKind = propertykinds.get((property.nodeLabel, property.propertyLabel))
         if (nodeKind.isDefined && propertyKind.isDefined) {
           val pos = g.schema.propertyOffsetArrayIndex(nodeKind.get, propertyKind.get)
-          g._properties(pos) = deltaDecode(readArray(fileChannel, property.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
-          g._properties(pos + 1) = readArray(fileChannel, property.property, nodeRemapper, pool)
+          g.properties(pos) = deltaDecode(readArray(fileChannel, property.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
+          g.properties(pos + 1) = readArray(fileChannel, property.property, nodeRemapper, pool)
         }
       }
       g
