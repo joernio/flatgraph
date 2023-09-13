@@ -23,51 +23,52 @@ object StorageTyp {
   val Double = "double"
   val Float  = "float"
 }
+
 object Keys {
-  val typ                = "type"
-  val startOffset        = "startOffset"
-  val compressedLength   = "compressedLength"
-  val decompressedLength = "decompressedLength"
-  val nodeLabel          = "nodeLabel"
-  val propertyLabel      = "propertyLabel"
-  val qty                = "qty"
-  val property           = "property"
-  val nnodes             = "nnodes"
-  val deletions          = "deletions"
-  val edgeLabel          = "edgeLabel"
-  val inout              = "inout"
-  val neighbors          = "neighbors"
-  val version            = "version"
-  val nodes              = "nodes"
-  val edges              = "edges"
-  val properties         = "properties"
-  val stringpoolLens     = "stringpoolLens"
-  val stringpoolBytes    = "stringpoolBytes"
-  val HEADER             = 0xdeadbeefdeadbeefL
+  val Type               = "type"
+  val StartOffset        = "startOffset"
+  val CompressedLength   = "compressedLength"
+  val DecompressedLength = "decompressedLength"
+  val NodeLabel          = "nodeLabel"
+  val PropertyLabel      = "propertyLabel"
+  val Quantity           = "qty"
+  val Property           = "property"
+  val NNodes             = "nnodes"
+  val Deletions          = "deletions"
+  val EdgeLabel          = "edgeLabel"
+  val InOut              = "inout"
+  val Neighbors          = "neighbors"
+  val Version            = "version"
+  val Nodes              = "nodes"
+  val Edges              = "edges"
+  val Properties         = "properties"
+  val StringpoolLens     = "stringpoolLens"
+  val StringpoolBytes    = "stringpoolBytes"
+  val Header             = 0xdeadbeefdeadbeefL
 }
 
 object StorageManifest {
   object GraphItem {
     def read(item: ujson.Value): GraphItem = {
-      val version = item.obj(Keys.version).num.toInt
+      val version = item.obj(Keys.Version).num.toInt
       if (version != 0) throw new RuntimeException()
-      val nodes           = item.obj(Keys.nodes).arr.map(NodeItem.read).toArray
-      val edges           = item.obj(Keys.edges).arr.map(EdgeItem.read).toArray
-      val properties      = item.obj(Keys.properties).arr.map(PropertyItem.read).toArray
-      val stringpoolLens  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.stringpoolLens))
-      val stringpoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.stringpoolBytes))
+      val nodes           = item.obj(Keys.Nodes).arr.map(NodeItem.read).toArray
+      val edges           = item.obj(Keys.Edges).arr.map(EdgeItem.read).toArray
+      val properties      = item.obj(Keys.Properties).arr.map(PropertyItem.read).toArray
+      val stringpoolLens  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.StringpoolLens))
+      val stringpoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.StringpoolBytes))
       val res             = new GraphItem(nodes, edges, properties, stringpoolLens, stringpoolBytes)
       res.version = version
       res
     }
     def write(item: GraphItem): ujson.Value = {
       val res = ujson.Obj()
-      res(Keys.version) = 0
-      res(Keys.nodes) = ujson.Arr(item.nodes.map(NodeItem.write): _*)
-      res(Keys.edges) = ujson.Arr(item.edges.map(EdgeItem.write): _*)
-      res(Keys.properties) = ujson.Arr(item.properties.map(PropertyItem.write): _*)
-      res(Keys.stringpoolLens) = OutlineStorage.write(item.stringpoolLens)
-      res(Keys.stringpoolBytes) = OutlineStorage.write(item.stringpoolBytes)
+      res(Keys.Version) = 0
+      res(Keys.Nodes) = ujson.Arr(item.nodes.map(NodeItem.write): _*)
+      res(Keys.Edges) = ujson.Arr(item.edges.map(EdgeItem.write): _*)
+      res(Keys.Properties) = ujson.Arr(item.properties.map(PropertyItem.write): _*)
+      res(Keys.StringpoolLens) = OutlineStorage.write(item.stringpoolLens)
+      res(Keys.StringpoolBytes) = OutlineStorage.write(item.stringpoolBytes)
       res
 
     }
@@ -86,17 +87,17 @@ object StorageManifest {
   object NodeItem {
     def write(item: NodeItem): ujson.Value = {
       val res = ujson.Obj()
-      res(Keys.nodeLabel) = item.nodeLabel
-      res(Keys.nnodes) = item.nnodes
-      res(Keys.deletions) =
+      res(Keys.NodeLabel) = item.nodeLabel
+      res(Keys.NNodes) = item.nnodes
+      res(Keys.Deletions) =
         if (item.deletions == null || item.deletions.isEmpty) ujson.Null else ujson.Arr(item.deletions.map { seq => ujson.Num(seq) }: _*)
       res
     }
     def read(item: ujson.Value): NodeItem = {
-      val nodeLabel = item.obj(Keys.nodeLabel).str
-      val nnodes    = item.obj(Keys.nnodes).num.toInt
+      val nodeLabel = item.obj(Keys.NodeLabel).str
+      val nnodes    = item.obj(Keys.NNodes).num.toInt
       val deletions = item.obj
-        .get(Keys.deletions)
+        .get(Keys.Deletions)
         .flatMap {
           case arr: ujson.Arr =>
             val a = arr.value.map(_.num.toInt)
@@ -111,22 +112,22 @@ object StorageManifest {
 
   object EdgeItem {
     def read(item: ujson.Value): EdgeItem = {
-      val nodeLabel = item.obj(Keys.nodeLabel).str
-      val edgeLabel = item.obj(Keys.edgeLabel).str
-      val inout     = item.obj(Keys.inout).num.toByte
-      val qty       = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.qty))
-      val neighbors = OutlineStorage.read(StorageTyp.Ref, item.obj(Keys.neighbors))
-      val property  = OutlineStorage.read(item.obj(Keys.property))
+      val nodeLabel = item.obj(Keys.NodeLabel).str
+      val edgeLabel = item.obj(Keys.EdgeLabel).str
+      val inout     = item.obj(Keys.InOut).num.toByte
+      val qty       = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.Quantity))
+      val neighbors = OutlineStorage.read(StorageTyp.Ref, item.obj(Keys.Neighbors))
+      val property  = OutlineStorage.read(item.obj(Keys.Property))
       new EdgeItem(nodeLabel, edgeLabel, inout, qty, neighbors, property)
     }
     def write(item: EdgeItem): ujson.Value = {
       val res = ujson.Obj()
-      res(Keys.nodeLabel) = item.nodeLabel
-      res(Keys.edgeLabel) = item.edgeLabel
-      res(Keys.inout) = item.inout
-      res(Keys.qty) = OutlineStorage.write(item.qty)
-      res(Keys.neighbors) = OutlineStorage.write(item.neighbors)
-      res(Keys.property) = OutlineStorage.write(item.property)
+      res(Keys.NodeLabel) = item.nodeLabel
+      res(Keys.EdgeLabel) = item.edgeLabel
+      res(Keys.InOut) = item.inout
+      res(Keys.Quantity) = OutlineStorage.write(item.qty)
+      res(Keys.Neighbors) = OutlineStorage.write(item.neighbors)
+      res(Keys.Property) = OutlineStorage.write(item.property)
       res
     }
   }
@@ -143,18 +144,18 @@ object StorageManifest {
   object PropertyItem {
     def write(item: PropertyItem): ujson.Value = {
       val res = ujson.Obj()
-      res(Keys.nodeLabel) = item.nodeLabel
-      res(Keys.propertyLabel) = item.propertyLabel
-      res(Keys.qty) = OutlineStorage.write(item.qty)
-      res(Keys.property) = OutlineStorage.write(item.property)
+      res(Keys.NodeLabel) = item.nodeLabel
+      res(Keys.PropertyLabel) = item.propertyLabel
+      res(Keys.Quantity) = OutlineStorage.write(item.qty)
+      res(Keys.Property) = OutlineStorage.write(item.property)
       res
     }
 
     def read(item: ujson.Value): PropertyItem = {
-      val nodeLabel     = item.obj(Keys.nodeLabel).str
-      val propertyLabel = item.obj(Keys.propertyLabel).str
-      val qty           = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.qty))
-      val property      = OutlineStorage.read(item.obj(Keys.property))
+      val nodeLabel     = item.obj(Keys.NodeLabel).str
+      val propertyLabel = item.obj(Keys.PropertyLabel).str
+      val qty           = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.Quantity))
+      val property      = OutlineStorage.read(item.obj(Keys.Property))
       new PropertyItem(nodeLabel, propertyLabel, qty, property)
     }
   }
@@ -164,10 +165,10 @@ object StorageManifest {
     def write(item: OutlineStorage): ujson.Value = {
       if (item == null) return ujson.Null
       val res = ujson.Obj()
-      res(Keys.typ) = item.typ
-      res(Keys.startOffset) = ujson.Num(item.startOffset.toDouble)
-      res(Keys.compressedLength) = ujson.Num(item.compressedLength.toDouble)
-      res(Keys.decompressedLength) = ujson.Num(item.decompressedLength)
+      res(Keys.Type) = item.typ
+      res(Keys.StartOffset) = ujson.Num(item.startOffset.toDouble)
+      res(Keys.CompressedLength) = ujson.Num(item.compressedLength.toDouble)
+      res(Keys.DecompressedLength) = ujson.Num(item.decompressedLength)
       res
     }
     def read(typ: String, item: ujson.Value): OutlineStorage = {
@@ -177,10 +178,10 @@ object StorageManifest {
     }
     def read(item: ujson.Value): OutlineStorage = {
       if (item.isNull) return null
-      val res = new OutlineStorage(item.obj(Keys.typ).str)
-      res.startOffset = item.obj(Keys.startOffset).num.toLong
-      res.compressedLength = item.obj(Keys.compressedLength).num.toInt
-      res.decompressedLength = item.obj(Keys.decompressedLength).num.toInt
+      val res = new OutlineStorage(item.obj(Keys.Type).str)
+      res.startOffset = item.obj(Keys.StartOffset).num.toLong
+      res.compressedLength = item.obj(Keys.CompressedLength).num.toInt
+      res.decompressedLength = item.obj(Keys.DecompressedLength).num.toInt
       res
     }
   }
@@ -279,7 +280,7 @@ object Serialization {
     var pos       = filePtr.get()
     val header    = new Array[Byte](16)
     val headerBuf = ByteBuffer.wrap(header)
-    headerBuf.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(Keys.HEADER).put(pos)
+    headerBuf.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(Keys.Header).put(pos)
     headerBuf.position(0)
     var headPos = 0L
     while (headerBuf.hasRemaining()) {
@@ -318,7 +319,7 @@ object Serialization {
     fileChannel: FileChannel
   ): OutlineStorage = {
     item match {
-      case default: DefaultValue => null
+      case _: DefaultValue => null
       case null                  => null
       case bools: Array[Boolean] =>
         write(bools.map { b => if (b) 1.toByte else 0.toByte }, new OutlineStorage(StorageTyp.Bool), filePtr, fileChannel)
@@ -507,7 +508,7 @@ object Deserialization {
     }
     header.flip()
 
-    if (header.getLong() != Keys.HEADER) throw new RuntimeException()
+    if (header.getLong() != Keys.Header) throw new RuntimeException()
     val manifestOffset = header.getLong()
     val manifestSize   = channel.size() - manifestOffset
     val manifestBytes  = ByteBuffer.allocate(manifestSize.toInt)
@@ -560,6 +561,7 @@ object Deserialization {
     }
     a
   }
+
   def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringpool: Array[String]): Array[_] = {
     if (ptr == null) return null
     val dec = Zstd
