@@ -206,8 +206,7 @@ class JoernGenerated {
   @Benchmark
   def callOrderTrav(blackhole: Blackhole): Int = {
     import io.shiftleft.semanticcpg.language.*
-    import overflowdb.traversal
-    val res = traversal.Traversal.from(nodeStart.iterator.asInstanceOf[Iterator[Call]]).orderGt(2).count.next()
+    val res = nodeStart.iterator.asInstanceOf[Iterator[Call]].orderGt(2).size
     if (blackhole != null) blackhole.consume(res)
     res
   }
