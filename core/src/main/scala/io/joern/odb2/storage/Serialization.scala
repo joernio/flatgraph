@@ -42,8 +42,8 @@ object Keys {
   val Nodes              = "nodes"
   val Edges              = "edges"
   val Properties         = "properties"
-  val StringpoolLens     = "stringpoolLens"
-  val StringpoolBytes    = "stringpoolBytes"
+  val StringPoolLength   = "stringPoolLength"
+  val StringPoolBytes    = "stringPoolBytes"
   val Header             = 0xdeadbeefdeadbeefL
 }
 
@@ -52,12 +52,12 @@ object StorageManifest {
     def read(item: ujson.Value): GraphItem = {
       val version = item.obj(Keys.Version).num.toInt
       if (version != 0) throw new RuntimeException()
-      val nodes           = item.obj(Keys.Nodes).arr.map(NodeItem.read).toArray
-      val edges           = item.obj(Keys.Edges).arr.map(EdgeItem.read).toArray
-      val properties      = item.obj(Keys.Properties).arr.map(PropertyItem.read).toArray
-      val stringpoolLens  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.StringpoolLens))
-      val stringpoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.StringpoolBytes))
-      val res             = new GraphItem(nodes, edges, properties, stringpoolLens, stringpoolBytes)
+      val nodes           = item.obj(Keys.nodes).arr.map(NodeItem.read).toArray
+      val edges           = item.obj(Keys.edges).arr.map(EdgeItem.read).toArray
+      val properties      = item.obj(Keys.properties).arr.map(PropertyItem.read).toArray
+      val stringPoolLength  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.StringPoolLength))
+      val stringPoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.StringPoolBytes))
+      val res             = new GraphItem(nodes, edges, properties, stringPoolLength, stringPoolBytes)
       res.version = version
       res
     }
@@ -67,8 +67,8 @@ object StorageManifest {
       res(Keys.Nodes) = ujson.Arr(item.nodes.map(NodeItem.write): _*)
       res(Keys.Edges) = ujson.Arr(item.edges.map(EdgeItem.write): _*)
       res(Keys.Properties) = ujson.Arr(item.properties.map(PropertyItem.write): _*)
-      res(Keys.StringpoolLens) = OutlineStorage.write(item.stringpoolLens)
-      res(Keys.StringpoolBytes) = OutlineStorage.write(item.stringpoolBytes)
+      res(Keys.StringPoolLength) = OutlineStorage.write(item.stringPoolLength)
+      res(Keys.StringPoolBytes) = OutlineStorage.write(item.stringPoolBytes)
       res
 
     }
@@ -77,8 +77,8 @@ object StorageManifest {
     var nodes: Array[NodeItem],
     var edges: Array[EdgeItem],
     var properties: Array[PropertyItem],
-    val stringpoolLens: OutlineStorage,
-    val stringpoolBytes: OutlineStorage
+    val stringPoolLength: OutlineStorage,
+    val stringPoolBytes: OutlineStorage
   ) {
     var version = 0
   }
@@ -522,26 +522,26 @@ object Deserialization {
   }
 
   def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
-    val stringPoolLens = Zstd
+    val stringPoolLength = Zstd
       .decompress(
-        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringpoolLens.startOffset, manifest.stringpoolLens.compressedLength),
-        manifest.stringpoolLens.decompressedLength
+        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
+        manifest.stringPoolLength.decompressedLength
       )
       .order(ByteOrder.LITTLE_ENDIAN)
     val stringPoolBytes = Zstd
       .decompress(
         fileChannel
-          .map(FileChannel.MapMode.READ_ONLY, manifest.stringpoolBytes.startOffset, manifest.stringpoolBytes.compressedLength),
-        manifest.stringpoolBytes.decompressedLength
+          .map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
+        manifest.stringPoolBytes.decompressedLength
       )
       .order(ByteOrder.LITTLE_ENDIAN)
-    val poolBytes = new Array[Byte](manifest.stringpoolBytes.decompressedLength)
+    val poolBytes = new Array[Byte](manifest.stringPoolBytes.decompressedLength)
     stringPoolBytes.get(poolBytes)
-    val pool    = new Array[String](manifest.stringpoolLens.decompressedLength >> 2)
+    val pool    = new Array[String](manifest.stringPoolLength.decompressedLength >> 2)
     var idx     = 0
     var poolPtr = 0
     while (idx < pool.length) {
-      val len = stringPoolLens.getInt()
+      val len = stringPoolLength.getInt()
       pool(idx) = new String(poolBytes, poolPtr, len, StandardCharsets.UTF_8)
       idx += 1
       poolPtr += len
@@ -562,7 +562,7 @@ object Deserialization {
     a
   }
 
-  def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringpool: Array[String]): Array[_] = {
+  def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringPool: Array[String]): Array[_] = {
     if (ptr == null) return null
     val dec = Zstd
       .decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)
@@ -605,7 +605,7 @@ object Deserialization {
         var idx    = 0
         while (idx < res.length) {
           val offset = intbuf.get(idx)
-          if (offset >= 0) res(idx) = stringpool(offset)
+          if (offset >= 0) res(idx) = stringPool(offset)
           idx += 1
         }
         res
