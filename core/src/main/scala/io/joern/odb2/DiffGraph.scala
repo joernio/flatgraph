@@ -493,12 +493,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     assert(deletions.forall { edge =>
       edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
     }, s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind")
-    // TODO speak to bernhard, come up with better name
-    def uniqueNumberForEdge(edge: EdgeRepr) = {
-      (edge.src.seq.toLong << 32) + edge.subSeq.toLong
-    }
-    deletions.sortInPlaceBy(uniqueNumberForEdge)
-    dedupBy(deletions, uniqueNumberForEdge)
+
+    deletions.sortInPlaceBy(numberForEdgeComparison)
+    dedupBy(deletions, numberForEdgeComparison)
     val nnodes       = graph._nodes(nodeKind).size
     val oldQty       = graph._neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph._neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -700,5 +697,16 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       }
     }
     buff.dropRightInPlace(idx - outIdx)
+  }
+
+  /**
+   * Creates a bitstring/integeger for fast comparison where
+   * - the most significicant bits are defined by edge.src.seq
+   * - the least significicant bits are defined by edge.subSeq
+   *
+   * So that we can quickly sort by edge.src.seq, and where those have multiple results, sort by edge.subSeq
+   */
+  private def numberForEdgeComparison(edge: EdgeRepr): Long = {
+    (edge.src.seq.toLong << 32) + edge.subSeq.toLong
   }
 }
