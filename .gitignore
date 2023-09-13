@@ -10,5 +10,8 @@
 /core/target/
 /cpg.bin
 /cpg.bin.tmp
+/cpg.fg
+/out.json
+/jmhResults.txt
 /odb1Results.txt
 /odb2Results.txt

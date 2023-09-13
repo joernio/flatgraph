@@ -113,17 +113,18 @@ on the same node races against itself) with only O(1) total synchronization even
 synchronization of some kind on every access (typically via atomics).
 
 # Benchmarks
-All benchmarks are run via the `runBenchmarks.sh` script. The script expects a test graph for overflowdb to be placed in `./cpg.bin`,
-and a test graph for odbv2 to be placed in `./cpg.fg`. Then outputs of the script are placed in `./jmhResults.txt` for iteration
+Prerequisite: a test graph in the old overflowdb format in `./cpg.bin`. 
+To start the benchmark, execute the `./runBenchmarks.sh` script. 
+It compiles and stages this build and converts the given `cpg.bin` from overflowdbv1 into a `./cpg.fg` in the overflowdbv2/flatgraph format using the `odbConvert` tool. 
+
+Then outputs of the script are placed in `./jmhResults.txt` for iteration
 over the graph, and for graph loading and memory consumption in `./odb1Results.txt` and `./odb2Results.txt`. 
 
 For this you need an example graph that you can conveniently generate with joern and take from the workspace 
 (don't forget to save). Since this uses joern domain classes, it is incompatible with ocular/codescience graphs. It is also
-incompatible with the legacy proto format (just load in joern and save). The graph in the new format can be generated via
-the `odbConvert` tool.
+incompatible with the legacy proto format (just load in joern and save). 
 
 The memory benchmarks rely on `jcmd`, so make sure to have the full sdk installed. 
-
 
 ## JMH benchmarks
 The jmh `perfnorm` profiler relies on linux `perf`, so make sure to have that installed. For the `perfasm` profiler in jmh 
@@ -1511,7 +1512,7 @@ Space losses: 2 bytes internal + 0 bytes external = 2 bytes total
 ## Odbv2 loading and memory
 We can convert odbv1 files to the current serialization format via 
 ```
-./odbConvert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > out.json
+./odb-convert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > out.json
 ```
 (or pipe to `/dev/null` if we don't care to look at the storage manifest json for debugging)
 That allows us to benchmark loading time and memory consumption:
