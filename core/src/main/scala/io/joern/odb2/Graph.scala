@@ -273,15 +273,15 @@ object Graph {
 }
 
 class Graph(val schema: Schema) {
-  private val nodeKindCount = schema.getNumberOfNodeKinds
-  private val edgeKindCount = schema.getNumberOfEdgeKinds
+  private val nodeKindCount   = schema.getNumberOfNodeKinds
+  private val edgeKindCount   = schema.getNumberOfEdgeKinds
   private val propertiesCount = schema.getNumberOfProperties
 
-  private[odb2] val nodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
-  private[odb2] val properties = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
-  private[odb2] val inverseIndices = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
+  private[odb2] val nodeCountByKind: Array[Int]     = new Array[Int](nodeKindCount)
+  private[odb2] val properties                      = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
+  private[odb2] val inverseIndices                  = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
   private[odb2] val nodesArray: Array[Array[GNode]] = Array.fill(nodeKindCount)(new Array[GNode](0))
-  private[odb2] val neighbors: Array[AnyRef] = makeNeighbors
+  private[odb2] val neighbors: Array[AnyRef]        = makeNeighbors()
 
   private[odb2] def nodeCount(kind: Int): Int = {
     assert(kind >= 0 && kind < nodeCountByKind.length, s"invalid nodeKind=$kind; valid values are 0..${nodeCountByKind.length - 1}")
@@ -293,13 +293,13 @@ class Graph(val schema: Schema) {
     else new misc.InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
 
-  private def makeNeighbors = {
+  private def makeNeighbors() = {
     val neighbors = new Array[AnyRef](nodeKindCount * edgeKindCount * NeighborsSlotSize * NumberOfDirections)
     for {
-      nodeKind <- Range(0, nodeKindCount)
+      nodeKind  <- Range(0, nodeKindCount)
       direction <- Edge.Direction.values
-      edgeKind <- Range(0, edgeKindCount)
-      pos = schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+      edgeKind  <- Range(0, edgeKindCount)
+      pos             = schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
       propertyDefault = schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size = 1)
       value =
         if (propertyDefault == null) null
