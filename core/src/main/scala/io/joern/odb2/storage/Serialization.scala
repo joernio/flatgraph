@@ -97,9 +97,14 @@ object StorageManifest {
       val nnodes    = item.obj(Keys.nnodes).num.toInt
       val deletions = item.obj
         .get(Keys.deletions)
-        .map(_.arrOpt.value.map(_.num.toInt).toArray)
-        .filter(_.isEmpty)
+        .flatMap {
+          case arr: ujson.Arr =>
+            val a = arr.value.map(_.num.toInt)
+            if (a.isEmpty) None else Some(a.toArray)
+          case _ => None
+        }
         .orNull
+
       new NodeItem(nodeLabel, nnodes, deletions)
     }
   }
