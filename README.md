@@ -117,8 +117,7 @@ Prerequisite: a test graph in the old overflowdb format in `./cpg.bin`.
 To start the benchmark, execute the `./runBenchmarks.sh` script. 
 It compiles and stages this build and converts the given `cpg.bin` from overflowdbv1 into a `./cpg.fg` in the overflowdbv2/flatgraph format using the `odbConvert` tool. 
 
-Then outputs of the script are placed in `./jmhResults.txt` for iteration
-over the graph, and for graph loading and memory consumption in `./odb1Results.txt` and `./odb2Results.txt`. 
+Then outputs of the script are placed in `./benchmarks/target/jmh-output.txt` and `./benchmarks/target/jmh-results.csv` and  for iteration over the graph. And for graph loading and memory consumption in `./odb1Results.txt` and `./odb2Results.txt`. 
 
 For this you need an example graph that you can conveniently generate with joern and take from the workspace 
 (don't forget to save). Since this uses joern domain classes, it is incompatible with ocular/codescience graphs. It is also
@@ -180,31 +179,48 @@ https://github.com/ShiftLeftSecurity/overflowdbv2/pull/17) have demonstrated tha
 dynamic dispatch on property access. The three variants benchmarked here show three possible styles of access, and demonstrate
 that we achieved the goal of getting roughly the same performance as the devirtualized variant.
 
-Basic results (without profiler output) are:
+Basic results as of 14/09/2023 without profiler output:
+Note: we use the JMH mode `AverageTime`, i.e. a lower `Score` is better
 ```
-Benchmark                                   (shuffled)  Mode  Cnt    Score     Error  Units
-joernBench.JoernGenerated.astDFS                  true  avgt    5   70.940 ±   2.884  ns/op
-joernBench.JoernGenerated.astDFS                 false  avgt    5   68.041 ±   1.013  ns/op
-joernBench.JoernGenerated.astUp                   true  avgt    5   99.687 ±   7.813  ns/op
-joernBench.JoernGenerated.astUp                  false  avgt    5   36.854 ±   1.327  ns/op
-joernBench.JoernGenerated.orderSum                true  avgt    5   83.824 ±   0.418  ns/op
-joernBench.JoernGenerated.orderSum               false  avgt    5   34.333 ±   0.785  ns/op
-joernBench.JoernLegacy.astDFS                     true  avgt    5   88.564 ±   4.092  ns/op
-joernBench.JoernLegacy.astDFS                    false  avgt    5   82.797 ±   2.734  ns/op
-joernBench.JoernLegacy.astUp                      true  avgt    5  124.519 ± 101.560  ns/op
-joernBench.JoernLegacy.astUp                     false  avgt    5   42.681 ±   1.898  ns/op
-joernBench.JoernLegacy.orderSum                   true  avgt    5   57.824 ±   0.560  ns/op
-joernBench.JoernLegacy.orderSum                  false  avgt    5   27.151 ±   0.282  ns/op
-joernBench.Odb2Generated.astDFS                   true  avgt    5   22.404 ±   0.374  ns/op
-joernBench.Odb2Generated.astDFS                  false  avgt    5   22.073 ±   0.215  ns/op
-joernBench.Odb2Generated.astUp                    true  avgt    5   44.049 ±   2.027  ns/op
-joernBench.Odb2Generated.astUp                   false  avgt    5   10.778 ±   0.425  ns/op
-joernBench.Odb2Generated.orderSumChecked          true  avgt    5   53.205 ±   2.740  ns/op
-joernBench.Odb2Generated.orderSumChecked         false  avgt    5    6.383 ±   0.185  ns/op
-joernBench.Odb2Generated.orderSumExplicit         true  avgt    5   49.655 ±   1.758  ns/op
-joernBench.Odb2Generated.orderSumExplicit        false  avgt    5    5.503 ±   0.140  ns/op
-joernBench.Odb2Generated.orderSumUnchecked        true  avgt    5   51.486 ±   2.207  ns/op
-joernBench.Odb2Generated.orderSumUnchecked       false  avgt    5    5.836 ±   0.178  ns/op
+Benchmark                               (shuffled)  Mode  Cnt     Score     Error  Units
+JoernGenerated.astDFS                         true  avgt   10    35.207 ±   0.666  ns/op
+JoernGenerated.astDFS                        false  avgt   10    35.176 ±   0.857  ns/op
+JoernGenerated.astUp                          true  avgt   10    27.246 ±   0.860  ns/op
+JoernGenerated.astUp                         false  avgt   10    18.449 ±   0.583  ns/op
+JoernGenerated.callOrderExplicit              true  avgt   10     2.916 ±   0.317  ns/op
+JoernGenerated.callOrderExplicit             false  avgt   10     3.362 ±   0.277  ns/op
+JoernGenerated.callOrderTrav                  true  avgt   10     5.753 ±   0.117  ns/op
+JoernGenerated.callOrderTrav                 false  avgt   10     5.987 ±   0.115  ns/op
+JoernGenerated.indexedMethodFullName          true  avgt   10    90.202 ±   3.041  ns/op
+JoernGenerated.indexedMethodFullName         false  avgt   10    24.619 ±   2.503  ns/op
+JoernGenerated.orderSum                       true  avgt   10    25.635 ±   1.526  ns/op
+JoernGenerated.orderSum                      false  avgt   10    16.824 ±   1.170  ns/op
+JoernGenerated.unindexedMethodFullName        true  avgt   10  3497.115 ± 100.402  ns/op
+JoernGenerated.unindexedMethodFullName       false  avgt   10  3524.315 ± 151.526  ns/op
+JoernLegacy.astDFS                            true  avgt   10    42.275 ±   3.531  ns/op
+JoernLegacy.astDFS                           false  avgt   10    45.237 ±   2.704  ns/op
+JoernLegacy.astUp                             true  avgt   10    34.761 ±   0.925  ns/op
+JoernLegacy.astUp                            false  avgt   10    26.270 ±   1.877  ns/op
+JoernLegacy.orderSum                          true  avgt   10    19.495 ±   0.125  ns/op
+JoernLegacy.orderSum                         false  avgt   10    11.123 ±   0.297  ns/op
+Odb2Generated.astDFS                          true  avgt   10    20.601 ±   4.220  ns/op
+Odb2Generated.astDFS                         false  avgt   10    17.376 ±   0.336  ns/op
+Odb2Generated.astUp                           true  avgt   10    12.288 ±   0.287  ns/op
+Odb2Generated.astUp                          false  avgt   10     9.787 ±   2.068  ns/op
+Odb2Generated.callOrderExplicit               true  avgt   10     7.220 ±   0.985  ns/op
+Odb2Generated.callOrderExplicit              false  avgt   10     7.002 ±   1.511  ns/op
+Odb2Generated.callOrderTrav                   true  avgt   10    10.010 ±   0.453  ns/op
+Odb2Generated.callOrderTrav                  false  avgt   10     9.308 ±   0.400  ns/op
+Odb2Generated.indexedMethodFullName           true  avgt   10    18.150 ±   3.344  ns/op
+Odb2Generated.indexedMethodFullName          false  avgt   10    19.027 ±   2.806  ns/op
+Odb2Generated.orderSumChecked                 true  avgt   10    12.736 ±   2.384  ns/op
+Odb2Generated.orderSumChecked                false  avgt   10     7.006 ±   0.111  ns/op
+Odb2Generated.orderSumExplicit                true  avgt   10     8.770 ±   0.169  ns/op
+Odb2Generated.orderSumExplicit               false  avgt   10     6.108 ±   0.197  ns/op
+Odb2Generated.orderSumUnchecked               true  avgt   10     9.270 ±   0.562  ns/op
+Odb2Generated.orderSumUnchecked              false  avgt   10     5.827 ±   0.266  ns/op
+Odb2Generated.unindexedMethodFullName         true  avgt   10  3672.285 ±  42.189  ns/op
+Odb2Generated.unindexedMethodFullName        false  avgt   10  3619.838 ±  79.796  ns/op
 ```
 Lengthy results with some profiler info are:
 <details>
