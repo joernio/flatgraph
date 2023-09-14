@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit
 import scala.util.Random
 
 object JmhBenchmarks {
+  val JmhOutputFile = "benchmarks/target/output.txt"
+  val JmhResultFile = "benchmarks/target/results.csv"
 
   def jmhMain(): Unit = {
     val opt = new OptionsBuilder()
@@ -23,15 +25,17 @@ object JmhBenchmarks {
       // .addProfiler(classOf[profile.LinuxPerfAsmProfiler], "tooBigThreshold=5000")
       .warmupIterations(1)
       .warmupTime(TimeValue.seconds(1))
-      .measurementTime(TimeValue.seconds(1))
+      .measurementTime(TimeValue.seconds(2))
       .measurementIterations(3)
       .mode(Mode.AverageTime)
       .timeUnit(TimeUnit.NANOSECONDS)
-      .forks(1)
-      .output("./jmhResults.txt")
+      .forks(2)
+      .output(JmhOutputFile)
+      .result(JmhResultFile)
       .detectJvmArgs() // inherit stuff like max heap size
       .build()
     new Runner(opt).run()
+    println(s"Finished JMH benchmarks. Results: $JmhResultFile; Output: $JmhOutputFile")
   }
 
   def setOps(params: BenchmarkParams, ops: Int): Unit = {

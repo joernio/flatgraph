@@ -22,4 +22,3 @@ time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttach
 
 echo "odbv2 load+mem benchmarked. Results are in odb2Results.txt. Running JMH benchmarks (this will take some time...)"
 time ./benchmarks/target/universal/stage/bin/benchmarks jmh
-echo "Finished JMH benchmarks. Results are in jmhResults.txt"
