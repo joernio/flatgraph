@@ -280,7 +280,7 @@ class Graph(val schema: Schema) {
   private[odb2] val nodeCountByKind: Array[Int]     = new Array[Int](nodeKindCount)
   private[odb2] val properties                      = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[odb2] val inverseIndices                  = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
-  private[odb2] val nodesArray: Array[Array[GNode]] = Array.fill(nodeKindCount)(new Array[GNode](0))
+  private[odb2] val nodesArray: Array[Array[GNode]] = makeNodesArray()
   private[odb2] val neighbors: Array[AnyRef]        = makeNeighbors()
 
   private[odb2] def nodeCount(kind: Int): Int = {
@@ -291,6 +291,13 @@ class Graph(val schema: Schema) {
   def nodes(nodeKind: Int): misc.InitNodeIterator[GNode] = {
     if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new misc.InitNodeIteratorArray[GNode](nodesArray(nodeKind))
     else new misc.InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
+  }
+
+  private def makeNodesArray(): Array[Array[GNode]] = {
+    val nodes = new Array[Array[GNode]](nodeKindCount)
+    for (nodeKind <- Range(0, nodes.length))
+      nodes(nodeKind) = new Array[GNode](0)
+    nodes
   }
 
   private def makeNeighbors() = {
