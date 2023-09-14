@@ -30,7 +30,9 @@ ThisBuild / scalacOptions ++= Seq(
   "-target:jvm-1.8" // "--release", "8"
 )
 
-ThisBuild / resolvers ++= Seq(Resolver.mavenLocal, "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public")
+ThisBuild / resolvers ++= Seq(Resolver.mavenLocal, "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public",
+  "Artifactory release local" at "https://shiftleft.jfrog.io/shiftleft/libs-release-local"
+)
 
 ThisBuild / Compile / scalacOptions ++= Seq(
 //  "-Xfatal-warnings",
