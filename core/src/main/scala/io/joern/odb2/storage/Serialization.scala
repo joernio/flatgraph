@@ -52,9 +52,9 @@ object StorageManifest {
     def read(item: ujson.Value): GraphItem = {
       val version = item.obj(Keys.Version).num.toInt
       if (version != 0) throw new RuntimeException()
-      val nodes           = item.obj(Keys.nodes).arr.map(NodeItem.read).toArray
-      val edges           = item.obj(Keys.edges).arr.map(EdgeItem.read).toArray
-      val properties      = item.obj(Keys.properties).arr.map(PropertyItem.read).toArray
+      val nodes           = item.obj(Keys.Nodes).arr.map(NodeItem.read).toArray
+      val edges           = item.obj(Keys.Edges).arr.map(EdgeItem.read).toArray
+      val properties      = item.obj(Keys.Properties).arr.map(PropertyItem.read).toArray
       val stringPoolLength  = OutlineStorage.read(StorageTyp.Int, item.obj(Keys.StringPoolLength))
       val stringPoolBytes = OutlineStorage.read(StorageTyp.Byte, item.obj(Keys.StringPoolBytes))
       val res             = new GraphItem(nodes, edges, properties, stringPoolLength, stringPoolBytes)
