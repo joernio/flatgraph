@@ -1,7 +1,7 @@
 package io.shiftleft.codepropertygraph.generated.v2
 import io.joern.odb2
-import io.joern.odb2.Edge.Direction
-import io.shiftleft.codepropertygraph.generated.v2.{edges, nodes}
+import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.v2.edges
 
 object GraphSchema extends odb2.Schema {
   val nodeLabels = Array(
@@ -70,7 +70,6 @@ object GraphSchema extends odb2.Schema {
     "INHERITS_FROM",
     "IS_CALL_FOR_IMPORT",
     "PARAMETER_LINK",
-    "POINTS_TO",
     "POST_DOMINATE",
     "REACHING_DEF",
     "RECEIVER",
@@ -99,8 +98,7 @@ object GraphSchema extends odb2.Schema {
     size => null,
     size => null,
     size => null,
-    size => null,
-    size => Array.fill(size)("<empty>") /*label = REACHING_DEF, id = 20*/,
+    size => Array.fill(size)("<empty>") /*label = REACHING_DEF, id = 19*/,
     size => null,
     size => null,
     size => null,
@@ -171,7 +169,6 @@ object GraphSchema extends odb2.Schema {
     (s, d, subseq, p) => new edges.InheritsFrom(s, d, subseq, p),
     (s, d, subseq, p) => new edges.IsCallForImport(s, d, subseq, p),
     (s, d, subseq, p) => new edges.ParameterLink(s, d, subseq, p),
-    (s, d, subseq, p) => new edges.PointsTo(s, d, subseq, p),
     (s, d, subseq, p) => new edges.PostDominate(s, d, subseq, p),
     (s, d, subseq, p) => new edges.ReachingDef(s, d, subseq, p),
     (s, d, subseq, p) => new edges.Receiver(s, d, subseq, p),
@@ -232,6 +229,7 @@ object GraphSchema extends odb2.Schema {
     size => new Array[String](size),
     size => new Array[String](size),
     size => new Array[String](size),
+    size => new Array[String](size),
     size => new Array[odb2.GNode](size),
     size => new Array[odb2.GNode](size)
   )
@@ -281,6 +279,7 @@ object GraphSchema extends odb2.Schema {
     "OVERLAYS",
     "PACKAGE_NAME",
     "PARSER_TYPE_NAME",
+    "POSSIBLE_TYPES",
     "ROOT",
     "SIGNATURE",
     "SYMBOL",
@@ -290,28 +289,29 @@ object GraphSchema extends odb2.Schema {
     "VERSION"
   )
   val nodePropertyByLabel =
-    normalNodePropertyNames.zipWithIndex.toMap.updated("evidence", 52).updated("node", 52).updated("keyValuePairs", 53).updated("tag", 53)
+    normalNodePropertyNames.zipWithIndex.toMap.updated("evidence", 53).updated("node", 53).updated("keyValuePairs", 54).updated("tag", 54)
 
   override def getNumberOfNodeKinds: Int                          = 44
-  override def getNumberOfEdgeKinds: Int                          = 25
+  override def getNumberOfEdgeKinds: Int                          = 24
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeIdByLabel(label: String): Int               = nodeIdByLabel.getOrElse(label, -1)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
   override def getEdgeIdByLabel(label: String): Int               = edgeIdByLabel.getOrElse(label, -1)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
-    if (propertyKind < 52) normalNodePropertyNames(propertyKind)
-    else if (propertyKind == 52 && nodeKind == 15) "evidence"      /*on node FINDING*/
-    else if (propertyKind == 52 && nodeKind == 23) "node"          /*on node LOCATION*/
-    else if (propertyKind == 52 && nodeKind == 36) "node"          /*on node TAG_NODE_PAIR*/
-    else if (propertyKind == 53 && nodeKind == 15) "keyValuePairs" /*on node FINDING*/
-    else if (propertyKind == 53 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
+    if (propertyKind < 53) normalNodePropertyNames(propertyKind)
+    else if (propertyKind == 53 && nodeKind == 15) "evidence"      /*on node FINDING*/
+    else if (propertyKind == 53 && nodeKind == 23) "node"          /*on node LOCATION*/
+    else if (propertyKind == 53 && nodeKind == 36) "node"          /*on node TAG_NODE_PAIR*/
+    else if (propertyKind == 54 && nodeKind == 15) "keyValuePairs" /*on node FINDING*/
+    else if (propertyKind == 54 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
     else null
 
   override def getPropertyIdByLabel(label: String): Int                                 = nodePropertyByLabel.getOrElse(label, -1)
-  override def getNumberOfProperties: Int                                               = 54
+  override def getNumberOfProperties: Int                                               = 55
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
+  override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] =
+    edgePropertyAllocators(edgeKind)(size)
   override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
 }

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-rm ./joernGenerated/src/main/scala/generated/*.scala
-rm ./codescienceGenerated/src/main/scala/generated/*.scala
+rm ./joern-generated/src/main/scala/generated/*.scala
+rm ./codescience-generated/src/main/scala/generated/*.scala
 
 sbt schemaGen/compile schemaGen/stage
-./schemaGen/target/universal/stage/bin/schemagen ./joernGenerated/src/main/scala/generated/ "cpg"
-./schemaGen/target/universal/stage/bin/schemagen ./codescienceGenerated/src/main/scala/generated/ "cs"
+./schema-gen/target/universal/stage/bin/schema-gen ./joern-generated/src/main/scala/generated/ "cpg"
+./schema-gen/target/universal/stage/bin/schema-gen ./codescience-generated/src/main/scala/generated/ "cs"
 sbt joernGenerated/scalafmt codescienceGenerated/scalafmt

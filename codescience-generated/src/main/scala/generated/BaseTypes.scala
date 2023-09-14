@@ -91,7 +91,7 @@ trait ExpressionBase extends AbstractNode with CfgNodeBase with StaticType[Expre
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, LITERAL, METHOD_REF, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
 trait Expression extends StoredNode with ExpressionBase with CfgNode with StaticType[ExpressionT]
 
-trait ExpressionNew extends NewNode with ExpressionBase with CfgNodeNew with AstNodeNew with TrackingPointNew with StaticType[ExpressionT] {
+trait ExpressionNew extends NewNode with ExpressionBase with AstNodeNew with CfgNodeNew with TrackingPointNew with StaticType[ExpressionT] {
   type RelatedStored <: Expression
   def argumentIndex: Int
   def argumentIndex_=(value: Int): Unit
@@ -204,6 +204,7 @@ trait HasParserTypeNameT
 trait HasPathT
 trait HasPatternT
 trait HasPolicyDirectoriesT
+trait HasPossibleTypesT
 trait HasResolvedT
 trait HasRootT
 trait HasScoreT

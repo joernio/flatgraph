@@ -464,7 +464,7 @@ object SchemaGen {
          | override def getNumberOfProperties: Int = ${actualProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
-         | override def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
+         | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
          | override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
          |}""".stripMargin
     outputDir.createChild("GraphSchema.scala").write(schemaFile)
@@ -509,7 +509,7 @@ object SchemaGen {
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
-      for (baseType <- stage) {
+      stage.iterator.foreach { baseType =>
         val extensionClass = s"Access_${baseType.className}Base"
         convertForStage.addOne(
           s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
@@ -530,7 +530,7 @@ object SchemaGen {
       }
     }
     for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
-      for (baseType <- stage) {
+      stage.iterator.foreach { baseType =>
         val extensionClass = s"Traversal_${baseType.className}Base"
         convertForStage.addOne(
           s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"

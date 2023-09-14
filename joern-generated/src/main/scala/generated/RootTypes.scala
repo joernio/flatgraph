@@ -101,40 +101,35 @@ abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: In
   final def _parameterLinkIn: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 17).asInstanceOf[IndexedSeq[StoredNode]]
 
-  final def _pointsToOut: IndexedSeq[StoredNode] =
+  final def _postDominateOut: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 18).asInstanceOf[IndexedSeq[StoredNode]]
-  final def _pointsToIn: IndexedSeq[StoredNode] =
+  final def _postDominateIn: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 18).asInstanceOf[IndexedSeq[StoredNode]]
 
-  final def _postDominateOut: IndexedSeq[StoredNode] =
+  final def _reachingDefOut: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 19).asInstanceOf[IndexedSeq[StoredNode]]
-  final def _postDominateIn: IndexedSeq[StoredNode] =
+  final def _reachingDefIn: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 19).asInstanceOf[IndexedSeq[StoredNode]]
 
-  final def _reachingDefOut: IndexedSeq[StoredNode] =
+  final def _receiverOut: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 20).asInstanceOf[IndexedSeq[StoredNode]]
-  final def _reachingDefIn: IndexedSeq[StoredNode] =
+  final def _receiverIn: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 20).asInstanceOf[IndexedSeq[StoredNode]]
 
-  final def _receiverOut: IndexedSeq[StoredNode] =
+  final def _refOut: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 21).asInstanceOf[IndexedSeq[StoredNode]]
-  final def _receiverIn: IndexedSeq[StoredNode] =
+  final def _refIn: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 21).asInstanceOf[IndexedSeq[StoredNode]]
 
-  final def _refOut: IndexedSeq[StoredNode] =
+  final def _sourceFileOut: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 22).asInstanceOf[IndexedSeq[StoredNode]]
-  final def _refIn: IndexedSeq[StoredNode] =
+  final def _sourceFileIn: IndexedSeq[StoredNode] =
     odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 22).asInstanceOf[IndexedSeq[StoredNode]]
 
-  final def _sourceFileOut: IndexedSeq[StoredNode] =
-    odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 23).asInstanceOf[IndexedSeq[StoredNode]]
-  final def _sourceFileIn: IndexedSeq[StoredNode] =
-    odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 23).asInstanceOf[IndexedSeq[StoredNode]]
-
   final def _taggedByOut: IndexedSeq[StoredNode] =
-    odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 24).asInstanceOf[IndexedSeq[StoredNode]]
+    odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 23).asInstanceOf[IndexedSeq[StoredNode]]
   final def _taggedByIn: IndexedSeq[StoredNode] =
-    odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 24).asInstanceOf[IndexedSeq[StoredNode]]
+    odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 23).asInstanceOf[IndexedSeq[StoredNode]]
 
 }
 

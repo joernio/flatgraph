@@ -5,7 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.nodes
 object Lang extends ConcreteStoredConversions {}
 
 object Accessors {
-  import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+  import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
   import odb2.misc.Misc
   final class Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]](
     val traversal: Iterator[NodeType]
@@ -1829,6 +1829,15 @@ object Accessors {
       }
 
   }
+  final class Traversal_Property_POSSIBLE_TYPES[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesT]](
+    val traversal: Iterator[NodeType]
+  ) extends AnyVal {
+
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
+  }
   final class Traversal_Property_ROOT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasRootT]](val traversal: Iterator[NodeType])
       extends AnyVal {
 
@@ -1858,7 +1867,7 @@ object Accessors {
     def rootExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 45, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.root == value }
     }
 
@@ -1902,7 +1911,7 @@ object Accessors {
     def signatureExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 47, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.signature == value }
     }
 
@@ -1946,7 +1955,7 @@ object Accessors {
     def symbolExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 47, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 48, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.symbol == value }
     }
 
@@ -1990,7 +1999,7 @@ object Accessors {
     def typeDeclFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 48, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeDeclFullName == value }
     }
 
@@ -2034,7 +2043,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -2078,7 +2087,7 @@ object Accessors {
     def valueExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.value == value }
     }
 
@@ -2122,7 +2131,7 @@ object Accessors {
     def versionExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.version == value }
     }
 
@@ -2371,7 +2380,7 @@ object Accessors {
     def signatureExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 47, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.signature == value }
     }
 
@@ -2390,6 +2399,10 @@ object Accessors {
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
       traversal.flatMap(_.dynamicTypeHintFullName)
+
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
@@ -2417,7 +2430,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -2515,6 +2528,10 @@ object Accessors {
         traversal.filter { item => valueSet.contains(item.methodFullName) }
       }
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -2541,7 +2558,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -3012,7 +3029,7 @@ object Accessors {
     def versionExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.version == value }
     }
 
@@ -3204,6 +3221,10 @@ object Accessors {
         traversal.filter { item => valueSet.contains(item.name) }
       }
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -3230,7 +3251,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -3635,7 +3656,7 @@ object Accessors {
     def valueExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.value == value }
     }
 
@@ -3654,6 +3675,10 @@ object Accessors {
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
       traversal.flatMap(_.dynamicTypeHintFullName)
+
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
@@ -3681,7 +3706,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -3749,6 +3774,10 @@ object Accessors {
     def dynamicTypeHintFullName: Iterator[String] =
       traversal.flatMap(_.dynamicTypeHintFullName)
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -3775,7 +3804,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -4138,7 +4167,7 @@ object Accessors {
     def symbolExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 47, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 48, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.symbol == value }
     }
 
@@ -4157,6 +4186,10 @@ object Accessors {
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
       traversal.flatMap(_.dynamicTypeHintFullName)
+
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
@@ -4184,7 +4217,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -4317,7 +4350,7 @@ object Accessors {
     def rootExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 45, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.root == value }
     }
 
@@ -4356,7 +4389,7 @@ object Accessors {
     def versionExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.version == value }
     }
 
@@ -4707,7 +4740,7 @@ object Accessors {
     def signatureExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 47, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.signature == value }
     }
 
@@ -4811,6 +4844,10 @@ object Accessors {
     def isVariadic(value: Boolean): Iterator[NodeType] =
       traversal.filter { _.isVariadic == value }
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -4837,7 +4874,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -4963,7 +5000,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -5022,6 +5059,10 @@ object Accessors {
         traversal.filter { item => valueSet.contains(item.methodFullName) }
       }
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -5048,7 +5089,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -5107,6 +5148,10 @@ object Accessors {
         traversal.filter { item => valueSet.contains(item.evaluationStrategy) }
       }
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -5133,7 +5178,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -5419,7 +5464,7 @@ object Accessors {
     def valueExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.value == value }
     }
 
@@ -5582,7 +5627,7 @@ object Accessors {
     def typeDeclFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 48, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeDeclFullName == value }
     }
 
@@ -5904,6 +5949,10 @@ object Accessors {
     def dynamicTypeHintFullName: Iterator[String] =
       traversal.flatMap(_.dynamicTypeHintFullName)
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -5930,7 +5979,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -6028,6 +6077,10 @@ object Accessors {
         traversal.filter { item => valueSet.contains(item.parserTypeName) }
       }
 
+    /** Traverse to possibleTypes property */
+    def possibleTypes: Iterator[String] =
+      traversal.flatMap(_.possibleTypes)
+
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
       traversal.map(_.typeFullName)
@@ -6054,7 +6107,7 @@ object Accessors {
     def typeFullNameExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.typeFullName == value }
     }
 
@@ -6309,7 +6362,7 @@ object Accessors {
     def signatureExact(value: String): Iterator[NodeType] = traversal match {
       case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
+        odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 47, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.signature == value }
     }
 
@@ -6455,7 +6508,7 @@ object Accessors {
   }
 }
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors.*
+  import Accessors._
   implicit def accessPropertyAliasTypeFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType] = new Traversal_Property_ALIAS_TYPE_FULL_NAME(traversal)
@@ -6592,6 +6645,9 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
   implicit def accessPropertyParserTypeName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasParserTypeNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_PARSER_TYPE_NAME[NodeType] = new Traversal_Property_PARSER_TYPE_NAME(traversal)
+  implicit def accessPropertyPossibleTypes[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesT]](
+    traversal: Iterator[NodeType]
+  ): Traversal_Property_POSSIBLE_TYPES[NodeType] = new Traversal_Property_POSSIBLE_TYPES(traversal)
   implicit def accessPropertyRoot[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasRootT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ROOT[NodeType] = new Traversal_Property_ROOT(traversal)
@@ -6616,7 +6672,7 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
-  import Accessors.*
+  import Accessors._
   implicit def traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](
     traversal: Iterator[NodeType]
   ): Traversal_AnnotationBase[NodeType] = new Traversal_AnnotationBase(traversal)
@@ -6729,7 +6785,7 @@ trait ConcreteBaseConversions extends AbstractBaseConversions0 {
 }
 
 trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
-  import Accessors.*
+  import Accessors._
   implicit def traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](traversal: Iterator[NodeType]): Traversal_AstNodeBase[NodeType] =
     new Traversal_AstNodeBase(traversal)
   implicit def traversal_CallReprBase[NodeType <: nodes.CallReprBase](traversal: Iterator[NodeType]): Traversal_CallReprBase[NodeType] =
@@ -6742,7 +6798,7 @@ trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
 }
 
 trait AbstractBaseConversions1 {
-  import Accessors.*
+  import Accessors._
   implicit def traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](
     traversal: Iterator[NodeType]
   ): Traversal_DeclarationBase[NodeType] = new Traversal_DeclarationBase(traversal)

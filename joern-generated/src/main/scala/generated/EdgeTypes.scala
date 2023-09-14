@@ -37,19 +37,17 @@ class IsCallForImport(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: I
     extends odb2.Edge(src_4762, dst_4762, 16.toShort, subSeq_4862, property_4862)
 class ParameterLink(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
     extends odb2.Edge(src_4762, dst_4762, 17.toShort, subSeq_4862, property_4862)
-class PointsTo(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 18.toShort, subSeq_4862, property_4862)
 class PostDominate(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 19.toShort, subSeq_4862, property_4862)
+    extends odb2.Edge(src_4762, dst_4762, 18.toShort, subSeq_4862, property_4862)
 class ReachingDef(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 20.toShort, subSeq_4862, property_4862) {
+    extends odb2.Edge(src_4762, dst_4762, 19.toShort, subSeq_4862, property_4862) {
   def variable: String = this.property.asInstanceOf[String]
 }
 class Receiver(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 21.toShort, subSeq_4862, property_4862)
+    extends odb2.Edge(src_4762, dst_4762, 20.toShort, subSeq_4862, property_4862)
 class Ref(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 22.toShort, subSeq_4862, property_4862)
+    extends odb2.Edge(src_4762, dst_4762, 21.toShort, subSeq_4862, property_4862)
 class SourceFile(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 23.toShort, subSeq_4862, property_4862)
+    extends odb2.Edge(src_4762, dst_4762, 22.toShort, subSeq_4862, property_4862)
 class TaggedBy(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-    extends odb2.Edge(src_4762, dst_4762, 24.toShort, subSeq_4862, property_4862)
+    extends odb2.Edge(src_4762, dst_4762, 23.toShort, subSeq_4862, property_4862)
