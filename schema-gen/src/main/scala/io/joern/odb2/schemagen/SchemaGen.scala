@@ -509,7 +509,7 @@ object SchemaGen {
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
-      for (baseType <- stage) {
+      stage.iterator.foreach { baseType =>
         val extensionClass = s"Access_${baseType.className}Base"
         convertForStage.addOne(
           s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
@@ -530,7 +530,7 @@ object SchemaGen {
       }
     }
     for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
-      for (baseType <- stage) {
+      stage.iterator.foreach { baseType =>
         val extensionClass = s"Traversal_${baseType.className}Base"
         convertForStage.addOne(
           s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
