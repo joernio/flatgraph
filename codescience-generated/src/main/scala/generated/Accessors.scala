@@ -1,7 +1,6 @@
 package io.shiftleft.codepropertygraph.generated.v2.accessors
 import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.nodes
-
 import scala.collection.immutable.IndexedSeq
 
 object Lang extends ConcreteStoredConversions {}
@@ -211,53 +210,56 @@ object Accessors {
   final class Access_Property_POLICY_DIRECTORIES(val node: nodes.StoredNode) extends AnyVal {
     def policyDirectories: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 67, node.seq)
   }
+  final class Access_Property_POSSIBLE_TYPES(val node: nodes.StoredNode) extends AnyVal {
+    def possibleTypes: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 68, node.seq)
+  }
   final class Access_Property_RESOLVED(val node: nodes.StoredNode) extends AnyVal {
-    def resolved: Option[Boolean] = odb2.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 68, node.seq)
+    def resolved: Option[Boolean] = odb2.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 69, node.seq)
   }
   final class Access_Property_ROOT(val node: nodes.StoredNode) extends AnyVal {
-    def root: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 69, node.seq(), "<empty>": String)
+    def root: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 70, node.seq(), "<empty>": String)
   }
   final class Access_Property_SCORE(val node: nodes.StoredNode) extends AnyVal {
-    def score: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 70, node.seq(), "<empty>": String)
+    def score: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 71, node.seq(), "<empty>": String)
   }
   final class Access_Property_SIGNATURE(val node: nodes.StoredNode) extends AnyVal {
-    def signature: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 71, node.seq(), "": String)
+    def signature: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 72, node.seq(), "": String)
   }
   final class Access_Property_SINK_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def sinkType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 72, node.seq(), "<empty>": String)
+    def sinkType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 73, node.seq(), "<empty>": String)
   }
   final class Access_Property_SOURCE_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def sourceType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 73, node.seq(), "<empty>": String)
+    def sourceType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 74, node.seq(), "<empty>": String)
   }
   final class Access_Property_SPID(val node: nodes.StoredNode) extends AnyVal {
-    def spid: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 74, node.seq)
+    def spid: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 75, node.seq)
   }
   final class Access_Property_STRUCTURED_FINGERPRINT(val node: nodes.StoredNode) extends AnyVal {
-    def structuredFingerprint: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 75, node.seq(), "null": String)
+    def structuredFingerprint: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 76, node.seq(), "null": String)
   }
   final class Access_Property_SYMBOL(val node: nodes.StoredNode) extends AnyVal {
-    def symbol: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 76, node.seq(), "<empty>": String)
+    def symbol: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 77, node.seq(), "<empty>": String)
   }
   final class Access_Property_TYPE_DECL_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def typeDeclFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 77, node.seq(), "<empty>": String)
+    def typeDeclFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 78, node.seq(), "<empty>": String)
   }
   final class Access_Property_TYPE_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def typeFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 78, node.seq(), "<empty>": String)
+    def typeFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 79, node.seq(), "<empty>": String)
   }
   final class Access_Property_URL(val node: nodes.StoredNode) extends AnyVal {
-    def url: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 79, node.seq(), "<empty>": String)
+    def url: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 80, node.seq(), "<empty>": String)
   }
   final class Access_Property_VALUE(val node: nodes.StoredNode) extends AnyVal {
-    def value: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 80, node.seq(), "": String)
+    def value: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 81, node.seq(), "": String)
   }
   final class Access_Property_VARARG_PARAMETER(val node: nodes.StoredNode) extends AnyVal {
-    def varargParameter: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 81, node.seq(), -1: Int)
+    def varargParameter: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 82, node.seq(), -1: Int)
   }
   final class Access_Property_VAR_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def varType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 82, node.seq(), "<empty>": String)
+    def varType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 83, node.seq(), "<empty>": String)
   }
   final class Access_Property_VERSION(val node: nodes.StoredNode) extends AnyVal {
-    def version: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 83, node.seq(), "<empty>": String)
+    def version: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 84, node.seq(), "<empty>": String)
   }
   //
   final class Access_AnnotationBase(val node: nodes.AnnotationBase) extends AnyVal {
@@ -302,6 +304,10 @@ object Accessors {
       case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewBlock  => newNode.dynamicTypeHintFullName
     }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewBlock  => newNode.possibleTypes
+    }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
       case newNode: nodes.NewBlock  => newNode.typeFullName
@@ -327,6 +333,10 @@ object Accessors {
     def methodInstFullName: Option[String] = node match {
       case stored: nodes.StoredNode => new Access_Property_METHOD_INST_FULL_NAME(stored).methodInstFullName
       case newNode: nodes.NewCall   => newNode.methodInstFullName
+    }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewCall   => newNode.possibleTypes
     }
     def resolved: Option[Boolean] = node match {
       case stored: nodes.StoredNode => new Access_Property_RESOLVED(stored).resolved
@@ -465,6 +475,10 @@ object Accessors {
       case stored: nodes.StoredNode     => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewIdentifier => newNode.dynamicTypeHintFullName
     }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode     => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewIdentifier => newNode.possibleTypes
+    }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode     => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
       case newNode: nodes.NewIdentifier => newNode.typeFullName
@@ -546,6 +560,10 @@ object Accessors {
       case stored: nodes.StoredNode  => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewLiteral => newNode.dynamicTypeHintFullName
     }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode  => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewLiteral => newNode.possibleTypes
+    }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode  => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
       case newNode: nodes.NewLiteral => newNode.typeFullName
@@ -559,6 +577,10 @@ object Accessors {
     def dynamicTypeHintFullName: IndexedSeq[String] = node match {
       case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewLocal  => newNode.dynamicTypeHintFullName
+    }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewLocal  => newNode.possibleTypes
     }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
@@ -617,6 +639,10 @@ object Accessors {
     def dynamicTypeHintFullName: IndexedSeq[String] = node match {
       case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewMember => newNode.dynamicTypeHintFullName
+    }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewMember => newNode.possibleTypes
     }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
@@ -738,6 +764,10 @@ object Accessors {
       case stored: nodes.StoredNode            => new Access_Property_IS_VARIADIC(stored).isVariadic
       case newNode: nodes.NewMethodParameterIn => newNode.isVariadic
     }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode            => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewMethodParameterIn => newNode.possibleTypes
+    }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode            => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
       case newNode: nodes.NewMethodParameterIn => newNode.typeFullName
@@ -774,6 +804,10 @@ object Accessors {
       case stored: nodes.StoredNode    => new Access_Property_METHOD_INST_FULL_NAME(stored).methodInstFullName
       case newNode: nodes.NewMethodRef => newNode.methodInstFullName
     }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode    => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewMethodRef => newNode.possibleTypes
+    }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode    => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
       case newNode: nodes.NewMethodRef => newNode.typeFullName
@@ -787,6 +821,10 @@ object Accessors {
     def evaluationStrategy: String = node match {
       case stored: nodes.StoredNode       => new Access_Property_EVALUATION_STRATEGY(stored).evaluationStrategy
       case newNode: nodes.NewMethodReturn => newNode.evaluationStrategy
+    }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode       => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewMethodReturn => newNode.possibleTypes
     }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode       => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
@@ -995,6 +1033,10 @@ object Accessors {
       case stored: nodes.StoredNode  => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewTypeRef => newNode.dynamicTypeHintFullName
     }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode  => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewTypeRef => newNode.possibleTypes
+    }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode  => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
       case newNode: nodes.NewTypeRef => newNode.typeFullName
@@ -1012,6 +1054,10 @@ object Accessors {
     def parserTypeName: String = node match {
       case stored: nodes.StoredNode  => new Access_Property_PARSER_TYPE_NAME(stored).parserTypeName
       case newNode: nodes.NewUnknown => newNode.parserTypeName
+    }
+    def possibleTypes: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode  => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
+      case newNode: nodes.NewUnknown => newNode.possibleTypes
     }
     def typeFullName: String = node match {
       case stored: nodes.StoredNode  => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
@@ -1120,7 +1166,7 @@ object Accessors {
 }
 
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors.*
+  import Accessors._
   implicit def accessPropertyAliasTypeFullName(
     node: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]
   ): Access_Property_ALIAS_TYPE_FULL_NAME = new Access_Property_ALIAS_TYPE_FULL_NAME(node)
@@ -1295,6 +1341,9 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
   implicit def accessPropertyPolicyDirectories(
     node: nodes.StoredNode with nodes.StaticType[nodes.HasPolicyDirectoriesT]
   ): Access_Property_POLICY_DIRECTORIES = new Access_Property_POLICY_DIRECTORIES(node)
+  implicit def accessPropertyPossibleTypes(
+    node: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesT]
+  ): Access_Property_POSSIBLE_TYPES = new Access_Property_POSSIBLE_TYPES(node)
   implicit def accessPropertyResolved(node: nodes.StoredNode with nodes.StaticType[nodes.HasResolvedT]): Access_Property_RESOLVED =
     new Access_Property_RESOLVED(node)
   implicit def accessPropertyRoot(node: nodes.StoredNode with nodes.StaticType[nodes.HasRootT]): Access_Property_ROOT =
@@ -1334,7 +1383,7 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
-  import Accessors.*
+  import Accessors._
   implicit def access_AnnotationBase(node: nodes.AnnotationBase): Access_AnnotationBase = new Access_AnnotationBase(node)
   implicit def access_AnnotationLiteralBase(node: nodes.AnnotationLiteralBase): Access_AnnotationLiteralBase =
     new Access_AnnotationLiteralBase(node)
@@ -1431,7 +1480,7 @@ trait ConcreteBaseConversions extends AbstractBaseConversions0 {
 }
 
 trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
-  import Accessors.*
+  import Accessors._
   implicit def access_AstNodeBase(node: nodes.AstNodeBase): Access_AstNodeBase          = new Access_AstNodeBase(node)
   implicit def access_CallReprBase(node: nodes.CallReprBase): Access_CallReprBase       = new Access_CallReprBase(node)
   implicit def access_CfgNodeBase(node: nodes.CfgNodeBase): Access_CfgNodeBase          = new Access_CfgNodeBase(node)
@@ -1439,12 +1488,12 @@ trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
 }
 
 trait AbstractBaseConversions1 extends AbstractBaseConversions2 {
-  import Accessors.*
+  import Accessors._
   implicit def access_DeclarationBase(node: nodes.DeclarationBase): Access_DeclarationBase       = new Access_DeclarationBase(node)
   implicit def access_TrackingPointBase(node: nodes.TrackingPointBase): Access_TrackingPointBase = new Access_TrackingPointBase(node)
 }
 
 trait AbstractBaseConversions2 {
-  import Accessors.*
+  import Accessors._
   implicit def access_LocalLikeBase(node: nodes.LocalLikeBase): Access_LocalLikeBase = new Access_LocalLikeBase(node)
 }

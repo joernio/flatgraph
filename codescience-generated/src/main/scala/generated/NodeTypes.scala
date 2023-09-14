@@ -1,13 +1,12 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
-
-import scala.collection.immutable.{ArraySeq, IndexedSeq}
+import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait AnnotationT extends AnyRef with ExpressionT with HasFullNameT with HasNameT
 trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[AnnotationT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -72,7 +71,7 @@ trait AnnotationLiteralT extends AnyRef with ExpressionT with HasNameT
 trait AnnotationLiteralBase extends AbstractNode with ExpressionBase with StaticType[AnnotationLiteralT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -133,7 +132,7 @@ trait AnnotationParameterT extends AnyRef with AstNodeT
 trait AnnotationParameterBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -173,7 +172,7 @@ trait AnnotationParameterAssignT extends AnyRef with AstNodeT
 trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterAssignT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -213,7 +212,7 @@ trait ArrayInitializerT extends AnyRef with ExpressionT
 trait ArrayInitializerBase extends AbstractNode with ExpressionBase with StaticType[ArrayInitializerT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -270,7 +269,7 @@ trait BindingT extends AnyRef with HasIsMethodNeverOverriddenT with HasMethodFul
 trait BindingBase extends AbstractNode with StaticType[BindingT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.isMethodNeverOverridden.foreach { p => res.put("IS_METHOD_NEVER_OVERRIDDEN", p) }
     res.put("METHOD_FULL_NAME", this.methodFullName)
@@ -300,15 +299,15 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
     if (isMethodNeverOverridden.nonEmpty) interface.emplaceProperty(this, 44, this.isMethodNeverOverridden)
     interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 71, Iterator(this.signature))
+    interface.emplaceProperty(this, 72, Iterator(this.signature))
   }
 }
 
-trait BlockT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+trait BlockT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
 trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -320,6 +319,7 @@ trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockT]
     res.put("INTERNAL_FLAGS", this.internalFlags)
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -342,6 +342,7 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
   var internalFlags: Int                                              = 0: Int
   var lineNumber: Option[Int]                                         = None
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def argumentIndex(value: Int): this.type                            = { this.argumentIndex = value; this }
   def argumentName(value: Option[String]): this.type                  = { this.argumentName = value; this }
@@ -355,6 +356,7 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
   def lineNumber(value: Int): this.type                               = { this.lineNumber = Option(value); this }
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
@@ -366,7 +368,8 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
     interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -379,12 +382,13 @@ trait CallT
     with HasDynamicTypeHintFullNameT
     with HasMethodFullNameT
     with HasMethodInstFullNameT
+    with HasPossibleTypesT
     with HasResolvedT
     with HasTypeFullNameT
 trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with StaticType[CallT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -401,6 +405,7 @@ trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with S
     this.methodInstFullName.foreach { p => res.put("METHOD_INST_FULL_NAME", p) }
     res.put("NAME", this.name)
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     this.resolved.foreach { p => res.put("RESOLVED", p) }
     res.put("SIGNATURE", this.signature)
     res.put("TYPE_FULL_NAME", this.typeFullName)
@@ -431,6 +436,7 @@ class NewCall extends NewNode(7.toShort) with CallBase {
   var methodInstFullName: Option[String]                              = None
   var name: String                                                    = "<empty>": String
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var resolved: Option[Boolean]                                       = None
   var signature: String                                               = "": String
   var typeFullName: String                                            = "<empty>": String
@@ -452,6 +458,7 @@ class NewCall extends NewNode(7.toShort) with CallBase {
   def methodInstFullName(value: String): this.type                    = { this.methodInstFullName = Option(value); this }
   def name(value: String): this.type                                  = { this.name = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def resolved(value: Boolean): this.type                             = { this.resolved = Option(value); this }
   def resolved(value: Option[Boolean]): this.type                     = { this.resolved = value; this }
   def signature(value: String): this.type                             = { this.signature = value; this }
@@ -471,9 +478,10 @@ class NewCall extends NewNode(7.toShort) with CallBase {
     if (methodInstFullName.nonEmpty) interface.emplaceProperty(this, 54, this.methodInstFullName)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (resolved.nonEmpty) interface.emplaceProperty(this, 68, this.resolved)
-    interface.emplaceProperty(this, 71, Iterator(this.signature))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    if (resolved.nonEmpty) interface.emplaceProperty(this, 69, this.resolved)
+    interface.emplaceProperty(this, 72, Iterator(this.signature))
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -482,7 +490,7 @@ trait CallChainBase extends AbstractNode with StaticType[CallChainT] {
   def calls: IndexedSeq[CallBase]
   def methods: IndexedSeq[MethodBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res        = new java.util.HashMap[String, Any]()
     val tmpcalls   = this.calls; if (tmpcalls.nonEmpty) res.put("calls", tmpcalls)
     val tmpmethods = this.methods; if (tmpmethods.nonEmpty) res.put("methods", tmpmethods)
@@ -493,8 +501,8 @@ class CallChain(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 8.toShort, seq_4762)
     with CallChainBase
     with StaticType[CallChainT] {
-  def calls: IndexedSeq[Call]     = odb2.Accessors.getNodePropertyMulti[Call](graph, nodeKind, 84, seq)
-  def methods: IndexedSeq[Method] = odb2.Accessors.getNodePropertyMulti[Method](graph, nodeKind, 85, seq)
+  def calls: IndexedSeq[Call]     = odb2.Accessors.getNodePropertyMulti[Call](graph, nodeKind, 85, seq)
+  def methods: IndexedSeq[Method] = odb2.Accessors.getNodePropertyMulti[Method](graph, nodeKind, 86, seq)
 }
 object NewCallChain { def apply(): NewCallChain = new NewCallChain }
 class NewCallChain extends NewNode(8.toShort) with CallChainBase {
@@ -505,8 +513,8 @@ class NewCallChain extends NewNode(8.toShort) with CallChainBase {
   def calls(value: IterableOnce[CallBase]): this.type     = { this.calls = value.iterator.to(ArraySeq); this }
   def methods(value: IterableOnce[MethodBase]): this.type = { this.methods = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (calls.nonEmpty) interface.emplaceProperty(this, 84, this.calls)
-    if (methods.nonEmpty) interface.emplaceProperty(this, 85, this.methods)
+    if (calls.nonEmpty) interface.emplaceProperty(this, 85, this.calls)
+    if (methods.nonEmpty) interface.emplaceProperty(this, 86, this.methods)
   }
 }
 
@@ -516,7 +524,7 @@ trait CallSiteBase extends AbstractNode with StaticType[CallSiteT] {
   def callerMethod: MethodBase
   def method: MethodBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("call", this.call)
     res.put("callerMethod", this.callerMethod)
@@ -528,9 +536,9 @@ class CallSite(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 9.toShort, seq_4762)
     with CallSiteBase
     with StaticType[CallSiteT] {
-  def call: Call           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Call)
-  def callerMethod: Method = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: Method)
-  def method: Method       = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Method)
+  def call: Call           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 87, seq, null: Call)
+  def callerMethod: Method = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Method)
+  def method: Method       = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Method)
 }
 object NewCallSite { def apply(): NewCallSite = new NewCallSite }
 class NewCallSite extends NewNode(9.toShort) with CallSiteBase {
@@ -543,9 +551,9 @@ class NewCallSite extends NewNode(9.toShort) with CallSiteBase {
   def callerMethod(value: MethodBase): this.type = { this.callerMethod = value; this }
   def method(value: MethodBase): this.type       = { this.method = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 86, Iterator(this.call))
-    interface.emplaceProperty(this, 84, Iterator(this.callerMethod))
-    interface.emplaceProperty(this, 85, Iterator(this.method))
+    interface.emplaceProperty(this, 87, Iterator(this.call))
+    interface.emplaceProperty(this, 85, Iterator(this.callerMethod))
+    interface.emplaceProperty(this, 86, Iterator(this.method))
   }
 }
 
@@ -553,7 +561,7 @@ trait ClosureBindingT extends AnyRef with HasClosureBindingIdT with HasClosureOr
 trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.closureBindingId.foreach { p => res.put("CLOSURE_BINDING_ID", p) }
     this.closureOriginalName.foreach { p => res.put("CLOSURE_ORIGINAL_NAME", p) }
@@ -588,7 +596,7 @@ trait CommentT extends AnyRef with AstNodeT with HasFilenameT
 trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -632,7 +640,7 @@ trait ConfigFileT extends AnyRef with TrackingPointT with HasContentT with HasNa
 trait ConfigFileBase extends AbstractNode with TrackingPointBase with StaticType[ConfigFileT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     res.put("CONTENT", this.content)
@@ -666,7 +674,7 @@ trait ControlStructureT extends AnyRef with ExpressionT with HasControlStructure
 trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticType[ControlStructureT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -731,7 +739,7 @@ trait DependencyT extends AnyRef with HasDependencyGroupIdT with HasDependencyTy
 trait DependencyBase extends AbstractNode with StaticType[DependencyT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.dependencyGroupId.foreach { p => res.put("DEPENDENCY_GROUP_ID", p) }
     res.put("DEPENDENCY_TYPE", this.dependencyType)
@@ -761,7 +769,7 @@ class NewDependency extends NewNode(14.toShort) with DependencyBase {
     if (dependencyGroupId.nonEmpty) interface.emplaceProperty(this, 21, this.dependencyGroupId)
     interface.emplaceProperty(this, 22, Iterator(this.dependencyType))
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 83, Iterator(this.version))
+    interface.emplaceProperty(this, 84, Iterator(this.version))
   }
 }
 
@@ -769,7 +777,7 @@ trait DomAttributeT extends AnyRef with HasNameT with HasValueT
 trait DomAttributeBase extends AbstractNode with StaticType[DomAttributeT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     res.put("VALUE", this.value)
@@ -790,7 +798,7 @@ class NewDomAttribute extends NewNode(15.toShort) with DomAttributeBase {
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 80, Iterator(this.value))
+    interface.emplaceProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -798,7 +806,7 @@ trait DomNodeT extends AnyRef with TrackingPointT with HasColumnNumberT with Has
 trait DomNodeBase extends AbstractNode with TrackingPointBase with StaticType[DomNodeT] {
   def attributes: IndexedSeq[DomAttributeBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -813,7 +821,7 @@ class DomNode(graph_4762: odb2.Graph, seq_4762: Int)
     with DomNodeBase
     with TrackingPoint
     with StaticType[DomNodeT] {
-  def attributes: IndexedSeq[DomAttribute] = odb2.Accessors.getNodePropertyMulti[DomAttribute](graph, nodeKind, 84, seq)
+  def attributes: IndexedSeq[DomAttribute] = odb2.Accessors.getNodePropertyMulti[DomAttribute](graph, nodeKind, 85, seq)
 }
 object NewDomNode { def apply(): NewDomNode = new NewDomNode }
 class NewDomNode extends NewNode(16.toShort) with DomNodeBase {
@@ -836,7 +844,7 @@ class NewDomNode extends NewNode(16.toShort) with DomNodeBase {
     if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    if (attributes.nonEmpty) interface.emplaceProperty(this, 84, this.attributes)
+    if (attributes.nonEmpty) interface.emplaceProperty(this, 85, this.attributes)
   }
 }
 
@@ -844,7 +852,7 @@ trait FieldIdentifierT extends AnyRef with ExpressionT with HasCanonicalNameT
 trait FieldIdentifierBase extends AbstractNode with ExpressionBase with StaticType[FieldIdentifierT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -905,7 +913,7 @@ trait FileT extends AnyRef with AstNodeT with HasHashT with HasNameT
 trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -956,7 +964,7 @@ trait FindingBase extends AbstractNode with StaticType[FindingT] {
   def keyValuePairs: IndexedSeq[KeyValuePairBase]
   def rootCauses: IndexedSeq[FindingBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("STRUCTURED_FINGERPRINT", this.structuredFingerprint)
     val tmpevidence      = this.evidence; if (tmpevidence.nonEmpty) res.put("evidence", tmpevidence)
@@ -969,9 +977,9 @@ class Finding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 19.toShort, seq_4762)
     with FindingBase
     with StaticType[FindingT] {
-  def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 84, seq)
-  def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 85, seq)
-  def rootCauses: IndexedSeq[Finding]         = odb2.Accessors.getNodePropertyMulti[Finding](graph, nodeKind, 86, seq)
+  def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 85, seq)
+  def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 86, seq)
+  def rootCauses: IndexedSeq[Finding]         = odb2.Accessors.getNodePropertyMulti[Finding](graph, nodeKind, 87, seq)
 }
 object NewFinding { def apply(): NewFinding = new NewFinding }
 class NewFinding extends NewNode(19.toShort) with FindingBase {
@@ -986,10 +994,10 @@ class NewFinding extends NewNode(19.toShort) with FindingBase {
   def rootCauses(value: IterableOnce[FindingBase]): this.type         = { this.rootCauses = value.iterator.to(ArraySeq); this }
   def structuredFingerprint(value: String): this.type                 = { this.structuredFingerprint = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 75, Iterator(this.structuredFingerprint))
-    if (evidence.nonEmpty) interface.emplaceProperty(this, 84, this.evidence)
-    if (keyValuePairs.nonEmpty) interface.emplaceProperty(this, 85, this.keyValuePairs)
-    if (rootCauses.nonEmpty) interface.emplaceProperty(this, 86, this.rootCauses)
+    interface.emplaceProperty(this, 76, Iterator(this.structuredFingerprint))
+    if (evidence.nonEmpty) interface.emplaceProperty(this, 85, this.evidence)
+    if (keyValuePairs.nonEmpty) interface.emplaceProperty(this, 86, this.keyValuePairs)
+    if (rootCauses.nonEmpty) interface.emplaceProperty(this, 87, this.rootCauses)
   }
 }
 
@@ -1002,7 +1010,7 @@ trait FlowBase extends AbstractNode with StaticType[FlowT] {
   def source: SourceBase
   def transformations: IndexedSeq[TransformationBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res             = new java.util.HashMap[String, Any]()
     val tmpbranchPoints = this.branchPoints; if (tmpbranchPoints.nonEmpty) res.put("branchPoints", tmpbranchPoints)
     val tmpcfgNodes     = this.cfgNodes; if (tmpcfgNodes.nonEmpty) res.put("cfgNodes", tmpcfgNodes)
@@ -1017,12 +1025,12 @@ class Flow(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 20.toShort, seq_4762)
     with FlowBase
     with StaticType[FlowT] {
-  def branchPoints: IndexedSeq[TrackingPoint]     = odb2.Accessors.getNodePropertyMulti[TrackingPoint](graph, nodeKind, 85, seq)
-  def cfgNodes: IndexedSeq[CfgNode]               = odb2.Accessors.getNodePropertyMulti[CfgNode](graph, nodeKind, 87, seq)
-  def points: IndexedSeq[ProgramPoint]            = odb2.Accessors.getNodePropertyMulti[ProgramPoint](graph, nodeKind, 88, seq)
-  def sink: Sink                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: Sink)
-  def source: Source                              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Source)
-  def transformations: IndexedSeq[Transformation] = odb2.Accessors.getNodePropertyMulti[Transformation](graph, nodeKind, 89, seq)
+  def branchPoints: IndexedSeq[TrackingPoint]     = odb2.Accessors.getNodePropertyMulti[TrackingPoint](graph, nodeKind, 86, seq)
+  def cfgNodes: IndexedSeq[CfgNode]               = odb2.Accessors.getNodePropertyMulti[CfgNode](graph, nodeKind, 88, seq)
+  def points: IndexedSeq[ProgramPoint]            = odb2.Accessors.getNodePropertyMulti[ProgramPoint](graph, nodeKind, 89, seq)
+  def sink: Sink                                  = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Sink)
+  def source: Source                              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 87, seq, null: Source)
+  def transformations: IndexedSeq[Transformation] = odb2.Accessors.getNodePropertyMulti[Transformation](graph, nodeKind, 90, seq)
 }
 object NewFlow { def apply(): NewFlow = new NewFlow }
 class NewFlow extends NewNode(20.toShort) with FlowBase {
@@ -1041,12 +1049,12 @@ class NewFlow extends NewNode(20.toShort) with FlowBase {
   def source(value: SourceBase): this.type                                = { this.source = value; this }
   def transformations(value: IterableOnce[TransformationBase]): this.type = { this.transformations = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (branchPoints.nonEmpty) interface.emplaceProperty(this, 85, this.branchPoints)
-    if (cfgNodes.nonEmpty) interface.emplaceProperty(this, 87, this.cfgNodes)
-    if (points.nonEmpty) interface.emplaceProperty(this, 88, this.points)
-    interface.emplaceProperty(this, 84, Iterator(this.sink))
-    interface.emplaceProperty(this, 86, Iterator(this.source))
-    if (transformations.nonEmpty) interface.emplaceProperty(this, 89, this.transformations)
+    if (branchPoints.nonEmpty) interface.emplaceProperty(this, 86, this.branchPoints)
+    if (cfgNodes.nonEmpty) interface.emplaceProperty(this, 88, this.cfgNodes)
+    if (points.nonEmpty) interface.emplaceProperty(this, 89, this.points)
+    interface.emplaceProperty(this, 85, Iterator(this.sink))
+    interface.emplaceProperty(this, 87, Iterator(this.source))
+    if (transformations.nonEmpty) interface.emplaceProperty(this, 90, this.transformations)
   }
 }
 
@@ -1054,7 +1062,7 @@ trait FrameworkT extends AnyRef with HasNameT
 trait FrameworkBase extends AbstractNode with StaticType[FrameworkT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     res
@@ -1079,7 +1087,7 @@ trait FrameworkDataT extends AnyRef with HasContentT with HasNameT
 trait FrameworkDataBase extends AbstractNode with StaticType[FrameworkDataT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CONTENT", this.content)
     res.put("NAME", this.name)
@@ -1104,11 +1112,17 @@ class NewFrameworkData extends NewNode(22.toShort) with FrameworkDataBase {
   }
 }
 
-trait IdentifierT extends AnyRef with ExpressionT with LocalLikeT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+trait IdentifierT
+    extends AnyRef
+    with ExpressionT
+    with LocalLikeT
+    with HasDynamicTypeHintFullNameT
+    with HasPossibleTypesT
+    with HasTypeFullNameT
 trait IdentifierBase extends AbstractNode with ExpressionBase with LocalLikeBase with StaticType[IdentifierT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -1121,6 +1135,7 @@ trait IdentifierBase extends AbstractNode with ExpressionBase with LocalLikeBase
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("NAME", this.name)
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -1145,6 +1160,7 @@ class NewIdentifier extends NewNode(23.toShort) with IdentifierBase {
   var lineNumber: Option[Int]                                         = None
   var name: String                                                    = "<empty>": String
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def argumentIndex(value: Int): this.type                            = { this.argumentIndex = value; this }
   def argumentName(value: Option[String]): this.type                  = { this.argumentName = value; this }
@@ -1159,6 +1175,7 @@ class NewIdentifier extends NewNode(23.toShort) with IdentifierBase {
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def name(value: String): this.type                                  = { this.name = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
@@ -1171,7 +1188,8 @@ class NewIdentifier extends NewNode(23.toShort) with IdentifierBase {
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1179,7 +1197,7 @@ trait ImplicitCallT extends AnyRef with CallReprT
 trait ImplicitCallBase extends AbstractNode with CallReprBase with StaticType[ImplicitCallT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1227,7 +1245,7 @@ class NewImplicitCall extends NewNode(24.toShort) with ImplicitCallBase {
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 71, Iterator(this.signature))
+    interface.emplaceProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -1242,7 +1260,7 @@ trait ImportT
 trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1318,7 +1336,7 @@ trait IoflowBase extends AbstractNode with StaticType[IoflowT] {
   def transforms: IndexedSeq[TransformBase]
   def triggerMethods: IndexedSeq[MethodBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("FINGERPRINT", this.fingerprint)
     val tmpLiteralsToSink = this.literalsToSink; if (tmpLiteralsToSink.nonEmpty) res.put("LITERALS_TO_SINK", tmpLiteralsToSink)
@@ -1346,18 +1364,18 @@ class Ioflow(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 26.toShort, seq_4762)
     with IoflowBase
     with StaticType[IoflowT] {
-  def dataTags: IndexedSeq[Tag]               = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 85, seq)
-  def dstTags: IndexedSeq[Tag]                = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
-  def primaryFlow: Flow                       = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 88, seq, null: Flow)
-  def sink: Sink                              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: Sink)
-  def sinkDescriptorFlows: IndexedSeq[Flow]   = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 89, seq)
-  def sinkDescriptorTags: IndexedSeq[Tag]     = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 90, seq)
-  def source: Source                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Source)
-  def sourceDescriptorFlows: IndexedSeq[Flow] = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 91, seq)
-  def sourceDescriptorTags: IndexedSeq[Tag]   = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 92, seq)
-  def sourceTags: IndexedSeq[Tag]             = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 93, seq)
-  def transforms: IndexedSeq[Transform]       = odb2.Accessors.getNodePropertyMulti[Transform](graph, nodeKind, 94, seq)
-  def triggerMethods: IndexedSeq[Method]      = odb2.Accessors.getNodePropertyMulti[Method](graph, nodeKind, 95, seq)
+  def dataTags: IndexedSeq[Tag]               = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 86, seq)
+  def dstTags: IndexedSeq[Tag]                = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 88, seq)
+  def primaryFlow: Flow                       = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 89, seq, null: Flow)
+  def sink: Sink                              = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Sink)
+  def sinkDescriptorFlows: IndexedSeq[Flow]   = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 90, seq)
+  def sinkDescriptorTags: IndexedSeq[Tag]     = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 91, seq)
+  def source: Source                          = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 87, seq, null: Source)
+  def sourceDescriptorFlows: IndexedSeq[Flow] = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 92, seq)
+  def sourceDescriptorTags: IndexedSeq[Tag]   = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 93, seq)
+  def sourceTags: IndexedSeq[Tag]             = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 94, seq)
+  def transforms: IndexedSeq[Transform]       = odb2.Accessors.getNodePropertyMulti[Transform](graph, nodeKind, 95, seq)
+  def triggerMethods: IndexedSeq[Method]      = odb2.Accessors.getNodePropertyMulti[Method](graph, nodeKind, 96, seq)
 }
 object NewIoflow { def apply(): NewIoflow = new NewIoflow }
 class NewIoflow extends NewNode(26.toShort) with IoflowBase {
@@ -1397,18 +1415,18 @@ class NewIoflow extends NewNode(26.toShort) with IoflowBase {
     interface.emplaceProperty(this, 33, Iterator(this.fingerprint))
     if (literalsToSink.nonEmpty) interface.emplaceProperty(this, 52, this.literalsToSink)
     interface.emplaceProperty(this, 56, Iterator(this.mlAssisted))
-    if (dataTags.nonEmpty) interface.emplaceProperty(this, 85, this.dataTags)
-    if (dstTags.nonEmpty) interface.emplaceProperty(this, 87, this.dstTags)
-    interface.emplaceProperty(this, 88, Iterator(this.primaryFlow))
-    interface.emplaceProperty(this, 84, Iterator(this.sink))
-    if (sinkDescriptorFlows.nonEmpty) interface.emplaceProperty(this, 89, this.sinkDescriptorFlows)
-    if (sinkDescriptorTags.nonEmpty) interface.emplaceProperty(this, 90, this.sinkDescriptorTags)
-    interface.emplaceProperty(this, 86, Iterator(this.source))
-    if (sourceDescriptorFlows.nonEmpty) interface.emplaceProperty(this, 91, this.sourceDescriptorFlows)
-    if (sourceDescriptorTags.nonEmpty) interface.emplaceProperty(this, 92, this.sourceDescriptorTags)
-    if (sourceTags.nonEmpty) interface.emplaceProperty(this, 93, this.sourceTags)
-    if (transforms.nonEmpty) interface.emplaceProperty(this, 94, this.transforms)
-    if (triggerMethods.nonEmpty) interface.emplaceProperty(this, 95, this.triggerMethods)
+    if (dataTags.nonEmpty) interface.emplaceProperty(this, 86, this.dataTags)
+    if (dstTags.nonEmpty) interface.emplaceProperty(this, 88, this.dstTags)
+    interface.emplaceProperty(this, 89, Iterator(this.primaryFlow))
+    interface.emplaceProperty(this, 85, Iterator(this.sink))
+    if (sinkDescriptorFlows.nonEmpty) interface.emplaceProperty(this, 90, this.sinkDescriptorFlows)
+    if (sinkDescriptorTags.nonEmpty) interface.emplaceProperty(this, 91, this.sinkDescriptorTags)
+    interface.emplaceProperty(this, 87, Iterator(this.source))
+    if (sourceDescriptorFlows.nonEmpty) interface.emplaceProperty(this, 92, this.sourceDescriptorFlows)
+    if (sourceDescriptorTags.nonEmpty) interface.emplaceProperty(this, 93, this.sourceDescriptorTags)
+    if (sourceTags.nonEmpty) interface.emplaceProperty(this, 94, this.sourceTags)
+    if (transforms.nonEmpty) interface.emplaceProperty(this, 95, this.transforms)
+    if (triggerMethods.nonEmpty) interface.emplaceProperty(this, 96, this.triggerMethods)
   }
 }
 
@@ -1416,7 +1434,7 @@ trait JumpLabelT extends AnyRef with AstNodeT with HasNameT with HasParserTypeNa
 trait JumpLabelBase extends AbstractNode with AstNodeBase with StaticType[JumpLabelT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1464,7 +1482,7 @@ trait JumpTargetT extends AnyRef with CfgNodeT with HasArgumentIndexT with HasNa
 trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpTargetT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     res.put("CODE", this.code)
@@ -1524,7 +1542,7 @@ trait KeyValuePairT extends AnyRef with HasKeyT with HasValueT
 trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("KEY", this.key)
     res.put("VALUE", this.value)
@@ -1545,15 +1563,15 @@ class NewKeyValuePair extends NewNode(29.toShort) with KeyValuePairBase {
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 48, Iterator(this.key))
-    interface.emplaceProperty(this, 80, Iterator(this.value))
+    interface.emplaceProperty(this, 81, Iterator(this.value))
   }
 }
 
-trait LiteralT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+trait LiteralT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
 trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[LiteralT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -1565,6 +1583,7 @@ trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[Liter
     res.put("INTERNAL_FLAGS", this.internalFlags)
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -1587,6 +1606,7 @@ class NewLiteral extends NewNode(30.toShort) with LiteralBase {
   var internalFlags: Int                                              = 0: Int
   var lineNumber: Option[Int]                                         = None
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def argumentIndex(value: Int): this.type                            = { this.argumentIndex = value; this }
   def argumentName(value: Option[String]): this.type                  = { this.argumentName = value; this }
@@ -1600,6 +1620,7 @@ class NewLiteral extends NewNode(30.toShort) with LiteralBase {
   def lineNumber(value: Int): this.type                               = { this.lineNumber = Option(value); this }
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
@@ -1611,7 +1632,8 @@ class NewLiteral extends NewNode(30.toShort) with LiteralBase {
     interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1622,11 +1644,12 @@ trait LocalT
     with LocalLikeT
     with HasClosureBindingIdT
     with HasDynamicTypeHintFullNameT
+    with HasPossibleTypesT
     with HasTypeFullNameT
 trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with LocalLikeBase with StaticType[LocalT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.closureBindingId.foreach { p => res.put("CLOSURE_BINDING_ID", p) }
     res.put("CODE", this.code)
@@ -1636,6 +1659,7 @@ trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with 
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("NAME", this.name)
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -1658,6 +1682,7 @@ class NewLocal extends NewNode(31.toShort) with LocalBase {
   var lineNumber: Option[Int]                                         = None
   var name: String                                                    = "<empty>": String
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def closureBindingId(value: Option[String]): this.type              = { this.closureBindingId = value; this }
   def closureBindingId(value: String): this.type                      = { this.closureBindingId = Option(value); this }
@@ -1669,6 +1694,7 @@ class NewLocal extends NewNode(31.toShort) with LocalBase {
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def name(value: String): this.type                                  = { this.name = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     if (closureBindingId.nonEmpty) interface.emplaceProperty(this, 13, this.closureBindingId)
@@ -1678,7 +1704,8 @@ class NewLocal extends NewNode(31.toShort) with LocalBase {
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1696,7 +1723,7 @@ trait LocationT
 trait LocationBase extends AbstractNode with StaticType[LocationT] {
   def node: Option[AbstractNode]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CLASS_NAME", this.className)
     res.put("CLASS_SHORT_NAME", this.classShortName)
@@ -1715,7 +1742,7 @@ class Location(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 32.toShort, seq_4762)
     with LocationBase
     with StaticType[LocationT] {
-  def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 84, seq)
+  def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 85, seq)
 }
 object NewLocation { def apply(): NewLocation = new NewLocation }
 class NewLocation extends NewNode(32.toShort) with LocationBase {
@@ -1752,8 +1779,8 @@ class NewLocation extends NewNode(32.toShort) with LocationBase {
     interface.emplaceProperty(this, 55, Iterator(this.methodShortName))
     interface.emplaceProperty(this, 59, Iterator(this.nodeLabel))
     interface.emplaceProperty(this, 62, Iterator(this.packageName))
-    interface.emplaceProperty(this, 76, Iterator(this.symbol))
-    if (node.nonEmpty) interface.emplaceProperty(this, 84, this.node)
+    interface.emplaceProperty(this, 77, Iterator(this.symbol))
+    if (node.nonEmpty) interface.emplaceProperty(this, 85, this.node)
   }
 }
 
@@ -1761,7 +1788,7 @@ trait MatchInfoT extends AnyRef with HasCategoryT with HasPatternT
 trait MatchInfoBase extends AbstractNode with StaticType[MatchInfoT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CATEGORY", this.category)
     res.put("PATTERN", this.pattern)
@@ -1786,11 +1813,11 @@ class NewMatchInfo extends NewNode(33.toShort) with MatchInfoBase {
   }
 }
 
-trait MemberT extends AnyRef with AstNodeT with DeclarationT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+trait MemberT extends AnyRef with AstNodeT with DeclarationT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
 trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[MemberT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -1799,6 +1826,7 @@ trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("NAME", this.name)
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -1819,6 +1847,7 @@ class NewMember extends NewNode(34.toShort) with MemberBase {
   var lineNumber: Option[Int]                                         = None
   var name: String                                                    = "<empty>": String
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def code(value: String): this.type                                  = { this.code = value; this }
   def columnNumber(value: Int): this.type                             = { this.columnNumber = Option(value); this }
@@ -1828,6 +1857,7 @@ class NewMember extends NewNode(34.toShort) with MemberBase {
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def name(value: String): this.type                                  = { this.name = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 15, Iterator(this.code))
@@ -1836,7 +1866,8 @@ class NewMember extends NewNode(34.toShort) with MemberBase {
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1852,7 +1883,7 @@ trait MetaDataT
 trait MetaDataBase extends AbstractNode with StaticType[MetaDataT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.hash.foreach { p => res.put("HASH", p) }
     res.put("LANGUAGE", this.language)
@@ -1894,9 +1925,9 @@ class NewMetaData extends NewNode(35.toShort) with MetaDataBase {
     interface.emplaceProperty(this, 49, Iterator(this.language))
     if (overlays.nonEmpty) interface.emplaceProperty(this, 61, this.overlays)
     if (policyDirectories.nonEmpty) interface.emplaceProperty(this, 67, this.policyDirectories)
-    interface.emplaceProperty(this, 69, Iterator(this.root))
-    if (spid.nonEmpty) interface.emplaceProperty(this, 74, this.spid)
-    interface.emplaceProperty(this, 83, Iterator(this.version))
+    interface.emplaceProperty(this, 70, Iterator(this.root))
+    if (spid.nonEmpty) interface.emplaceProperty(this, 75, this.spid)
+    interface.emplaceProperty(this, 84, Iterator(this.version))
   }
 }
 
@@ -1919,7 +1950,7 @@ trait MethodT
 trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("AST_PARENT_FULL_NAME", this.astParentFullName)
     res.put("AST_PARENT_TYPE", this.astParentType)
@@ -2016,8 +2047,8 @@ class NewMethod extends NewNode(36.toShort) with MethodBase {
     if (lineNumberEnd.nonEmpty) interface.emplaceProperty(this, 51, this.lineNumberEnd)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 71, Iterator(this.signature))
-    interface.emplaceProperty(this, 81, Iterator(this.varargParameter))
+    interface.emplaceProperty(this, 72, Iterator(this.signature))
+    interface.emplaceProperty(this, 82, Iterator(this.varargParameter))
   }
 }
 
@@ -2025,7 +2056,7 @@ trait MethodInstT extends AnyRef with AstNodeT with HasFullNameT with HasMethodF
 trait MethodInstBase extends AbstractNode with AstNodeBase with StaticType[MethodInstT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2073,7 +2104,7 @@ class NewMethodInst extends NewNode(37.toShort) with MethodInstBase {
     interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 71, Iterator(this.signature))
+    interface.emplaceProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -2086,6 +2117,7 @@ trait MethodParameterInT
     with HasEvaluationStrategyT
     with HasIndexT
     with HasIsVariadicT
+    with HasPossibleTypesT
     with HasTypeFullNameT
 trait MethodParameterInBase
     extends AbstractNode
@@ -2095,7 +2127,7 @@ trait MethodParameterInBase
     with StaticType[MethodParameterInT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2109,6 +2141,7 @@ trait MethodParameterInBase
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("NAME", this.name)
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -2135,6 +2168,7 @@ class NewMethodParameterIn extends NewNode(38.toShort) with MethodParameterInBas
   var lineNumber: Option[Int]                                         = None
   var name: String                                                    = "<empty>": String
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def code(value: String): this.type                                  = { this.code = value; this }
   def columnNumber(value: Int): this.type                             = { this.columnNumber = Option(value); this }
@@ -2149,6 +2183,7 @@ class NewMethodParameterIn extends NewNode(38.toShort) with MethodParameterInBas
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def name(value: String): this.type                                  = { this.name = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 15, Iterator(this.code))
@@ -2162,7 +2197,8 @@ class NewMethodParameterIn extends NewNode(38.toShort) with MethodParameterInBas
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2177,7 +2213,7 @@ trait MethodParameterOutT
 trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterOutT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2238,7 +2274,7 @@ class NewMethodParameterOut extends NewNode(39.toShort) with MethodParameterOutB
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2248,11 +2284,12 @@ trait MethodRefT
     with HasDynamicTypeHintFullNameT
     with HasMethodFullNameT
     with HasMethodInstFullNameT
+    with HasPossibleTypesT
     with HasTypeFullNameT
 trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[MethodRefT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -2266,6 +2303,7 @@ trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[Met
     res.put("METHOD_FULL_NAME", this.methodFullName)
     this.methodInstFullName.foreach { p => res.put("METHOD_INST_FULL_NAME", p) }
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -2290,6 +2328,7 @@ class NewMethodRef extends NewNode(40.toShort) with MethodRefBase {
   var methodFullName: String                                          = "<empty>": String
   var methodInstFullName: Option[String]                              = None
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def argumentIndex(value: Int): this.type                            = { this.argumentIndex = value; this }
   def argumentName(value: Option[String]): this.type                  = { this.argumentName = value; this }
@@ -2306,6 +2345,7 @@ class NewMethodRef extends NewNode(40.toShort) with MethodRefBase {
   def methodInstFullName(value: Option[String]): this.type            = { this.methodInstFullName = value; this }
   def methodInstFullName(value: String): this.type                    = { this.methodInstFullName = Option(value); this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
@@ -2319,15 +2359,22 @@ class NewMethodRef extends NewNode(40.toShort) with MethodRefBase {
     interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
     if (methodInstFullName.nonEmpty) interface.emplaceProperty(this, 54, this.methodInstFullName)
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
-trait MethodReturnT extends AnyRef with CfgNodeT with HasDynamicTypeHintFullNameT with HasEvaluationStrategyT with HasTypeFullNameT
+trait MethodReturnT
+    extends AnyRef
+    with CfgNodeT
+    with HasDynamicTypeHintFullNameT
+    with HasEvaluationStrategyT
+    with HasPossibleTypesT
+    with HasTypeFullNameT
 trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[MethodReturnT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2338,6 +2385,7 @@ trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[Met
     res.put("INTERNAL_FLAGS", this.internalFlags)
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -2359,6 +2407,7 @@ class NewMethodReturn extends NewNode(41.toShort) with MethodReturnBase {
   var internalFlags: Int                                              = 0: Int
   var lineNumber: Option[Int]                                         = None
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def code(value: String): this.type                                  = { this.code = value; this }
   def columnNumber(value: Int): this.type                             = { this.columnNumber = Option(value); this }
@@ -2370,6 +2419,7 @@ class NewMethodReturn extends NewNode(41.toShort) with MethodReturnBase {
   def lineNumber(value: Int): this.type                               = { this.lineNumber = Option(value); this }
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 15, Iterator(this.code))
@@ -2380,7 +2430,8 @@ class NewMethodReturn extends NewNode(41.toShort) with MethodReturnBase {
     interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2400,7 +2451,7 @@ trait MethodSummaryBase extends AbstractNode with StaticType[MethodSummaryT] {
   def routes: IndexedSeq[RouteBase]
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.binarySignature.foreach { p => res.put("BINARY_SIGNATURE", p) }
     res.put("IS_EXTERNAL", this.isExternal)
@@ -2427,19 +2478,19 @@ class MethodSummary(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodSummaryBase
     with StaticType[MethodSummaryT] {
   def annotationParameters: IndexedSeq[SpAnnotationParameter] =
-    odb2.Accessors.getNodePropertyMulti[SpAnnotationParameter](graph, nodeKind, 87, seq)
-  def method: Method                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Method)
-  def modifiers: IndexedSeq[Modifier]               = odb2.Accessors.getNodePropertyMulti[Modifier](graph, nodeKind, 88, seq)
-  def outParameters: IndexedSeq[MethodParameterOut] = odb2.Accessors.getNodePropertyMulti[MethodParameterOut](graph, nodeKind, 90, seq)
-  def outParamTags: IndexedSeq[Tags]                = odb2.Accessors.getNodePropertyMulti[Tags](graph, nodeKind, 89, seq)
-  def parameters: IndexedSeq[MethodParameterIn]     = odb2.Accessors.getNodePropertyMulti[MethodParameterIn](graph, nodeKind, 92, seq)
-  def paramTags: IndexedSeq[Tags]                   = odb2.Accessors.getNodePropertyMulti[Tags](graph, nodeKind, 84, seq)
-  def paramTypes: IndexedSeq[Type]                  = odb2.Accessors.getNodePropertyMulti[Type](graph, nodeKind, 91, seq)
-  def returnParameter: MethodReturn                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 94, seq, null: MethodReturn)
-  def returnParameterType: Type                     = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 95, seq, null: Type)
-  def returnParamTags: IndexedSeq[Tag]              = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 93, seq)
-  def routes: IndexedSeq[Route]                     = odb2.Accessors.getNodePropertyMulti[Route](graph, nodeKind, 96, seq)
-  def tags: IndexedSeq[Tag]                         = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 86, seq)
+    odb2.Accessors.getNodePropertyMulti[SpAnnotationParameter](graph, nodeKind, 88, seq)
+  def method: Method                                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Method)
+  def modifiers: IndexedSeq[Modifier]               = odb2.Accessors.getNodePropertyMulti[Modifier](graph, nodeKind, 89, seq)
+  def outParameters: IndexedSeq[MethodParameterOut] = odb2.Accessors.getNodePropertyMulti[MethodParameterOut](graph, nodeKind, 91, seq)
+  def outParamTags: IndexedSeq[Tags]                = odb2.Accessors.getNodePropertyMulti[Tags](graph, nodeKind, 90, seq)
+  def parameters: IndexedSeq[MethodParameterIn]     = odb2.Accessors.getNodePropertyMulti[MethodParameterIn](graph, nodeKind, 93, seq)
+  def paramTags: IndexedSeq[Tags]                   = odb2.Accessors.getNodePropertyMulti[Tags](graph, nodeKind, 85, seq)
+  def paramTypes: IndexedSeq[Type]                  = odb2.Accessors.getNodePropertyMulti[Type](graph, nodeKind, 92, seq)
+  def returnParameter: MethodReturn                 = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 95, seq, null: MethodReturn)
+  def returnParameterType: Type                     = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 96, seq, null: Type)
+  def returnParamTags: IndexedSeq[Tag]              = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 94, seq)
+  def routes: IndexedSeq[Route]                     = odb2.Accessors.getNodePropertyMulti[Route](graph, nodeKind, 97, seq)
+  def tags: IndexedSeq[Tag]                         = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
 }
 object NewMethodSummary { def apply(): NewMethodSummary = new NewMethodSummary }
 class NewMethodSummary extends NewNode(42.toShort) with MethodSummaryBase {
@@ -2484,19 +2535,19 @@ class NewMethodSummary extends NewNode(42.toShort) with MethodSummaryBase {
     if (binarySignature.nonEmpty) interface.emplaceProperty(this, 7, this.binarySignature)
     interface.emplaceProperty(this, 43, Iterator(this.isExternal))
     interface.emplaceProperty(this, 45, Iterator(this.isStatic))
-    if (annotationParameters.nonEmpty) interface.emplaceProperty(this, 87, this.annotationParameters)
-    interface.emplaceProperty(this, 85, Iterator(this.method))
-    if (modifiers.nonEmpty) interface.emplaceProperty(this, 88, this.modifiers)
-    if (outParameters.nonEmpty) interface.emplaceProperty(this, 90, this.outParameters)
-    if (outParamTags.nonEmpty) interface.emplaceProperty(this, 89, this.outParamTags)
-    if (parameters.nonEmpty) interface.emplaceProperty(this, 92, this.parameters)
-    if (paramTags.nonEmpty) interface.emplaceProperty(this, 84, this.paramTags)
-    if (paramTypes.nonEmpty) interface.emplaceProperty(this, 91, this.paramTypes)
-    interface.emplaceProperty(this, 94, Iterator(this.returnParameter))
-    interface.emplaceProperty(this, 95, Iterator(this.returnParameterType))
-    if (returnParamTags.nonEmpty) interface.emplaceProperty(this, 93, this.returnParamTags)
-    if (routes.nonEmpty) interface.emplaceProperty(this, 96, this.routes)
-    if (tags.nonEmpty) interface.emplaceProperty(this, 86, this.tags)
+    if (annotationParameters.nonEmpty) interface.emplaceProperty(this, 88, this.annotationParameters)
+    interface.emplaceProperty(this, 86, Iterator(this.method))
+    if (modifiers.nonEmpty) interface.emplaceProperty(this, 89, this.modifiers)
+    if (outParameters.nonEmpty) interface.emplaceProperty(this, 91, this.outParameters)
+    if (outParamTags.nonEmpty) interface.emplaceProperty(this, 90, this.outParamTags)
+    if (parameters.nonEmpty) interface.emplaceProperty(this, 93, this.parameters)
+    if (paramTags.nonEmpty) interface.emplaceProperty(this, 85, this.paramTags)
+    if (paramTypes.nonEmpty) interface.emplaceProperty(this, 92, this.paramTypes)
+    interface.emplaceProperty(this, 95, Iterator(this.returnParameter))
+    interface.emplaceProperty(this, 96, Iterator(this.returnParameterType))
+    if (returnParamTags.nonEmpty) interface.emplaceProperty(this, 94, this.returnParamTags)
+    if (routes.nonEmpty) interface.emplaceProperty(this, 97, this.routes)
+    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
   }
 }
 
@@ -2504,7 +2555,7 @@ trait ModifierT extends AnyRef with AstNodeT with HasModifierTypeT
 trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[ModifierT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2548,7 +2599,7 @@ trait NamespaceT extends AnyRef with AstNodeT with HasNameT
 trait NamespaceBase extends AbstractNode with AstNodeBase with StaticType[NamespaceT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2592,7 +2643,7 @@ trait NamespaceBlockT extends AnyRef with AstNodeT with HasFilenameT with HasFul
 trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[NamespaceBlockT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2644,7 +2695,7 @@ trait PackagePrefixT extends AnyRef with HasValueT
 trait PackagePrefixBase extends AbstractNode with StaticType[PackagePrefixT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("VALUE", this.value)
     res
@@ -2661,7 +2712,7 @@ class NewPackagePrefix extends NewNode(46.toShort) with PackagePrefixBase {
   var value: String                   = "": String
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 80, Iterator(this.value))
+    interface.emplaceProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -2669,7 +2720,7 @@ trait PostExecutionCallT extends AnyRef with CallReprT
 trait PostExecutionCallBase extends AbstractNode with CallReprBase with StaticType[PostExecutionCallT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -2717,7 +2768,7 @@ class NewPostExecutionCall extends NewNode(47.toShort) with PostExecutionCallBas
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 58, Iterator(this.name))
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 71, Iterator(this.signature))
+    interface.emplaceProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -2728,7 +2779,7 @@ trait ProgramPointBase extends AbstractNode with StaticType[ProgramPointT] {
   def methodTags: IndexedSeq[TagBase]
   def paramTags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("elem", this.elem)
     this.method.foreach { p => res.put("method", p) }
@@ -2741,10 +2792,10 @@ class ProgramPoint(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 48.toShort, seq_4762)
     with ProgramPointBase
     with StaticType[ProgramPointT] {
-  def elem: TrackingPoint         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: TrackingPoint)
-  def method: Option[Method]      = odb2.Accessors.getNodePropertyOption[Method](graph, nodeKind, 85, seq)
-  def methodTags: IndexedSeq[Tag] = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
-  def paramTags: IndexedSeq[Tag]  = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 84, seq)
+  def elem: TrackingPoint         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 87, seq, null: TrackingPoint)
+  def method: Option[Method]      = odb2.Accessors.getNodePropertyOption[Method](graph, nodeKind, 86, seq)
+  def methodTags: IndexedSeq[Tag] = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 88, seq)
+  def paramTags: IndexedSeq[Tag]  = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 85, seq)
 }
 object NewProgramPoint { def apply(): NewProgramPoint = new NewProgramPoint }
 class NewProgramPoint extends NewNode(48.toShort) with ProgramPointBase {
@@ -2760,10 +2811,10 @@ class NewProgramPoint extends NewNode(48.toShort) with ProgramPointBase {
   def methodTags(value: IterableOnce[TagBase]): this.type = { this.methodTags = value.iterator.to(ArraySeq); this }
   def paramTags(value: IterableOnce[TagBase]): this.type  = { this.paramTags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 86, Iterator(this.elem))
-    if (method.nonEmpty) interface.emplaceProperty(this, 85, this.method)
-    if (methodTags.nonEmpty) interface.emplaceProperty(this, 87, this.methodTags)
-    if (paramTags.nonEmpty) interface.emplaceProperty(this, 84, this.paramTags)
+    interface.emplaceProperty(this, 87, Iterator(this.elem))
+    if (method.nonEmpty) interface.emplaceProperty(this, 86, this.method)
+    if (methodTags.nonEmpty) interface.emplaceProperty(this, 88, this.methodTags)
+    if (paramTags.nonEmpty) interface.emplaceProperty(this, 85, this.paramTags)
   }
 }
 
@@ -2773,7 +2824,7 @@ trait ReadBase extends AbstractNode with StaticType[ReadT] {
   def source: SourceBase
   def triggerCallChains: IndexedSeq[CallChainBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res                = new java.util.HashMap[String, Any]()
     val tmpdescriptorFlows = this.descriptorFlows; if (tmpdescriptorFlows.nonEmpty) res.put("descriptorFlows", tmpdescriptorFlows)
     res.put("source", this.source)
@@ -2785,9 +2836,9 @@ class Read(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 49.toShort, seq_4762)
     with ReadBase
     with StaticType[ReadT] {
-  def descriptorFlows: IndexedSeq[Flow]        = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 85, seq)
-  def source: Source                           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Source)
-  def triggerCallChains: IndexedSeq[CallChain] = odb2.Accessors.getNodePropertyMulti[CallChain](graph, nodeKind, 87, seq)
+  def descriptorFlows: IndexedSeq[Flow]        = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 86, seq)
+  def source: Source                           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 87, seq, null: Source)
+  def triggerCallChains: IndexedSeq[CallChain] = odb2.Accessors.getNodePropertyMulti[CallChain](graph, nodeKind, 88, seq)
 }
 object NewRead { def apply(): NewRead = new NewRead }
 class NewRead extends NewNode(49.toShort) with ReadBase {
@@ -2800,9 +2851,9 @@ class NewRead extends NewNode(49.toShort) with ReadBase {
   def source(value: SourceBase): this.type                             = { this.source = value; this }
   def triggerCallChains(value: IterableOnce[CallChainBase]): this.type = { this.triggerCallChains = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 85, this.descriptorFlows)
-    interface.emplaceProperty(this, 86, Iterator(this.source))
-    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 87, this.triggerCallChains)
+    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 86, this.descriptorFlows)
+    interface.emplaceProperty(this, 87, Iterator(this.source))
+    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 88, this.triggerCallChains)
   }
 }
 
@@ -2810,7 +2861,7 @@ trait ReturnT extends AnyRef with ExpressionT
 trait ReturnBase extends AbstractNode with ExpressionBase with StaticType[ReturnT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -2867,7 +2918,7 @@ trait RouteT extends AnyRef with HasPathT
 trait RouteBase extends AbstractNode with StaticType[RouteT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("PATH", this.path)
     res
@@ -2893,7 +2944,7 @@ trait SensitiveDataTypeBase extends AbstractNode with StaticType[SensitiveDataTy
   def members: IndexedSeq[SensitiveMemberBase]
   def names: IndexedSeq[MatchInfoBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("FULL_NAME", this.fullName)
     val tmpmembers = this.members; if (tmpmembers.nonEmpty) res.put("members", tmpmembers)
@@ -2905,8 +2956,8 @@ class SensitiveDataType(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 52.toShort, seq_4762)
     with SensitiveDataTypeBase
     with StaticType[SensitiveDataTypeT] {
-  def members: IndexedSeq[SensitiveMember] = odb2.Accessors.getNodePropertyMulti[SensitiveMember](graph, nodeKind, 85, seq)
-  def names: IndexedSeq[MatchInfo]         = odb2.Accessors.getNodePropertyMulti[MatchInfo](graph, nodeKind, 84, seq)
+  def members: IndexedSeq[SensitiveMember] = odb2.Accessors.getNodePropertyMulti[SensitiveMember](graph, nodeKind, 86, seq)
+  def names: IndexedSeq[MatchInfo]         = odb2.Accessors.getNodePropertyMulti[MatchInfo](graph, nodeKind, 85, seq)
 }
 object NewSensitiveDataType { def apply(): NewSensitiveDataType = new NewSensitiveDataType }
 class NewSensitiveDataType extends NewNode(52.toShort) with SensitiveDataTypeBase {
@@ -2920,8 +2971,8 @@ class NewSensitiveDataType extends NewNode(52.toShort) with SensitiveDataTypeBas
   def names(value: IterableOnce[MatchInfoBase]): this.type         = { this.names = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    if (members.nonEmpty) interface.emplaceProperty(this, 85, this.members)
-    if (names.nonEmpty) interface.emplaceProperty(this, 84, this.names)
+    if (members.nonEmpty) interface.emplaceProperty(this, 86, this.members)
+    if (names.nonEmpty) interface.emplaceProperty(this, 85, this.names)
   }
 }
 
@@ -2929,7 +2980,7 @@ trait SensitiveMemberT extends AnyRef with HasNameT
 trait SensitiveMemberBase extends AbstractNode with StaticType[SensitiveMemberT] {
   def names: IndexedSeq[MatchInfoBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     val tmpnames = this.names; if (tmpnames.nonEmpty) res.put("names", tmpnames)
@@ -2940,7 +2991,7 @@ class SensitiveMember(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 53.toShort, seq_4762)
     with SensitiveMemberBase
     with StaticType[SensitiveMemberT] {
-  def names: IndexedSeq[MatchInfo] = odb2.Accessors.getNodePropertyMulti[MatchInfo](graph, nodeKind, 84, seq)
+  def names: IndexedSeq[MatchInfo] = odb2.Accessors.getNodePropertyMulti[MatchInfo](graph, nodeKind, 85, seq)
 }
 object NewSensitiveMember { def apply(): NewSensitiveMember = new NewSensitiveMember }
 class NewSensitiveMember extends NewNode(53.toShort) with SensitiveMemberBase {
@@ -2952,7 +3003,7 @@ class NewSensitiveMember extends NewNode(53.toShort) with SensitiveMemberBase {
   def names(value: IterableOnce[MatchInfoBase]): this.type = { this.names = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    if (names.nonEmpty) interface.emplaceProperty(this, 84, this.names)
+    if (names.nonEmpty) interface.emplaceProperty(this, 85, this.names)
   }
 }
 
@@ -2960,7 +3011,7 @@ trait SensitiveReferenceT extends AnyRef
 trait SensitiveReferenceBase extends AbstractNode with StaticType[SensitiveReferenceT] {
   def ioflows: IndexedSeq[IoflowBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res        = new java.util.HashMap[String, Any]()
     val tmpioflows = this.ioflows; if (tmpioflows.nonEmpty) res.put("ioflows", tmpioflows)
     res
@@ -2970,7 +3021,7 @@ class SensitiveReference(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 54.toShort, seq_4762)
     with SensitiveReferenceBase
     with StaticType[SensitiveReferenceT] {
-  def ioflows: IndexedSeq[Ioflow] = odb2.Accessors.getNodePropertyMulti[Ioflow](graph, nodeKind, 84, seq)
+  def ioflows: IndexedSeq[Ioflow] = odb2.Accessors.getNodePropertyMulti[Ioflow](graph, nodeKind, 85, seq)
 }
 object NewSensitiveReference { def apply(): NewSensitiveReference = new NewSensitiveReference }
 class NewSensitiveReference extends NewNode(54.toShort) with SensitiveReferenceBase {
@@ -2979,7 +3030,7 @@ class NewSensitiveReference extends NewNode(54.toShort) with SensitiveReferenceB
   var ioflows: IndexedSeq[IoflowBase]                     = ArraySeq.empty
   def ioflows(value: IterableOnce[IoflowBase]): this.type = { this.ioflows = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (ioflows.nonEmpty) interface.emplaceProperty(this, 84, this.ioflows)
+    if (ioflows.nonEmpty) interface.emplaceProperty(this, 85, this.ioflows)
   }
 }
 
@@ -2987,7 +3038,7 @@ trait SensitiveVariableT extends AnyRef with HasCategoriesT with HasEvalTypeT wi
 trait SensitiveVariableBase extends AbstractNode with StaticType[SensitiveVariableT] {
   def node: LocalLikeBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res           = new java.util.HashMap[String, Any]()
     val tmpCategories = this.categories; if (tmpCategories.nonEmpty) res.put("CATEGORIES", tmpCategories)
     res.put("EVAL_TYPE", this.evalType)
@@ -3000,7 +3051,7 @@ class SensitiveVariable(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 55.toShort, seq_4762)
     with SensitiveVariableBase
     with StaticType[SensitiveVariableT] {
-  def node: LocalLike = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: LocalLike)
+  def node: LocalLike = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: LocalLike)
 }
 object NewSensitiveVariable { def apply(): NewSensitiveVariable = new NewSensitiveVariable }
 class NewSensitiveVariable extends NewNode(55.toShort) with SensitiveVariableBase {
@@ -3018,7 +3069,7 @@ class NewSensitiveVariable extends NewNode(55.toShort) with SensitiveVariableBas
     if (categories.nonEmpty) interface.emplaceProperty(this, 9, this.categories)
     interface.emplaceProperty(this, 30, Iterator(this.evalType))
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 84, Iterator(this.node))
+    interface.emplaceProperty(this, 85, Iterator(this.node))
   }
 }
 
@@ -3033,7 +3084,7 @@ trait SinkBase extends AbstractNode with StaticType[SinkT] {
   def parameterIn: Option[MethodParameterInBase]
   def parameterInTags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("SINK_TYPE", this.sinkType)
     res.put("STRUCTURED_FINGERPRINT", this.structuredFingerprint)
@@ -3052,14 +3103,14 @@ class Sink(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 56.toShort, seq_4762)
     with SinkBase
     with StaticType[SinkT] {
-  def callingMethod: Option[Method]          = odb2.Accessors.getNodePropertyOption[Method](graph, nodeKind, 88, seq)
-  def callsite: Option[Call]                 = odb2.Accessors.getNodePropertyOption[Call](graph, nodeKind, 89, seq)
-  def method: Method                         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Method)
-  def methodTags: IndexedSeq[Tag]            = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
-  def node: TrackingPoint                    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: TrackingPoint)
-  def nodeType: Type                         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 90, seq, null: Type)
-  def parameterIn: Option[MethodParameterIn] = odb2.Accessors.getNodePropertyOption[MethodParameterIn](graph, nodeKind, 86, seq)
-  def parameterInTags: IndexedSeq[Tag]       = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 91, seq)
+  def callingMethod: Option[Method]          = odb2.Accessors.getNodePropertyOption[Method](graph, nodeKind, 89, seq)
+  def callsite: Option[Call]                 = odb2.Accessors.getNodePropertyOption[Call](graph, nodeKind, 90, seq)
+  def method: Method                         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Method)
+  def methodTags: IndexedSeq[Tag]            = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 88, seq)
+  def node: TrackingPoint                    = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: TrackingPoint)
+  def nodeType: Type                         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 91, seq, null: Type)
+  def parameterIn: Option[MethodParameterIn] = odb2.Accessors.getNodePropertyOption[MethodParameterIn](graph, nodeKind, 87, seq)
+  def parameterInTags: IndexedSeq[Tag]       = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 92, seq)
 }
 object NewSink { def apply(): NewSink = new NewSink }
 class NewSink extends NewNode(56.toShort) with SinkBase {
@@ -3089,16 +3140,16 @@ class NewSink extends NewNode(56.toShort) with SinkBase {
   def sinkType(value: String): this.type                           = { this.sinkType = value; this }
   def structuredFingerprint(value: String): this.type              = { this.structuredFingerprint = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 72, Iterator(this.sinkType))
-    interface.emplaceProperty(this, 75, Iterator(this.structuredFingerprint))
-    if (callingMethod.nonEmpty) interface.emplaceProperty(this, 88, this.callingMethod)
-    if (callsite.nonEmpty) interface.emplaceProperty(this, 89, this.callsite)
-    interface.emplaceProperty(this, 85, Iterator(this.method))
-    if (methodTags.nonEmpty) interface.emplaceProperty(this, 87, this.methodTags)
-    interface.emplaceProperty(this, 84, Iterator(this.node))
-    interface.emplaceProperty(this, 90, Iterator(this.nodeType))
-    if (parameterIn.nonEmpty) interface.emplaceProperty(this, 86, this.parameterIn)
-    if (parameterInTags.nonEmpty) interface.emplaceProperty(this, 91, this.parameterInTags)
+    interface.emplaceProperty(this, 73, Iterator(this.sinkType))
+    interface.emplaceProperty(this, 76, Iterator(this.structuredFingerprint))
+    if (callingMethod.nonEmpty) interface.emplaceProperty(this, 89, this.callingMethod)
+    if (callsite.nonEmpty) interface.emplaceProperty(this, 90, this.callsite)
+    interface.emplaceProperty(this, 86, Iterator(this.method))
+    if (methodTags.nonEmpty) interface.emplaceProperty(this, 88, this.methodTags)
+    interface.emplaceProperty(this, 85, Iterator(this.node))
+    interface.emplaceProperty(this, 91, Iterator(this.nodeType))
+    if (parameterIn.nonEmpty) interface.emplaceProperty(this, 87, this.parameterIn)
+    if (parameterInTags.nonEmpty) interface.emplaceProperty(this, 92, this.parameterInTags)
   }
 }
 
@@ -3112,7 +3163,7 @@ trait SourceBase extends AbstractNode with StaticType[SourceT] {
   def nodeType: TypeBase
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("SOURCE_TYPE", this.sourceType)
     res.put("STRUCTURED_FINGERPRINT", this.structuredFingerprint)
@@ -3130,13 +3181,13 @@ class Source(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 57.toShort, seq_4762)
     with SourceBase
     with StaticType[SourceT] {
-  def callingMethod: Option[Method] = odb2.Accessors.getNodePropertyOption[Method](graph, nodeKind, 88, seq)
-  def callsite: Option[Call]        = odb2.Accessors.getNodePropertyOption[Call](graph, nodeKind, 89, seq)
-  def method: Method                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Method)
-  def methodTags: IndexedSeq[Tag]   = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
-  def node: TrackingPoint           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: TrackingPoint)
-  def nodeType: Type                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 90, seq, null: Type)
-  def tags: IndexedSeq[Tag]         = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 86, seq)
+  def callingMethod: Option[Method] = odb2.Accessors.getNodePropertyOption[Method](graph, nodeKind, 89, seq)
+  def callsite: Option[Call]        = odb2.Accessors.getNodePropertyOption[Call](graph, nodeKind, 90, seq)
+  def method: Method                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Method)
+  def methodTags: IndexedSeq[Tag]   = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 88, seq)
+  def node: TrackingPoint           = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: TrackingPoint)
+  def nodeType: Type                = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 91, seq, null: Type)
+  def tags: IndexedSeq[Tag]         = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
 }
 object NewSource { def apply(): NewSource = new NewSource }
 class NewSource extends NewNode(57.toShort) with SourceBase {
@@ -3163,15 +3214,15 @@ class NewSource extends NewNode(57.toShort) with SourceBase {
   def structuredFingerprint(value: String): this.type     = { this.structuredFingerprint = value; this }
   def tags(value: IterableOnce[TagBase]): this.type       = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 73, Iterator(this.sourceType))
-    interface.emplaceProperty(this, 75, Iterator(this.structuredFingerprint))
-    if (callingMethod.nonEmpty) interface.emplaceProperty(this, 88, this.callingMethod)
-    if (callsite.nonEmpty) interface.emplaceProperty(this, 89, this.callsite)
-    interface.emplaceProperty(this, 85, Iterator(this.method))
-    if (methodTags.nonEmpty) interface.emplaceProperty(this, 87, this.methodTags)
-    interface.emplaceProperty(this, 84, Iterator(this.node))
-    interface.emplaceProperty(this, 90, Iterator(this.nodeType))
-    if (tags.nonEmpty) interface.emplaceProperty(this, 86, this.tags)
+    interface.emplaceProperty(this, 74, Iterator(this.sourceType))
+    interface.emplaceProperty(this, 76, Iterator(this.structuredFingerprint))
+    if (callingMethod.nonEmpty) interface.emplaceProperty(this, 89, this.callingMethod)
+    if (callsite.nonEmpty) interface.emplaceProperty(this, 90, this.callsite)
+    interface.emplaceProperty(this, 86, Iterator(this.method))
+    if (methodTags.nonEmpty) interface.emplaceProperty(this, 88, this.methodTags)
+    interface.emplaceProperty(this, 85, Iterator(this.node))
+    interface.emplaceProperty(this, 91, Iterator(this.nodeType))
+    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
   }
 }
 
@@ -3179,7 +3230,7 @@ trait SpAnnotationParameterT extends AnyRef with HasAnnotationFullNameT with Has
 trait SpAnnotationParameterBase extends AbstractNode with StaticType[SpAnnotationParameterT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ANNOTATION_FULL_NAME", this.annotationFullName)
     res.put("ANNOTATION_NAME", this.annotationName)
@@ -3208,7 +3259,7 @@ class NewSpAnnotationParameter extends NewNode(58.toShort) with SpAnnotationPara
     interface.emplaceProperty(this, 1, Iterator(this.annotationFullName))
     interface.emplaceProperty(this, 2, Iterator(this.annotationName))
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 80, Iterator(this.value))
+    interface.emplaceProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -3216,7 +3267,7 @@ trait SpBlacklistT extends AnyRef
 trait SpBlacklistBase extends AbstractNode with StaticType[SpBlacklistT] {
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res     = new java.util.HashMap[String, Any]()
     val tmptags = this.tags; if (tmptags.nonEmpty) res.put("tags", tmptags)
     res
@@ -3226,7 +3277,7 @@ class SpBlacklist(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 59.toShort, seq_4762)
     with SpBlacklistBase
     with StaticType[SpBlacklistT] {
-  def tags: IndexedSeq[Tag] = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 86, seq)
+  def tags: IndexedSeq[Tag] = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
 }
 object NewSpBlacklist { def apply(): NewSpBlacklist = new NewSpBlacklist }
 class NewSpBlacklist extends NewNode(59.toShort) with SpBlacklistBase {
@@ -3235,7 +3286,7 @@ class NewSpBlacklist extends NewNode(59.toShort) with SpBlacklistBase {
   var tags: IndexedSeq[TagBase]                     = ArraySeq.empty
   def tags(value: IterableOnce[TagBase]): this.type = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (tags.nonEmpty) interface.emplaceProperty(this, 86, this.tags)
+    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
   }
 }
 
@@ -3243,7 +3294,7 @@ trait TagT extends AnyRef with HasNameT with HasValueT
 trait TagBase extends AbstractNode with StaticType[TagT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("NAME", this.name)
     res.put("VALUE", this.value)
@@ -3261,7 +3312,7 @@ class NewTag extends NewNode(60.toShort) with TagBase {
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 80, Iterator(this.value))
+    interface.emplaceProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -3269,7 +3320,7 @@ trait TagsT extends AnyRef
 trait TagsBase extends AbstractNode with StaticType[TagsT] {
   def tags: IndexedSeq[TagBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res     = new java.util.HashMap[String, Any]()
     val tmptags = this.tags; if (tmptags.nonEmpty) res.put("tags", tmptags)
     res
@@ -3279,7 +3330,7 @@ class Tags(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 61.toShort, seq_4762)
     with TagsBase
     with StaticType[TagsT] {
-  def tags: IndexedSeq[Tag] = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 86, seq)
+  def tags: IndexedSeq[Tag] = odb2.Accessors.getNodePropertyMulti[Tag](graph, nodeKind, 87, seq)
 }
 object NewTags { def apply(): NewTags = new NewTags }
 class NewTags extends NewNode(61.toShort) with TagsBase {
@@ -3288,7 +3339,7 @@ class NewTags extends NewNode(61.toShort) with TagsBase {
   var tags: IndexedSeq[TagBase]                     = ArraySeq.empty
   def tags(value: IterableOnce[TagBase]): this.type = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (tags.nonEmpty) interface.emplaceProperty(this, 86, this.tags)
+    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
   }
 }
 
@@ -3297,7 +3348,7 @@ trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairT] {
   def node: AbstractNode
   def tag: TagBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("node", this.node)
     res.put("tag", this.tag)
@@ -3308,8 +3359,8 @@ class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 62.toShort, seq_4762)
     with TagNodePairBase
     with StaticType[TagNodePairT] {
-  def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: StoredNode)
-  def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Tag)
+  def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: StoredNode)
+  def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Tag)
 }
 object NewTagNodePair { def apply(): NewTagNodePair = new NewTagNodePair }
 class NewTagNodePair extends NewNode(62.toShort) with TagNodePairBase {
@@ -3320,8 +3371,8 @@ class NewTagNodePair extends NewNode(62.toShort) with TagNodePairBase {
   def node(value: AbstractNode): this.type = { this.node = value; this }
   def tag(value: TagBase): this.type       = { this.tag = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 84, Iterator(this.node))
-    interface.emplaceProperty(this, 85, Iterator(this.tag))
+    interface.emplaceProperty(this, 85, Iterator(this.node))
+    interface.emplaceProperty(this, 86, Iterator(this.tag))
   }
 }
 
@@ -3329,7 +3380,7 @@ trait TemplateDomT extends AnyRef with ExpressionT with HasNameT
 trait TemplateDomBase extends AbstractNode with ExpressionBase with StaticType[TemplateDomT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -3393,7 +3444,7 @@ trait TransformBase extends AbstractNode with StaticType[TransformT] {
   def sink: SinkBase
   def triggerCallChains: IndexedSeq[CallChainBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("call", this.call)
     val tmpdescriptorFlows = this.descriptorFlows; if (tmpdescriptorFlows.nonEmpty) res.put("descriptorFlows", tmpdescriptorFlows)
@@ -3406,10 +3457,10 @@ class Transform(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 64.toShort, seq_4762)
     with TransformBase
     with StaticType[TransformT] {
-  def call: Call                               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 86, seq, null: Call)
-  def descriptorFlows: IndexedSeq[Flow]        = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 85, seq)
-  def sink: Sink                               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: Sink)
-  def triggerCallChains: IndexedSeq[CallChain] = odb2.Accessors.getNodePropertyMulti[CallChain](graph, nodeKind, 87, seq)
+  def call: Call                               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 87, seq, null: Call)
+  def descriptorFlows: IndexedSeq[Flow]        = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 86, seq)
+  def sink: Sink                               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Sink)
+  def triggerCallChains: IndexedSeq[CallChain] = odb2.Accessors.getNodePropertyMulti[CallChain](graph, nodeKind, 88, seq)
 }
 object NewTransform { def apply(): NewTransform = new NewTransform }
 class NewTransform extends NewNode(64.toShort) with TransformBase {
@@ -3424,10 +3475,10 @@ class NewTransform extends NewNode(64.toShort) with TransformBase {
   def sink(value: SinkBase): this.type                                 = { this.sink = value; this }
   def triggerCallChains(value: IterableOnce[CallChainBase]): this.type = { this.triggerCallChains = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 86, Iterator(this.call))
-    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 85, this.descriptorFlows)
-    interface.emplaceProperty(this, 84, Iterator(this.sink))
-    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 87, this.triggerCallChains)
+    interface.emplaceProperty(this, 87, Iterator(this.call))
+    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 86, this.descriptorFlows)
+    interface.emplaceProperty(this, 85, Iterator(this.sink))
+    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 88, this.triggerCallChains)
   }
 }
 
@@ -3435,7 +3486,7 @@ trait TransformationT extends AnyRef
 trait TransformationBase extends AbstractNode with StaticType[TransformationT] {
   def node: TrackingPointBase
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("node", this.node)
     res
@@ -3445,7 +3496,7 @@ class Transformation(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 65.toShort, seq_4762)
     with TransformationBase
     with StaticType[TransformationT] {
-  def node: TrackingPoint = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: TrackingPoint)
+  def node: TrackingPoint = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: TrackingPoint)
 }
 object NewTransformation { def apply(): NewTransformation = new NewTransformation }
 class NewTransformation extends NewNode(65.toShort) with TransformationBase {
@@ -3454,7 +3505,7 @@ class NewTransformation extends NewNode(65.toShort) with TransformationBase {
   var node: TrackingPointBase                   = null
   def node(value: TrackingPointBase): this.type = { this.node = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 84, Iterator(this.node))
+    interface.emplaceProperty(this, 85, Iterator(this.node))
   }
 }
 
@@ -3462,7 +3513,7 @@ trait TypeT extends AnyRef with HasFullNameT with HasNameT with HasTypeDeclFullN
 trait TypeBase extends AbstractNode with StaticType[TypeT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("FULL_NAME", this.fullName)
     res.put("NAME", this.name)
@@ -3487,7 +3538,7 @@ class NewType extends NewNode(66.toShort) with TypeBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 34, Iterator(this.fullName))
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 77, Iterator(this.typeDeclFullName))
+    interface.emplaceProperty(this, 78, Iterator(this.typeDeclFullName))
   }
 }
 
@@ -3495,7 +3546,7 @@ trait TypeArgumentT extends AnyRef with AstNodeT
 trait TypeArgumentBase extends AbstractNode with AstNodeBase with StaticType[TypeArgumentT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -3545,7 +3596,7 @@ trait TypeDeclT
 trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     this.aliasTypeFullName.foreach { p => res.put("ALIAS_TYPE_FULL_NAME", p) }
     res.put("AST_PARENT_FULL_NAME", this.astParentFullName)
@@ -3621,7 +3672,7 @@ trait TypeParameterT extends AnyRef with AstNodeT with HasNameT
 trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[TypeParameterT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
@@ -3661,11 +3712,11 @@ class NewTypeParameter extends NewNode(69.toShort) with TypeParameterBase {
   }
 }
 
-trait TypeRefT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasTypeFullNameT
+trait TypeRefT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
 trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeRefT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -3677,6 +3728,7 @@ trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeR
     res.put("INTERNAL_FLAGS", this.internalFlags)
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("ORDER", this.order)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -3699,6 +3751,7 @@ class NewTypeRef extends NewNode(70.toShort) with TypeRefBase {
   var internalFlags: Int                                              = 0: Int
   var lineNumber: Option[Int]                                         = None
   var order: Int                                                      = -1: Int
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def argumentIndex(value: Int): this.type                            = { this.argumentIndex = value; this }
   def argumentName(value: Option[String]): this.type                  = { this.argumentName = value; this }
@@ -3712,6 +3765,7 @@ class NewTypeRef extends NewNode(70.toShort) with TypeRefBase {
   def lineNumber(value: Int): this.type                               = { this.lineNumber = Option(value); this }
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
@@ -3723,7 +3777,8 @@ class NewTypeRef extends NewNode(70.toShort) with TypeRefBase {
     interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -3733,11 +3788,12 @@ trait UnknownT
     with HasContainedRefT
     with HasDynamicTypeHintFullNameT
     with HasParserTypeNameT
+    with HasPossibleTypesT
     with HasTypeFullNameT
 trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[UnknownT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("ARGUMENT_INDEX", this.argumentIndex)
     this.argumentName.foreach { p => res.put("ARGUMENT_NAME", p) }
@@ -3751,6 +3807,7 @@ trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[Unkno
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("ORDER", this.order)
     res.put("PARSER_TYPE_NAME", this.parserTypeName)
+    val tmpPossibleTypes = this.possibleTypes; if (tmpPossibleTypes.nonEmpty) res.put("POSSIBLE_TYPES", tmpPossibleTypes)
     res.put("TYPE_FULL_NAME", this.typeFullName)
     res
   }
@@ -3775,6 +3832,7 @@ class NewUnknown extends NewNode(71.toShort) with UnknownBase {
   var lineNumber: Option[Int]                                         = None
   var order: Int                                                      = -1: Int
   var parserTypeName: String                                          = "<empty>": String
+  var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
   def argumentIndex(value: Int): this.type                            = { this.argumentIndex = value; this }
   def argumentName(value: Option[String]): this.type                  = { this.argumentName = value; this }
@@ -3790,6 +3848,7 @@ class NewUnknown extends NewNode(71.toShort) with UnknownBase {
   def lineNumber(value: Option[Int]): this.type                       = { this.lineNumber = value; this }
   def order(value: Int): this.type                                    = { this.order = value; this }
   def parserTypeName(value: String): this.type                        = { this.parserTypeName = value; this }
+  def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
@@ -3803,7 +3862,8 @@ class NewUnknown extends NewNode(71.toShort) with UnknownBase {
     if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
     interface.emplaceProperty(this, 60, Iterator(this.order))
     interface.emplaceProperty(this, 64, Iterator(this.parserTypeName))
-    interface.emplaceProperty(this, 78, Iterator(this.typeFullName))
+    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
+    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -3811,7 +3871,7 @@ trait VariableInfoT extends AnyRef with HasEvaluationTypeT with HasParameterInde
 trait VariableInfoBase extends AbstractNode with StaticType[VariableInfoT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("EVALUATION_TYPE", this.evaluationType)
     this.parameterIndex.foreach { p => res.put("PARAMETER_INDEX", p) }
@@ -3837,7 +3897,7 @@ class NewVariableInfo extends NewNode(72.toShort) with VariableInfoBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 29, Iterator(this.evaluationType))
     if (parameterIndex.nonEmpty) interface.emplaceProperty(this, 63, this.parameterIndex)
-    interface.emplaceProperty(this, 82, Iterator(this.varType))
+    interface.emplaceProperty(this, 83, Iterator(this.varType))
   }
 }
 
@@ -3845,7 +3905,7 @@ trait VulnerabilityT extends AnyRef with HasDescriptionT with HasNameT with HasS
 trait VulnerabilityBase extends AbstractNode with StaticType[VulnerabilityT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res = new java.util.HashMap[String, Any]()
     res.put("DESCRIPTION", this.description)
     res.put("NAME", this.name)
@@ -3873,8 +3933,8 @@ class NewVulnerability extends NewNode(73.toShort) with VulnerabilityBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.emplaceProperty(this, 24, Iterator(this.description))
     interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 70, Iterator(this.score))
-    interface.emplaceProperty(this, 79, Iterator(this.url))
+    interface.emplaceProperty(this, 71, Iterator(this.score))
+    interface.emplaceProperty(this, 80, Iterator(this.url))
   }
 }
 
@@ -3885,7 +3945,7 @@ trait WriteBase extends AbstractNode with StaticType[WriteT] {
   def sink: SinkBase
   def triggerCallChains: IndexedSeq[CallChainBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+    import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang._
     val res                = new java.util.HashMap[String, Any]()
     val tmpdescriptorFlows = this.descriptorFlows; if (tmpdescriptorFlows.nonEmpty) res.put("descriptorFlows", tmpdescriptorFlows)
     val tmpflows           = this.flows; if (tmpflows.nonEmpty) res.put("flows", tmpflows)
@@ -3898,10 +3958,10 @@ class Write(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 74.toShort, seq_4762)
     with WriteBase
     with StaticType[WriteT] {
-  def descriptorFlows: IndexedSeq[Flow]        = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 85, seq)
-  def flows: IndexedSeq[Flow]                  = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 86, seq)
-  def sink: Sink                               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 84, seq, null: Sink)
-  def triggerCallChains: IndexedSeq[CallChain] = odb2.Accessors.getNodePropertyMulti[CallChain](graph, nodeKind, 87, seq)
+  def descriptorFlows: IndexedSeq[Flow]        = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 86, seq)
+  def flows: IndexedSeq[Flow]                  = odb2.Accessors.getNodePropertyMulti[Flow](graph, nodeKind, 87, seq)
+  def sink: Sink                               = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 85, seq, null: Sink)
+  def triggerCallChains: IndexedSeq[CallChain] = odb2.Accessors.getNodePropertyMulti[CallChain](graph, nodeKind, 88, seq)
 }
 object NewWrite { def apply(): NewWrite = new NewWrite }
 class NewWrite extends NewNode(74.toShort) with WriteBase {
@@ -3916,9 +3976,9 @@ class NewWrite extends NewNode(74.toShort) with WriteBase {
   def sink(value: SinkBase): this.type                                 = { this.sink = value; this }
   def triggerCallChains(value: IterableOnce[CallChainBase]): this.type = { this.triggerCallChains = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 85, this.descriptorFlows)
-    if (flows.nonEmpty) interface.emplaceProperty(this, 86, this.flows)
-    interface.emplaceProperty(this, 84, Iterator(this.sink))
-    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 87, this.triggerCallChains)
+    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 86, this.descriptorFlows)
+    if (flows.nonEmpty) interface.emplaceProperty(this, 87, this.flows)
+    interface.emplaceProperty(this, 85, Iterator(this.sink))
+    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 88, this.triggerCallChains)
   }
 }

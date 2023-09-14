@@ -1,7 +1,7 @@
 package io.shiftleft.codepropertygraph.generated.v2
 import io.joern.odb2
-import io.joern.odb2.Edge.Direction
-import io.shiftleft.codepropertygraph.generated.v2.{edges, nodes}
+import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.v2.edges
 
 object GraphSchema extends odb2.Schema {
   val nodeLabels = Array(
@@ -106,7 +106,6 @@ object GraphSchema extends odb2.Schema {
     "IS_SENSITIVE_DATA_DESCR_OF_REF",
     "IS_SENSITIVE_DATA_OF_TYPE",
     "PARAMETER_LINK",
-    "POINTS_TO",
     "POST_DOMINATE",
     "REACHING_DEF",
     "RECEIVER",
@@ -143,8 +142,7 @@ object GraphSchema extends odb2.Schema {
     size => null,
     size => null,
     size => null,
-    size => null,
-    size => Array.fill(size)("<empty>") /*label = REACHING_DEF, id = 25*/,
+    size => Array.fill(size)("<empty>") /*label = REACHING_DEF, id = 24*/,
     size => null,
     size => null,
     size => null,
@@ -254,7 +252,6 @@ object GraphSchema extends odb2.Schema {
     (s, d, subseq, p) => new edges.IsSensitiveDataDescrOfRef(s, d, subseq, p),
     (s, d, subseq, p) => new edges.IsSensitiveDataOfType(s, d, subseq, p),
     (s, d, subseq, p) => new edges.ParameterLink(s, d, subseq, p),
-    (s, d, subseq, p) => new edges.PointsTo(s, d, subseq, p),
     (s, d, subseq, p) => new edges.PostDominate(s, d, subseq, p),
     (s, d, subseq, p) => new edges.ReachingDef(s, d, subseq, p),
     (s, d, subseq, p) => new edges.Receiver(s, d, subseq, p),
@@ -330,6 +327,7 @@ object GraphSchema extends odb2.Schema {
     size => new Array[String](size),
     size => new Array[String](size),
     size => new Array[Int](size),
+    size => new Array[String](size),
     size => new Array[String](size),
     size => new Array[String](size),
     size => new Array[String](size),
@@ -433,6 +431,7 @@ object GraphSchema extends odb2.Schema {
     "PATH",
     "PATTERN",
     "POLICY_DIRECTORIES",
+    "POSSIBLE_TYPES",
     "RESOLVED",
     "ROOT",
     "SCORE",
@@ -451,155 +450,155 @@ object GraphSchema extends odb2.Schema {
     "VERSION"
   )
   val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap
-    .updated("attributes", 84)
-    .updated("callerMethod", 84)
-    .updated("calls", 84)
-    .updated("evidence", 84)
-    .updated("ioflows", 84)
-    .updated("names", 84)
-    .updated("node", 84)
-    .updated("paramTags", 84)
-    .updated("sink", 84)
-    .updated("branchPoints", 85)
-    .updated("dataTags", 85)
-    .updated("descriptorFlows", 85)
-    .updated("keyValuePairs", 85)
-    .updated("members", 85)
-    .updated("method", 85)
-    .updated("methods", 85)
-    .updated("tag", 85)
-    .updated("call", 86)
-    .updated("elem", 86)
-    .updated("flows", 86)
-    .updated("parameterIn", 86)
-    .updated("rootCauses", 86)
-    .updated("source", 86)
-    .updated("tags", 86)
-    .updated("annotationParameters", 87)
-    .updated("cfgNodes", 87)
-    .updated("dstTags", 87)
-    .updated("methodTags", 87)
-    .updated("triggerCallChains", 87)
-    .updated("callingMethod", 88)
-    .updated("modifiers", 88)
-    .updated("points", 88)
-    .updated("primaryFlow", 88)
-    .updated("callsite", 89)
-    .updated("outParamTags", 89)
-    .updated("sinkDescriptorFlows", 89)
-    .updated("transformations", 89)
-    .updated("nodeType", 90)
-    .updated("outParameters", 90)
-    .updated("sinkDescriptorTags", 90)
-    .updated("paramTypes", 91)
-    .updated("parameterInTags", 91)
-    .updated("sourceDescriptorFlows", 91)
-    .updated("parameters", 92)
-    .updated("sourceDescriptorTags", 92)
-    .updated("returnParamTags", 93)
-    .updated("sourceTags", 93)
-    .updated("returnParameter", 94)
-    .updated("transforms", 94)
-    .updated("returnParameterType", 95)
-    .updated("triggerMethods", 95)
-    .updated("routes", 96)
+    .updated("attributes", 85)
+    .updated("callerMethod", 85)
+    .updated("calls", 85)
+    .updated("evidence", 85)
+    .updated("ioflows", 85)
+    .updated("names", 85)
+    .updated("node", 85)
+    .updated("paramTags", 85)
+    .updated("sink", 85)
+    .updated("branchPoints", 86)
+    .updated("dataTags", 86)
+    .updated("descriptorFlows", 86)
+    .updated("keyValuePairs", 86)
+    .updated("members", 86)
+    .updated("method", 86)
+    .updated("methods", 86)
+    .updated("tag", 86)
+    .updated("call", 87)
+    .updated("elem", 87)
+    .updated("flows", 87)
+    .updated("parameterIn", 87)
+    .updated("rootCauses", 87)
+    .updated("source", 87)
+    .updated("tags", 87)
+    .updated("annotationParameters", 88)
+    .updated("cfgNodes", 88)
+    .updated("dstTags", 88)
+    .updated("methodTags", 88)
+    .updated("triggerCallChains", 88)
+    .updated("callingMethod", 89)
+    .updated("modifiers", 89)
+    .updated("points", 89)
+    .updated("primaryFlow", 89)
+    .updated("callsite", 90)
+    .updated("outParamTags", 90)
+    .updated("sinkDescriptorFlows", 90)
+    .updated("transformations", 90)
+    .updated("nodeType", 91)
+    .updated("outParameters", 91)
+    .updated("sinkDescriptorTags", 91)
+    .updated("paramTypes", 92)
+    .updated("parameterInTags", 92)
+    .updated("sourceDescriptorFlows", 92)
+    .updated("parameters", 93)
+    .updated("sourceDescriptorTags", 93)
+    .updated("returnParamTags", 94)
+    .updated("sourceTags", 94)
+    .updated("returnParameter", 95)
+    .updated("transforms", 95)
+    .updated("returnParameterType", 96)
+    .updated("triggerMethods", 96)
+    .updated("routes", 97)
 
   override def getNumberOfNodeKinds: Int                          = 75
-  override def getNumberOfEdgeKinds: Int                          = 33
+  override def getNumberOfEdgeKinds: Int                          = 32
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeIdByLabel(label: String): Int               = nodeIdByLabel.getOrElse(label, -1)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
   override def getEdgeIdByLabel(label: String): Int               = edgeIdByLabel.getOrElse(label, -1)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
-    if (propertyKind < 84) normalNodePropertyNames(propertyKind)
-    else if (propertyKind == 84 && nodeKind == 16) "attributes"            /*on node DOM_NODE*/
-    else if (propertyKind == 84 && nodeKind == 19) "evidence"              /*on node FINDING*/
-    else if (propertyKind == 84 && nodeKind == 20) "sink"                  /*on node FLOW*/
-    else if (propertyKind == 84 && nodeKind == 26) "sink"                  /*on node IOFLOW*/
-    else if (propertyKind == 84 && nodeKind == 32) "node"                  /*on node LOCATION*/
-    else if (propertyKind == 84 && nodeKind == 42) "paramTags"             /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 84 && nodeKind == 48) "paramTags"             /*on node PROGRAM_POINT*/
-    else if (propertyKind == 84 && nodeKind == 52) "names"                 /*on node SENSITIVE_DATA_TYPE*/
-    else if (propertyKind == 84 && nodeKind == 53) "names"                 /*on node SENSITIVE_MEMBER*/
-    else if (propertyKind == 84 && nodeKind == 54) "ioflows"               /*on node SENSITIVE_REFERENCE*/
-    else if (propertyKind == 84 && nodeKind == 55) "node"                  /*on node SENSITIVE_VARIABLE*/
-    else if (propertyKind == 84 && nodeKind == 56) "node"                  /*on node SINK*/
-    else if (propertyKind == 84 && nodeKind == 57) "node"                  /*on node SOURCE*/
-    else if (propertyKind == 84 && nodeKind == 62) "node"                  /*on node TAG_NODE_PAIR*/
-    else if (propertyKind == 84 && nodeKind == 64) "sink"                  /*on node TRANSFORM*/
-    else if (propertyKind == 84 && nodeKind == 65) "node"                  /*on node TRANSFORMATION*/
-    else if (propertyKind == 84 && nodeKind == 74) "sink"                  /*on node WRITE*/
-    else if (propertyKind == 84 && nodeKind == 8) "calls"                  /*on node CALL_CHAIN*/
-    else if (propertyKind == 84 && nodeKind == 9) "callerMethod"           /*on node CALL_SITE*/
-    else if (propertyKind == 85 && nodeKind == 19) "keyValuePairs"         /*on node FINDING*/
-    else if (propertyKind == 85 && nodeKind == 20) "branchPoints"          /*on node FLOW*/
-    else if (propertyKind == 85 && nodeKind == 26) "dataTags"              /*on node IOFLOW*/
-    else if (propertyKind == 85 && nodeKind == 42) "method"                /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 85 && nodeKind == 48) "method"                /*on node PROGRAM_POINT*/
-    else if (propertyKind == 85 && nodeKind == 49) "descriptorFlows"       /*on node READ*/
-    else if (propertyKind == 85 && nodeKind == 52) "members"               /*on node SENSITIVE_DATA_TYPE*/
-    else if (propertyKind == 85 && nodeKind == 56) "method"                /*on node SINK*/
-    else if (propertyKind == 85 && nodeKind == 57) "method"                /*on node SOURCE*/
-    else if (propertyKind == 85 && nodeKind == 62) "tag"                   /*on node TAG_NODE_PAIR*/
-    else if (propertyKind == 85 && nodeKind == 64) "descriptorFlows"       /*on node TRANSFORM*/
-    else if (propertyKind == 85 && nodeKind == 74) "descriptorFlows"       /*on node WRITE*/
-    else if (propertyKind == 85 && nodeKind == 8) "methods"                /*on node CALL_CHAIN*/
-    else if (propertyKind == 85 && nodeKind == 9) "method"                 /*on node CALL_SITE*/
-    else if (propertyKind == 86 && nodeKind == 19) "rootCauses"            /*on node FINDING*/
-    else if (propertyKind == 86 && nodeKind == 20) "source"                /*on node FLOW*/
-    else if (propertyKind == 86 && nodeKind == 26) "source"                /*on node IOFLOW*/
-    else if (propertyKind == 86 && nodeKind == 42) "tags"                  /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 86 && nodeKind == 48) "elem"                  /*on node PROGRAM_POINT*/
-    else if (propertyKind == 86 && nodeKind == 49) "source"                /*on node READ*/
-    else if (propertyKind == 86 && nodeKind == 56) "parameterIn"           /*on node SINK*/
-    else if (propertyKind == 86 && nodeKind == 57) "tags"                  /*on node SOURCE*/
-    else if (propertyKind == 86 && nodeKind == 59) "tags"                  /*on node SP_BLACKLIST*/
-    else if (propertyKind == 86 && nodeKind == 61) "tags"                  /*on node TAGS*/
-    else if (propertyKind == 86 && nodeKind == 64) "call"                  /*on node TRANSFORM*/
-    else if (propertyKind == 86 && nodeKind == 74) "flows"                 /*on node WRITE*/
-    else if (propertyKind == 86 && nodeKind == 9) "call"                   /*on node CALL_SITE*/
-    else if (propertyKind == 87 && nodeKind == 20) "cfgNodes"              /*on node FLOW*/
-    else if (propertyKind == 87 && nodeKind == 26) "dstTags"               /*on node IOFLOW*/
-    else if (propertyKind == 87 && nodeKind == 42) "annotationParameters"  /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 87 && nodeKind == 48) "methodTags"            /*on node PROGRAM_POINT*/
-    else if (propertyKind == 87 && nodeKind == 49) "triggerCallChains"     /*on node READ*/
-    else if (propertyKind == 87 && nodeKind == 56) "methodTags"            /*on node SINK*/
-    else if (propertyKind == 87 && nodeKind == 57) "methodTags"            /*on node SOURCE*/
-    else if (propertyKind == 87 && nodeKind == 64) "triggerCallChains"     /*on node TRANSFORM*/
-    else if (propertyKind == 87 && nodeKind == 74) "triggerCallChains"     /*on node WRITE*/
-    else if (propertyKind == 88 && nodeKind == 20) "points"                /*on node FLOW*/
-    else if (propertyKind == 88 && nodeKind == 26) "primaryFlow"           /*on node IOFLOW*/
-    else if (propertyKind == 88 && nodeKind == 42) "modifiers"             /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 88 && nodeKind == 56) "callingMethod"         /*on node SINK*/
-    else if (propertyKind == 88 && nodeKind == 57) "callingMethod"         /*on node SOURCE*/
-    else if (propertyKind == 89 && nodeKind == 20) "transformations"       /*on node FLOW*/
-    else if (propertyKind == 89 && nodeKind == 26) "sinkDescriptorFlows"   /*on node IOFLOW*/
-    else if (propertyKind == 89 && nodeKind == 42) "outParamTags"          /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 89 && nodeKind == 56) "callsite"              /*on node SINK*/
-    else if (propertyKind == 89 && nodeKind == 57) "callsite"              /*on node SOURCE*/
-    else if (propertyKind == 90 && nodeKind == 26) "sinkDescriptorTags"    /*on node IOFLOW*/
-    else if (propertyKind == 90 && nodeKind == 42) "outParameters"         /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 90 && nodeKind == 56) "nodeType"              /*on node SINK*/
-    else if (propertyKind == 90 && nodeKind == 57) "nodeType"              /*on node SOURCE*/
-    else if (propertyKind == 91 && nodeKind == 26) "sourceDescriptorFlows" /*on node IOFLOW*/
-    else if (propertyKind == 91 && nodeKind == 42) "paramTypes"            /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 91 && nodeKind == 56) "parameterInTags"       /*on node SINK*/
-    else if (propertyKind == 92 && nodeKind == 26) "sourceDescriptorTags"  /*on node IOFLOW*/
-    else if (propertyKind == 92 && nodeKind == 42) "parameters"            /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 93 && nodeKind == 26) "sourceTags"            /*on node IOFLOW*/
-    else if (propertyKind == 93 && nodeKind == 42) "returnParamTags"       /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 94 && nodeKind == 26) "transforms"            /*on node IOFLOW*/
-    else if (propertyKind == 94 && nodeKind == 42) "returnParameter"       /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 95 && nodeKind == 26) "triggerMethods"        /*on node IOFLOW*/
-    else if (propertyKind == 95 && nodeKind == 42) "returnParameterType"   /*on node METHOD_SUMMARY*/
-    else if (propertyKind == 96 && nodeKind == 42) "routes"                /*on node METHOD_SUMMARY*/
+    if (propertyKind < 85) normalNodePropertyNames(propertyKind)
+    else if (propertyKind == 85 && nodeKind == 16) "attributes"            /*on node DOM_NODE*/
+    else if (propertyKind == 85 && nodeKind == 19) "evidence"              /*on node FINDING*/
+    else if (propertyKind == 85 && nodeKind == 20) "sink"                  /*on node FLOW*/
+    else if (propertyKind == 85 && nodeKind == 26) "sink"                  /*on node IOFLOW*/
+    else if (propertyKind == 85 && nodeKind == 32) "node"                  /*on node LOCATION*/
+    else if (propertyKind == 85 && nodeKind == 42) "paramTags"             /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 85 && nodeKind == 48) "paramTags"             /*on node PROGRAM_POINT*/
+    else if (propertyKind == 85 && nodeKind == 52) "names"                 /*on node SENSITIVE_DATA_TYPE*/
+    else if (propertyKind == 85 && nodeKind == 53) "names"                 /*on node SENSITIVE_MEMBER*/
+    else if (propertyKind == 85 && nodeKind == 54) "ioflows"               /*on node SENSITIVE_REFERENCE*/
+    else if (propertyKind == 85 && nodeKind == 55) "node"                  /*on node SENSITIVE_VARIABLE*/
+    else if (propertyKind == 85 && nodeKind == 56) "node"                  /*on node SINK*/
+    else if (propertyKind == 85 && nodeKind == 57) "node"                  /*on node SOURCE*/
+    else if (propertyKind == 85 && nodeKind == 62) "node"                  /*on node TAG_NODE_PAIR*/
+    else if (propertyKind == 85 && nodeKind == 64) "sink"                  /*on node TRANSFORM*/
+    else if (propertyKind == 85 && nodeKind == 65) "node"                  /*on node TRANSFORMATION*/
+    else if (propertyKind == 85 && nodeKind == 74) "sink"                  /*on node WRITE*/
+    else if (propertyKind == 85 && nodeKind == 8) "calls"                  /*on node CALL_CHAIN*/
+    else if (propertyKind == 85 && nodeKind == 9) "callerMethod"           /*on node CALL_SITE*/
+    else if (propertyKind == 86 && nodeKind == 19) "keyValuePairs"         /*on node FINDING*/
+    else if (propertyKind == 86 && nodeKind == 20) "branchPoints"          /*on node FLOW*/
+    else if (propertyKind == 86 && nodeKind == 26) "dataTags"              /*on node IOFLOW*/
+    else if (propertyKind == 86 && nodeKind == 42) "method"                /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 86 && nodeKind == 48) "method"                /*on node PROGRAM_POINT*/
+    else if (propertyKind == 86 && nodeKind == 49) "descriptorFlows"       /*on node READ*/
+    else if (propertyKind == 86 && nodeKind == 52) "members"               /*on node SENSITIVE_DATA_TYPE*/
+    else if (propertyKind == 86 && nodeKind == 56) "method"                /*on node SINK*/
+    else if (propertyKind == 86 && nodeKind == 57) "method"                /*on node SOURCE*/
+    else if (propertyKind == 86 && nodeKind == 62) "tag"                   /*on node TAG_NODE_PAIR*/
+    else if (propertyKind == 86 && nodeKind == 64) "descriptorFlows"       /*on node TRANSFORM*/
+    else if (propertyKind == 86 && nodeKind == 74) "descriptorFlows"       /*on node WRITE*/
+    else if (propertyKind == 86 && nodeKind == 8) "methods"                /*on node CALL_CHAIN*/
+    else if (propertyKind == 86 && nodeKind == 9) "method"                 /*on node CALL_SITE*/
+    else if (propertyKind == 87 && nodeKind == 19) "rootCauses"            /*on node FINDING*/
+    else if (propertyKind == 87 && nodeKind == 20) "source"                /*on node FLOW*/
+    else if (propertyKind == 87 && nodeKind == 26) "source"                /*on node IOFLOW*/
+    else if (propertyKind == 87 && nodeKind == 42) "tags"                  /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 87 && nodeKind == 48) "elem"                  /*on node PROGRAM_POINT*/
+    else if (propertyKind == 87 && nodeKind == 49) "source"                /*on node READ*/
+    else if (propertyKind == 87 && nodeKind == 56) "parameterIn"           /*on node SINK*/
+    else if (propertyKind == 87 && nodeKind == 57) "tags"                  /*on node SOURCE*/
+    else if (propertyKind == 87 && nodeKind == 59) "tags"                  /*on node SP_BLACKLIST*/
+    else if (propertyKind == 87 && nodeKind == 61) "tags"                  /*on node TAGS*/
+    else if (propertyKind == 87 && nodeKind == 64) "call"                  /*on node TRANSFORM*/
+    else if (propertyKind == 87 && nodeKind == 74) "flows"                 /*on node WRITE*/
+    else if (propertyKind == 87 && nodeKind == 9) "call"                   /*on node CALL_SITE*/
+    else if (propertyKind == 88 && nodeKind == 20) "cfgNodes"              /*on node FLOW*/
+    else if (propertyKind == 88 && nodeKind == 26) "dstTags"               /*on node IOFLOW*/
+    else if (propertyKind == 88 && nodeKind == 42) "annotationParameters"  /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 88 && nodeKind == 48) "methodTags"            /*on node PROGRAM_POINT*/
+    else if (propertyKind == 88 && nodeKind == 49) "triggerCallChains"     /*on node READ*/
+    else if (propertyKind == 88 && nodeKind == 56) "methodTags"            /*on node SINK*/
+    else if (propertyKind == 88 && nodeKind == 57) "methodTags"            /*on node SOURCE*/
+    else if (propertyKind == 88 && nodeKind == 64) "triggerCallChains"     /*on node TRANSFORM*/
+    else if (propertyKind == 88 && nodeKind == 74) "triggerCallChains"     /*on node WRITE*/
+    else if (propertyKind == 89 && nodeKind == 20) "points"                /*on node FLOW*/
+    else if (propertyKind == 89 && nodeKind == 26) "primaryFlow"           /*on node IOFLOW*/
+    else if (propertyKind == 89 && nodeKind == 42) "modifiers"             /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 89 && nodeKind == 56) "callingMethod"         /*on node SINK*/
+    else if (propertyKind == 89 && nodeKind == 57) "callingMethod"         /*on node SOURCE*/
+    else if (propertyKind == 90 && nodeKind == 20) "transformations"       /*on node FLOW*/
+    else if (propertyKind == 90 && nodeKind == 26) "sinkDescriptorFlows"   /*on node IOFLOW*/
+    else if (propertyKind == 90 && nodeKind == 42) "outParamTags"          /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 90 && nodeKind == 56) "callsite"              /*on node SINK*/
+    else if (propertyKind == 90 && nodeKind == 57) "callsite"              /*on node SOURCE*/
+    else if (propertyKind == 91 && nodeKind == 26) "sinkDescriptorTags"    /*on node IOFLOW*/
+    else if (propertyKind == 91 && nodeKind == 42) "outParameters"         /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 91 && nodeKind == 56) "nodeType"              /*on node SINK*/
+    else if (propertyKind == 91 && nodeKind == 57) "nodeType"              /*on node SOURCE*/
+    else if (propertyKind == 92 && nodeKind == 26) "sourceDescriptorFlows" /*on node IOFLOW*/
+    else if (propertyKind == 92 && nodeKind == 42) "paramTypes"            /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 92 && nodeKind == 56) "parameterInTags"       /*on node SINK*/
+    else if (propertyKind == 93 && nodeKind == 26) "sourceDescriptorTags"  /*on node IOFLOW*/
+    else if (propertyKind == 93 && nodeKind == 42) "parameters"            /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 94 && nodeKind == 26) "sourceTags"            /*on node IOFLOW*/
+    else if (propertyKind == 94 && nodeKind == 42) "returnParamTags"       /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 95 && nodeKind == 26) "transforms"            /*on node IOFLOW*/
+    else if (propertyKind == 95 && nodeKind == 42) "returnParameter"       /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 96 && nodeKind == 26) "triggerMethods"        /*on node IOFLOW*/
+    else if (propertyKind == 96 && nodeKind == 42) "returnParameterType"   /*on node METHOD_SUMMARY*/
+    else if (propertyKind == 97 && nodeKind == 42) "routes"                /*on node METHOD_SUMMARY*/
     else null
 
   override def getPropertyIdByLabel(label: String): Int                                 = nodePropertyByLabel.getOrElse(label, -1)
-  override def getNumberOfProperties: Int                                               = 97
+  override def getNumberOfProperties: Int                                               = 98
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
+  override def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
   override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
 }
