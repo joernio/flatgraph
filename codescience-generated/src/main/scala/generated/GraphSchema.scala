@@ -599,6 +599,7 @@ object GraphSchema extends odb2.Schema {
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, inout: Int, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
+  override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] =
+    edgePropertyAllocators(edgeKind)(size)
   override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
 }
