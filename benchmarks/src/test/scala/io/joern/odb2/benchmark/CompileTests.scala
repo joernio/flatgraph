@@ -1,34 +1,21 @@
 package io.joern.odb2.benchmark
 
+import io.shiftleft.codepropertygraph.generated.v2
+import v2.accessors.Lang.*
+import v2.nodes
+import v2.traversals.Lang.*
+
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
 /*Here we add some code that uses the existing implicits.
 
 The only check is that this code compiles and produces no ambiguity warnings, and that we can use intellij to see how implicits were resolved.
  * */
 trait IsStaticT
-object CompileTests {
-  import io.shiftleft.codepropertygraph.generated.v2
-  import v2.accessors.Lang.*
-  import v2.nodes
-  import v2.traversals.Lang.*
 
-  implicit class IsStaticExt[NodeType <: nodes.CallBase](val node: NodeType) extends AnyVal {
-    // n.b. this should really be `def isStatic: Boolean` - the reason it's not is simply that we wanted to have compile-time test for
-    // complex cases and didn't really think this through...
-    def isStatic: Option[NodeType with nodes.StaticType[IsStaticT]] =
-      if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType with nodes.StaticType[IsStaticT]]) else None
-  }
-
-  implicit class IsStaticTravExt[NodeType <: nodes.CallBase](val trav: Iterator[NodeType]) extends AnyVal {
-    def isStatic: Iterator[NodeType with nodes.StaticType[IsStaticT]] = trav.flatMap { _.isStatic }
-  }
-
-  implicit class StaticCallExt[NodeType <: nodes.Call with nodes.StaticType[IsStaticT]](val node: NodeType) extends AnyVal {
-    def staticCallee: nodes.Method = node._callOut.head.asInstanceOf[nodes.Method]
-  }
-
-  implicit class StaticCallTravExt[NodeType <: nodes.Call with nodes.StaticType[IsStaticT]](val trav: Iterator[NodeType]) extends AnyVal {
-    def staticCallee: Iterator[nodes.Method] = trav.map { _.staticCallee }
-  }
+class CompileTests extends AnyWordSpec with Matchers {
+  import CompileTests.*
 
   def concreteStored(it: Iterator[nodes.Call]): Unit = {
     it.name("a")
@@ -95,5 +82,29 @@ object CompileTests {
     it.order
     it.next.name
   }
+
+}
+
+object CompileTests {
+
+  implicit class IsStaticExt[NodeType <: nodes.CallBase](val node: NodeType) extends AnyVal {
+    // n.b. this should really be `def isStatic: Boolean` - the reason it's not is simply that we wanted to have compile-time test for
+    // complex cases and didn't really think this through...
+    def isStatic: Option[NodeType with nodes.StaticType[IsStaticT]] =
+      if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType with nodes.StaticType[IsStaticT]]) else None
+  }
+
+  implicit class IsStaticTravExt[NodeType <: nodes.CallBase](val trav: Iterator[NodeType]) extends AnyVal {
+    def isStatic: Iterator[NodeType with nodes.StaticType[IsStaticT]] = trav.flatMap { _.isStatic }
+  }
+
+  implicit class StaticCallExt[NodeType <: nodes.Call with nodes.StaticType[IsStaticT]](val node: NodeType) extends AnyVal {
+    def staticCallee: nodes.Method = node._callOut.head.asInstanceOf[nodes.Method]
+  }
+
+  implicit class StaticCallTravExt[NodeType <: nodes.Call with nodes.StaticType[IsStaticT]](val trav: Iterator[NodeType]) extends AnyVal {
+    def staticCallee: Iterator[nodes.Method] = trav.map { _.staticCallee }
+  }
+
 
 }
