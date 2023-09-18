@@ -12,6 +12,8 @@ object CompileTests {
   import v2.traversals.Lang.*
 
   implicit class IsStaticExt[NodeType <: nodes.CallBase](val node: NodeType) extends AnyVal {
+    // n.b. this should really be `def isStatic: Boolean` - the reason it's not is simply that we wanted to have compile-time test for
+    // complex cases and didn't really think this through...
     def isStatic: Option[NodeType with nodes.StaticType[IsStaticT]] =
       if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType with nodes.StaticType[IsStaticT]]) else None
   }
