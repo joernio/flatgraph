@@ -14,70 +14,100 @@ import org.scalatest.wordspec.AnyWordSpec
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
 
-  def concreteStored(iter: Iterator[Call]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.order
-    iter.isStatic.orderGt(3).staticCallee
-    iter.next.isStatic.map { _.staticCallee }
+  "concrete stored class" in {
+    lazy val iter: Iterator[Call] = ???
+    lazy val compiles = {
+      iter.name("a")
+      iter.order
+      iter.next.order
+      iter.isStatic.orderGt(3).staticCallee
+      iter.next.isStatic.map(_.staticCallee)
+    }
   }
 
-  def concreteBase(iter: Iterator[CallBase]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.order
-    iter.isStatic
-    // error: iter.isStatic.staticCallee
-    iter.next.isStatic
-    // error:  iter.next.isStatic.map{_.staticCallee}
+  "concrete base trait" in {
+    lazy val iter: Iterator[CallBase] = ???
+    lazy val compiles = {
+      iter.name("a")
+      iter.order
+      iter.next.order
+      iter.isStatic
+      iter.next.isStatic
+    }
+    assertDoesNotCompile("iter.isStatic.staticCallee")
+    assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
   }
 
-  def concreteNew(iter: Iterator[NewCall]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.order
-    iter.isStatic
-    // error: iter.isStatic.staticCallee
-    iter.next.isStatic
-    // error:  iter.next.isStatic.map{_.staticCallee}
+  "concrete New* class" in {
+    lazy val iter: Iterator[NewCall] = ???
+    lazy val compiles = {
+      iter.name("a")
+      iter.order
+      iter.next.order
+      iter.isStatic
+      iter.next.isStatic
+    }
+    assertDoesNotCompile("iter.isStatic.staticCallee")
+    assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
   }
 
-  def abstractStored(iter: Iterator[CallRepr]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.order
+  "abstract stored class" in {
+    lazy val iter: Iterator[CallRepr] = ???
+    lazy val compiles = {
+      iter.name("a")
+      iter.order
+      iter.next.order
+    }
   }
 
-  def abstractBase(iter: Iterator[CallReprBase]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.order
+  "abstract base class" in {
+    lazy val iter: Iterator[CallReprBase] = ???
+    lazy val compiles = {
+      iter.name("a")
+      iter.order
+      iter.next.order
+    }
   }
 
-  def abstractNew(iter: Iterator[CallReprNew]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.name
+  "abstract New* class" in {
+    lazy val iter: Iterator[CallReprNew] = ???
+    lazy val compiles = {
+      iter.name("a")
+      iter.order
+      iter.next.order
+    }
   }
 
-  // here, both abstract types declare "name". So we test that the implicits are disambiguated.
-  // there exist no nodes in the intersection, but the code should still compile.
-  def conflictStored(iter: Iterator[Declaration with CallRepr]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.name
-  }
+  "resolves name ambiguity" when {
+    // here, both abstract types declare "name". So we test that the implicits are disambiguated.
+    // there exist no nodes in the intersection, but the code should still compile.
 
-  def conflictBase(iter: Iterator[DeclarationBase with CallReprBase]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.name
-  }
+    "using stored class" in {
+      lazy val iter: Iterator[Declaration with CallRepr] = ???
+      lazy val compiles = {
+        iter.name("a")
+        iter.order
+        iter.next.name
+      }
+    }
 
-  def conflictNew(iter: Iterator[DeclarationNew with CallReprNew]): Unit = {
-    iter.name("a")
-    iter.order
-    iter.next.name
+    "using base class" in {
+      lazy val iter: Iterator[Declaration with CallReprBase] = ???
+      lazy val compiles = {
+        iter.name("a")
+        iter.order
+        iter.next.name
+      }
+    }
+
+    "using New* class" in {
+      lazy val iter: Iterator[Declaration with CallReprNew] = ???
+      lazy val compiles = {
+        iter.name("a")
+        iter.order
+        iter.next.name
+      }
+    }
   }
 
 }
