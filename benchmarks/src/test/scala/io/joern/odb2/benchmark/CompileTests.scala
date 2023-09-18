@@ -8,12 +8,10 @@ import v2.traversals.Lang.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-/*Here we add some code that uses the existing implicits.
-
-The only check is that this code compiles and produces no ambiguity warnings, and that we can use intellij to see how implicits were resolved.
+/**
+ * Verifies that the generated API (accessors via implicits) works for the joern domain.
+ * Nothing really executes, we just want to verify that this code compiles and produces no ambiguity warnings.
  * */
-trait IsStaticT
-
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
 
@@ -86,6 +84,7 @@ class CompileTests extends AnyWordSpec with Matchers {
 }
 
 object CompileTests {
+  trait IsStaticT
 
   implicit class IsStaticExt[NodeType <: nodes.CallBase](val node: NodeType) extends AnyVal {
     // n.b. this should really be `def isStatic: Boolean` - the reason it's not is simply that we wanted to have compile-time test for
