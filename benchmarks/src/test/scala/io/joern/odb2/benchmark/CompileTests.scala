@@ -14,70 +14,70 @@ import org.scalatest.wordspec.AnyWordSpec
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
 
-  def concreteStored(it: Iterator[Call]): Unit = {
-    it.name("a")
-    it.order
-    it.next.order
-    it.isStatic.orderGt(3).staticCallee
-    it.next.isStatic.map { _.staticCallee }
+  def concreteStored(iter: Iterator[Call]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.order
+    iter.isStatic.orderGt(3).staticCallee
+    iter.next.isStatic.map { _.staticCallee }
   }
 
-  def concreteBase(it: Iterator[CallBase]): Unit = {
-    it.name("a")
-    it.order
-    it.next.order
-    it.isStatic
-    // error: it.isStatic.staticCallee
-    it.next.isStatic
-    // error:  it.next.isStatic.map{_.staticCallee}
+  def concreteBase(iter: Iterator[CallBase]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.order
+    iter.isStatic
+    // error: iter.isStatic.staticCallee
+    iter.next.isStatic
+    // error:  iter.next.isStatic.map{_.staticCallee}
   }
 
-  def concreteNew(it: Iterator[NewCall]): Unit = {
-    it.name("a")
-    it.order
-    it.next.order
-    it.isStatic
-    // error: it.isStatic.staticCallee
-    it.next.isStatic
-    // error:  it.next.isStatic.map{_.staticCallee}
+  def concreteNew(iter: Iterator[NewCall]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.order
+    iter.isStatic
+    // error: iter.isStatic.staticCallee
+    iter.next.isStatic
+    // error:  iter.next.isStatic.map{_.staticCallee}
   }
 
-  def abstractStored(it: Iterator[CallRepr]): Unit = {
-    it.name("a")
-    it.order
-    it.next.order
+  def abstractStored(iter: Iterator[CallRepr]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.order
   }
 
-  def abstractBase(it: Iterator[CallReprBase]): Unit = {
-    it.name("a")
-    it.order
-    it.next.order
+  def abstractBase(iter: Iterator[CallReprBase]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.order
   }
 
-  def abstractNew(it: Iterator[CallReprNew]): Unit = {
-    it.name("a")
-    it.order
-    it.next.name
+  def abstractNew(iter: Iterator[CallReprNew]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.name
   }
 
   // here, both abstract types declare "name". So we test that the implicits are disambiguated.
   // there exist no nodes in the intersection, but the code should still compile.
-  def conflictStored(it: Iterator[Declaration with CallRepr]): Unit = {
-    it.name("a")
-    it.order
-    it.next.name
+  def conflictStored(iter: Iterator[Declaration with CallRepr]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.name
   }
 
-  def conflictBase(it: Iterator[DeclarationBase with CallReprBase]): Unit = {
-    it.name("a")
-    it.order
-    it.next.name
+  def conflictBase(iter: Iterator[DeclarationBase with CallReprBase]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.name
   }
 
-  def conflictNew(it: Iterator[DeclarationNew with CallReprNew]): Unit = {
-    it.name("a")
-    it.order
-    it.next.name
+  def conflictNew(iter: Iterator[DeclarationNew with CallReprNew]): Unit = {
+    iter.name("a")
+    iter.order
+    iter.next.name
   }
 
 }
