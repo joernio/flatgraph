@@ -5,84 +5,6 @@ import io.joern.odb2.Edge.Direction.{Incoming, Outgoing}
 
 import scala.collection.{Iterator, mutable}
 
-trait RawUpdate
-
-/*Todo: All the edge representations for updates have the property field. It makes sense to use subclasses with and
-   without edge property, in order to save some memory. The resulting dynamic dispatch should be cheap -- at most bimorphic,
-   which doesn't prevent inlining, and well-predicted since edge properties are so rarely used.*/
-class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val property: Any) extends RawUpdate
-
-class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val inout: Byte, val property: Any)
-    extends RawUpdate
-
-class RemoveEdge(val edge: Edge)                         extends RawUpdate
-class SetEdgeProperty(val edge: Edge, val property: Any) extends RawUpdate
-
-class DelNode(val node: GNode) extends RawUpdate
-
-class SetNodeProperty(val node: GNode, val propertyKind: Int, val property: Any) extends RawUpdate
-
-class DiffGraphBuilder {
-  var buffer = mutable.ArrayDeque[RawUpdate]()
-
-  def addNode(newNode: DNode): this.type = {
-    this.buffer.append(newNode)
-    this
-  }
-
-  def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind.toShort, property))
-    this
-  }
-
-  def setEdgeProperty(edge: Edge, property: Any): this.type = {
-    this.buffer.append(new SetEdgeProperty(edge, property))
-    this
-  }
-
-  def setNodeProperty(node: GNode, propertyKind: Int, property: Any): this.type = {
-    this.buffer.append(new SetNodeProperty(node, propertyKind, property))
-    this
-  }
-  def removeEdge(edge: Edge): this.type = {
-    this.buffer.append(new RemoveEdge(edge))
-    this
-  }
-
-  def removeNode(node: GNode): this.type = {
-    this.buffer.append(new DelNode(node))
-    this
-  }
-
-  def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 1, property))
-    this
-  }
-
-  def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 0, property))
-    this
-  }
-
-  def size: Int = buffer.size
-
-  def absorb(right: DiffGraphBuilder): Unit = {
-    if (this.buffer.size >= right.buffer.size) {
-      this.buffer.appendAll(right.buffer)
-      right.buffer = null
-    } else {
-      val tmp = right.buffer
-      tmp.prependAll(this.buffer)
-      this.buffer = tmp
-      right.buffer = null
-    }
-  }
-}
-
-/*Internal representations of half-edges. These are always normalized to represent either src <- dst or src -> dst. */
-class AddEdgeProcessed(val src: GNode, val dst: GNode, val edgeKind: Short, val property: Any)
-class EdgeRepr(val src: GNode, val dst: GNode, val edgeKind: Short, val subSeq: Int, val property: Any)
-
 object DiffGraphApplier {
   def applyDiff(g: Graph, diff: DiffGraphBuilder): Unit = {
     new DiffGraphApplier(g, diff).applyUpdate()
@@ -90,13 +12,9 @@ object DiffGraphApplier {
   }
 }
 
-private[odb2] class SetPropertyDesc(val node: GNode, val start: Int, val end: Int) {
-  def length: Int = end - start
-}
-
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
-class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
+private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges          = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
@@ -265,8 +183,8 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     } setEdgeProperty(nodeKind, direction, edgeKind)
 
     for {
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
       direction <- Edge.Direction.values
     } deleteEdges(nodeKind, direction, edgeKind)
 
@@ -364,9 +282,9 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
     // Now replacements is filled with the modifications.
     for {
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
-      direction    <- Direction.values
+      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      direction <- Direction.values
     } {
       val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
       if (replacements(pos) != null) {
@@ -412,7 +330,10 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (edge.subSeq > 0) {
       val count    = Accessors.getEdgesOut(edge.src, kind).iterator.take(edge.subSeq).count(_.dst == edge.dst)
       val reversed = Accessors.getEdgesIn(edge.dst, kind).iterator.filter(_.src == edge.src).drop(count - 1).next()
-      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq < 0, "something went wrong when calculating reversed edge")
+      assert(
+        reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq < 0,
+        "something went wrong when calculating reversed edge"
+      )
       (
         new EdgeRepr(edge.src, edge.dst, kind, edge.subSeq, edge.property),
         new EdgeRepr(edge.dst, edge.src, kind, -reversed.subSeq, edge.property)
@@ -420,7 +341,10 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     } else {
       val count    = Accessors.getEdgesIn(edge.dst, kind).iterator.take(-edge.subSeq).count(_.src == edge.src)
       val reversed = Accessors.getEdgesOut(edge.src, kind).iterator.filter(_.dst == edge.dst).drop(count - 1).next()
-      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq > 0, "something went wrong when calculating reversed edge")
+      assert(
+        reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq > 0,
+        "something went wrong when calculating reversed edge"
+      )
       (
         new EdgeRepr(edge.src, edge.dst, kind, reversed.subSeq, edge.property),
         new EdgeRepr(edge.dst, edge.src, kind, -edge.subSeq, edge.property)
@@ -458,9 +382,7 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
       return
     }
-    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(
-      newNodes(nodeKind).map(_.storedRef.get)
-    )
+    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
     graph.nodeCountByKind(nodeKind) += newNodes(nodeKind).size
   }
 
@@ -488,9 +410,12 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val deletions = delEdges(pos)
     if (deletions == null) return
-    assert(deletions.forall { edge =>
-      edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
-    }, s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind")
+    assert(
+      deletions.forall { edge =>
+        edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
+      },
+      s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
+    )
 
     deletions.sortInPlaceBy(numberForEdgeComparison)
     dedupBy(deletions, numberForEdgeComparison)
@@ -697,14 +622,22 @@ class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     buff.dropRightInPlace(idx - outIdx)
   }
 
-  /**
-   * Creates a bitstring/integeger for fast comparison where
-   * - the most significicant bits are defined by edge.src.seq
-   * - the least significicant bits are defined by edge.subSeq
-   *
-   * So that we can quickly sort by edge.src.seq, and where those have multiple results, sort by edge.subSeq
-   */
+  /** Creates a bitstring/integeger for fast comparison where
+    *   - the most significicant bits are defined by edge.src.seq
+    *   - the least significicant bits are defined by edge.subSeq
+    *
+    * So that we can quickly sort by edge.src.seq, and where those have multiple results, sort by edge.subSeq
+    */
   private def numberForEdgeComparison(edge: EdgeRepr): Long = {
     (edge.src.seq.toLong << 32) + edge.subSeq.toLong
   }
+}
+
+/* Internal representations of half-edges. These are always normalized to represent either src <- dst or src -> dst. */
+private[odb2] class AddEdgeProcessed(val src: GNode, val dst: GNode, val edgeKind: Short, val property: Any)
+
+private[odb2] class EdgeRepr(val src: GNode, val dst: GNode, val edgeKind: Short, val subSeq: Int, val property: Any)
+
+private[odb2] class SetPropertyDesc(val node: GNode, val start: Int, val end: Int) {
+  def length: Int = end - start
 }

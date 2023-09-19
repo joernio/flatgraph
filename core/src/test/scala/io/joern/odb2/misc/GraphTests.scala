@@ -1,5 +1,6 @@
 package io.joern.odb2
 
+import io.joern.odb2.misc.DebugDump
 import io.joern.odb2.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
