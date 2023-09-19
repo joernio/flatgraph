@@ -3,6 +3,7 @@ package io.joern.odb2.schemagen
 import overflowdb.codegen.Helpers
 import overflowdb.schema.Property
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
+import overflowdb.schema.NodeType
 
 import scala.collection.mutable
 
@@ -24,19 +25,20 @@ object SchemaGen {
     val kindByNode = nodeTypes.zipWithIndex.toMap
 
     val actualPropertiesSet   = mutable.HashSet[overflowdb.schema.Property[_]]()
-    val containingByName      = mutable.HashMap[String, mutable.HashSet[overflowdb.schema.NodeType]]()
+    val containingByName      = mutable.HashMap[String, mutable.HashSet[NodeType]]()
     val containedIndexByName  = mutable.HashMap[String, Int]()
-    val forbiddenSlotsByIndex = mutable.ArrayBuffer[mutable.HashSet[overflowdb.schema.NodeType]]()
+    val forbiddenSlotsByIndex = mutable.ArrayBuffer[mutable.HashSet[NodeType]]()
 
     for (node <- nodeTypes) {
       actualPropertiesSet.addAll(node.properties)
       for (contained <- node.containedNodes) {
-        containingByName.getOrElseUpdate(contained.localName, mutable.HashSet[overflowdb.schema.NodeType]()).add(node)
+        containingByName.getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]()).add(node)
       }
     }
+
     // we need to assign non-conflicting indices to each containedNode. Knapsack!
     for ((name, containing) <- containingByName.toList.sortBy { case (n, c) => (-c.size, n) }) {
-      forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, idx) =>
+      forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, _) =>
         forbidden.intersect(containing).isEmpty
       } match {
         case Some((oldforbidden, idx)) =>
