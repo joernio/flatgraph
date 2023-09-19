@@ -13,12 +13,12 @@ object Accessors {
 
   def getEdgesOut(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
     val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, Edge.Direction.Outgoing, edgeKind)
-    val offsets = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
+    val offsets = node.graph.neighbors(pos).asInstanceOf[Array[Int]]
     if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
     new EdgeView(
-      node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
+      node.graph.neighbors(pos + 1).asInstanceOf[Array[GNode]],
       node,
-      node.graph._neighbors(pos + 2),
+      node.graph.neighbors(pos + 2),
       1,
       edgeKind.toShort,
       offsets(node.seq()),
@@ -28,12 +28,12 @@ object Accessors {
 
   def getEdgesIn(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
     val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, Incoming, edgeKind)
-    val offsets = node.graph._neighbors(pos).asInstanceOf[Array[Int]]
+    val offsets = node.graph.neighbors(pos).asInstanceOf[Array[Int]]
     if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
     new EdgeView(
-      node.graph._neighbors(pos + 1).asInstanceOf[Array[GNode]],
+      node.graph.neighbors(pos + 1).asInstanceOf[Array[GNode]],
       node,
-      node.graph._neighbors(pos + 2),
+      node.graph.neighbors(pos + 2),
       0,
       edgeKind.toShort,
       offsets(node.seq()),
@@ -73,10 +73,10 @@ object Accessors {
     getNeighbors(g, g.schema.neighborOffsetArrayIndex(nodeKind, Incoming, edgeKind), seq)
 
   private def getNeighbors(g: Graph, pos: Int, seq: Int): IndexedSeq[GNode] = {
-    val qty = g._neighbors(pos).asInstanceOf[Array[Int]]
+    val qty = g.neighbors(pos).asInstanceOf[Array[Int]]
     if (qty == null) return ISeq.empty
     if (seq + 1 < qty.length) {
-      val vals = g._neighbors(pos + 1).asInstanceOf[Array[GNode]]
+      val vals = g.neighbors(pos + 1).asInstanceOf[Array[GNode]]
       new ISeq(vals, qty(seq), qty(seq + 1))
     } else ISeq.empty
   }
@@ -86,19 +86,19 @@ object Accessors {
 
   def getNodeProperty(graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int): ISeq[Any] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    val qty = graph.properties(pos).asInstanceOf[Array[Int]]
     if (qty == null || seq + 1 >= qty.length) return ISeq.empty
-    val vals = graph._properties(pos + 1)
+    val vals = graph.properties(pos + 1)
     ISeq.from(vals, qty(seq), qty(seq + 1))
   }
 
   // this is cheating. It relies on the fact that all reference types are collapsed into one and the array-cast is unchecked.
   def getNodePropertySingle[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int, default: T): T = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    val qty = graph.properties(pos).asInstanceOf[Array[Int]]
     if (qty == null || seq + 1 >= qty.length || qty(seq + 1) == qty(seq)) return default
     if (qty(seq + 1) - qty(seq) > 1) ???
-    val vals = graph._properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
+    val vals = graph.properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
     vals(qty(seq))
   }
 
@@ -106,10 +106,10 @@ object Accessors {
     evidence: ClassTag[T]
   ): Option[T] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    val qty = graph.properties(pos).asInstanceOf[Array[Int]]
     if (qty == null || seq + 1 >= qty.length || qty(seq) == qty(seq + 1)) return None
     if (qty(seq + 1) - qty(seq) != 1) ???
-    val vals = graph._properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
+    val vals = graph.properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
     Some(vals(qty(seq)))
   }
 
@@ -117,15 +117,15 @@ object Accessors {
     evidence: ClassTag[T]
   ): ISeq[T] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val qty = graph._properties(pos).asInstanceOf[Array[Int]]
+    val qty = graph.properties(pos).asInstanceOf[Array[Int]]
     if (qty == null || seq + 1 >= qty.length) return ISeq.empty
-    val vals = graph._properties(pos + 1).asInstanceOf[Array[T]]
+    val vals = graph.properties(pos + 1).asInstanceOf[Array[T]]
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
   def getInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): misc.MultiDictIndex = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    graph._inverseIndices.get(pos) match {
+    graph.inverseIndices.get(pos) match {
       case exists: misc.MultiDictIndex if exists != null => exists
       case _                                             => createInverseIndex(graph, nodeKind, propertyKind)
     }
@@ -137,7 +137,7 @@ object Accessors {
   private class IndexLock {}
   private def createInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): misc.MultiDictIndex = {
     val pos            = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val inverseIndices = graph._inverseIndices
+    val inverseIndices = graph.inverseIndices
     /* we have 3 states of the slot:
       null -> IndexLock -> MultiDictIndex
 
@@ -151,9 +151,9 @@ object Accessors {
             val inverseIndex = new MultiDictIndex
             try {
 
-              val numItems = graph._properties(pos).asInstanceOf[Array[Int]]
-              val items    = graph._properties(pos + 1).asInstanceOf[Array[String]]
-              val nodes    = graph._nodes(nodeKind)
+              val numItems = graph.properties(pos).asInstanceOf[Array[Int]]
+              val items    = graph.properties(pos + 1).asInstanceOf[Array[String]]
+              val nodes    = graph.nodesArray(nodeKind)
               inverseIndex.initForSize(items.length)
               for (idx <- Range(0, nodes.length) if idx + 1 < numItems.length) {
                 val node  = nodes(idx)
@@ -202,18 +202,18 @@ object DebugDump {
   def debugDump(g: Graph): String = {
     val sb = new java.lang.StringBuilder(0)
     val numstr =
-      g._nodes.map { _.size }.zipWithIndex.map { case (sz, nodeKind) => s"(${nodeKind}: ${sz})" }.mkString(", ")
-    sb.append(s"#Node numbers (kindId, nnodes) ${numstr}, total ${g._nodes.iterator.map { _.size }.sum}\n")
+      g.nodesArray.map { _.size }.zipWithIndex.map { case (sz, nodeKind) => s"(${nodeKind}: ${sz})" }.mkString(", ")
+    sb.append(s"#Node numbers (kindId, nnodes) ${numstr}, total ${g.nodesArray.iterator.map { _.size }.sum}\n")
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       sb.append(s"Node kind ${nodeKind}. (eid, nEdgesOut, nEdgesIn):")
       for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
         val posOut = g.schema.neighborOffsetArrayIndex(nodeKind, Outgoing, edgeKind)
-        val neO = g._neighbors(posOut + 1) match {
+        val neO = g.neighbors(posOut + 1) match {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
         }
         val posIn = g.schema.neighborOffsetArrayIndex(nodeKind, Incoming, edgeKind)
-        val neIn = g._neighbors(posIn + 1) match {
+        val neIn = g.neighbors(posIn + 1) match {
           case null        => "0 [NA]"
           case a: Array[_] => s"${a.length} [dense]"
         }
@@ -221,7 +221,7 @@ object DebugDump {
       }
       sb.append("\n")
 
-      for (n <- g._nodes(nodeKind)) {
+      for (n <- g.nodes(nodeKind)) {
         val properties = mutable.ArrayBuffer.empty[String]
         for (propertyKind <- Range(0, g.schema.getNumberOfProperties)) {
           val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
@@ -273,30 +273,46 @@ object Graph {
 }
 
 class Graph(val schema: Schema) {
-  val _nodes: Array[Array[GNode]] = new Array[Array[GNode]](schema.getNumberOfNodeKinds)
+  private val nodeKindCount   = schema.getNumberOfNodeKinds
+  private val edgeKindCount   = schema.getNumberOfEdgeKinds
+  private val propertiesCount = schema.getNumberOfProperties
 
-  val _neighbors: Array[AnyRef] =
-    new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfEdgeKinds * NeighborsSlotSize * NumberOfDirections)
+  private[odb2] val nodeCountByKind: Array[Int]     = new Array[Int](nodeKindCount)
+  private[odb2] val properties                      = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
+  private[odb2] val inverseIndices                  = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
+  private[odb2] val nodesArray: Array[Array[GNode]] = makeNodesArray()
+  private[odb2] val neighbors: Array[AnyRef]        = makeNeighbors()
 
-  val _properties = new Array[AnyRef](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
-
-  val _inverseIndices = new AtomicReferenceArray[Object](schema.getNumberOfNodeKinds * schema.getNumberOfProperties * PropertySlotSize)
-
-  for {
-    nodeKind  <- Range(0, schema.getNumberOfNodeKinds)
-    direction <- Edge.Direction.values
-    edgeKind  <- Range(0, schema.getNumberOfEdgeKinds)
-  } {
-    val pos             = schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val propertyDefault = schema.allocateEdgeProperty(nodeKind, direction, edgeKind, 1)
-    _neighbors(pos + 2) = if (propertyDefault == null) null else new DefaultValue(propertyDefault(0))
+  private[odb2] def nodeCount(kind: Int): Int = {
+    assert(kind >= 0 && kind < nodeCountByKind.length, s"invalid nodeKind=$kind; valid values are 0..${nodeCountByKind.length - 1}")
+    nodeCountByKind(kind)
   }
 
-  val nnodes: Array[Int] = new Array[Int](schema.getNumberOfNodeKinds)
   def nodes(nodeKind: Int): misc.InitNodeIterator[GNode] = {
-    if (_nodes(nodeKind).length == nnodes(nodeKind)) new misc.InitNodeIteratorArray[GNode](_nodes(nodeKind))
-    else new misc.InitNodeIteratorArrayFiltered[GNode](_nodes(nodeKind))
+    if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new misc.InitNodeIteratorArray[GNode](nodesArray(nodeKind))
+    else new misc.InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
-  for (nodeKind <- Range(0, _nodes.length)) _nodes(nodeKind) = new Array[GNode](0)
 
+  private def makeNodesArray(): Array[Array[GNode]] = {
+    val nodes = new Array[Array[GNode]](nodeKindCount)
+    for (nodeKind <- Range(0, nodes.length))
+      nodes(nodeKind) = new Array[GNode](0)
+    nodes
+  }
+
+  private def makeNeighbors() = {
+    val neighbors = new Array[AnyRef](nodeKindCount * edgeKindCount * NeighborsSlotSize * NumberOfDirections)
+    for {
+      nodeKind  <- Range(0, nodeKindCount)
+      direction <- Edge.Direction.values
+      edgeKind  <- Range(0, edgeKindCount)
+      pos             = schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+      propertyDefault = schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size = 1)
+      value =
+        if (propertyDefault == null) null
+        else new DefaultValue(propertyDefault(0))
+    } neighbors(pos + 2) = value
+
+    neighbors
+  }
 }

@@ -105,7 +105,7 @@ object LoadingAndMemoryBenchmarks {
   def touchGraph(graph: odb2.Graph): Int = {
     var count = 0
     for {
-      nodesArray <- graph._nodes
+      nodesArray <- graph.nodesArray
       edgeKind   <- Range(0, graph.schema.getNumberOfEdgeKinds).iterator
       node       <- nodesArray
     } count += odb2.Accessors.getNeighborsOut(node, edgeKind).length
@@ -165,7 +165,7 @@ object LoadingAndMemoryBenchmarks {
     val touch2 = measure {
       touchGraph(cpgBox.result.asInstanceOf[odb2.Graph])
     }
-    val nodecount = cpgBox.result.asInstanceOf[odb2.Graph].nnodes.sum
+    val nodecount = cpgBox.result.asInstanceOf[odb2.Graph].nodeCountByKind.sum
     val filesize  = new java.io.File("./cpg.fg").length()
     val (nnodeKinds, npropKinds, nEdgeKinds) = Some(cpgBox.result.asInstanceOf[odb2.Graph].schema).map { s =>
       (s.getNumberOfNodeKinds, s.getNumberOfProperties, s.getNumberOfEdgeKinds)
