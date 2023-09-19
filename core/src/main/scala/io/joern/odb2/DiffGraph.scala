@@ -96,7 +96,7 @@ private[odb2] class SetPropertyDesc(val node: GNode, val start: Int, val end: In
 
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
-class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
+private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges          = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
