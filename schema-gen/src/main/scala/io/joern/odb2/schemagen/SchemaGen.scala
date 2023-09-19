@@ -47,7 +47,7 @@ object SchemaGen {
           oldForbidden.addAll(containing)
         case None =>
           containedIndexByName(name) = forbiddenSlotsByIndex.length
-          forbiddenSlotsByIndex.append(containing.filter { _ => true })
+          forbiddenSlotsByIndex.append(containing)
       }
     }
 
