@@ -47,7 +47,7 @@ object SchemaGen {
     }
 
     val idByProperty                 = relevantProperties.zipWithIndex.toMap
-    val propertyOrContainedByNumbers = mutable.HashMap[(Int, Int), Any]()
+    val propertyOrContainedByNumbers = mutable.HashMap.empty[(Int, Int), Any]
     for (node <- schema.nodeTypes) {
       for (c <- node.containedNodes) {
         val containedId = containedIndexByName(c.localName)
@@ -70,7 +70,7 @@ object SchemaGen {
       }.toSet).toList.sortBy(_.name)
     }.toMap
 
-    val prioStages = mutable.ArrayBuffer[mutable.ArrayBuffer[NodeBaseType]]()
+    val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
     for (baseType <- schema.nodeBaseTypes) {
       val props = newPropsAtNodeSet(baseType)
       val dst   = prioStages.find { stage => stage.forall(other => (newPropsAtNodeSet(other) & props).isEmpty) }
@@ -147,7 +147,7 @@ object SchemaGen {
           _.name
         }
 
-        val newNodeDefs = mutable.ArrayBuffer[String]()
+        val newNodeDefs = mutable.ArrayBuffer.empty[String]
 
         for (p <- newProperties) {
           val pname = Helpers.camelCase(p.name)
@@ -260,12 +260,12 @@ object SchemaGen {
           (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
             .map { base => base.className } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
         // val base = (s"""class ${nodeType.className}""")
-        val newNodeProps    = mutable.ArrayBuffer[String]()
-        val newNodeFluent   = mutable.ArrayBuffer[String]()
-        val storedNodeProps = mutable.ArrayBuffer[String]()
-        val baseNodeProps   = mutable.ArrayBuffer[String]()
-        val propDictItems   = mutable.ArrayBuffer[String]()
-        val flattenItems    = mutable.ArrayBuffer[String]()
+        val newNodeProps    = mutable.ArrayBuffer.empty[String]
+        val newNodeFluent   = mutable.ArrayBuffer.empty[String]
+        val storedNodeProps = mutable.ArrayBuffer.empty[String]
+        val baseNodeProps   = mutable.ArrayBuffer.empty[String]
+        val propDictItems   = mutable.ArrayBuffer.empty[String]
+        val flattenItems    = mutable.ArrayBuffer.empty[String]
 
         for (p <- nodeType.properties) {
           val pname = Helpers.camelCase(p.name)
@@ -450,14 +450,14 @@ object SchemaGen {
 
     // Accessors and traversals
 
-    val concreteStoredAccess = mutable.ArrayBuffer[String]()
-    val concreteStoredConv   = mutable.ArrayBuffer[String]()
-    val baseAccess           = mutable.ArrayBuffer[String]()
+    val concreteStoredAccess = mutable.ArrayBuffer.empty[String]
+    val concreteStoredConv   = mutable.ArrayBuffer.empty[String]
+    val baseAccess           = mutable.ArrayBuffer.empty[String]
     val baseConvert          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
 
-    val concreteStoredAccessTrav = mutable.ArrayBuffer[String]()
-    val concreteStoredConvTrav   = mutable.ArrayBuffer[String]()
-    val baseAccessTrav           = mutable.ArrayBuffer[String]()
+    val concreteStoredAccessTrav = mutable.ArrayBuffer.empty[String]
+    val concreteStoredConvTrav   = mutable.ArrayBuffer.empty[String]
+    val baseAccessTrav           = mutable.ArrayBuffer.empty[String]
     val baseConvertTrav          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
 
     for (p <- relevantProperties) {
@@ -495,7 +495,7 @@ object SchemaGen {
         )
         val newName = if (baseType.isInstanceOf[NodeBaseType]) { baseType.className + "New" }
         else { "New" + baseType.className }
-        val accessors = mutable.ArrayBuffer[String]()
+        val accessors = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
           val funName = Helpers.camelCase(p.name)
           accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
@@ -514,7 +514,7 @@ object SchemaGen {
         convertForStage.addOne(
           s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
         )
-        val elems = mutable.ArrayBuffer[String]()
+        val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
           elems.addOne(generatePropertyTraversals(p, idByProperty(p)))
         }
@@ -528,8 +528,8 @@ object SchemaGen {
       }
     }
 
-    val convtraits     = mutable.ArrayBuffer[String]()
-    val convtraitsTrav = mutable.ArrayBuffer[String]()
+    val convtraits     = mutable.ArrayBuffer.empty[String]
+    val convtraitsTrav = mutable.ArrayBuffer.empty[String]
 
     val convBuffer     = concreteStoredConv +: baseConvert
     val convBufferTrav = concreteStoredConvTrav +: baseConvertTrav
@@ -943,7 +943,7 @@ object SchemaGen {
       relevantPropertiesSet.addAll(node.properties)
       for (contained <- node.containedNodes) {
         containingByName
-          .getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]())
+          .getOrElseUpdate(contained.localName, mutable.HashSet.empty[NodeType])
           .add(node)
       }
     }
