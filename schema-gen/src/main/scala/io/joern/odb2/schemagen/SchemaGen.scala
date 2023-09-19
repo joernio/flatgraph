@@ -23,13 +23,13 @@ object SchemaGen {
     val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
     val kindByNode = nodeTypes.zipWithIndex.toMap
 
-    val actualPropertiesSet   = mutable.HashSet[Property[_]]()
+    val relevantPropertiesSet = mutable.HashSet[Property[_]]()
     val containingByName      = mutable.HashMap[String, mutable.HashSet[NodeType]]()
     val containedIndexByName  = mutable.HashMap[String, Int]()
     val forbiddenSlotsByIndex = mutable.ArrayBuffer[mutable.HashSet[NodeType]]()
 
     for (node <- nodeTypes) {
-      actualPropertiesSet.addAll(node.properties)
+      relevantPropertiesSet.addAll(node.properties)
       for (contained <- node.containedNodes) {
         containingByName
           .getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]())
@@ -52,21 +52,21 @@ object SchemaGen {
     }
 
     for (baseType <- schema.nodeBaseTypes) {
-      actualPropertiesSet.addAll(baseType.properties)
+      relevantPropertiesSet.addAll(baseType.properties)
     }
 
-    assert(actualPropertiesSet.size == actualPropertiesSet.map(_.name).size,
-      s"""actualPropertiesSet should have exactly one entry per entry name, but that's not the case...
-         |actualPropertiesSet entries: ${actualPropertiesSet.toSeq.sortBy(_.name)}
-         |actualPropertiesSet names:   ${actualPropertiesSet.map(_.name).toSeq}
+    assert(relevantPropertiesSet.size == relevantPropertiesSet.map(_.name).size,
+      s"""relevantPropertiesSet should have exactly one entry per entry name, but that's not the case...
+         |relevantPropertiesSet entries: ${relevantPropertiesSet.toSeq.sortBy(_.name)}
+         |relevantPropertiesSet names:   ${relevantPropertiesSet.map(_.name).toSeq}
          |""".stripMargin)
-    val actualProperties = actualPropertiesSet.toArray.sortBy(_.name)
-    val idByProperty                 = actualProperties.zipWithIndex.toMap
+    val relevantProperties = relevantPropertiesSet.toArray.sortBy(_.name)
+    val idByProperty                 = relevantProperties.zipWithIndex.toMap
     val propertyOrContainedByNumbers = mutable.HashMap[(Int, Int), Any]()
     for (node <- schema.nodeTypes) {
       for (c <- node.containedNodes) {
         val containedId = containedIndexByName(c.localName)
-        propertyOrContainedByNumbers((kindByNode(node), actualProperties.size + containedId)) = c
+        propertyOrContainedByNumbers((kindByNode(node), relevantProperties.size + containedId)) = c
       }
       for (p <- node.properties) {
         propertyOrContainedByNumbers((kindByNode(node), idByProperty(p))) = p
@@ -142,7 +142,7 @@ object SchemaGen {
          |""".stripMargin
     outputDir.createChild("RootTypes.scala").write(rootTypes)
 
-    val propertyMarkers = actualProperties.map { p => s"trait Has${p.className}T" }.mkString("\n")
+    val propertyMarkers = relevantProperties.map { p => s"trait Has${p.className}T" }.mkString("\n")
     val basetypefile = schema.nodeBaseTypes
       .map { baseType =>
         val newExtendz = newExtendzMap(baseType)
@@ -315,7 +315,7 @@ object SchemaGen {
           val pname = c.localName
           val ptyp  = classNameToBase(c.nodeType.className)
           val styp  = c.nodeType.className
-          val index = actualProperties.size + containedIndexByName(c.localName)
+          val index = relevantProperties.size + containedIndexByName(c.localName)
           val pid   = idByProperty.size + containedIndexByName(pname)
           c.cardinality match {
             case Cardinality.List =>
@@ -421,13 +421,13 @@ object SchemaGen {
          |  val edgeFactories: Array[(odb2.GNode, odb2.GNode, Int, Any) => odb2.Edge] = Array(${edgeTypes
           .map { e => s"(s, d, subseq, p) => new edges.${e.className}(s, d, subseq, p)" }
           .mkString(", ")})
-         |  val nodePropertyAllocators: Array[Int => Array[_]] = Array(${(actualProperties.map { p =>
+         |  val nodePropertyAllocators: Array[Int => Array[_]] = Array(${(relevantProperties.map { p =>
           s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
         }.iterator ++ forbiddenSlotsByIndex.map { _ => "size => new Array[odb2.GNode](size)" }).mkString(", ")})
-         |  val normalNodePropertyNames = Array(${actualProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
+         |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap${containedIndexByName.toList
           .sortBy { kv => (kv._2, kv._1) }
-          .map { kv => s".updated(\"${kv._1}\", ${actualProperties.size + kv._2})" }
+          .map { kv => s".updated(\"${kv._1}\", ${relevantProperties.size + kv._2})" }
           .mkString}
          |
          | override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
@@ -437,7 +437,7 @@ object SchemaGen {
          | override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
          | override def getEdgeIdByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, -1)
          | override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
-         |    if(propertyKind < ${actualProperties.length}) normalNodePropertyNames(propertyKind)
+         |    if(propertyKind < ${relevantProperties.length}) normalNodePropertyNames(propertyKind)
          |${nodeTypes
           .flatMap { nt =>
             nt.containedNodes.map {
@@ -445,7 +445,7 @@ object SchemaGen {
             }
           }
           .map { case (node, contained) =>
-            s"    else if(propertyKind == ${actualProperties.length + containedIndexByName(
+            s"    else if(propertyKind == ${relevantProperties.length + containedIndexByName(
                 contained.localName
               )} && nodeKind == ${kindByNode(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
           }
@@ -455,7 +455,7 @@ object SchemaGen {
          |    else null
          | 
          | override def getPropertyIdByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
-         | override def getNumberOfProperties: Int = ${actualProperties.size + forbiddenSlotsByIndex.size}
+         | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
          | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
@@ -475,7 +475,7 @@ object SchemaGen {
     val baseAccessTrav           = mutable.ArrayBuffer[String]()
     val baseConvertTrav          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
 
-    for (p <- actualProperties) {
+    for (p <- relevantProperties) {
       val funName = Helpers.camelCase(p.name)
       concreteStoredAccess.addOne(
         s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
