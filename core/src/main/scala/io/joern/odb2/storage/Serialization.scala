@@ -48,6 +48,7 @@ object Keys {
 }
 
 object Serialization {
+
   def writeGraph(g: Graph, filename: String = "/tmp/foo.fg"): Unit = {
     val fileOffset = new AtomicLong(16)
 
@@ -77,9 +78,12 @@ object Serialization {
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       val nodeLabel = g.schema.getNodeLabel(nodeKind)
-      val deletions = g.nodes(nodeKind).collect {
-        case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
-      }.toArray
+      val deletions = g
+        .nodes(nodeKind)
+        .collect {
+          case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
+        }
+        .toArray
       val size = g.nodeCount(nodeKind)
       nodes.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
     }
@@ -147,7 +151,8 @@ object Serialization {
     }
     fileChannel.truncate(pos)
   }
-  def deltaEncode(padTo: Int, offsets: Array[Int]): Array[Int] = {
+
+  private def deltaEncode(padTo: Int, offsets: Array[Int]): Array[Int] = {
     if (offsets == null) null
     else {
       // the array has one more element than needed, in order to permit deltaDecode to be in-place
@@ -163,7 +168,7 @@ object Serialization {
     }
   }
 
-  def encodeAny(
+  private[odb2] def encodeAny(
     item: Any,
     filePtr: AtomicLong,
     stringPool: mutable.LinkedHashMap[String, Int],
@@ -171,7 +176,7 @@ object Serialization {
   ): OutlineStorage = {
     item match {
       case _: DefaultValue => null
-      case null                  => null
+      case null            => null
       case bools: Array[Boolean] =>
         write(bools.map { b => if (b) 1.toByte else 0.toByte }, new OutlineStorage(StorageTyp.Bool), filePtr, fileChannel)
       case bytes: Array[Byte] =>
@@ -211,7 +216,7 @@ object Serialization {
     }
   }
 
-  def write(bytes: Array[Byte], res: OutlineStorage, filePtr: AtomicLong, fileChannel: FileChannel): OutlineStorage = {
+  private[odb2] def write(bytes: Array[Byte], res: OutlineStorage, filePtr: AtomicLong, fileChannel: FileChannel): OutlineStorage = {
     res.decompressedLength = bytes.length
     val compressed = Zstd.compress(bytes)
 
@@ -224,7 +229,8 @@ object Serialization {
     }
     res
   }
-  def insertString(stringPool: mutable.LinkedHashMap[String, Int])(s: String): Int = {
+
+  private def insertString(stringPool: mutable.LinkedHashMap[String, Int])(s: String): Int = {
     if (s == null) -1
     else stringPool.getOrElseUpdate(s, stringPool.size)
   }
