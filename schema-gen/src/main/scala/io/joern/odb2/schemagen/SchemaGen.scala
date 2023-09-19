@@ -50,11 +50,11 @@ object SchemaGen {
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
-    val newPropsAtNodeSet = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
+    val newPropsAtNodeSet = schema.allNodeTypes.map { n =>
       n -> (n.properties.toSet &~ n.extendzRecursively.flatMap { _.properties }.toSet)
     }.toMap
     val newPropsAtNodeList = newPropsAtNodeSet.map { case k -> v => k -> v.toList.sortBy(_.name) }
-    val newExtendzMap = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
+    val newExtendzMap = schema.allNodeTypes.map { n =>
       n -> (n.extendz.toSet &~ n.extendzRecursively.flatMap {
         _.extendz
       }.toSet).toList.sortBy(_.name)
