@@ -2,7 +2,7 @@ package io.joern.odb2.convert
 
 import io.joern.odb2
 import io.joern.odb2.{Edge, storage}
-import io.joern.odb2.storage.{Keys, Serialization, Manifest, StorageTyp}
+import io.joern.odb2.storage.{Keys, Serialization, Manifest, StorageType}
 import org.msgpack.core.MessagePack
 import overflowdb.storage.{OdbStorage, ValueTypes}
 
@@ -116,8 +116,8 @@ object Convert {
         poolBytes.write(bytes)
         poolLenBuffer.put(bytes.length)
       }
-      val poolLensStored  = new Manifest.OutlineStorage(StorageTyp.Int)
-      val poolBytesStored = new Manifest.OutlineStorage(storage.StorageTyp.Byte)
+      val poolLensStored  = new Manifest.OutlineStorage(StorageType.Int)
+      val poolBytesStored = new Manifest.OutlineStorage(storage.StorageType.Byte)
       storage.Serialization.write(poolLenBytes, poolLensStored, filePtr, fileChannel)
       storage.Serialization.write(poolBytes.toByteArray, poolBytesStored, filePtr, fileChannel)
 
@@ -147,21 +147,21 @@ object Convert {
   def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
     items.find { _ != null } match {
       case None             => (null, null)
-      case Some(_: Boolean) => (storage.StorageTyp.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)
-      case Some(_: Byte)    => (storage.StorageTyp.Byte, items.asInstanceOf[mutable.ArrayBuffer[Byte]].toArray)
-      case Some(_: Short)   => (storage.StorageTyp.Short, items.asInstanceOf[mutable.ArrayBuffer[Short]].toArray)
-      case Some(_: Int)     => (storage.StorageTyp.Int, items.asInstanceOf[mutable.ArrayBuffer[Int]].toArray)
-      case Some(_: Long)    => (storage.StorageTyp.Long, items.asInstanceOf[mutable.ArrayBuffer[Long]].toArray)
-      case Some(_: Float)   => (storage.StorageTyp.Float, items.asInstanceOf[mutable.ArrayBuffer[Float]].toArray)
-      case Some(_: Double)  => (storage.StorageTyp.Double, items.asInstanceOf[mutable.ArrayBuffer[Double]].toArray)
+      case Some(_: Boolean) => (storage.StorageType.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)
+      case Some(_: Byte)    => (storage.StorageType.Byte, items.asInstanceOf[mutable.ArrayBuffer[Byte]].toArray)
+      case Some(_: Short)   => (storage.StorageType.Short, items.asInstanceOf[mutable.ArrayBuffer[Short]].toArray)
+      case Some(_: Int)     => (storage.StorageType.Int, items.asInstanceOf[mutable.ArrayBuffer[Int]].toArray)
+      case Some(_: Long)    => (storage.StorageType.Long, items.asInstanceOf[mutable.ArrayBuffer[Long]].toArray)
+      case Some(_: Float)   => (storage.StorageType.Float, items.asInstanceOf[mutable.ArrayBuffer[Float]].toArray)
+      case Some(_: Double)  => (storage.StorageType.Double, items.asInstanceOf[mutable.ArrayBuffer[Double]].toArray)
       case Some(_: StringRef) =>
         (
-          storage.StorageTyp.String,
+          storage.StorageType.String,
           items.asInstanceOf[mutable.ArrayBuffer[StringRef]].map { ref => if (ref == null) -1 else ref.idx }.toArray
         )
       case Some(_: NodeRefTmp) =>
         (
-          storage.StorageTyp.Ref,
+          storage.StorageType.Ref,
           items.asInstanceOf[mutable.ArrayBuffer[NodeRefTmp]].map { ref => if (ref == null) 0x0000ffffffffffffL else ref.newId }.toArray
         )
     }

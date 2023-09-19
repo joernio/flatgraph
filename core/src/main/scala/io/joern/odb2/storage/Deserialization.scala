@@ -37,15 +37,15 @@ object Deserialization {
   def protoFromOutline(outline: OutlineStorage): AnyRef = {
     if (outline == null) return null
     outline.typ match {
-      case StorageTyp.Bool => new Array[Boolean](0)
-      case StorageTyp.Byte => new Array[Byte](0)
-      case StorageTyp.Short => new Array[Short](0)
-      case StorageTyp.Int => new Array[Int](0)
-      case StorageTyp.Long => new Array[Long](0)
-      case StorageTyp.Float => new Array[Float](0)
-      case StorageTyp.Double => new Array[Double](0)
-      case StorageTyp.Ref => new Array[GNode](0)
-      case StorageTyp.String => new Array[String](0)
+      case StorageType.Bool => new Array[Boolean](0)
+      case StorageType.Byte => new Array[Byte](0)
+      case StorageType.Short => new Array[Short](0)
+      case StorageType.Int => new Array[Int](0)
+      case StorageType.Long => new Array[Long](0)
+      case StorageType.Float => new Array[Float](0)
+      case StorageType.Double => new Array[Double](0)
+      case StorageType.Ref => new Array[GNode](0)
+      case StorageType.String => new Array[String](0)
     }
   }
 
@@ -199,38 +199,38 @@ object Deserialization {
       .decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)
       .order(ByteOrder.LITTLE_ENDIAN)
     ptr.typ match {
-      case StorageTyp.Bool =>
+      case StorageType.Bool =>
         val bytes = new Array[Byte](dec.limit())
         dec.get(bytes)
         bytes.map {
           case 0 => false
           case 1 => true
         }
-      case StorageTyp.Byte =>
+      case StorageType.Byte =>
         val bytes = new Array[Byte](dec.limit())
         dec.get(bytes)
         bytes
-      case StorageTyp.Short =>
+      case StorageType.Short =>
         val res = new Array[Short](dec.limit() >> 1)
         dec.asShortBuffer().get(res)
         res
-      case StorageTyp.Int =>
+      case StorageType.Int =>
         val res = new Array[Int](dec.limit() >> 2)
         dec.asIntBuffer().get(res)
         res
-      case StorageTyp.Long =>
+      case StorageType.Long =>
         val res = new Array[Long](dec.limit() >> 3)
         dec.asLongBuffer().get(res)
         res
-      case StorageTyp.Float =>
+      case StorageType.Float =>
         val res = new Array[Float](dec.limit() >> 2)
         dec.asFloatBuffer().get(res)
         res
-      case StorageTyp.Double =>
+      case StorageType.Double =>
         val res = new Array[Double](dec.limit() >> 3)
         dec.asDoubleBuffer().get(res)
         res
-      case StorageTyp.String =>
+      case StorageType.String =>
         val res = new Array[String](dec.limit() >> 2)
         val intbuf = dec.asIntBuffer()
         var idx = 0
@@ -240,7 +240,7 @@ object Deserialization {
           idx += 1
         }
         res
-      case StorageTyp.Ref =>
+      case StorageType.Ref =>
         val res = new Array[GNode](dec.limit() >> 3)
         val longbuf = dec.asLongBuffer()
         var idx = 0

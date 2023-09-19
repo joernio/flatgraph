@@ -12,7 +12,7 @@ import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
 
-object StorageTyp {
+object StorageType {
   val Bool   = "bool"
   val Byte   = "byte"
   val Short  = "short"
@@ -128,8 +128,8 @@ object Serialization {
       poolBytes.write(bytes)
       poolLenBuffer.put(bytes.length)
     }
-    val poolLensStored  = new OutlineStorage(StorageTyp.Int)
-    val poolBytesStored = new OutlineStorage(StorageTyp.Byte)
+    val poolLensStored  = new OutlineStorage(StorageType.Int)
+    val poolBytesStored = new OutlineStorage(StorageType.Byte)
     write(poolLenBytes, poolLensStored, filePtr, fileChannel)
     write(poolBytes.toByteArray, poolBytesStored, filePtr, fileChannel)
     var pos       = filePtr.get()
@@ -178,41 +178,41 @@ object Serialization {
       case _: DefaultValue => null
       case null            => null
       case bools: Array[Boolean] =>
-        write(bools.map { b => if (b) 1.toByte else 0.toByte }, new OutlineStorage(StorageTyp.Bool), filePtr, fileChannel)
+        write(bools.map { b => if (b) 1.toByte else 0.toByte }, new OutlineStorage(StorageType.Bool), filePtr, fileChannel)
       case bytes: Array[Byte] =>
-        write(bytes, new OutlineStorage(StorageTyp.Byte), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Byte), filePtr, fileChannel)
       case shorts: Array[Short] =>
         val bytes = new Array[Byte](2 * shorts.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(shorts)
-        write(bytes, new OutlineStorage(StorageTyp.Short), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Short), filePtr, fileChannel)
       case ints: Array[Int] =>
         val bytes = new Array[Byte](4 * ints.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(ints)
-        write(bytes, new OutlineStorage(StorageTyp.Int), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Int), filePtr, fileChannel)
       case longs: Array[Long] =>
         val bytes = new Array[Byte](8 * longs.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(longs)
-        write(bytes, new OutlineStorage(StorageTyp.Long), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Long), filePtr, fileChannel)
       case floats: Array[Float] =>
         val bytes = new Array[Byte](4 * floats.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer().put(floats)
-        write(bytes, new OutlineStorage(StorageTyp.Float), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Float), filePtr, fileChannel)
       case doubles: Array[Double] =>
         val bytes = new Array[Byte](8 * doubles.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer().put(doubles)
-        write(bytes, new OutlineStorage(StorageTyp.Double), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Double), filePtr, fileChannel)
       case refs: Array[GNode] =>
         val bytes = new Array[Byte](8 * refs.length)
         val buf   = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         for (ref <- refs) {
           if (ref == null) buf.putLong(0x0000ffffffffffffL) else buf.putLong(ref.seq().toLong + (ref.nodeKind.toLong << 32))
         }
-        write(bytes, new OutlineStorage(StorageTyp.Ref), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.Ref), filePtr, fileChannel)
       case strings: Array[String] =>
         val indices = strings.map(insertString(stringPool))
         val bytes   = new Array[Byte](4 * strings.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(indices)
-        write(bytes, new OutlineStorage(StorageTyp.String), filePtr, fileChannel)
+        write(bytes, new OutlineStorage(StorageType.String), filePtr, fileChannel)
     }
   }
 
