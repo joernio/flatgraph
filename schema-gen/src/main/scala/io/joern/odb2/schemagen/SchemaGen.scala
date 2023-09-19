@@ -51,13 +51,11 @@ object SchemaGen {
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
     val newPropsAtNodeSet = schema.allNodeTypes.map { nodeType =>
-      nodeType -> (nodeType.properties.toSet &~ nodeType.extendzRecursively.flatMap { _.properties }.toSet)
+      nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
     }.toMap
     val newPropsAtNodeList = newPropsAtNodeSet.view.mapValues(_.toList.sortBy(_.name))
     val newExtendzMap = schema.allNodeTypes.map { nodeType =>
-      nodeType -> (nodeType.extendz.toSet &~ nodeType.extendzRecursively.flatMap {
-        _.extendz
-      }.toSet).toList.sortBy(_.name)
+      nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
 
     val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
