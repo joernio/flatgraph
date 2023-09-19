@@ -7,12 +7,12 @@ object Manifest {
     def read(item: ujson.Value): GraphItem = {
       val version = item.obj(Keys.Version).num.toInt
       if (version != 0) throw new RuntimeException()
-      val nodes = item.obj(Keys.Nodes).arr.map(NodeItem.read).toArray
-      val edges = item.obj(Keys.Edges).arr.map(EdgeItem.read).toArray
-      val properties = item.obj(Keys.Properties).arr.map(PropertyItem.read).toArray
+      val nodes            = item.obj(Keys.Nodes).arr.map(NodeItem.read).toArray
+      val edges            = item.obj(Keys.Edges).arr.map(EdgeItem.read).toArray
+      val properties       = item.obj(Keys.Properties).arr.map(PropertyItem.read).toArray
       val stringPoolLength = OutlineStorage.read(StorageType.Int, item.obj(Keys.StringPoolLength))
-      val stringPoolBytes = OutlineStorage.read(StorageType.Byte, item.obj(Keys.StringPoolBytes))
-      val res = new GraphItem(nodes, edges, properties, stringPoolLength, stringPoolBytes)
+      val stringPoolBytes  = OutlineStorage.read(StorageType.Byte, item.obj(Keys.StringPoolBytes))
+      val res              = new GraphItem(nodes, edges, properties, stringPoolLength, stringPoolBytes)
       res.version = version
       res
     }
@@ -31,12 +31,12 @@ object Manifest {
   }
 
   class GraphItem(
-                   var nodes: Array[NodeItem],
-                   var edges: Array[EdgeItem],
-                   var properties: Array[PropertyItem],
-                   val stringPoolLength: OutlineStorage,
-                   val stringPoolBytes: OutlineStorage
-                 ) {
+    var nodes: Array[NodeItem],
+    var edges: Array[EdgeItem],
+    var properties: Array[PropertyItem],
+    val stringPoolLength: OutlineStorage,
+    val stringPoolBytes: OutlineStorage
+  ) {
     var version = 0
   }
 
@@ -54,7 +54,7 @@ object Manifest {
 
     def read(item: ujson.Value): NodeItem = {
       val nodeLabel = item.obj(Keys.NodeLabel).str
-      val nnodes = item.obj(Keys.NNodes).num.toInt
+      val nnodes    = item.obj(Keys.NNodes).num.toInt
       val deletions = item.obj
         .get(Keys.Deletions)
         .flatMap {
@@ -73,10 +73,10 @@ object Manifest {
     def read(item: ujson.Value): EdgeItem = {
       val nodeLabel = item.obj(Keys.NodeLabel).str
       val edgeLabel = item.obj(Keys.EdgeLabel).str
-      val inout = item.obj(Keys.InOut).num.toByte
-      val qty = OutlineStorage.read(StorageType.Int, item.obj(Keys.Quantity))
+      val inout     = item.obj(Keys.InOut).num.toByte
+      val qty       = OutlineStorage.read(StorageType.Int, item.obj(Keys.Quantity))
       val neighbors = OutlineStorage.read(StorageType.Ref, item.obj(Keys.Neighbors))
-      val property = OutlineStorage.read(item.obj(Keys.Property))
+      val property  = OutlineStorage.read(item.obj(Keys.Property))
       new EdgeItem(nodeLabel, edgeLabel, inout, qty, neighbors, property)
     }
 
@@ -93,13 +93,13 @@ object Manifest {
   }
 
   class EdgeItem(
-                  val nodeLabel: String,
-                  val edgeLabel: String,
-                  val inout: Byte, // 0: Incoming, 1: Outgoing; see Edge.Direction enum
-                  var qty: OutlineStorage,
-                  var neighbors: OutlineStorage,
-                  var property: OutlineStorage
-                ) {
+    val nodeLabel: String,
+    val edgeLabel: String,
+    val inout: Byte, // 0: Incoming, 1: Outgoing; see Edge.Direction enum
+    var qty: OutlineStorage,
+    var neighbors: OutlineStorage,
+    var property: OutlineStorage
+  ) {
     Edge.Direction.verifyEncodingRange(inout)
   }
 
@@ -114,10 +114,10 @@ object Manifest {
     }
 
     def read(item: ujson.Value): PropertyItem = {
-      val nodeLabel = item.obj(Keys.NodeLabel).str
+      val nodeLabel     = item.obj(Keys.NodeLabel).str
       val propertyLabel = item.obj(Keys.PropertyLabel).str
-      val qty = OutlineStorage.read(StorageType.Int, item.obj(Keys.Quantity))
-      val property = OutlineStorage.read(item.obj(Keys.Property))
+      val qty           = OutlineStorage.read(StorageType.Int, item.obj(Keys.Quantity))
+      val property      = OutlineStorage.read(item.obj(Keys.Property))
       new PropertyItem(nodeLabel, propertyLabel, qty, property)
     }
   }
@@ -152,8 +152,8 @@ object Manifest {
   }
 
   class OutlineStorage(var typ: String) {
-    var startOffset: Long = -1L
-    var compressedLength: Int = -1
+    var startOffset: Long       = -1L
+    var compressedLength: Int   = -1
     var decompressedLength: Int = -1
   }
 }

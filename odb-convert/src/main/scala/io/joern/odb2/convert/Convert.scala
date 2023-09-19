@@ -21,7 +21,8 @@ object Convert {
     } else {
       val inputFile  = args(0)
       val outputFile = args(1)
-      val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(new java.io.File(inputFile), new overflowdb.util.StringInterner)
+      val storage =
+        overflowdb.storage.OdbStorage.createWithSpecificLocation(new java.io.File(inputFile), new overflowdb.util.StringInterner)
       val (nodes, strings) = readOdb(storage)
       writeData(outputFile, nodes, strings)
     }

@@ -183,8 +183,8 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     } setEdgeProperty(nodeKind, direction, edgeKind)
 
     for {
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
       direction <- Edge.Direction.values
     } deleteEdges(nodeKind, direction, edgeKind)
 
@@ -282,9 +282,9 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
     // Now replacements is filled with the modifications.
     for {
-      nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind <- Range(0, graph.schema.getNumberOfEdgeKinds)
-      direction    <- Direction.values
+      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
+      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      direction <- Direction.values
     } {
       val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
       if (replacements(pos) != null) {
@@ -330,7 +330,10 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (edge.subSeq > 0) {
       val count    = Accessors.getEdgesOut(edge.src, kind).iterator.take(edge.subSeq).count(_.dst == edge.dst)
       val reversed = Accessors.getEdgesIn(edge.dst, kind).iterator.filter(_.src == edge.src).drop(count - 1).next()
-      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq < 0, "something went wrong when calculating reversed edge")
+      assert(
+        reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq < 0,
+        "something went wrong when calculating reversed edge"
+      )
       (
         new EdgeRepr(edge.src, edge.dst, kind, edge.subSeq, edge.property),
         new EdgeRepr(edge.dst, edge.src, kind, -reversed.subSeq, edge.property)
@@ -338,7 +341,10 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     } else {
       val count    = Accessors.getEdgesIn(edge.dst, kind).iterator.take(-edge.subSeq).count(_.src == edge.src)
       val reversed = Accessors.getEdgesOut(edge.src, kind).iterator.filter(_.dst == edge.dst).drop(count - 1).next()
-      assert(reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq > 0, "something went wrong when calculating reversed edge")
+      assert(
+        reversed.src == edge.src && reversed.dst == edge.dst && reversed.property == edge.property && reversed.subSeq > 0,
+        "something went wrong when calculating reversed edge"
+      )
       (
         new EdgeRepr(edge.src, edge.dst, kind, reversed.subSeq, edge.property),
         new EdgeRepr(edge.dst, edge.src, kind, -edge.subSeq, edge.property)
@@ -376,9 +382,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
       return
     }
-    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(
-      newNodes(nodeKind).map(_.storedRef.get)
-    )
+    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
     graph.nodeCountByKind(nodeKind) += newNodes(nodeKind).size
   }
 
@@ -406,9 +410,12 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val deletions = delEdges(pos)
     if (deletions == null) return
-    assert(deletions.forall { edge =>
-      edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
-    }, s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind")
+    assert(
+      deletions.forall { edge =>
+        edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
+      },
+      s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
+    )
 
     deletions.sortInPlaceBy(numberForEdgeComparison)
     dedupBy(deletions, numberForEdgeComparison)
@@ -615,13 +622,12 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     buff.dropRightInPlace(idx - outIdx)
   }
 
-  /**
-   * Creates a bitstring/integeger for fast comparison where
-   * - the most significicant bits are defined by edge.src.seq
-   * - the least significicant bits are defined by edge.subSeq
-   *
-   * So that we can quickly sort by edge.src.seq, and where those have multiple results, sort by edge.subSeq
-   */
+  /** Creates a bitstring/integeger for fast comparison where
+    *   - the most significicant bits are defined by edge.src.seq
+    *   - the least significicant bits are defined by edge.subSeq
+    *
+    * So that we can quickly sort by edge.src.seq, and where those have multiple results, sort by edge.subSeq
+    */
   private def numberForEdgeComparison(edge: EdgeRepr): Long = {
     (edge.src.seq.toLong << 32) + edge.subSeq.toLong
   }

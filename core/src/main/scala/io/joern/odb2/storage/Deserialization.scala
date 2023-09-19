@@ -13,22 +13,22 @@ import scala.collection.mutable
 object Deserialization {
 
   def freeSchemaFromManifest(manifest: Manifest.GraphItem): FreeSchema = {
-    val nodeLabels = manifest.nodes.map { n => n.nodeLabel }
+    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
     val nodePropNames = mutable.LinkedHashMap[String, AnyRef]()
     for (prop <- manifest.properties) {
       nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
     }
-    val propertyLabels = nodePropNames.keysIterator.toArray
+    val propertyLabels         = nodePropNames.keysIterator.toArray
     val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
 
     val edgePropNames = mutable.LinkedHashMap[String, AnyRef]()
     for (edge <- manifest.edges) {
       edgePropNames.get(edge.edgeLabel) match {
         case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
-        case _ =>
+        case _                 =>
       }
     }
-    val edgeLabels = edgePropNames.keysIterator.toArray
+    val edgeLabels             = edgePropNames.keysIterator.toArray
     val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
 
     new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
@@ -37,14 +37,14 @@ object Deserialization {
   def protoFromOutline(outline: OutlineStorage): AnyRef = {
     if (outline == null) return null
     outline.typ match {
-      case StorageType.Bool => new Array[Boolean](0)
-      case StorageType.Byte => new Array[Byte](0)
-      case StorageType.Short => new Array[Short](0)
-      case StorageType.Int => new Array[Int](0)
-      case StorageType.Long => new Array[Long](0)
-      case StorageType.Float => new Array[Float](0)
+      case StorageType.Bool   => new Array[Boolean](0)
+      case StorageType.Byte   => new Array[Byte](0)
+      case StorageType.Short  => new Array[Short](0)
+      case StorageType.Int    => new Array[Int](0)
+      case StorageType.Long   => new Array[Long](0)
+      case StorageType.Float  => new Array[Float](0)
       case StorageType.Double => new Array[Double](0)
-      case StorageType.Ref => new Array[GNode](0)
+      case StorageType.Ref    => new Array[GNode](0)
       case StorageType.String => new Array[String](0)
     }
   }
@@ -54,16 +54,16 @@ object Deserialization {
       new java.io.RandomAccessFile(filename, "r").getChannel
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
-      val manifest = readManifest(fileChannel)
-      val pool = readPool(manifest, fileChannel)
-      val g = new Graph(if (schema != null) schema else freeSchemaFromManifest(manifest))
+      val manifest  = readManifest(fileChannel)
+      val pool      = readPool(manifest, fileChannel)
+      val g         = new Graph(if (schema != null) schema else freeSchemaFromManifest(manifest))
       val nodekinds = mutable.HashMap[String, Short]()
       for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
       val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
       val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
       for {
         (nodeItem, idx) <- manifest.nodes.zipWithIndex
-        nodeKind <- nodekinds.get(nodeItem.nodeLabel)
+        nodeKind        <- nodekinds.get(nodeItem.nodeLabel)
       } {
         kindRemapper(idx) = nodeKind
         val nodes = new Array[GNode](nodeItem.nnodes)
@@ -93,8 +93,8 @@ object Deserialization {
       }
 
       for (edgeItem <- manifest.edges) {
-        val nodeKind = nodekinds.get(edgeItem.nodeLabel)
-        val edgeKind = edgeKinds.get(edgeItem.nodeLabel, edgeItem.edgeLabel)
+        val nodeKind  = nodekinds.get(edgeItem.nodeLabel)
+        val edgeKind  = edgeKinds.get(edgeItem.nodeLabel, edgeItem.edgeLabel)
         val direction = Direction.fromOrdinal(edgeItem.inout)
         if (nodeKind.isDefined && edgeKind.isDefined) {
           val pos = g.schema.neighborOffsetArrayIndex(nodeKind.get, direction, edgeKind.get)
@@ -108,10 +108,10 @@ object Deserialization {
 
       val propertykinds = mutable.HashMap[(String, String), Int]()
       for {
-        nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)
+        nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds)
         propertyKind <- Range(0, g.schema.getNumberOfProperties)
       } {
-        val nodeLabel = g.schema.getNodeLabel(nodeKind)
+        val nodeLabel     = g.schema.getNodeLabel(nodeKind)
         val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
         if (propertyLabel != null) {
           propertykinds((nodeLabel, propertyLabel)) = propertyKind
@@ -119,7 +119,7 @@ object Deserialization {
       }
 
       for (property <- manifest.properties) {
-        val nodeKind = nodekinds.get(property.nodeLabel)
+        val nodeKind     = nodekinds.get(property.nodeLabel)
         val propertyKind = propertykinds.get((property.nodeLabel, property.propertyLabel))
         if (nodeKind.isDefined && propertyKind.isDefined) {
           val pos = g.schema.propertyOffsetArrayIndex(nodeKind.get, propertyKind.get)
@@ -132,7 +132,7 @@ object Deserialization {
   }
 
   def readManifest(channel: FileChannel): GraphItem = {
-    val header = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
+    val header    = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
     while (readBytes < 16) {
       readBytes += channel.read(header, readBytes)
@@ -141,8 +141,8 @@ object Deserialization {
 
     if (header.getLong() != Keys.Header) throw new RuntimeException()
     val manifestOffset = header.getLong()
-    val manifestSize = channel.size() - manifestOffset
-    val manifestBytes = ByteBuffer.allocate(manifestSize.toInt)
+    val manifestSize   = channel.size() - manifestOffset
+    val manifestBytes  = ByteBuffer.allocate(manifestSize.toInt)
     readBytes = 0
     while (readBytes < manifestSize) {
       readBytes += channel.read(manifestBytes, readBytes + manifestOffset)
@@ -168,8 +168,8 @@ object Deserialization {
       .order(ByteOrder.LITTLE_ENDIAN)
     val poolBytes = new Array[Byte](manifest.stringPoolBytes.decompressedLength)
     stringPoolBytes.get(poolBytes)
-    val pool = new Array[String](manifest.stringPoolLength.decompressedLength >> 2)
-    var idx = 0
+    val pool    = new Array[String](manifest.stringPoolLength.decompressedLength >> 2)
+    var idx     = 0
     var poolPtr = 0
     while (idx < pool.length) {
       val len = stringPoolLength.getInt()
@@ -182,7 +182,7 @@ object Deserialization {
 
   def deltaDecode(a: Array[Int]): Array[Int] = {
     if (a == null) return null
-    var idx = 0
+    var idx    = 0
     var cumsum = 0
     while (idx < a.length) {
       val tmp = a(idx)
@@ -231,9 +231,9 @@ object Deserialization {
         dec.asDoubleBuffer().get(res)
         res
       case StorageType.String =>
-        val res = new Array[String](dec.limit() >> 2)
+        val res    = new Array[String](dec.limit() >> 2)
         val intbuf = dec.asIntBuffer()
-        var idx = 0
+        var idx    = 0
         while (idx < res.length) {
           val offset = intbuf.get(idx)
           if (offset >= 0) res(idx) = stringPool(offset)
@@ -241,13 +241,13 @@ object Deserialization {
         }
         res
       case StorageType.Ref =>
-        val res = new Array[GNode](dec.limit() >> 3)
+        val res     = new Array[GNode](dec.limit() >> 3)
         val longbuf = dec.asLongBuffer()
-        var idx = 0
+        var idx     = 0
         while (idx < res.length) {
           val encodedRef = longbuf.get()
-          val kind = (encodedRef >>> 32).toInt
-          val seqid = encodedRef.toInt
+          val kind       = (encodedRef >>> 32).toInt
+          val seqid      = encodedRef.toInt
           if (kind >= 0) {
             if (kind < nodes.length) res(idx) = nodes(kind)(seqid)
             else {
