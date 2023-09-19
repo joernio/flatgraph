@@ -122,12 +122,8 @@ object SchemaGen {
         val newProperties = newPropsAtNodeList(baseType)
         val mixinsT =
           (List("AnyRef") ++ newExtendz.map { _.className + "T" } ++ newProperties.map { p => s"Has${p.className}T" }).mkString(" with ")
-        val oldProperties = (baseType.properties.toSet &~ newProperties.toSet).toList.sortBy {
-          _.name
-        }
-        val oldExtendz = (baseType.extendzRecursively.toSet &~ newExtendz.toSet).toList.sortBy {
-          _.name
-        }
+        val oldProperties = (baseType.properties.toSet &~ newProperties.toSet).toList.sortBy(_.name)
+        val oldExtendz = (baseType.extendzRecursively.toSet &~ newExtendz.toSet).toList.sortBy(_.name)
 
         val newNodeDefs = mutable.ArrayBuffer.empty[String]
 
@@ -156,19 +152,12 @@ object SchemaGen {
            |trait ${baseType.className}Base extends ${mixinsBase.mkString(" with ")} with StaticType[${baseType.className}T]
            | // new properties: ${newProperties.map { _.name }.mkString(", ")}
            | // inherited properties: ${oldProperties.map { _.name }.mkString(", ")}
-           | // inherited interfaces: ${oldExtendz
-            .map {
-              _.name
-            }
-            .mkString(", ")}
+           | // inherited interfaces: ${oldExtendz.map(_.name).mkString(", ")}
            | // implementing nodes: ${nodeTypes
             .filter { n => n.extendzRecursively.contains(baseType) }
-            .map {
-              _.name
-            }
+            .map(_.name)
             .mkString(", ")}
-           |trait ${baseType.className} extends ${mixinsStored
-            .mkString(" with ")} with StaticType[${baseType.className}T]
+           |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}T]
            |
            |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}T]{
            |  type RelatedStored <:  ${baseType.className}
@@ -196,17 +185,11 @@ object SchemaGen {
           p.cardinality match {
             case _: Cardinality.One[_] =>
               s"""{
-                 |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(
-                  p.valueType,
-                  true
-                )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
+                 |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
                  |}""".stripMargin
             case Cardinality.ZeroOrOne =>
               s"""{
-                 |  def ${Helpers.camelCase(p.name)}: Option[${unpackTypeUnboxed(
-                  p.valueType,
-                  true
-                )}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
+                 |  def ${Helpers.camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
                  |}""".stripMargin
             case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
           }
