@@ -47,23 +47,13 @@ object SchemaGen {
     }
 
     val idByProperty                 = relevantProperties.zipWithIndex.toMap
-    val propertyOrContainedByNumbers = mutable.HashMap.empty[(Int, Int), Any]
-    for (node <- schema.nodeTypes) {
-      for (c <- node.containedNodes) {
-        val containedId = containedIndexByName(c.localName)
-        propertyOrContainedByNumbers((kindByNode(node), relevantProperties.size + containedId)) = c
-      }
-      for (p <- node.properties) {
-        propertyOrContainedByNumbers((kindByNode(node), idByProperty(p))) = p
-      }
-    }
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
     val newPropsAtNodeSet = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
       n -> (n.properties.toSet &~ n.extendzRecursively.flatMap { _.properties }.toSet)
     }.toMap
-    val newPropsAtNodeList = newPropsAtNodeSet.map { case (k -> v) => k -> v.toList.sortBy(_.name) }
+    val newPropsAtNodeList = newPropsAtNodeSet.map { case k -> v => k -> v.toList.sortBy(_.name) }
     val newExtendzMap = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
       n -> (n.extendz.toSet &~ n.extendzRecursively.flatMap {
         _.extendz
