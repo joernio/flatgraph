@@ -8,6 +8,11 @@ import scala.collection.mutable
 
 object SchemaGen {
   def main(args: Array[String]): Unit = {
+    if (args.length < 2) {
+      System.err.println("usage: CodeGen <outputDir> <schema: cpg|cs>")
+      System.exit(1)
+    }
+
     val schema = args(1) match {
       case "cpg" => io.shiftleft.codepropertygraph.schema.CpgSchema.instance
       case "cs"  => io.shiftleft.codepropertygraph.schema.CpgExtSchema.instance
