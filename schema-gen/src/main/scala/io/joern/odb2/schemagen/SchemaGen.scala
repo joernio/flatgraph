@@ -1,12 +1,13 @@
 package io.joern.odb2.schemagen
 
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{MarkerTrait, NodeBaseType, NodeType, Property}
+import overflowdb.schema.{MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
 
 object SchemaGen {
+
   def main(args: Array[String]): Unit = {
     if (args.length < 2) {
       System.err.println("usage: CodeGen <outputDir> <schema: cpg|cs>")
@@ -20,25 +21,19 @@ object SchemaGen {
     val outputDir   = better.files.File(args(0))
     val basePackage = schema.basePackage + ".v2"
 
+    val propertyContexts = relevantPropertyContexts(schema)
+    val relevantProperties = propertyContexts.properties
+
     val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
     val kindByNode = nodeTypes.zipWithIndex.toMap
 
-    val relevantPropertiesSet = mutable.HashSet[Property[_]]()
-    val containingByName      = mutable.HashMap[String, mutable.HashSet[NodeType]]()
-    val containedIndexByName  = mutable.HashMap[String, Int]()
-    val forbiddenSlotsByIndex = mutable.ArrayBuffer[mutable.HashSet[NodeType]]()
+    val containedIndexByName  = mutable.HashMap.empty[String, Int]
+    val forbiddenSlotsByIndex = mutable.ArrayBuffer.empty[mutable.HashSet[NodeType]]
 
-    for (node <- nodeTypes) {
-      relevantPropertiesSet.addAll(node.properties)
-      for (contained <- node.containedNodes) {
-        containingByName
-          .getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]())
-          .add(node)
-      }
-    }
-
+    // TODO: remove knapsack - as discussed with Bernhard and Markus, we don't need this complicated mechanism for a relatively small benefit
+    // context: the original idea was to have a high L1 usage, but that's not realistic, and adds lots of complexity
     // we need to assign non-conflicting indices to each containedNode. Knapsack!
-    for ((name, containing) <- containingByName.toList.sortBy { case (n, c) => (-c.size, n) }) {
+    for ((name, containing) <- propertyContexts.containedNodesByName.toList.sortBy { case (n, c) => (-c.size, n) }) {
       forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, _) =>
         forbidden.intersect(containing).isEmpty
       } match {
@@ -51,16 +46,6 @@ object SchemaGen {
       }
     }
 
-    for (baseType <- schema.nodeBaseTypes) {
-      relevantPropertiesSet.addAll(baseType.properties)
-    }
-
-    assert(relevantPropertiesSet.size == relevantPropertiesSet.map(_.name).size,
-      s"""relevantPropertiesSet should have exactly one entry per entry name, but that's not the case...
-         |relevantPropertiesSet entries: ${relevantPropertiesSet.toSeq.sortBy(_.name)}
-         |relevantPropertiesSet names:   ${relevantPropertiesSet.map(_.name).toSeq}
-         |""".stripMargin)
-    val relevantProperties = relevantPropertiesSet.toArray.sortBy(_.name)
     val idByProperty                 = relevantProperties.zipWithIndex.toMap
     val propertyOrContainedByNumbers = mutable.HashMap[(Int, Int), Any]()
     for (node <- schema.nodeTypes) {
@@ -946,5 +931,36 @@ object SchemaGen {
       case ValueType.NodeRef             => s"nodes.AbstractNode"
       case _                             => ???
     }
+  }
+
+  private case class PropertyContexts(properties: Array[Property[?]], containedNodesByName: Map[String, mutable.HashSet[NodeType]])
+
+  private def relevantPropertyContexts(schema: Schema): PropertyContexts = {
+    val relevantPropertiesSet = mutable.HashSet.empty[Property[?]]
+    val containingByName      = mutable.HashMap.empty[String, mutable.HashSet[NodeType]]
+
+    for (node <- schema.nodeTypes) {
+      relevantPropertiesSet.addAll(node.properties)
+      for (contained <- node.containedNodes) {
+        containingByName
+          .getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]())
+          .add(node)
+      }
+    }
+
+    for (baseType <- schema.nodeBaseTypes) {
+      relevantPropertiesSet.addAll(baseType.properties)
+    }
+
+    assert(relevantPropertiesSet.size == relevantPropertiesSet.map(_.name).size,
+      s"""relevantPropertiesSet should have exactly one entry per entry name, but that's not the case...
+         |relevantPropertiesSet entries: ${relevantPropertiesSet.toSeq.sortBy(_.name)}
+         |relevantPropertiesSet names:   ${relevantPropertiesSet.map(_.name).toSeq}
+         |""".stripMargin)
+
+    PropertyContexts(
+      relevantPropertiesSet.toArray.sortBy(_.name),
+      containingByName.view.toMap
+    )
   }
 }
