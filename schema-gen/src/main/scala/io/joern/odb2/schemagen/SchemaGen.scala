@@ -42,7 +42,7 @@ object SchemaGen {
           oldForbidden.addAll(containing)
         case None =>
           containedIndexByName(name) = forbiddenSlotsByIndex.length
-          forbiddenSlotsByIndex.append(containing.filter { _ => true })
+          forbiddenSlotsByIndex.append(containing.filter { _ => true }) // this looks silly (because it is!) - apparently .filter copies the map, and since it's mutable...
       }
     }
 
