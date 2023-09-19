@@ -1,7 +1,7 @@
 package io.joern.odb2.schemagen
 
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{NodeType, Property}
+import overflowdb.schema.{MarkerTrait, NodeBaseType, NodeType, Property}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
@@ -23,7 +23,7 @@ object SchemaGen {
     val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
     val kindByNode = nodeTypes.zipWithIndex.toMap
 
-    val actualPropertiesSet   = mutable.HashSet[overflowdb.schema.Property[_]]()
+    val actualPropertiesSet   = mutable.HashSet[Property[_]]()
     val containingByName      = mutable.HashMap[String, mutable.HashSet[NodeType]]()
     val containedIndexByName  = mutable.HashMap[String, Int]()
     val forbiddenSlotsByIndex = mutable.ArrayBuffer[mutable.HashSet[NodeType]]()
@@ -85,7 +85,7 @@ object SchemaGen {
       }.toSet).toList.sortBy(_.name)
     }.toMap
 
-    val prioStages = mutable.ArrayBuffer[mutable.ArrayBuffer[overflowdb.schema.NodeBaseType]]()
+    val prioStages = mutable.ArrayBuffer[mutable.ArrayBuffer[NodeBaseType]]()
     for (baseType <- schema.nodeBaseTypes) {
       val props = newPropsAtNodeSet(baseType)
       val dst   = prioStages.find { stage => stage.forall(other => (newPropsAtNodeSet(other) & props).isEmpty) }
@@ -114,7 +114,7 @@ object SchemaGen {
         _.markerTraits
       }
       .distinct
-      .map { case overflowdb.schema.MarkerTrait(name) => s"trait $name" }
+      .map { case MarkerTrait(name) => s"trait $name" }
       .sorted
       .mkString("\n")
 
@@ -508,7 +508,7 @@ object SchemaGen {
         convertForStage.addOne(
           s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
         )
-        val newName = if (baseType.isInstanceOf[overflowdb.schema.NodeBaseType]) { baseType.className + "New" }
+        val newName = if (baseType.isInstanceOf[NodeBaseType]) { baseType.className + "New" }
         else { "New" + baseType.className }
         val accessors = mutable.ArrayBuffer[String]()
         for (p <- newPropsAtNodeList(baseType)) {
@@ -652,7 +652,7 @@ object SchemaGen {
     }
   }
 
-  def generatePropertyTraversals(property: overflowdb.schema.Property[_], propertyId: Int): String = {
+  def generatePropertyTraversals(property: Property[_], propertyId: Int): String = {
     // fixme: also generate negated filters
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, false, false)
