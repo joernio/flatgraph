@@ -1,9 +1,8 @@
 package io.joern.odb2.schemagen
 
 import overflowdb.codegen.Helpers
-import overflowdb.schema.Property
+import overflowdb.schema.{NodeType, Property}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
-import overflowdb.schema.NodeType
 
 import scala.collection.mutable
 
@@ -32,7 +31,9 @@ object SchemaGen {
     for (node <- nodeTypes) {
       actualPropertiesSet.addAll(node.properties)
       for (contained <- node.containedNodes) {
-        containingByName.getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]()).add(node)
+        containingByName
+          .getOrElseUpdate(contained.localName, mutable.HashSet[NodeType]())
+          .add(node)
       }
     }
 
@@ -41,39 +42,25 @@ object SchemaGen {
       forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, _) =>
         forbidden.intersect(containing).isEmpty
       } match {
-        case Some((oldforbidden, idx)) =>
+        case Some((oldForbidden, idx)) =>
           containedIndexByName(name) = idx
-          oldforbidden.addAll(containing)
+          oldForbidden.addAll(containing)
         case None =>
           containedIndexByName(name) = forbiddenSlotsByIndex.length
           forbiddenSlotsByIndex.append(containing.filter { _ => true })
       }
     }
-    for (bt <- schema.nodeBaseTypes) {
-      actualPropertiesSet.addAll(bt.properties)
+
+    for (baseType <- schema.nodeBaseTypes) {
+      actualPropertiesSet.addAll(baseType.properties)
     }
 
-    if (
-      actualPropertiesSet.size != actualPropertiesSet.map {
-        _.name
-      }.size
-    ) {
-      println(actualPropertiesSet.toList.sortBy {
-        _.name
-      })
-      println(
-        actualPropertiesSet
-          .map {
-            _.name
-          }
-          .toList
-          .sorted
-      )
-      ???
-    }
-    val actualProperties = actualPropertiesSet.toArray.sortBy {
-      _.name
-    }
+    assert(actualPropertiesSet.size == actualPropertiesSet.map(_.name).size,
+      s"""actualPropertiesSet should have exactly one entry per entry name, but that's not the case...
+         |actualPropertiesSet entries: ${actualPropertiesSet.toSeq.sortBy(_.name)}
+         |actualPropertiesSet names:   ${actualPropertiesSet.map(_.name).toSeq}
+         |""".stripMargin)
+    val actualProperties = actualPropertiesSet.toArray.sortBy(_.name)
     val idByProperty                 = actualProperties.zipWithIndex.toMap
     val propertyOrContainedByNumbers = mutable.HashMap[(Int, Int), Any]()
     for (node <- schema.nodeTypes) {
