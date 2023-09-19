@@ -1,9 +1,6 @@
 package io.joern.odb2
 
-import io.joern.odb2.Edge.Direction
-import io.joern.odb2.Edge.Direction.{Incoming, Outgoing}
-
-import scala.collection.{Iterator, mutable}
+import scala.collection.mutable
 
 class DiffGraphBuilder {
   var buffer = mutable.ArrayDeque[RawUpdate]()
