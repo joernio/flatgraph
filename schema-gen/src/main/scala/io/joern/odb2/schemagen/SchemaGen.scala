@@ -67,21 +67,15 @@ object SchemaGen {
     }
 
     // base file
-    val edgeAccess = edgeTypes
-      .map { et =>
-        s"""final def _${Helpers.camelCase(
-            et.name
-          )}Out: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(
-            et
-          )}).asInstanceOf[IndexedSeq[StoredNode]]
-         |final def _${Helpers.camelCase(
-            et.name
-          )}In: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(
-            et
-          )}).asInstanceOf[IndexedSeq[StoredNode]]
-         |""".stripMargin
-      }
-      .mkString("\n")
+    // format: off
+    val edgeAccess = edgeTypes.map { et =>
+      s"""
+       |final def _${Helpers.camelCase(et.name)}Out: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
+       |final def _${Helpers.camelCase(et.name)}In: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
+       |""".stripMargin
+    }.mkString("\n")
+    // format: on
+
     val userMarkers = schema.allNodeTypes
       .flatMap {
         _.markerTraits
