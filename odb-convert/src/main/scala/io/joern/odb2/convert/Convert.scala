@@ -2,7 +2,7 @@ package io.joern.odb2.convert
 
 import io.joern.odb2
 import io.joern.odb2.{Edge, storage}
-import io.joern.odb2.storage.{Keys, Serialization, StorageManifest, StorageTyp}
+import io.joern.odb2.storage.{Keys, Serialization, Manifest, StorageTyp}
 import org.msgpack.core.MessagePack
 import overflowdb.storage.{OdbStorage, ValueTypes}
 
@@ -73,9 +73,9 @@ object Convert {
     val filePtr     = new AtomicLong(16)
     val fileChannel = new java.io.RandomAccessFile(filename, "rw").getChannel
     try {
-      val nodes      = nodeStuff.map { ns => new StorageManifest.NodeItem(ns.label, ns.nextId, null) }
-      val edges      = mutable.ArrayBuffer[StorageManifest.EdgeItem]()
-      val properties = mutable.ArrayBuffer[StorageManifest.PropertyItem]()
+      val nodes      = nodeStuff.map { ns => new Manifest.NodeItem(ns.label, ns.nextId, null) }
+      val edges      = mutable.ArrayBuffer[Manifest.EdgeItem]()
+      val properties = mutable.ArrayBuffer[Manifest.PropertyItem]()
       for {
         node                      <- nodeStuff
         ((prefix, key), quantity) <- node.quantities.iterator
@@ -88,12 +88,12 @@ object Convert {
           values.typ = valtyp
           prefix match {
             case NodeStuff.NODEPROPERTY =>
-              properties.addOne(new StorageManifest.PropertyItem(node.label, key, qty, values))
+              properties.addOne(new Manifest.PropertyItem(node.label, key, qty, values))
             case NodeStuff.NEIGHBOR_IN | NodeStuff.NEIGHBOR_OUT =>
               val inout =
                 if (prefix == NodeStuff.NEIGHBOR_IN) Edge.Direction.Incoming.encoding
                 else Edge.Direction.Outgoing.encoding
-              val edgeItem = new StorageManifest.EdgeItem(node.label, key, inout, qty, values, null)
+              val edgeItem = new Manifest.EdgeItem(node.label, key, inout, qty, values, null)
               edges.addOne(edgeItem)
               node.values.get((prefix + NodeStuff.EDGEPROPERTY_SUFFIX, key)) match {
                 case None =>
@@ -116,8 +116,8 @@ object Convert {
         poolBytes.write(bytes)
         poolLenBuffer.put(bytes.length)
       }
-      val poolLensStored  = new StorageManifest.OutlineStorage(StorageTyp.Int)
-      val poolBytesStored = new StorageManifest.OutlineStorage(storage.StorageTyp.Byte)
+      val poolLensStored  = new Manifest.OutlineStorage(StorageTyp.Int)
+      val poolBytesStored = new Manifest.OutlineStorage(storage.StorageTyp.Byte)
       storage.Serialization.write(poolLenBytes, poolLensStored, filePtr, fileChannel)
       storage.Serialization.write(poolBytes.toByteArray, poolBytesStored, filePtr, fileChannel)
 
@@ -130,8 +130,8 @@ object Convert {
       while (headerBuf.hasRemaining()) {
         headPos += fileChannel.write(headerBuf, headPos)
       }
-      val manifest    = new StorageManifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
-      val manifestObj = StorageManifest.GraphItem.write(manifest)
+      val manifest    = new Manifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
+      val manifestObj = Manifest.GraphItem.write(manifest)
       val buf         = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
       while (buf.hasRemaining()) {
         pos += fileChannel.write(buf, pos)
