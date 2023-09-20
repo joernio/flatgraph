@@ -607,7 +607,6 @@ object SchemaGen {
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, false, false)
     val cardinality   = property.cardinality
-    val Traversal     = "Iterator"
 
     val mapOrFlatMap = cardinality match {
       case Cardinality.One(_)                       => "map"
@@ -618,7 +617,7 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
          |  * */
-         |def $nameCamelCase(pattern: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(pattern: $baseType): Iterator[NodeType] =
          |  if(!Misc.isRegex(pattern)){
          |    ${nameCamelCase}Exact(pattern)
          |  } else {
@@ -629,14 +628,14 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
          |  * */
-         |def $nameCamelCase(patterns: $baseType*): $Traversal[NodeType] = {
+         |def $nameCamelCase(patterns: $baseType*): Iterator[NodeType] = {
          |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
          |   traversal.filter{item => matchers.exists{_.reset(item.$nameCamelCase).matches}}
          | }
          |/**
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
-         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
+         |def ${nameCamelCase}Exact(value: $baseType): Iterator[NodeType] = traversal match {
          |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
          |      val someNode = init.next
          |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
@@ -646,7 +645,7 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
          |  * */
-         |def ${nameCamelCase}Exact(values: $baseType*): $Traversal[NodeType] =
+         |def ${nameCamelCase}Exact(values: $baseType*): Iterator[NodeType] =
          |  if(values.length == 1) ${nameCamelCase}Exact(values.head) else {
          |  val valueSet = values.toSet
          |  traversal.filter{item => valueSet.contains(item.${nameCamelCase})}
@@ -659,7 +658,7 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
          |  * */
-         |def $nameCamelCase(pattern: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(pattern: $baseType): Iterator[NodeType] =
          |  if(!Misc.isRegex(pattern)){
          |    ${nameCamelCase}Exact(pattern)
          |  } else {
@@ -670,7 +669,7 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
          |  * */
-         |def $nameCamelCase(patterns: $baseType*): $Traversal[NodeType] = {
+         |def $nameCamelCase(patterns: $baseType*): Iterator[NodeType] = {
          |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
          |   traversal.filter{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
          | }
@@ -678,7 +677,7 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
-         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
+         |def ${nameCamelCase}Exact(value: $baseType): Iterator[NodeType] = traversal match {
          |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
          |      val someNode = init.next
          |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
@@ -688,7 +687,7 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
          |  * */
-         |def ${nameCamelCase}Exact(values: $baseType*): $Traversal[NodeType] = 
+         |def ${nameCamelCase}Exact(values: $baseType*): Iterator[NodeType] =
          |  if(values.length == 1) ${nameCamelCase}Exact(values.head) else {
          |  val valueSet = values.toSet
          |  traversal.filter{item => val tmp = item.$nameCamelCase; tmp.isDefined && valueSet.contains(tmp.get)}
@@ -699,7 +698,7 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase equals the given `value`
          |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase == value}
          |
          |""".stripMargin
@@ -708,7 +707,7 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase equals the given `value`
          |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => node.${nameCamelCase}.isDefined && node.$nameCamelCase.get == value}
          |""".stripMargin
 
@@ -716,13 +715,13 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase equals the given `value`
          |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase == value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
          |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
          |  val vset = values.toSet
          |  traversal.filter{node => vset.contains(node.$nameCamelCase)}
          |}
@@ -730,25 +729,25 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
          |  * */
-         |def ${nameCamelCase}Gt(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Gt(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase > value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase is greater than or equal the given `value`
          |  * */
-         |def ${nameCamelCase}Gte(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Gte(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase >= value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase is less than the given `value`
          |  * */
-         |def ${nameCamelCase}Lt(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Lt(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase < value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase is less than or equal the given `value`
          |  * */
-         |def ${nameCamelCase}Lte(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Lte(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase <= value}
          |
          |""".stripMargin
@@ -757,13 +756,13 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase equals the given `value`
          |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
          |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
          |  val vset = values.toSet
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && vset.contains(tmp.get)}
          |}
@@ -771,25 +770,25 @@ object SchemaGen {
          |/**
          |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
          |  * */
-         |def ${nameCamelCase}Gt(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Gt(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get > value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase is greater than or equal the given `value`
          |  * */
-         |def ${nameCamelCase}Gte(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Gte(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get >= value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase is less than the given `value`
          |  * */
-         |def ${nameCamelCase}Lt(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Lt(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get < value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase is less than or equal the given `value`
          |  * */
-         |def ${nameCamelCase}Lte(value: $baseType): $Traversal[NodeType] =
+         |def ${nameCamelCase}Lte(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get <= value}
          |
          |""".stripMargin
@@ -798,13 +797,13 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase equals the given `value`
          |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{_.$nameCamelCase == value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
          |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
          |  val vset = values.toSet
          |  traversal.filter{node => !vset.contains(node.$nameCamelCase)}
          |}
@@ -815,13 +814,13 @@ object SchemaGen {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase equals the given `value`
          |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
+         |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => node.$nameCamelCase.isDefined && node.$nameCamelCase.get == value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
          |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
+         |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
          |  val vset = values.toSet
          |  traversal.filter{node => node.$nameCamelCase.isDefined && !vset.contains(node.$nameCamelCase.get)}
          |}
@@ -841,7 +840,7 @@ object SchemaGen {
     }
 
     s"""/** Traverse to $nameCamelCase property */
-       |def $nameCamelCase: $Traversal[$baseType] =
+       |def $nameCamelCase: Iterator[$baseType] =
        |  traversal.$mapOrFlatMap(_.$nameCamelCase)
        |
        |$filterSteps
