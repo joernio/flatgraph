@@ -15,7 +15,7 @@ lazy val benchmarks           = project.in(file("benchmarks")).dependsOn(core).d
 
 ThisBuild / libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.15" % Test
+  "org.scalatest" %% "scalatest" % "3.2.17" % Test,
 )
 
 ThisBuild / scalacOptions ++= Seq(
