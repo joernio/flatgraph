@@ -1,13 +1,20 @@
 package io.joern.odb2.schemagen
 
+import io.joern.odb2.schemagen.CodeSnippets.FilterSteps
 import overflowdb.codegen.Helpers
-import overflowdb.schema.Property
+import overflowdb.schema.{MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
 
 object SchemaGen {
+
   def main(args: Array[String]): Unit = {
+    if (args.length < 2) {
+      System.err.println("usage: CodeGen <outputDir> <schema: cpg|cs>")
+      System.exit(1)
+    }
+
     val schema = args(1) match {
       case "cpg" => io.shiftleft.codepropertygraph.schema.CpgSchema.instance
       case "cs"  => io.shiftleft.codepropertygraph.schema.CpgExtSchema.instance
@@ -15,83 +22,44 @@ object SchemaGen {
     val outputDir   = better.files.File(args(0))
     val basePackage = schema.basePackage + ".v2"
 
+    val propertyContexts = relevantPropertyContexts(schema)
+    val relevantProperties = propertyContexts.properties
+
     val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
     val kindByNode = nodeTypes.zipWithIndex.toMap
 
-    val actualPropertiesSet   = mutable.HashSet[overflowdb.schema.Property[_]]()
-    val containingByName      = mutable.HashMap[String, mutable.HashSet[overflowdb.schema.NodeType]]()
-    val containedIndexByName  = mutable.HashMap[String, Int]()
-    val forbiddenSlotsByIndex = mutable.ArrayBuffer[mutable.HashSet[overflowdb.schema.NodeType]]()
+    val containedIndexByName  = mutable.HashMap.empty[String, Int]
+    val forbiddenSlotsByIndex = mutable.ArrayBuffer.empty[mutable.HashSet[NodeType]]
 
-    for (node <- nodeTypes) {
-      actualPropertiesSet.addAll(node.properties)
-      for (contained <- node.containedNodes) {
-        containingByName.getOrElseUpdate(contained.localName, mutable.HashSet[overflowdb.schema.NodeType]()).add(node)
-      }
-    }
+    // TODO: remove knapsack - as discussed with Bernhard and Markus, we don't need this complicated mechanism for a relatively small benefit
+    // context: the original idea was to have a high L1 usage, but that's not realistic, and adds lots of complexity
     // we need to assign non-conflicting indices to each containedNode. Knapsack!
-    for ((name, containing) <- containingByName.toList.sortBy { case (n, c) => (-c.size, n) }) {
-      forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, idx) =>
+    for ((name, containing) <- propertyContexts.containedNodesByName.toList.sortBy { case (n, c) => (-c.size, n) }) {
+      forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, _) =>
         forbidden.intersect(containing).isEmpty
       } match {
-        case Some((oldforbidden, idx)) =>
+        case Some((oldForbidden, idx)) =>
           containedIndexByName(name) = idx
-          oldforbidden.addAll(containing)
+          oldForbidden.addAll(containing)
         case None =>
           containedIndexByName(name) = forbiddenSlotsByIndex.length
-          forbiddenSlotsByIndex.append(containing.filter { _ => true })
+          forbiddenSlotsByIndex.append(containing.filter { _ => true }) // this looks silly (because it is!) - apparently .filter copies the map, and since it's mutable...
       }
-    }
-    for (bt <- schema.nodeBaseTypes) {
-      actualPropertiesSet.addAll(bt.properties)
     }
 
-    if (
-      actualPropertiesSet.size != actualPropertiesSet.map {
-        _.name
-      }.size
-    ) {
-      println(actualPropertiesSet.toList.sortBy {
-        _.name
-      })
-      println(
-        actualPropertiesSet
-          .map {
-            _.name
-          }
-          .toList
-          .sorted
-      )
-      ???
-    }
-    val actualProperties = actualPropertiesSet.toArray.sortBy {
-      _.name
-    }
-    val idByProperty                 = actualProperties.zipWithIndex.toMap
-    val propertyOrContainedByNumbers = mutable.HashMap[(Int, Int), Any]()
-    for (node <- schema.nodeTypes) {
-      for (c <- node.containedNodes) {
-        val containedId = containedIndexByName(c.localName)
-        propertyOrContainedByNumbers((kindByNode(node), actualProperties.size + containedId)) = c
-      }
-      for (p <- node.properties) {
-        propertyOrContainedByNumbers((kindByNode(node), idByProperty(p))) = p
-      }
-    }
+    val idByProperty = relevantProperties.zipWithIndex.toMap
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
-    val newPropsAtNodeSet = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
-      n -> (n.properties.toSet &~ n.extendzRecursively.flatMap { _.properties }.toSet)
+    val newPropsAtNodeSet = schema.allNodeTypes.map { nodeType =>
+      nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
     }.toMap
-    val newPropsAtNodeList = newPropsAtNodeSet.map { case (k -> v) => k -> v.toList.sortBy(_.name) }
-    val newExtendzMap = (schema.nodeBaseTypes.iterator ++ schema.nodeTypes.iterator).map { n =>
-      n -> (n.extendz.toSet &~ n.extendzRecursively.flatMap {
-        _.extendz
-      }.toSet).toList.sortBy(_.name)
+    val newPropsAtNodeList = newPropsAtNodeSet.view.mapValues(_.toList.sortBy(_.name))
+    val newExtendzMap = schema.allNodeTypes.map { nodeType =>
+      nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
 
-    val prioStages = mutable.ArrayBuffer[mutable.ArrayBuffer[overflowdb.schema.NodeBaseType]]()
+    val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
     for (baseType <- schema.nodeBaseTypes) {
       val props = newPropsAtNodeSet(baseType)
       val dst   = prioStages.find { stage => stage.forall(other => (newPropsAtNodeSet(other) & props).isEmpty) }
@@ -100,32 +68,26 @@ object SchemaGen {
     }
 
     // base file
-    val edgeAccess = edgeTypes
-      .map { et =>
-        s"""final def _${Helpers.camelCase(
-            et.name
-          )}Out: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(
-            et
-          )}).asInstanceOf[IndexedSeq[StoredNode]]
-         |final def _${Helpers.camelCase(
-            et.name
-          )}In: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(
-            et
-          )}).asInstanceOf[IndexedSeq[StoredNode]]
-         |""".stripMargin
-      }
-      .mkString("\n")
+    // format: off
+    val edgeAccess = edgeTypes.map { et =>
+      s"""
+       |final def _${Helpers.camelCase(et.name)}Out: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
+       |final def _${Helpers.camelCase(et.name)}In: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
+       |""".stripMargin
+    }.mkString("\n")
+    // format: on
+
     val userMarkers = schema.allNodeTypes
       .flatMap {
         _.markerTraits
       }
       .distinct
-      .map { case overflowdb.schema.MarkerTrait(name) => s"trait $name" }
+      .map { case MarkerTrait(name) => s"trait $name" }
       .sorted
       .mkString("\n")
 
     val rootTypes =
-      s"""package ${basePackage}.nodes
+      s"""package $basePackage.nodes
          |import io.joern.odb2
          |
          |trait StaticType[+T]
@@ -148,7 +110,7 @@ object SchemaGen {
          |""".stripMargin
     outputDir.createChild("RootTypes.scala").write(rootTypes)
 
-    val propertyMarkers = actualProperties.map { p => s"trait Has${p.className}T" }.mkString("\n")
+    val propertyMarkers = relevantProperties.map { p => s"trait Has${p.className}T" }.mkString("\n")
     val basetypefile = schema.nodeBaseTypes
       .map { baseType =>
         val newExtendz = newExtendzMap(baseType)
@@ -161,14 +123,10 @@ object SchemaGen {
         val newProperties = newPropsAtNodeList(baseType)
         val mixinsT =
           (List("AnyRef") ++ newExtendz.map { _.className + "T" } ++ newProperties.map { p => s"Has${p.className}T" }).mkString(" with ")
-        val oldProperties = (baseType.properties.toSet &~ newProperties.toSet).toList.sortBy {
-          _.name
-        }
-        val oldExtendz = (baseType.extendzRecursively.toSet &~ newExtendz.toSet).toList.sortBy {
-          _.name
-        }
+        val oldProperties = (baseType.properties.toSet &~ newProperties.toSet).toList.sortBy(_.name)
+        val oldExtendz = (baseType.extendzRecursively.toSet &~ newExtendz.toSet).toList.sortBy(_.name)
 
-        val newNodeDefs = mutable.ArrayBuffer[String]()
+        val newNodeDefs = mutable.ArrayBuffer.empty[String]
 
         for (p <- newProperties) {
           val pname = Helpers.camelCase(p.name)
@@ -195,19 +153,12 @@ object SchemaGen {
            |trait ${baseType.className}Base extends ${mixinsBase.mkString(" with ")} with StaticType[${baseType.className}T]
            | // new properties: ${newProperties.map { _.name }.mkString(", ")}
            | // inherited properties: ${oldProperties.map { _.name }.mkString(", ")}
-           | // inherited interfaces: ${oldExtendz
-            .map {
-              _.name
-            }
-            .mkString(", ")}
+           | // inherited interfaces: ${oldExtendz.map(_.name).mkString(", ")}
            | // implementing nodes: ${nodeTypes
             .filter { n => n.extendzRecursively.contains(baseType) }
-            .map {
-              _.name
-            }
+            .map(_.name)
             .mkString(", ")}
-           |trait ${baseType.className} extends ${mixinsStored
-            .mkString(" with ")} with StaticType[${baseType.className}T]
+           |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}T]
            |
            |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}T]{
            |  type RelatedStored <:  ${baseType.className}
@@ -235,17 +186,11 @@ object SchemaGen {
           p.cardinality match {
             case _: Cardinality.One[_] =>
               s"""{
-                 |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(
-                  p.valueType,
-                  true
-                )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
+                 |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
                  |}""".stripMargin
             case Cardinality.ZeroOrOne =>
               s"""{
-                 |  def ${Helpers.camelCase(p.name)}: Option[${unpackTypeUnboxed(
-                  p.valueType,
-                  true
-                )}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
+                 |  def ${Helpers.camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
                  |}""".stripMargin
             case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
           }
@@ -281,12 +226,12 @@ object SchemaGen {
           (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
             .map { base => base.className } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
         // val base = (s"""class ${nodeType.className}""")
-        val newNodeProps    = mutable.ArrayBuffer[String]()
-        val newNodeFluent   = mutable.ArrayBuffer[String]()
-        val storedNodeProps = mutable.ArrayBuffer[String]()
-        val baseNodeProps   = mutable.ArrayBuffer[String]()
-        val propDictItems   = mutable.ArrayBuffer[String]()
-        val flattenItems    = mutable.ArrayBuffer[String]()
+        val newNodeProps    = mutable.ArrayBuffer.empty[String]
+        val newNodeFluent   = mutable.ArrayBuffer.empty[String]
+        val storedNodeProps = mutable.ArrayBuffer.empty[String]
+        val baseNodeProps   = mutable.ArrayBuffer.empty[String]
+        val propDictItems   = mutable.ArrayBuffer.empty[String]
+        val flattenItems    = mutable.ArrayBuffer.empty[String]
 
         for (p <- nodeType.properties) {
           val pname = Helpers.camelCase(p.name)
@@ -321,7 +266,7 @@ object SchemaGen {
           val pname = c.localName
           val ptyp  = classNameToBase(c.nodeType.className)
           val styp  = c.nodeType.className
-          val index = actualProperties.size + containedIndexByName(c.localName)
+          val index = relevantProperties.size + containedIndexByName(c.localName)
           val pid   = idByProperty.size + containedIndexByName(pname)
           c.cardinality match {
             case Cardinality.List =>
@@ -427,13 +372,13 @@ object SchemaGen {
          |  val edgeFactories: Array[(odb2.GNode, odb2.GNode, Int, Any) => odb2.Edge] = Array(${edgeTypes
           .map { e => s"(s, d, subseq, p) => new edges.${e.className}(s, d, subseq, p)" }
           .mkString(", ")})
-         |  val nodePropertyAllocators: Array[Int => Array[_]] = Array(${(actualProperties.map { p =>
+         |  val nodePropertyAllocators: Array[Int => Array[_]] = Array(${(relevantProperties.map { p =>
           s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
         }.iterator ++ forbiddenSlotsByIndex.map { _ => "size => new Array[odb2.GNode](size)" }).mkString(", ")})
-         |  val normalNodePropertyNames = Array(${actualProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
+         |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap${containedIndexByName.toList
           .sortBy { kv => (kv._2, kv._1) }
-          .map { kv => s".updated(\"${kv._1}\", ${actualProperties.size + kv._2})" }
+          .map { kv => s".updated(\"${kv._1}\", ${relevantProperties.size + kv._2})" }
           .mkString}
          |
          | override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
@@ -443,7 +388,7 @@ object SchemaGen {
          | override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
          | override def getEdgeIdByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, -1)
          | override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
-         |    if(propertyKind < ${actualProperties.length}) normalNodePropertyNames(propertyKind)
+         |    if(propertyKind < ${relevantProperties.length}) normalNodePropertyNames(propertyKind)
          |${nodeTypes
           .flatMap { nt =>
             nt.containedNodes.map {
@@ -451,7 +396,7 @@ object SchemaGen {
             }
           }
           .map { case (node, contained) =>
-            s"    else if(propertyKind == ${actualProperties.length + containedIndexByName(
+            s"    else if(propertyKind == ${relevantProperties.length + containedIndexByName(
                 contained.localName
               )} && nodeKind == ${kindByNode(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
           }
@@ -461,7 +406,7 @@ object SchemaGen {
          |    else null
          | 
          | override def getPropertyIdByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
-         | override def getNumberOfProperties: Int = ${actualProperties.size + forbiddenSlotsByIndex.size}
+         | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
          | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
@@ -471,17 +416,17 @@ object SchemaGen {
 
     // Accessors and traversals
 
-    val concreteStoredAccess = mutable.ArrayBuffer[String]()
-    val concreteStoredConv   = mutable.ArrayBuffer[String]()
-    val baseAccess           = mutable.ArrayBuffer[String]()
+    val concreteStoredAccess = mutable.ArrayBuffer.empty[String]
+    val concreteStoredConv   = mutable.ArrayBuffer.empty[String]
+    val baseAccess           = mutable.ArrayBuffer.empty[String]
     val baseConvert          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
 
-    val concreteStoredAccessTrav = mutable.ArrayBuffer[String]()
-    val concreteStoredConvTrav   = mutable.ArrayBuffer[String]()
-    val baseAccessTrav           = mutable.ArrayBuffer[String]()
+    val concreteStoredAccessTrav = mutable.ArrayBuffer.empty[String]
+    val concreteStoredConvTrav   = mutable.ArrayBuffer.empty[String]
+    val baseAccessTrav           = mutable.ArrayBuffer.empty[String]
     val baseConvertTrav          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
 
-    for (p <- actualProperties) {
+    for (p <- relevantProperties) {
       val funName = Helpers.camelCase(p.name)
       concreteStoredAccess.addOne(
         s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
@@ -514,9 +459,9 @@ object SchemaGen {
         convertForStage.addOne(
           s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
         )
-        val newName = if (baseType.isInstanceOf[overflowdb.schema.NodeBaseType]) { baseType.className + "New" }
+        val newName = if (baseType.isInstanceOf[NodeBaseType]) { baseType.className + "New" }
         else { "New" + baseType.className }
-        val accessors = mutable.ArrayBuffer[String]()
+        val accessors = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
           val funName = Helpers.camelCase(p.name)
           accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
@@ -535,7 +480,7 @@ object SchemaGen {
         convertForStage.addOne(
           s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
         )
-        val elems = mutable.ArrayBuffer[String]()
+        val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
           elems.addOne(generatePropertyTraversals(p, idByProperty(p)))
         }
@@ -549,8 +494,8 @@ object SchemaGen {
       }
     }
 
-    val convtraits     = mutable.ArrayBuffer[String]()
-    val convtraitsTrav = mutable.ArrayBuffer[String]()
+    val convtraits     = mutable.ArrayBuffer.empty[String]
+    val convtraitsTrav = mutable.ArrayBuffer.empty[String]
 
     val convBuffer     = concreteStoredConv +: baseConvert
     val convBufferTrav = concreteStoredConvTrav +: baseConvertTrav
@@ -658,246 +603,32 @@ object SchemaGen {
     }
   }
 
-  def generatePropertyTraversals(property: overflowdb.schema.Property[_], propertyId: Int): String = {
+  def generatePropertyTraversals(property: Property[_], propertyId: Int): String = {
     // fixme: also generate negated filters
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, false, false)
     val cardinality   = property.cardinality
-    val Traversal     = "Iterator"
 
     val mapOrFlatMap = cardinality match {
       case Cardinality.One(_)                       => "map"
       case Cardinality.ZeroOrOne | Cardinality.List => "flatMap"
     }
 
-    val filterStepsForSingleString =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
-         |  * */
-         |def $nameCamelCase(pattern: $baseType): $Traversal[NodeType] =
-         |  if(!Misc.isRegex(pattern)){
-         |    ${nameCamelCase}Exact(pattern)
-         |  } else {
-         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-         |    traversal.filter{item => matcher.reset(item.${nameCamelCase}).matches}
-         |  }
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
-         |  * */
-         |def $nameCamelCase(patterns: $baseType*): $Traversal[NodeType] = {
-         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
-         |   traversal.filter{item => matchers.exists{_.reset(item.$nameCamelCase).matches}}
-         | }
-         |/**
-         |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
-         |  * */
-         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
-         |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
-         |      val someNode = init.next
-         |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
-         |    case _ => traversal.filter{_.${nameCamelCase} == value}
-         |  }
-         |
-         |/**
-         |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
-         |  * */
-         |def ${nameCamelCase}Exact(values: $baseType*): $Traversal[NodeType] =
-         |  if(values.length == 1) ${nameCamelCase}Exact(values.head) else {
-         |  val valueSet = values.toSet
-         |  traversal.filter{item => valueSet.contains(item.${nameCamelCase})}
-         |  }
-         |
-         |
-         |""".stripMargin
-
-    val filterStepsForOptionalString =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
-         |  * */
-         |def $nameCamelCase(pattern: $baseType): $Traversal[NodeType] =
-         |  if(!Misc.isRegex(pattern)){
-         |    ${nameCamelCase}Exact(pattern)
-         |  } else {
-         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-         |    traversal.filter{ item =>  val tmp = item.${nameCamelCase}; tmp.isDefined && matcher.reset(tmp.get).matches}
-         |  }
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
-         |  * */
-         |def $nameCamelCase(patterns: $baseType*): $Traversal[NodeType] = {
-         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
-         |   traversal.filter{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
-         | }
-         |
-         |/**
-         |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
-         |  * */
-         |def ${nameCamelCase}Exact(value: $baseType): $Traversal[NodeType] = traversal match {
-         |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
-         |      val someNode = init.next
-         |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  ${propertyId}, value).asInstanceOf[Iterator[NodeType]]
-         |     case _ => traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
-         |}
-         |
-         |/**
-         |  * Traverse to nodes where $nameCamelCase matches one of the elements in `values` exactly.
-         |  * */
-         |def ${nameCamelCase}Exact(values: $baseType*): $Traversal[NodeType] = 
-         |  if(values.length == 1) ${nameCamelCase}Exact(values.head) else {
-         |  val valueSet = values.toSet
-         |  traversal.filter{item => val tmp = item.$nameCamelCase; tmp.isDefined && valueSet.contains(tmp.get)}
-         |  }
-         |""".stripMargin
-
-    val filterStepsForSingleBoolean =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
-         |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase == value}
-         |
-         |""".stripMargin
-
-    val filterStepsForOptionalBoolean =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
-         |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => node.${nameCamelCase}.isDefined && node.$nameCamelCase.get == value}
-         |""".stripMargin
-
-    val filterStepsForSingleInt =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
-         |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase == value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
-         |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
-         |  val vset = values.toSet
-         |  traversal.filter{node => vset.contains(node.$nameCamelCase)}
-         |}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
-         |  * */
-         |def ${nameCamelCase}Gt(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase > value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is greater than or equal the given `value`
-         |  * */
-         |def ${nameCamelCase}Gte(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase >= value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is less than the given `value`
-         |  * */
-         |def ${nameCamelCase}Lt(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase < value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is less than or equal the given `value`
-         |  * */
-         |def ${nameCamelCase}Lte(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase <= value}
-         |
-         |""".stripMargin
-
-    val filterStepsForOptionalInt =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
-         |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
-         |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
-         |  val vset = values.toSet
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && vset.contains(tmp.get)}
-         |}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
-         |  * */
-         |def ${nameCamelCase}Gt(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get > value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is greater than or equal the given `value`
-         |  * */
-         |def ${nameCamelCase}Gte(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get >= value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is less than the given `value`
-         |  * */
-         |def ${nameCamelCase}Lt(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get < value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase is less than or equal the given `value`
-         |  * */
-         |def ${nameCamelCase}Lte(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get <= value}
-         |
-         |""".stripMargin
-
-    val filterStepsGenericSingle =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
-         |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{_.$nameCamelCase == value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
-         |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
-         |  val vset = values.toSet
-         |  traversal.filter{node => !vset.contains(node.$nameCamelCase)}
-         |}
-         |
-         |""".stripMargin
-
-    val filterStepsGenericOption =
-      s"""/**
-         |  * Traverse to nodes where the $nameCamelCase equals the given `value`
-         |  * */
-         |def $nameCamelCase(value: $baseType): $Traversal[NodeType] =
-         |  traversal.filter{node => node.$nameCamelCase.isDefined && node.$nameCamelCase.get == value}
-         |
-         |/**
-         |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
-         |  * */
-         |def $nameCamelCase(values: $baseType*): $Traversal[NodeType] = {
-         |  val vset = values.toSet
-         |  traversal.filter{node => node.$nameCamelCase.isDefined && !vset.contains(node.$nameCamelCase.get)}
-         |}
-         |""".stripMargin
-
     val filterSteps = (cardinality, property.valueType) match {
       case (Cardinality.List, _)                      => ""
-      case (Cardinality.One(_), ValueType.String)     => filterStepsForSingleString
-      case (Cardinality.ZeroOrOne, ValueType.String)  => filterStepsForOptionalString
-      case (Cardinality.One(_), ValueType.Boolean)    => filterStepsForSingleBoolean
-      case (Cardinality.ZeroOrOne, ValueType.Boolean) => filterStepsForOptionalBoolean
-      case (Cardinality.One(_), ValueType.Int)        => filterStepsForSingleInt
-      case (Cardinality.ZeroOrOne, ValueType.Int)     => filterStepsForOptionalInt
-      case (Cardinality.One(_), _)                    => filterStepsGenericSingle
-      case (Cardinality.ZeroOrOne, _)                 => filterStepsGenericOption
+      case (Cardinality.One(_), ValueType.String)     => FilterSteps.forSingleString(nameCamelCase, baseType, propertyId)
+      case (Cardinality.ZeroOrOne, ValueType.String)  => FilterSteps.forOptionalString(nameCamelCase, baseType, propertyId)
+      case (Cardinality.One(_), ValueType.Boolean)    => FilterSteps.forSingleBoolean(nameCamelCase, baseType)
+      case (Cardinality.ZeroOrOne, ValueType.Boolean) => FilterSteps.forOptionalBoolean(nameCamelCase, baseType)
+      case (Cardinality.One(_), ValueType.Int)        => FilterSteps.forSingleInt(nameCamelCase, baseType)
+      case (Cardinality.ZeroOrOne, ValueType.Int)     => FilterSteps.forOptionalInt(nameCamelCase, baseType)
+      case (Cardinality.One(_), _)                    => FilterSteps.genericSingle(nameCamelCase, baseType)
+      case (Cardinality.ZeroOrOne, _)                 => FilterSteps.genericOption(nameCamelCase, baseType)
       case _                                          => ""
     }
 
     s"""/** Traverse to $nameCamelCase property */
-       |def $nameCamelCase: $Traversal[$baseType] =
+       |def $nameCamelCase: Iterator[$baseType] =
        |  traversal.$mapOrFlatMap(_.$nameCamelCase)
        |
        |$filterSteps
@@ -952,5 +683,36 @@ object SchemaGen {
       case ValueType.NodeRef             => s"nodes.AbstractNode"
       case _                             => ???
     }
+  }
+
+  private case class PropertyContexts(properties: Array[Property[?]], containedNodesByName: Map[String, mutable.HashSet[NodeType]])
+
+  private def relevantPropertyContexts(schema: Schema): PropertyContexts = {
+    val relevantPropertiesSet = mutable.HashSet.empty[Property[?]]
+    val containingByName      = mutable.HashMap.empty[String, mutable.HashSet[NodeType]]
+
+    for (node <- schema.nodeTypes) {
+      relevantPropertiesSet.addAll(node.properties)
+      for (contained <- node.containedNodes) {
+        containingByName
+          .getOrElseUpdate(contained.localName, mutable.HashSet.empty[NodeType])
+          .add(node)
+      }
+    }
+
+    for (baseType <- schema.nodeBaseTypes) {
+      relevantPropertiesSet.addAll(baseType.properties)
+    }
+
+    assert(relevantPropertiesSet.size == relevantPropertiesSet.map(_.name).size,
+      s"""relevantPropertiesSet should have exactly one entry per entry name, but that's not the case...
+         |relevantPropertiesSet entries: ${relevantPropertiesSet.toSeq.sortBy(_.name)}
+         |relevantPropertiesSet names:   ${relevantPropertiesSet.map(_.name).toSeq}
+         |""".stripMargin)
+
+    PropertyContexts(
+      relevantPropertiesSet.toArray.sortBy(_.name),
+      containingByName.view.toMap
+    )
   }
 }
