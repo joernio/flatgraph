@@ -98,7 +98,7 @@ object GraphSchema extends odb2.Schema {
     size => null,
     size => null,
     size => null,
-    size => Array.fill(size)("<empty>") /*label = REACHING_DEF, id = 19*/,
+    size => Array.fill(size)("<empty>") /* label = REACHING_DEF, id = 19 */,
     size => null,
     size => null,
     size => null,
