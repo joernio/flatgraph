@@ -15,11 +15,16 @@ object SchemaGen {
       System.exit(1)
     }
 
+    // start with a clean slate
+    val outputDir = os.Path(Paths.get(args(0)).toAbsolutePath)
+    os.remove.all(outputDir)
+    os.makeDir.all(outputDir)
+
     val schema = args(1) match {
       case "cpg" => io.shiftleft.codepropertygraph.schema.CpgSchema.instance
       case "cs"  => io.shiftleft.codepropertygraph.schema.CpgExtSchema.instance
     }
-    val outputDir   = os.Path(Paths.get(args(0)).toAbsolutePath)
+
     val basePackage = schema.basePackage + ".v2"
 
     val propertyContexts = relevantPropertyContexts(schema)
