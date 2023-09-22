@@ -165,6 +165,7 @@ object Convert {
           storage.StorageType.Ref,
           items.asInstanceOf[mutable.ArrayBuffer[NodeRefTmp]].map { ref => if (ref == null) 0x0000ffffffffffffL else ref.newId }.toArray
         )
+      case Some(other) => throw new AssertionError(s"unexpected item found: $other of type ${other.getClass}")
     }
 
   }

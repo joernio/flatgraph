@@ -4,10 +4,11 @@ import io.joern.odb2.GNode
 
 import scala.annotation.tailrec
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
-private[odb2] class MultiDictIndex {
+private[odb2] class MultiDictIndex[A <: AnyRef] {
   private var keys: Array[String]   = _
-  private var values: Array[AnyRef] = _
+  private var values: Array[AnyRef] = _ // holds single elements of type `A` and lists of type `Array[A]`
   private var size                  = 0
   private var finalized             = false
 
@@ -17,7 +18,7 @@ private[odb2] class MultiDictIndex {
     values = new Array[AnyRef](size)
   }
 
-  def insert(key: String, value: GNode): Unit = {
+  def insert(key: String, value: A): Unit = {
     if (key != null) {
       assert(!finalized, "Cannot insert into finalized index")
       val startPosition = hashToPos(key.hashCode())
@@ -26,7 +27,7 @@ private[odb2] class MultiDictIndex {
   }
 
   @tailrec
-  private def insert0(key: String, value: GNode, position: Int, iteration: Int = 0): Unit = {
+  private def insert0(key: String, value: A, position: Int, iteration: Int = 0): Unit = {
     assert(iteration < size,
       s"We've tried all possible slots, none of which was available - please allocate a large-enough index! iteration=$iteration, size=$size")
 
@@ -42,7 +43,7 @@ private[odb2] class MultiDictIndex {
         case k if k == key =>
           // found the right (preexistent) slot for this key: append to existing entries
           values(position) match {
-            case buf: mutable.ArrayBuffer[GNode @unchecked] => buf.addOne(value)
+            case buf: mutable.ArrayBuffer[A @unchecked] => buf.addOne(value)
             case old =>
               values(position) = mutable.ArrayBuffer(old, value)
           }
@@ -57,15 +58,16 @@ private[odb2] class MultiDictIndex {
     var idx = 0
     while (idx < size) {
       values(idx) match {
-        case buf: mutable.ArrayBuffer[GNode @unchecked] => values(idx) = buf.toArray[GNode]
-        case _                                          =>
+        case buf: mutable.ArrayBuffer[A @unchecked] =>
+          values(idx) = buf.toArray[AnyRef]
+        case _  =>
       }
       idx += 1
     }
     finalized = true
   }
 
-  def get(key: String): Iterator[GNode] = {
+  def get(key: String): Iterator[A] = {
     if (key == null) return null
     if (!finalized) throw new RuntimeException("Cannot lookup in an index that's not finalized - please invoke `shrinkFit` first")
     var pos = hashToPos(key.hashCode())
@@ -76,8 +78,8 @@ private[odb2] class MultiDictIndex {
         return Iterator.empty
       } else if (k == key) {
         values(pos) match {
-          case buf: Array[GNode] => return buf.iterator
-          case single: GNode     => return Iterator(single)
+          case buf: Array[A @unchecked] => return buf.iterator
+          case single: A @unchecked     => return Iterator(single)
         }
       }
       pos += 1
