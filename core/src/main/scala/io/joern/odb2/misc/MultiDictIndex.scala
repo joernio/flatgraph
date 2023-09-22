@@ -70,21 +70,34 @@ private[odb2] class MultiDictIndex[A <: AnyRef] {
   def get(key: String): Iterator[A] = {
     if (key == null) return null
     if (!finalized) throw new RuntimeException("Cannot lookup in an index that's not finalized - please invoke `shrinkFit` first")
-    var pos = hashToPos(key.hashCode())
-    while (true) {
-      if (pos >= size) pos = 0
-      val k = keys(pos)
-      if (k == null) {
-        return Iterator.empty
-      } else if (k == key) {
-        values(pos) match {
-          case buf: Array[A @unchecked] => return buf.iterator
-          case single: A @unchecked     => return Iterator(single)
+    val startPosition = hashToPos(key.hashCode())
+    get0(key, position = startPosition)
+  }
+
+  @tailrec
+  private def get0(key: String, position: Int, iteration: Int = 0): Iterator[A] = {
+    if (iteration >= size) {
+      // we've tried all possible slots
+      Iterator.empty
+    } else {
+      if (position >= size) {
+        // we've reached the end of the slots. overflow: try from index 0
+        get0(key, position = 0, iteration = iteration + 1)
+      } else {
+        keys(position) match {
+          case null => Iterator.empty
+          case k if k == key =>
+            // found the right (preexistent) slot for this key: append to existing entries
+            values(position) match {
+              case multiple: mutable.ArrayBuffer[A@unchecked] => multiple.iterator
+              case single: A => Iterator.single(single)
+            }
+          case _ =>
+            // key not found so far - try the next slot
+            get0(key, position + 1, iteration = iteration + 1)
         }
       }
-      pos += 1
     }
-    throw new RuntimeException("unreachable")
   }
 
   private def hashToPos(hash0: Int): Int = {

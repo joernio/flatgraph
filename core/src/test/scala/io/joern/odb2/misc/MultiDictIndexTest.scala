@@ -19,12 +19,22 @@ class MultiDictIndexTest extends AnyWordSpec with Matchers {
   }
 
   "recognises and throws exception if we try to insert beyond capacity" in {
-    val index = new MultiDictIndex
+    val index = new MultiDictIndex[String]
     index.initForSize(1)
     index.insert("key1", "one")
     assertThrows[AssertionError] {
       index.insert("key2", "oneTooMany")
     }
+  }
+
+  "should return empty Iterator for non-existing key" in {
+    val index = new MultiDictIndex[String]
+    index.initForSize(1)
+    index.insert("key1", "one")
+    index.shrinkFit()
+
+    // note: this should not run into an endless loop, as it happened with a previous version
+    index.get("undefined") shouldBe Iterator.empty
   }
 
 }
