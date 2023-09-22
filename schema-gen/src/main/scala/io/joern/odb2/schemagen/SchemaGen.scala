@@ -353,7 +353,7 @@ object SchemaGen {
           .sortBy { case (_, kind) => kind }
           .map { case (nodeType, _) => s"\"${nodeType.name}\"" }
           .mkString(", ")})
-         |  val nodeIdByLabel = nodeLabels.zipWithIndex.toMap
+         |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
          |  val edgeLabels = Array(${edgeTypes.map { e => s"\"${e.name}\"" }.mkString(",  ")})
          |  val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
          |  val edgePropertyAllocators: Array[Int => Array[_]] = Array(${edgeTypes.zipWithIndex
@@ -384,7 +384,7 @@ object SchemaGen {
          | override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          | override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          | override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
-         | override def getNodeIdByLabel(label: String): Int = nodeIdByLabel.getOrElse(label, -1)
+         | override def getNodeIdByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, -1)
          | override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
          | override def getEdgeIdByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, -1)
          | override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
