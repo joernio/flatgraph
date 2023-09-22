@@ -9,21 +9,11 @@ private[odb2] class MultiDictIndex {
   private var values: Array[AnyRef] = _
   private var size                  = 0
   private var finished              = false
-  def initForSize(sizehint: Int): Unit = {
-    size = sizehint + (sizehint >> 1)
+
+  def initForSize(sizeHint: Int): Unit = {
+    size = sizeHint + (sizeHint >> 1)
     keys = new Array[String](size)
     values = new Array[AnyRef](size)
-  }
-
-  private def hashToPos(hash0: Int): Int = {
-    // using the simple murmur 32 bit mixing to strengthen the hash
-    var hash = hash0 ^ (hash0 >>> 16)
-    hash *= 0x85ebca6b
-    hash ^= hash >>> 13
-    hash *= 0xc2b2ae35
-    hash ^= hash >>> 16
-
-    (((hash.toLong & 0x00000000ffffffffL) * size.toLong) >> 32).toInt
   }
 
   def insert(key: String, value: GNode): Unit = {
@@ -33,7 +23,7 @@ private[odb2] class MultiDictIndex {
     while (true) {
       if (pos >= size) pos = 0
       val k = keys(pos)
-      if (k eq null) {
+      if (k == null) {
         keys(pos) = key
         values(pos) = value
         return
@@ -67,9 +57,9 @@ private[odb2] class MultiDictIndex {
     while (true) {
       if (pos >= size) pos = 0
       val k = keys(pos)
-      if (k eq null) {
+      if (k == null) {
         return Iterator.empty
-      } else if (k.equals(key)) {
+      } else if (k == key) {
         values(pos) match {
           case buf: Array[GNode] => return buf.iterator
           case single: GNode     => return Iterator(single)
@@ -78,6 +68,17 @@ private[odb2] class MultiDictIndex {
       pos += 1
     }
     throw new RuntimeException("unreachable")
+  }
+
+  private def hashToPos(hash0: Int): Int = {
+    // using the simple murmur 32 bit mixing to strengthen the hash
+    var hash = hash0 ^ (hash0 >>> 16)
+    hash *= 0x85ebca6b
+    hash ^= hash >>> 13
+    hash *= 0xc2b2ae35
+    hash ^= hash >>> 16
+
+    (((hash.toLong & 0x00000000ffffffffL) * size.toLong) >> 32).toInt
   }
 
 }

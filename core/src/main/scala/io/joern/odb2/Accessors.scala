@@ -120,11 +120,11 @@ object Accessors {
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
-  def getInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): misc.MultiDictIndex = {
+  def getInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): MultiDictIndex = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     graph.inverseIndices.get(pos) match {
-      case exists: misc.MultiDictIndex if exists != null => exists
-      case _                                             => createInverseIndex(graph, nodeKind, propertyKind)
+      case exists: MultiDictIndex if exists != null => exists
+      case _                                        => createInverseIndex(graph, nodeKind, propertyKind)
     }
   }
 
@@ -133,12 +133,11 @@ object Accessors {
 
   private class IndexLock {}
 
-  private def createInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): misc.MultiDictIndex = {
+  private def createInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): MultiDictIndex = {
     val pos            = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val inverseIndices = graph.inverseIndices
     /* we have 3 states of the slot:
-      null -> IndexLock -> MultiDictIndex
-
+     * null -> IndexLock -> MultiDictIndex
      * */
     inverseIndices.get(pos) match {
       case null =>
@@ -148,7 +147,6 @@ object Accessors {
             // we now own the slot.
             val inverseIndex = new MultiDictIndex
             try {
-
               val numItems = graph.properties(pos).asInstanceOf[Array[Int]]
               val items    = graph.properties(pos + 1).asInstanceOf[Array[String]]
               val nodes    = graph.nodesArray(nodeKind)
@@ -178,7 +176,7 @@ object Accessors {
       case _ =>
     }
     inverseIndices.get(pos) match {
-      case exists: misc.MultiDictIndex if exists != null =>
+      case exists: MultiDictIndex if exists != null =>
         // the slot contains the result
         exists
     }
