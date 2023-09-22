@@ -272,6 +272,7 @@ object SchemaGen {
               flattenItems.append(s"""interface.emplaceProperty(this, ${idByProperty(p)}, Iterator(this.$pname))""")
           }
         }
+
         for (c <- nodeType.containedNodes) {
           val pname = c.localName
           val ptyp  = classNameToBase(c.nodeType.className)
@@ -302,7 +303,7 @@ object SchemaGen {
               propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
               flattenItems.append(s"""if($pname.nonEmpty) interface.emplaceProperty(this, $pid, this.$pname)""")
 
-            case one: Cardinality.One[_] =>
+            case _: Cardinality.One[_] =>
               newNodeProps.append(s"var $pname: $ptyp = null")
               newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
               baseNodeProps.append(s"def $pname: $ptyp")
@@ -328,8 +329,8 @@ object SchemaGen {
             )}
              |}""".stripMargin
 
-        s"""${staticTyp}
-           |${base}{
+        s"""$staticTyp
+           |$base {
            |${baseNodeProps.mkString(lineSeparator)}
            |${propDictItems.mkString(
             s"override def propertiesMap: java.util.Map[String, Any] = {$lineSeparator import $basePackage.accessors.Lang._$lineSeparator val res = new java.util.HashMap[String, Any]()$lineSeparator",
@@ -337,10 +338,10 @@ object SchemaGen {
             s"$lineSeparator res$lineSeparator}"
           )}
            |}
-           |${stored} {
+           |$stored {
            |${storedNodeProps.mkString(lineSeparator)}
            |}
-           |${newNode}
+           |$newNode
            |""".stripMargin
       }
       .mkString(
