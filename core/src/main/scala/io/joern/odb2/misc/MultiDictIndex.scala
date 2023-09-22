@@ -1,22 +1,14 @@
 package io.joern.odb2.misc
 
-import io.joern.odb2.GNode
-
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
-private[odb2] class MultiDictIndex[A <: AnyRef] {
-  private var keys: Array[String]   = _
-  private var values: Array[AnyRef] = _ // holds single elements of type `A` and lists of type `Array[A]`
-  private var size                  = 0
+private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
+  private val size                  = sizeHint + (sizeHint >> 1)
+  private val keys: Array[String]   = new Array[String](size)
+  private val values: Array[AnyRef] = new Array[AnyRef](size) // holds single elements of type `A` and lists of type `Array[A]`, hence the use of `AnyRef`
   private var finalized             = false
-
-  def initForSize(sizeHint: Int): Unit = {
-    size = sizeHint + (sizeHint >> 1)
-    keys = new Array[String](size)
-    values = new Array[AnyRef](size)
-  }
 
   def insert(key: String, value: A): Unit = {
     if (key != null) {
@@ -90,7 +82,7 @@ private[odb2] class MultiDictIndex[A <: AnyRef] {
             // found the right (preexistent) slot for this key: append to existing entries
             values(position) match {
               case multiple: mutable.ArrayBuffer[A@unchecked] => multiple.iterator
-              case single: A => Iterator.single(single)
+              case single: A @unchecked => Iterator.single(single)
             }
           case _ =>
             // key not found so far - try the next slot

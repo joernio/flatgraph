@@ -6,8 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class MultiDictIndexTest extends AnyWordSpec with Matchers {
 
   "insert and retrieve: single and multiple entries by key" in {
-    val index = new MultiDictIndex[String]
-    index.initForSize(10)
+    val index = new MultiDictIndex[String](sizeHint = 10)
     index.insert("key1", "value1")
     index.insert("key2", "value2")
     index.insert("key2", "value3")
@@ -19,8 +18,7 @@ class MultiDictIndexTest extends AnyWordSpec with Matchers {
   }
 
   "recognises and throws exception if we try to insert beyond capacity" in {
-    val index = new MultiDictIndex[String]
-    index.initForSize(1)
+    val index = new MultiDictIndex[String](sizeHint = 1)
     index.insert("key1", "one")
     assertThrows[AssertionError] {
       index.insert("key2", "oneTooMany")
@@ -28,8 +26,7 @@ class MultiDictIndexTest extends AnyWordSpec with Matchers {
   }
 
   "should return empty Iterator for non-existing key" in {
-    val index = new MultiDictIndex[String]
-    index.initForSize(1)
+    val index = new MultiDictIndex[String](sizeHint = 1)
     index.insert("key1", "one")
     index.shrinkFit()
 
