@@ -136,27 +136,27 @@ object SchemaGen {
         val oldProperties = baseType.properties.toSet.diff(newProperties.toSet).toList.sortBy(_.name)
         val oldExtendz    = baseType.extendzRecursively.toSet.diff(newExtendz.toSet).toList.sortBy(_.name)
 
-        val newNodeDefs = mutable.ArrayBuffer.empty[String]
-
-        for (p <- newProperties) {
-          val pname = Helpers.camelCase(p.name)
-          val ptyp  = unpackTypeUnboxed(p.valueType, false, false)
-          p.cardinality match {
-            case Cardinality.List =>
-              newNodeDefs.append(s"def ${pname}: IndexedSeq[$ptyp]")
-              newNodeDefs.append(s"def ${pname}_=(value: IndexedSeq[$ptyp]): Unit")
-              newNodeDefs.append(s"def ${pname}(value: IterableOnce[$ptyp]): this.type")
-            case Cardinality.ZeroOrOne =>
-              newNodeDefs.append(s"def ${pname}: Option[$ptyp]")
-              newNodeDefs.append(s"def ${pname}_=(value: Option[$ptyp]): Unit")
-              newNodeDefs.append(s"def ${pname}(value: Option[$ptyp]): this.type")
-              newNodeDefs.append(s"def ${pname}(value: $ptyp): this.type")
-            case one: Cardinality.One[_] =>
-              newNodeDefs.append(s"def ${pname}: $ptyp")
-              newNodeDefs.append(s"def ${pname}_=(value: $ptyp): Unit")
-              newNodeDefs.append(s"def ${pname}(value: $ptyp): this.type")
+        val newNodeDefs: Seq[String] = {
+          for {
+            property <- newProperties
+            pname = Helpers.camelCase(property.name)
+            ptyp  = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
+         } yield property.cardinality match {
+            case Cardinality.List => Seq(
+              s"def ${pname}: IndexedSeq[$ptyp]",
+              s"def ${pname}_=(value: IndexedSeq[$ptyp]): Unit",
+              s"def ${pname}(value: IterableOnce[$ptyp]): this.type")
+            case Cardinality.ZeroOrOne => Seq(
+              s"def ${pname}: Option[$ptyp]",
+              s"def ${pname}_=(value: Option[$ptyp]): Unit",
+              s"def ${pname}(value: Option[$ptyp]): this.type",
+              s"def ${pname}(value: $ptyp): this.type")
+            case one: Cardinality.One[_] => Seq(
+              s"def ${pname}: $ptyp",
+              s"def ${pname}_=(value: $ptyp): Unit",
+              s"def ${pname}(value: $ptyp): this.type")
           }
-        }
+        }.flatten
 
         s"""trait ${baseType.className}T extends $mixinsT
            |
