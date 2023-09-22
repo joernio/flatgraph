@@ -1,10 +1,10 @@
 package io.joern.odb2.schemagen
 
 import io.joern.odb2.schemagen.CodeSnippets.FilterSteps
+import java.nio.file.Paths
 import overflowdb.codegen.Helpers
 import overflowdb.schema.{MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
-
 import scala.collection.mutable
 
 object SchemaGen {
@@ -15,11 +15,16 @@ object SchemaGen {
       System.exit(1)
     }
 
+    // start with a clean slate
+    val outputDir = os.Path(Paths.get(args(0)).toAbsolutePath)
+    os.remove.all(outputDir)
+    os.makeDir.all(outputDir)
+
     val schema = args(1) match {
       case "cpg" => io.shiftleft.codepropertygraph.schema.CpgSchema.instance
       case "cs"  => io.shiftleft.codepropertygraph.schema.CpgExtSchema.instance
     }
-    val outputDir   = better.files.File(args(0))
+
     val basePackage = schema.basePackage + ".v2"
 
     val propertyContexts = relevantPropertyContexts(schema)
@@ -106,7 +111,8 @@ object SchemaGen {
          |override def storedRef_=(stored: Option[odb2.GNode]):Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
          |}
          |""".stripMargin
-    outputDir.createChild("RootTypes.scala").write(rootTypes)
+
+    os.write(outputDir / "RootTypes.scala", rootTypes)
 
     val propertyMarkers = relevantProperties.map(p => s"trait Has${p.className}T").mkString("\n")
     val basetypefile = schema.nodeBaseTypes
@@ -163,9 +169,8 @@ object SchemaGen {
            |  ${newNodeDefs.mkString("\n")}
            |}
            |""".stripMargin
-      }
-      .mkString(
-        s"""package ${basePackage}.nodes
+      }.mkString(
+        s"""package $basePackage.nodes
            |import io.joern.odb2
            |
            |
@@ -173,7 +178,7 @@ object SchemaGen {
         "\n\n",
         s"\n$userMarkers\n$propertyMarkers\n"
       )
-    outputDir.createChild("BaseTypes.scala").write(basetypefile)
+    os.write(outputDir / "BaseTypes.scala", basetypefile)
 
     val edgeTypes_ = edgeTypes.iterator.zipWithIndex
       .map { case (edgeType, idx) =>
@@ -197,8 +202,7 @@ object SchemaGen {
 
         s"""class ${edgeType.className}(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
            |    extends odb2.Edge(src_4762, dst_4762, $idx.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
-      }
-      .mkString(
+      }.mkString(
         s"""package ${basePackage}.edges
            |import io.joern.odb2
            |
@@ -206,7 +210,7 @@ object SchemaGen {
         "\n",
         "\n"
       )
-    outputDir.createChild("EdgeTypes.scala").write(edgeTypes_)
+    os.write(outputDir / "EdgeTypes.scala", edgeTypes_)
 
     val concreteNodes = nodeTypes.iterator.zipWithIndex
       .map { case (nodeType, kind) =>
@@ -336,7 +340,7 @@ object SchemaGen {
         "\n\n",
         ""
       )
-    outputDir.createChild("NodeTypes.scala").write(concreteNodes)
+    os.write(outputDir / "NodeTypes.scala", concreteNodes)
 
     val schemaFile =
       s"""package $basePackage
@@ -408,7 +412,7 @@ object SchemaGen {
          | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
          | override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
          |}""".stripMargin
-    outputDir.createChild("GraphSchema.scala").write(schemaFile)
+    os.write(outputDir / "GraphSchema.scala", schemaFile)
 
     // Accessors and traversals
 
@@ -529,7 +533,7 @@ object SchemaGen {
          |${convtraits.mkString("\n\n")}
          |""".stripMargin
 
-    outputDir.createChild("Accessors.scala").write(accessors)
+    os.write(outputDir / "Accessors.scala", accessors)
 
     // fixme: Also generate edge accessors
     val traversals =
@@ -548,7 +552,7 @@ object SchemaGen {
          |}
          |${convtraitsTrav.mkString("\n\n")}
          |""".stripMargin
-    outputDir.createChild("Traversals.scala").write(traversals)
+    os.write(outputDir / "Traversals.scala", traversals)
 
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
@@ -577,8 +581,7 @@ object SchemaGen {
          |${baseStarters.mkString("\n")}
          |}
          |""".stripMargin
-    outputDir.createChild(s"${schema.domainShortName}.scala").write(domainMain)
-
+    os.write(outputDir / s"${schema.domainShortName}.scala", domainMain)
   } // end generate
 
   def typeForProperty(p: Property[_]): String = {
