@@ -575,7 +575,7 @@ object SchemaGen {
          |assert(graph.schema == GraphSchema)
          |}
          |
-         |class ${schema.domainShortName}GeneratedNodeStarters(val wrappedGraph: ${schema.domainShortName}) extends AnyVal {
+         |class ${schema.domainShortName}NodeStarters(val wrappedGraph: ${schema.domainShortName}) extends AnyVal {
          |${concreteStarters.mkString("\n")}
          |
          |${baseStarters.mkString("\n")}

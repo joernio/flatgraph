@@ -287,10 +287,10 @@ class Odb2Generated {
       case name if name.contains("MethodFullName") =>
         import v2.traversals.Lang.*
         if (shuffled)
-          fullnames = new Random(1234).shuffle(new v2.CpgGeneratedNodeStarters(cpg).method.fullName.iterator).toArray
+          fullnames = new Random(1234).shuffle(new v2.CpgNodeStarters(cpg).method.fullName.iterator).toArray
         else
           fullnames =
-            new Random(1234).shuffle(new v2.CpgGeneratedNodeStarters(cpg).method.fullName.iterator.map { name => name + "lolnope" }).toArray
+            new Random(1234).shuffle(new v2.CpgNodeStarters(cpg).method.fullName.iterator.map { name => name + "lolnope" }).toArray
         fullnames = fullnames.slice(0, math.min(1000, fullnames.length))
         JmhBenchmarks.setOps(params, fullnames.length)
     }
@@ -388,7 +388,7 @@ class Odb2Generated {
   def indexedMethodFullName(bh: Blackhole): Unit = {
     import v2.traversals.Lang.*
     fullnames.foreach { fullName =>
-      new v2.CpgGeneratedNodeStarters(cpg).method.fullNameExact(fullName).foreach(bh.consume)
+      new v2.CpgNodeStarters(cpg).method.fullNameExact(fullName).foreach(bh.consume)
     }
   }
 
@@ -397,7 +397,7 @@ class Odb2Generated {
     import v2.traversals.Lang.*
     for {
       str   <- fullnames
-      found <- new v2.CpgGeneratedNodeStarters(cpg).method.filter { _ => true }.fullNameExact(str)
+      found <- new v2.CpgNodeStarters(cpg).method.filter { _ => true }.fullNameExact(str)
     } bh.consume(found)
   }
 

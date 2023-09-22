@@ -8,7 +8,7 @@ class Cpg(val graph: odb2.Graph) {
   assert(graph.schema == GraphSchema)
 }
 
-class CpgGeneratedNodeStarters(val wrappedGraph: Cpg) extends AnyVal {
+class CpgNodeStarters(val wrappedGraph: Cpg) extends AnyVal {
   def annotation: Iterator[nodes.Annotation]               = wrappedGraph.graph.nodes(0).asInstanceOf[Iterator[nodes.Annotation]]
   def annotationLiteral: Iterator[nodes.AnnotationLiteral] = wrappedGraph.graph.nodes(1).asInstanceOf[Iterator[nodes.AnnotationLiteral]]
   def annotationParameter: Iterator[nodes.AnnotationParameter] =
