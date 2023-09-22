@@ -16,7 +16,7 @@ class MultiDictIndexTest extends AnyWordSpec with Matchers {
     index.insert("key1", testNode1)
     index.insert("key2", testNode2)
     index.insert("key2", testNode3)
-    index.shrinkfit()
+    index.shrinkFit()
 
     index.get("undefined").size shouldBe 0
     index.get("key1").toSeq shouldBe Seq(testNode1)

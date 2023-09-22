@@ -159,7 +159,7 @@ object Accessors {
                   inverseIndex.insert(items(idx2), node)
                 }
               }
-              inverseIndex.shrinkfit()
+              inverseIndex.shrinkFit()
               return inverseIndex
             } finally {
               val lock2 = inverseIndices.getAndSet(pos, inverseIndex)
