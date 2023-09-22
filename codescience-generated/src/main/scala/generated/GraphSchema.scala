@@ -81,7 +81,7 @@ object GraphSchema extends odb2.Schema {
     "VULNERABILITY",
     "WRITE"
   )
-  val nodeIdByLabel = nodeLabels.zipWithIndex.toMap
+  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
   val edgeLabels = Array(
     "ALIAS_OF",
     "ARGUMENT",
@@ -506,7 +506,7 @@ object GraphSchema extends odb2.Schema {
   override def getNumberOfNodeKinds: Int                          = 75
   override def getNumberOfEdgeKinds: Int                          = 32
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
-  override def getNodeIdByLabel(label: String): Int               = nodeIdByLabel.getOrElse(label, -1)
+  override def getNodeIdByLabel(label: String): Int               = nodeKindByLabel.getOrElse(label, -1)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
   override def getEdgeIdByLabel(label: String): Int               = edgeIdByLabel.getOrElse(label, -1)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
