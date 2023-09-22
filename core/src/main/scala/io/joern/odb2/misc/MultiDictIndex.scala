@@ -17,25 +17,28 @@ private[odb2] class MultiDictIndex {
   }
 
   def insert(key: String, value: GNode): Unit = {
-    if (key == null) return
-    if (finished) throw new RuntimeException("Cannot insert into finished index")
-    var pos = hashToPos(key.hashCode())
-    while (true) {
-      if (pos >= size) pos = 0
-      val k = keys(pos)
-      if (k == null) {
-        keys(pos) = key
-        values(pos) = value
-        return
-      } else if (k.equals(key)) {
-        values(pos) match {
-          case buf: mutable.ArrayBuffer[GNode] => buf.addOne(value)
-          case old: GNode =>
-            values(pos) = mutable.ArrayBuffer(old, value)
+    if (key != null) {
+      assert(!finished, "Cannot insert into finished index")
+      var position = hashToPos(key.hashCode())
+      var inserted = false
+      while (!inserted) {
+        if (position >= size) position = 0
+        keys(position) match {
+          case null =>
+            keys(position) = key
+            values(position) = value
+            inserted = true
+          case k if k == key =>
+            values(position) match {
+              case buf: mutable.ArrayBuffer[GNode] => buf.addOne(value)
+              case old: GNode =>
+                values(position) = mutable.ArrayBuffer(old, value)
+            }
+            inserted = true
+          case _ =>
+            position += 1
         }
-        return
       }
-      pos += 1
     }
   }
 
