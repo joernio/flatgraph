@@ -81,7 +81,7 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
           case k if k == key =>
             // found the right (preexistent) slot for this key: append to existing entries
             values(position) match {
-              case multiple: mutable.ArrayBuffer[A@unchecked] => multiple.iterator
+              case multiple: Array[A @unchecked] => multiple.iterator
               case single: A @unchecked => Iterator.single(single)
             }
           case _ =>
