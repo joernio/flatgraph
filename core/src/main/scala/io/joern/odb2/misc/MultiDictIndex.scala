@@ -4,6 +4,10 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
+/**
+ * Memory efficient dictionary for single and/or multiple elements of type `A`.
+ * Sample usage: see MultiDictIndexTest
+ */
 private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
   private val size                  = sizeHint + (sizeHint >> 1)
   private val keys: Array[String]   = new Array[String](size)
