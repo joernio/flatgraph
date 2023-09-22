@@ -2,6 +2,7 @@ package io.joern.odb2.misc
 
 import io.joern.odb2.GNode
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 private[odb2] class MultiDictIndex {
@@ -19,25 +20,31 @@ private[odb2] class MultiDictIndex {
   def insert(key: String, value: GNode): Unit = {
     if (key != null) {
       assert(!finished, "Cannot insert into finished index")
-      var position = hashToPos(key.hashCode())
-      var inserted = false
-      while (!inserted) {
-        if (position >= size) position = 0
-        keys(position) match {
-          case null =>
-            keys(position) = key
-            values(position) = value
-            inserted = true
-          case k if k == key =>
-            values(position) match {
-              case buf: mutable.ArrayBuffer[GNode] => buf.addOne(value)
-              case old: GNode =>
-                values(position) = mutable.ArrayBuffer(old, value)
-            }
-            inserted = true
-          case _ =>
-            position += 1
-        }
+      insert0(key, value, position = hashToPos(key.hashCode()))
+    }
+  }
+
+  @tailrec
+  private def insert0(key: String, value: GNode, position: Int): Unit = {
+    if (position >= size) {
+      // we've reached the end of the slots. overflow: try from index 0
+      insert0(key, value, position = 0)
+    } else {
+      keys(position) match {
+        case null =>
+          // found a free slot: insert here
+          keys(position) = key
+          values(position) = value
+        case k if k == key =>
+          // found the right (preexistent) slot for this key: append to existing entries
+          values(position) match {
+            case buf: mutable.ArrayBuffer[GNode] => buf.addOne(value)
+            case old: GNode =>
+              values(position) = mutable.ArrayBuffer(old, value)
+          }
+        case _ =>
+          // this slot is already taken - try the next one
+          insert0(key, value, position + 1)
       }
     }
   }
