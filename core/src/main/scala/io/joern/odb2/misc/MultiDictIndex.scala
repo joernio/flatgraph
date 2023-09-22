@@ -20,15 +20,19 @@ private[odb2] class MultiDictIndex {
   def insert(key: String, value: GNode): Unit = {
     if (key != null) {
       assert(!finished, "Cannot insert into finished index")
-      insert0(key, value, position = hashToPos(key.hashCode()))
+      val startPosition = hashToPos(key.hashCode())
+      insert0(key, value, position = startPosition)
     }
   }
 
   @tailrec
-  private def insert0(key: String, value: GNode, position: Int): Unit = {
+  private def insert0(key: String, value: GNode, position: Int, iteration: Int = 0): Unit = {
+    assert(iteration < size,
+      s"We've tried all possible slots, none of which was available - please allocate a large-enough index! iteration=$iteration, size=$size")
+
     if (position >= size) {
       // we've reached the end of the slots. overflow: try from index 0
-      insert0(key, value, position = 0)
+      insert0(key, value, position = 0, iteration = iteration + 1)
     } else {
       keys(position) match {
         case null =>
@@ -44,7 +48,7 @@ private[odb2] class MultiDictIndex {
           }
         case _ =>
           // this slot is already taken - try the next one
-          insert0(key, value, position + 1)
+          insert0(key, value, position + 1, iteration = iteration + 1)
       }
     }
   }
