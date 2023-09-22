@@ -163,7 +163,7 @@ object Accessors {
               return inverseIndex
             } finally {
               val lock2 = inverseIndices.getAndSet(pos, inverseIndex)
-              assert(lock eq lock2)
+              assert(lock == lock2, s"something went wrong with the locks: expected them to be equal, but they weren't... lock=$lock, lock2=$lock2")
             }
           }
         }
