@@ -27,7 +27,7 @@ object SchemaGen {
 
     val basePackage = schema.basePackage + ".v2"
 
-    val propertyContexts = relevantPropertyContexts(schema)
+    val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
 
     val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
@@ -128,7 +128,7 @@ object SchemaGen {
         val mixinsT =
           (List("AnyRef") ++ newExtendz.map { _.className + "T" } ++ newProperties.map { p => s"Has${p.className}T" }).mkString(" with ")
         val oldProperties = baseType.properties.toSet.diff(newProperties.toSet).toList.sortBy(_.name)
-        val oldExtendz = baseType.extendzRecursively.toSet.diff(newExtendz.toSet).toList.sortBy(_.name)
+        val oldExtendz    = baseType.extendzRecursively.toSet.diff(newExtendz.toSet).toList.sortBy(_.name)
 
         val newNodeDefs = mutable.ArrayBuffer.empty[String]
 
@@ -184,6 +184,7 @@ object SchemaGen {
       .map { case (edgeType, idx) =>
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
+        // format: off
         val accessor = if (edgeType.properties.length == 1) {
           val p = edgeType.properties.head
           p.cardinality match {
@@ -199,6 +200,7 @@ object SchemaGen {
           }
 
         } else ""
+        // format: on
 
         s"""class ${edgeType.className}(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
            |    extends odb2.Edge(src_4762, dst_4762, $idx.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
@@ -313,7 +315,11 @@ object SchemaGen {
              |override def label: String = "${nodeType.name}"
              |${newNodeProps.sorted.mkString(lineSeparator)}
              |${newNodeFluent.sorted.mkString(lineSeparator)}
-             |${flattenItems.mkString(s"override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {$lineSeparator", lineSeparator, s"$lineSeparator}")}
+             |${flattenItems.mkString(
+              s"override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {$lineSeparator",
+              lineSeparator,
+              s"$lineSeparator}"
+            )}
              |}""".stripMargin
 
         s"""${staticTyp}
@@ -470,7 +476,11 @@ object SchemaGen {
           |}""".stripMargin)
         }
         baseAccess.addOne(
-          accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {$lineSeparator", lineSeparator, s"$lineSeparator}")
+          accessors.mkString(
+            s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {$lineSeparator",
+            lineSeparator,
+            s"$lineSeparator}"
+          )
         )
       }
     }
@@ -556,7 +566,9 @@ object SchemaGen {
 
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
-      s"""def ${sanitizeReservedNames(Helpers.camelCase(typ.name))}: Iterator[nodes.${typ.className}] = wrappedGraph.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
+      s"""def ${sanitizeReservedNames(
+          Helpers.camelCase(typ.name)
+        )}: Iterator[nodes.${typ.className}] = wrappedGraph.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
     }.toList
     val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
       s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
@@ -701,16 +713,15 @@ object SchemaGen {
       relevantPropertiesSet.addAll(baseType.properties)
     }
 
-    assert(relevantPropertiesSet.size == relevantPropertiesSet.map(_.name).size,
+    assert(
+      relevantPropertiesSet.size == relevantPropertiesSet.map(_.name).size,
       s"""relevantPropertiesSet should have exactly one entry per entry name, but that's not the case...
          |relevantPropertiesSet entries: ${relevantPropertiesSet.toSeq.sortBy(_.name)}
          |relevantPropertiesSet names:   ${relevantPropertiesSet.map(_.name).toSeq}
-         |""".stripMargin)
-
-    PropertyContexts(
-      relevantPropertiesSet.toArray.sortBy(_.name),
-      containingByName.view.toMap
+         |""".stripMargin
     )
+
+    PropertyContexts(relevantPropertiesSet.toArray.sortBy(_.name), containingByName.view.toMap)
   }
 
   val lineSeparator = java.lang.System.lineSeparator()
