@@ -3,7 +3,7 @@ package io.joern.odb2.schemagen
 import io.joern.odb2.schemagen.CodeSnippets.FilterSteps
 import java.nio.file.Paths
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import overflowdb.schema.{AbstractNodeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 import scala.collection.mutable
 
@@ -56,7 +56,7 @@ object SchemaGen {
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
-    val newPropsAtNodeSet = schema.allNodeTypes.map { nodeType =>
+    val newPropsAtNodeSet: Map[AbstractNodeType, Set[Property[_]]] = schema.allNodeTypes.map { nodeType =>
       nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
     }.toMap
     val newPropsAtNodeList = newPropsAtNodeSet.view.mapValues(_.toList.sortBy(_.name))
@@ -64,12 +64,18 @@ object SchemaGen {
       nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
 
-    val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
-    for (baseType <- schema.nodeBaseTypes) {
-      val props = newPropsAtNodeSet(baseType)
-      val dst   = prioStages.find { stage => stage.forall(other => (newPropsAtNodeSet(other) & props).isEmpty) }
-      if (dst.isDefined) { dst.get.addOne(baseType) }
-      else prioStages.addOne(mutable.ArrayBuffer(baseType))
+    val prioStages: Array[Array[NodeBaseType]] = {
+      val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
+      for (baseType <- schema.nodeBaseTypes) {
+        val props = newPropsAtNodeSet(baseType)
+        prioStages.find { stage =>
+          stage.forall(other => newPropsAtNodeSet(other).intersect(props).isEmpty)
+        } match {
+          case Some(value) => value.addOne(baseType)
+          case None => prioStages.addOne(mutable.ArrayBuffer(baseType))
+        }
+      }
+      prioStages.map(_.toArray).toArray
     }
 
     // base file
@@ -459,8 +465,8 @@ object SchemaGen {
 
     }
 
-    for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
-      stage.iterator.foreach { baseType =>
+    for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
+      stage.foreach { baseType =>
         val extensionClass = s"Access_${baseType.className}Base"
         convertForStage.addOne(
           s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
@@ -484,8 +490,8 @@ object SchemaGen {
         )
       }
     }
-    for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes.iterator) ++ prioStages.iterator)) {
-      stage.iterator.foreach { baseType =>
+    for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
+      stage.foreach { baseType =>
         val extensionClass = s"Traversal_${baseType.className}Base"
         convertForStage.addOne(
           s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
