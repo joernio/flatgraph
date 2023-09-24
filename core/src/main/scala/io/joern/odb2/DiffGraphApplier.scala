@@ -12,8 +12,8 @@ object DiffGraphApplier {
   }
 }
 
-/** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
-  */
+/** The class that is responsible for applying diffgraphs.
+  * This is not supposed to be public API, users should stick to applyDiff */
 private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
