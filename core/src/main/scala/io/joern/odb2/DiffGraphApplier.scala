@@ -34,12 +34,12 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   def emplaceSetProperty(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
-    val iter = propertyValues.iterator
     val pos  = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
-    if (setNodeProperties(pos) == null) setNodeProperties(pos) = mutable.ArrayBuffer.empty
+    if (setNodeProperties(pos) == null)
+      setNodeProperties(pos) = mutable.ArrayBuffer.empty
     val buf   = setNodeProperties(pos)
     val start = buf.size
-    iter.foreach {
+    propertyValues.iterator.foreach {
       case dnode: DNode => buf.addOne(getGNode(dnode))
       case other        => buf.addOne(other)
     }
@@ -48,7 +48,9 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   private def emplace[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
-    if (a(pos) == null) a(pos) = mutable.ArrayBuffer.empty[T]
+    if (a(pos) == null)
+      a(pos) = mutable.ArrayBuffer.empty[T]
+
     a(pos).append(item)
   }
 
