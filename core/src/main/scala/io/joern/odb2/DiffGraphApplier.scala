@@ -28,12 +28,12 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     override def emplaceProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
       val iter = propertyValues.iterator
       if (iter.hasNext) {
-        emplaceSetProperty(node.storedRef.get, propertyKind, iter)
+        emplaceProperty0(node.storedRef.get, propertyKind, iter)
       }
     }
   }
 
-  def emplaceSetProperty(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
+  private def emplaceProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
     val pos  = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
     if (setNodeProperties(pos) == null)
       setNodeProperties(pos) = mutable.ArrayBuffer.empty
@@ -54,13 +54,13 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     a(pos).append(item)
   }
 
-  def drainDeferred(): Unit = {
+  private def drainDeferred(): Unit = {
     while (deferred.nonEmpty) {
       deferred.removeHead().flattenProperties(NewNodeInterface)
     }
   }
 
-  def getGNode(node: DNodeOrNode): GNode = {
+  private def getGNode(node: DNodeOrNode): GNode = {
     node match {
       case already: GNode =>
         assert(already.graph == graph, "expected a different graph instance")
@@ -82,7 +82,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def splitUpdate(): Unit = {
+  private def splitUpdate(): Unit = {
     diff.buffer.foreach {
       case delNode: DelNode if !AccessHelpers.isDeleted(delNode.node) =>
         AccessHelpers.markDeleted(delNode.node)
@@ -165,7 +165,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           case a: Array[_]           => a.iterator
           case item                  => Iterator.single(item)
         }
-        emplaceSetProperty(setNodeProperty.node, setNodeProperty.propertyKind, iter)
+        emplaceProperty0(setNodeProperty.node, setNodeProperty.propertyKind, iter)
       case delNode: DelNode =>
         // already processed
         assert(AccessHelpers.isDeleted(delNode.node), s"node should have been deleted already but wasn't: ${delNode.node}")
@@ -173,7 +173,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     drainDeferred()
   }
 
-  def applyUpdate(): Unit = {
+  private def applyUpdate(): Unit = {
     splitUpdate()
     // order: 1. remove edges, 2. add nodes, 3. delete nodes, 4. add edges
     for {
@@ -243,7 +243,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         case null =>
         case oldQty: Array[Int] =>
           if (get(oldQty, deletedNode.seq() + 1) - get(oldQty, deletedNode.seq()) > 0)
-            emplaceSetProperty(deletedNode, propertyKind, Iterator.empty)
+            emplaceProperty0(deletedNode, propertyKind, Iterator.empty)
         case _ =>
       }
     }
@@ -324,7 +324,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   /** returns (out-edge, in-edge) pair */
-  def normalizeRepresentation(edge: Edge): (EdgeRepr, EdgeRepr) = {
+  private def normalizeRepresentation(edge: Edge): (EdgeRepr, EdgeRepr) = {
     val kind = edge.edgeKind
     assert(edge.subSeq != 0, "edge.subSeq must not be 0")
     if (edge.subSeq > 0) {
@@ -353,7 +353,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   /** in-place turns offset-encoded qty into length-encoded qty */
-  def ranToLen(arr: Array[Int]): Unit = {
+  private def ranToLen(arr: Array[Int]): Unit = {
     if (arr.length > 0) {
       assert(arr(0) == 0, s"first element in array was expected to be `0`, but instead is `${arr(0)}`")
       for (idx <- Range(0, arr.length - 1)) {
@@ -364,7 +364,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   /** in-place turns length-encoded qty into offset-encoded qty */
-  def lenToRan(arr: Array[Int]): Unit = {
+  private def lenToRan(arr: Array[Int]): Unit = {
     if (arr.length > 0) {
       assert(arr.last == 0, s"last element in array was expected to be `0`, but instead is `${arr.last}`")
       var count = 0
@@ -378,7 +378,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def addNodes(nodeKind: Int): Unit = {
+  private def addNodes(nodeKind: Int): Unit = {
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
       return
     }
@@ -386,7 +386,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     graph.nodeCountByKind(nodeKind) += newNodes(nodeKind).size
   }
 
-  def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     if (setEdgeProperties(pos) == null) return
     val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
@@ -406,7 +406,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
 
   }
 
-  def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val deletions = delEdges(pos)
     if (deletions == null) return
@@ -480,7 +480,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos        = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val insertions = newEdges(pos)
     if (insertions == null) {
@@ -545,7 +545,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
+  private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
     val pos         = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val propertyBuf = setNodeProperties(pos)
     if (propertyBuf != null) {
