@@ -85,7 +85,7 @@ object SchemaGen {
        |final def _${Helpers.camelCase(et.name)}Out: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
        |final def _${Helpers.camelCase(et.name)}In: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
        |""".stripMargin
-    }.mkString(lineSeparator)
+    }.mkString("\n")
     // format: on
 
     val userMarkers = schema.allNodeTypes
@@ -93,7 +93,7 @@ object SchemaGen {
       .distinct
       .map { case MarkerTrait(name) => s"trait $name" }
       .sorted
-      .mkString(lineSeparator)
+      .mkString("\n")
 
     val rootTypes =
       s"""package $basePackage.nodes
@@ -120,7 +120,7 @@ object SchemaGen {
 
     os.write(outputDir / "RootTypes.scala", rootTypes)
 
-    val propertyMarkers = relevantProperties.map(p => s"trait Has${p.className}T").mkString(lineSeparator)
+    val propertyMarkers = relevantProperties.map(p => s"trait Has${p.className}T").mkString("\n")
     val basetypefile = schema.nodeBaseTypes
       .map { baseType =>
         val newExtendz = newExtendzMap(baseType)
@@ -172,7 +172,7 @@ object SchemaGen {
            |
            |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}T]{
            |  type RelatedStored <:  ${baseType.className}
-           |  ${newNodeDefs.mkString(lineSeparator)}
+           |  ${newNodeDefs.mkString("\n")}
            |}
            |""".stripMargin
       }.mkString(
@@ -181,8 +181,8 @@ object SchemaGen {
            |
            |
            |""".stripMargin,
-        s"$lineSeparator$lineSeparator",
-        s"$lineSeparator$userMarkers$lineSeparator$propertyMarkers$lineSeparator"
+        "\n\n",
+        s"\n$userMarkers\n$propertyMarkers\n"
       )
     os.write(outputDir / "BaseTypes.scala", basetypefile)
 
@@ -215,8 +215,8 @@ object SchemaGen {
            |import io.joern.odb2
            |
            |""".stripMargin,
-        lineSeparator,
-        lineSeparator
+        "\n",
+        "\n"
       )
     os.write(outputDir / "EdgeTypes.scala", edgeTypes_)
 
@@ -320,26 +320,22 @@ object SchemaGen {
              |class New${nodeType.className} extends NewNode(${kindByNode(nodeType)}.toShort) with ${nodeType.className}Base {
              |type RelatedStored = ${nodeType.className}
              |override def label: String = "${nodeType.name}"
-             |${newNodeProps.sorted.mkString(lineSeparator)}
-             |${newNodeFluent.sorted.mkString(lineSeparator)}
-             |${flattenItems.mkString(
-              s"override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {$lineSeparator",
-              lineSeparator,
-              s"$lineSeparator}"
-            )}
+             |${newNodeProps.sorted.mkString("\n")}
+             |${newNodeFluent.sorted.mkString("\n")}
+             |${flattenItems.mkString("override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {\n", "\n", "\n}")}
              |}""".stripMargin
 
         s"""$staticTyp
            |$base {
-           |${baseNodeProps.mkString(lineSeparator)}
+           |${baseNodeProps.mkString("\n")}
            |${propDictItems.mkString(
-            s"override def propertiesMap: java.util.Map[String, Any] = {$lineSeparator import $basePackage.accessors.Lang._$lineSeparator val res = new java.util.HashMap[String, Any]()$lineSeparator",
-            lineSeparator,
-            s"$lineSeparator res$lineSeparator}"
+            s"override def propertiesMap: java.util.Map[String, Any] = {\n import $basePackage.accessors.Lang._\n val res = new java.util.HashMap[String, Any]()\n",
+            "\n",
+            "\n res\n}"
           )}
            |}
            |$stored {
-           |${storedNodeProps.mkString(lineSeparator)}
+           |${storedNodeProps.mkString("\n")}
            |}
            |$newNode
            |""".stripMargin
@@ -350,7 +346,7 @@ object SchemaGen {
            |import scala.collection.immutable.{IndexedSeq, ArraySeq}
            |
            |""".stripMargin,
-        s"$lineSeparator$lineSeparator",
+        "\n\n",
         ""
       )
     os.write(outputDir / "NodeTypes.scala", concreteNodes)
@@ -415,7 +411,7 @@ object SchemaGen {
           }
           .toList
           .sorted
-          .mkString(lineSeparator)}
+          .mkString("\n")}
          |    else null
          | 
          | override def getPropertyIdByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
@@ -483,11 +479,7 @@ object SchemaGen {
           |}""".stripMargin)
         }
         baseAccess.addOne(
-          accessors.mkString(
-            s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {$lineSeparator",
-            lineSeparator,
-            s"$lineSeparator}"
-          )
+          accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
         )
       }
     }
@@ -504,7 +496,7 @@ object SchemaGen {
         baseAccessTrav.addOne(
           elems.mkString(
             s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
-            lineSeparator,
+            "\n",
             "}"
           )
         )
@@ -525,11 +517,11 @@ object SchemaGen {
       }
       convtraits.addOne(s"""trait $tname ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
            |import Accessors._
-           |${convBuffer(idx).mkString(lineSeparator)}
+           |${convBuffer(idx).mkString("\n")}
            |}""".stripMargin)
       convtraitsTrav.addOne(s"""trait $tname ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
            |import Accessors._
-           |${convBufferTrav(idx).mkString(lineSeparator)}
+           |${convBufferTrav(idx).mkString("\n")}
            |}""".stripMargin)
     }
 
@@ -542,12 +534,12 @@ object SchemaGen {
          |object Lang extends ConcreteStoredConversions {}
          |
          |object Accessors {
-         |  ${concreteStoredAccess.mkString(lineSeparator)}
+         |  ${concreteStoredAccess.mkString("\n")}
          |  //
-         |  ${baseAccess.mkString(lineSeparator)}
+         |  ${baseAccess.mkString("\n")}
          |}
          |
-         |${convtraits.mkString(s"$lineSeparator$lineSeparator")}
+         |${convtraits.mkString("\n\n")}
          |""".stripMargin
 
     os.write(outputDir / "Accessors.scala", accessors)
@@ -563,11 +555,11 @@ object SchemaGen {
          |object Accessors {
          |  import $basePackage.accessors.Lang._
          |  import odb2.misc.Misc
-         |  ${concreteStoredAccessTrav.mkString(lineSeparator)}
+         |  ${concreteStoredAccessTrav.mkString("\n")}
          |  //
-         |  ${baseAccessTrav.mkString(lineSeparator)}
+         |  ${baseAccessTrav.mkString("\n")}
          |}
-         |${convtraitsTrav.mkString(s"$lineSeparator$lineSeparator")}
+         |${convtraitsTrav.mkString("\n\n")}
          |""".stripMargin
     os.write(outputDir / "Traversals.scala", traversals)
 
@@ -595,9 +587,9 @@ object SchemaGen {
          |}
          |
          |class ${schema.domainShortName}NodeStarters(val wrappedGraph: ${schema.domainShortName}) extends AnyVal {
-         |${concreteStarters.mkString(lineSeparator)}
+         |${concreteStarters.mkString("\n")}
          |
-         |${baseStarters.mkString(lineSeparator)}
+         |${baseStarters.mkString("\n")}
          |}
          |""".stripMargin
     os.write(outputDir / s"${schema.domainShortName}.scala", domainMain)
@@ -731,5 +723,4 @@ object SchemaGen {
     PropertyContexts(relevantPropertiesSet.toArray.sortBy(_.name), containingByName.view.toMap)
   }
 
-  val lineSeparator = java.lang.System.lineSeparator()
 }
