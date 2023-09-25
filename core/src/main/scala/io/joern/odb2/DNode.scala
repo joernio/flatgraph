@@ -12,7 +12,7 @@ trait DNode extends RawUpdate with DNodeOrNode {
 }
 
 trait BatchedUpdateInterface {
-  def emplaceProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit
+  def insertProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit
 }
 class GenericDNode(val nodeKind: Short, var storedRef: Option[GNode] = None) extends DNode {
   override def flattenProperties(interface: BatchedUpdateInterface): Unit = {}

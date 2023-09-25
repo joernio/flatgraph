@@ -255,7 +255,7 @@ object SchemaGen {
               propDictItems.append(
                 s"""val tmp${p.className} = this.$pname; if(tmp${p.className}.nonEmpty) res.put("${p.name}", tmp${p.className})"""
               )
-              flattenItems.append(s"""if($pname.nonEmpty) interface.emplaceProperty(this, ${idByProperty(p)}, this.${pname})""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.${pname})""")
             case Cardinality.ZeroOrOne =>
               newNodeProps.append(s"var $pname: Option[$ptyp] = None")
               newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.${pname} = value; this }")
@@ -263,13 +263,13 @@ object SchemaGen {
                 s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.${pname} = Option(value); this }"
               )
               propDictItems.append(s"""this.$pname.foreach{p => res.put("${p.name}", p )}""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.emplaceProperty(this, ${idByProperty(p)}, this.${pname})""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.${pname})""")
 
             case one: Cardinality.One[_] =>
               newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
               newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.${pname} = value; this }")
               propDictItems.append(s"""res.put("${p.name}", this.$pname )""")
-              flattenItems.append(s"""interface.emplaceProperty(this, ${idByProperty(p)}, Iterator(this.$pname))""")
+              flattenItems.append(s"""interface.insertProperty(this, ${idByProperty(p)}, Iterator(this.$pname))""")
           }
         }
 
@@ -290,7 +290,7 @@ object SchemaGen {
                 s"def $pname: IndexedSeq[${styp}] = odb2.Accessors.getNodePropertyMulti[$styp](graph, nodeKind, $index, seq)"
               )
               propDictItems.append(s"""val tmp$pname = this.$pname; if(tmp$pname.nonEmpty) res.put("$pname", tmp$pname)""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.emplaceProperty(this, $pid, this.$pname)""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
 
             case Cardinality.ZeroOrOne =>
               newNodeProps.append(s"var $pname: Option[$ptyp] = None")
@@ -301,7 +301,7 @@ object SchemaGen {
                 s"def $pname: Option[${styp}] = odb2.Accessors.getNodePropertyOption[$styp](graph, nodeKind, $index, seq)"
               )
               propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.emplaceProperty(this, $pid, this.$pname)""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
 
             case _: Cardinality.One[_] =>
               newNodeProps.append(s"var $pname: $ptyp = null")
@@ -311,7 +311,7 @@ object SchemaGen {
                 s"def $pname: ${styp} = odb2.Accessors.getNodePropertySingle(graph, nodeKind, $index, seq, null: ${styp})"
               )
               propDictItems.append(s"""res.put("$pname", this.$pname )""")
-              flattenItems.append(s"""interface.emplaceProperty(this, $pid, Iterator(this.$pname))""")
+              flattenItems.append(s"""interface.insertProperty(this, $pid, Iterator(this.$pname))""")
           }
         }
 

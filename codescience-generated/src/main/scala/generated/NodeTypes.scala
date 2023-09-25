@@ -54,16 +54,16 @@ class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
   def name(value: String): this.type                 = { this.name = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -116,15 +116,15 @@ class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase
   def name(value: String): this.type                 = { this.name = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -161,10 +161,10 @@ class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameter
   def lineNumber(value: Option[Int]): this.type   = { this.lineNumber = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -201,10 +201,10 @@ class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationPar
   def lineNumber(value: Option[Int]): this.type   = { this.lineNumber = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -254,14 +254,14 @@ class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
   def lineNumber(value: Option[Int]): this.type      = { this.lineNumber = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -296,10 +296,10 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
   def name(value: String): this.type                             = { this.name = value; this }
   def signature(value: String): this.type                        = { this.signature = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (isMethodNeverOverridden.nonEmpty) interface.emplaceProperty(this, 44, this.isMethodNeverOverridden)
-    interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 72, Iterator(this.signature))
+    if (isMethodNeverOverridden.nonEmpty) interface.insertProperty(this, 44, this.isMethodNeverOverridden)
+    interface.insertProperty(this, 53, Iterator(this.methodFullName))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -359,17 +359,17 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -464,24 +464,24 @@ class NewCall extends NewNode(7.toShort) with CallBase {
   def signature(value: String): this.type                             = { this.signature = value; this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 25, Iterator(this.dispatchName))
-    interface.emplaceProperty(this, 26, Iterator(this.dispatchType))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
-    if (methodInstFullName.nonEmpty) interface.emplaceProperty(this, 54, this.methodInstFullName)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    if (resolved.nonEmpty) interface.emplaceProperty(this, 69, this.resolved)
-    interface.emplaceProperty(this, 72, Iterator(this.signature))
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 25, Iterator(this.dispatchName))
+    interface.insertProperty(this, 26, Iterator(this.dispatchType))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 53, Iterator(this.methodFullName))
+    if (methodInstFullName.nonEmpty) interface.insertProperty(this, 54, this.methodInstFullName)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    if (resolved.nonEmpty) interface.insertProperty(this, 69, this.resolved)
+    interface.insertProperty(this, 72, Iterator(this.signature))
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -513,8 +513,8 @@ class NewCallChain extends NewNode(8.toShort) with CallChainBase {
   def calls(value: IterableOnce[CallBase]): this.type     = { this.calls = value.iterator.to(ArraySeq); this }
   def methods(value: IterableOnce[MethodBase]): this.type = { this.methods = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (calls.nonEmpty) interface.emplaceProperty(this, 85, this.calls)
-    if (methods.nonEmpty) interface.emplaceProperty(this, 86, this.methods)
+    if (calls.nonEmpty) interface.insertProperty(this, 85, this.calls)
+    if (methods.nonEmpty) interface.insertProperty(this, 86, this.methods)
   }
 }
 
@@ -551,9 +551,9 @@ class NewCallSite extends NewNode(9.toShort) with CallSiteBase {
   def callerMethod(value: MethodBase): this.type = { this.callerMethod = value; this }
   def method(value: MethodBase): this.type       = { this.method = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 87, Iterator(this.call))
-    interface.emplaceProperty(this, 85, Iterator(this.callerMethod))
-    interface.emplaceProperty(this, 86, Iterator(this.method))
+    interface.insertProperty(this, 87, Iterator(this.call))
+    interface.insertProperty(this, 85, Iterator(this.callerMethod))
+    interface.insertProperty(this, 86, Iterator(this.method))
   }
 }
 
@@ -586,9 +586,9 @@ class NewClosureBinding extends NewNode(10.toShort) with ClosureBindingBase {
   def closureOriginalName(value: String): this.type         = { this.closureOriginalName = Option(value); this }
   def evaluationStrategy(value: String): this.type          = { this.evaluationStrategy = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (closureBindingId.nonEmpty) interface.emplaceProperty(this, 13, this.closureBindingId)
-    if (closureOriginalName.nonEmpty) interface.emplaceProperty(this, 14, this.closureOriginalName)
-    interface.emplaceProperty(this, 28, Iterator(this.evaluationStrategy))
+    if (closureBindingId.nonEmpty) interface.insertProperty(this, 13, this.closureBindingId)
+    if (closureOriginalName.nonEmpty) interface.insertProperty(this, 14, this.closureOriginalName)
+    interface.insertProperty(this, 28, Iterator(this.evaluationStrategy))
   }
 }
 
@@ -628,11 +628,11 @@ class NewComment extends NewNode(11.toShort) with CommentBase {
   def lineNumber(value: Option[Int]): this.type   = { this.lineNumber = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 32, Iterator(this.filename))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 32, Iterator(this.filename))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -664,9 +664,9 @@ class NewConfigFile extends NewNode(12.toShort) with ConfigFileBase {
   def content(value: String): this.type = { this.content = value; this }
   def name(value: String): this.type    = { this.name = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    interface.emplaceProperty(this, 19, Iterator(this.content))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    interface.insertProperty(this, 19, Iterator(this.content))
+    interface.insertProperty(this, 58, Iterator(this.name))
   }
 }
 
@@ -722,16 +722,16 @@ class NewControlStructure extends NewNode(13.toShort) with ControlStructureBase 
   def order(value: Int): this.type                   = { this.order = value; this }
   def parserTypeName(value: String): this.type       = { this.parserTypeName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 20, Iterator(this.controlStructureType))
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 64, Iterator(this.parserTypeName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 20, Iterator(this.controlStructureType))
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 64, Iterator(this.parserTypeName))
   }
 }
 
@@ -766,10 +766,10 @@ class NewDependency extends NewNode(14.toShort) with DependencyBase {
   def name(value: String): this.type                      = { this.name = value; this }
   def version(value: String): this.type                   = { this.version = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (dependencyGroupId.nonEmpty) interface.emplaceProperty(this, 21, this.dependencyGroupId)
-    interface.emplaceProperty(this, 22, Iterator(this.dependencyType))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 84, Iterator(this.version))
+    if (dependencyGroupId.nonEmpty) interface.insertProperty(this, 21, this.dependencyGroupId)
+    interface.insertProperty(this, 22, Iterator(this.dependencyType))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 84, Iterator(this.version))
   }
 }
 
@@ -797,8 +797,8 @@ class NewDomAttribute extends NewNode(15.toShort) with DomAttributeBase {
   def name(value: String): this.type  = { this.name = value; this }
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 81, Iterator(this.value))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -840,11 +840,11 @@ class NewDomNode extends NewNode(16.toShort) with DomNodeBase {
   def lineNumber(value: Option[Int]): this.type                    = { this.lineNumber = value; this }
   def name(value: String): this.type                               = { this.name = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    if (attributes.nonEmpty) interface.emplaceProperty(this, 85, this.attributes)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    if (attributes.nonEmpty) interface.insertProperty(this, 85, this.attributes)
   }
 }
 
@@ -897,15 +897,15 @@ class NewFieldIdentifier extends NewNode(17.toShort) with FieldIdentifierBase {
   def lineNumber(value: Option[Int]): this.type      = { this.lineNumber = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 8, Iterator(this.canonicalName))
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 8, Iterator(this.canonicalName))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -949,12 +949,12 @@ class NewFile extends NewNode(18.toShort) with FileBase {
   def name(value: String): this.type              = { this.name = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (hash.nonEmpty) interface.emplaceProperty(this, 35, this.hash)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (hash.nonEmpty) interface.insertProperty(this, 35, this.hash)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -994,10 +994,10 @@ class NewFinding extends NewNode(19.toShort) with FindingBase {
   def rootCauses(value: IterableOnce[FindingBase]): this.type         = { this.rootCauses = value.iterator.to(ArraySeq); this }
   def structuredFingerprint(value: String): this.type                 = { this.structuredFingerprint = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 76, Iterator(this.structuredFingerprint))
-    if (evidence.nonEmpty) interface.emplaceProperty(this, 85, this.evidence)
-    if (keyValuePairs.nonEmpty) interface.emplaceProperty(this, 86, this.keyValuePairs)
-    if (rootCauses.nonEmpty) interface.emplaceProperty(this, 87, this.rootCauses)
+    interface.insertProperty(this, 76, Iterator(this.structuredFingerprint))
+    if (evidence.nonEmpty) interface.insertProperty(this, 85, this.evidence)
+    if (keyValuePairs.nonEmpty) interface.insertProperty(this, 86, this.keyValuePairs)
+    if (rootCauses.nonEmpty) interface.insertProperty(this, 87, this.rootCauses)
   }
 }
 
@@ -1049,12 +1049,12 @@ class NewFlow extends NewNode(20.toShort) with FlowBase {
   def source(value: SourceBase): this.type                                = { this.source = value; this }
   def transformations(value: IterableOnce[TransformationBase]): this.type = { this.transformations = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (branchPoints.nonEmpty) interface.emplaceProperty(this, 86, this.branchPoints)
-    if (cfgNodes.nonEmpty) interface.emplaceProperty(this, 88, this.cfgNodes)
-    if (points.nonEmpty) interface.emplaceProperty(this, 89, this.points)
-    interface.emplaceProperty(this, 85, Iterator(this.sink))
-    interface.emplaceProperty(this, 87, Iterator(this.source))
-    if (transformations.nonEmpty) interface.emplaceProperty(this, 90, this.transformations)
+    if (branchPoints.nonEmpty) interface.insertProperty(this, 86, this.branchPoints)
+    if (cfgNodes.nonEmpty) interface.insertProperty(this, 88, this.cfgNodes)
+    if (points.nonEmpty) interface.insertProperty(this, 89, this.points)
+    interface.insertProperty(this, 85, Iterator(this.sink))
+    interface.insertProperty(this, 87, Iterator(this.source))
+    if (transformations.nonEmpty) interface.insertProperty(this, 90, this.transformations)
   }
 }
 
@@ -1079,7 +1079,7 @@ class NewFramework extends NewNode(21.toShort) with FrameworkBase {
   var name: String                   = "<empty>": String
   def name(value: String): this.type = { this.name = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 58, Iterator(this.name))
   }
 }
 
@@ -1107,8 +1107,8 @@ class NewFrameworkData extends NewNode(22.toShort) with FrameworkDataBase {
   def content(value: String): this.type = { this.content = value; this }
   def name(value: String): this.type    = { this.name = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 19, Iterator(this.content))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 19, Iterator(this.content))
+    interface.insertProperty(this, 58, Iterator(this.name))
   }
 }
 
@@ -1178,18 +1178,18 @@ class NewIdentifier extends NewNode(23.toShort) with IdentifierBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1238,14 +1238,14 @@ class NewImplicitCall extends NewNode(24.toShort) with ImplicitCallBase {
   def order(value: Int): this.type                = { this.order = value; this }
   def signature(value: String): this.type         = { this.signature = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 72, Iterator(this.signature))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -1309,15 +1309,15 @@ class NewImport extends NewNode(25.toShort) with ImportBase {
   def lineNumber(value: Option[Int]): this.type        = { this.lineNumber = value; this }
   def order(value: Int): this.type                     = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (explicitAs.nonEmpty) interface.emplaceProperty(this, 31, this.explicitAs)
-    if (importedAs.nonEmpty) interface.emplaceProperty(this, 37, this.importedAs)
-    if (importedEntity.nonEmpty) interface.emplaceProperty(this, 38, this.importedEntity)
-    if (isExplicit.nonEmpty) interface.emplaceProperty(this, 42, this.isExplicit)
-    if (isWildcard.nonEmpty) interface.emplaceProperty(this, 47, this.isWildcard)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (explicitAs.nonEmpty) interface.insertProperty(this, 31, this.explicitAs)
+    if (importedAs.nonEmpty) interface.insertProperty(this, 37, this.importedAs)
+    if (importedEntity.nonEmpty) interface.insertProperty(this, 38, this.importedEntity)
+    if (isExplicit.nonEmpty) interface.insertProperty(this, 42, this.isExplicit)
+    if (isWildcard.nonEmpty) interface.insertProperty(this, 47, this.isWildcard)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -1412,21 +1412,21 @@ class NewIoflow extends NewNode(26.toShort) with IoflowBase {
   def transforms(value: IterableOnce[TransformBase]): this.type       = { this.transforms = value.iterator.to(ArraySeq); this }
   def triggerMethods(value: IterableOnce[MethodBase]): this.type      = { this.triggerMethods = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 33, Iterator(this.fingerprint))
-    if (literalsToSink.nonEmpty) interface.emplaceProperty(this, 52, this.literalsToSink)
-    interface.emplaceProperty(this, 56, Iterator(this.mlAssisted))
-    if (dataTags.nonEmpty) interface.emplaceProperty(this, 86, this.dataTags)
-    if (dstTags.nonEmpty) interface.emplaceProperty(this, 88, this.dstTags)
-    interface.emplaceProperty(this, 89, Iterator(this.primaryFlow))
-    interface.emplaceProperty(this, 85, Iterator(this.sink))
-    if (sinkDescriptorFlows.nonEmpty) interface.emplaceProperty(this, 90, this.sinkDescriptorFlows)
-    if (sinkDescriptorTags.nonEmpty) interface.emplaceProperty(this, 91, this.sinkDescriptorTags)
-    interface.emplaceProperty(this, 87, Iterator(this.source))
-    if (sourceDescriptorFlows.nonEmpty) interface.emplaceProperty(this, 92, this.sourceDescriptorFlows)
-    if (sourceDescriptorTags.nonEmpty) interface.emplaceProperty(this, 93, this.sourceDescriptorTags)
-    if (sourceTags.nonEmpty) interface.emplaceProperty(this, 94, this.sourceTags)
-    if (transforms.nonEmpty) interface.emplaceProperty(this, 95, this.transforms)
-    if (triggerMethods.nonEmpty) interface.emplaceProperty(this, 96, this.triggerMethods)
+    interface.insertProperty(this, 33, Iterator(this.fingerprint))
+    if (literalsToSink.nonEmpty) interface.insertProperty(this, 52, this.literalsToSink)
+    interface.insertProperty(this, 56, Iterator(this.mlAssisted))
+    if (dataTags.nonEmpty) interface.insertProperty(this, 86, this.dataTags)
+    if (dstTags.nonEmpty) interface.insertProperty(this, 88, this.dstTags)
+    interface.insertProperty(this, 89, Iterator(this.primaryFlow))
+    interface.insertProperty(this, 85, Iterator(this.sink))
+    if (sinkDescriptorFlows.nonEmpty) interface.insertProperty(this, 90, this.sinkDescriptorFlows)
+    if (sinkDescriptorTags.nonEmpty) interface.insertProperty(this, 91, this.sinkDescriptorTags)
+    interface.insertProperty(this, 87, Iterator(this.source))
+    if (sourceDescriptorFlows.nonEmpty) interface.insertProperty(this, 92, this.sourceDescriptorFlows)
+    if (sourceDescriptorTags.nonEmpty) interface.insertProperty(this, 93, this.sourceDescriptorTags)
+    if (sourceTags.nonEmpty) interface.insertProperty(this, 94, this.sourceTags)
+    if (transforms.nonEmpty) interface.insertProperty(this, 95, this.transforms)
+    if (triggerMethods.nonEmpty) interface.insertProperty(this, 96, this.triggerMethods)
   }
 }
 
@@ -1469,12 +1469,12 @@ class NewJumpLabel extends NewNode(27.toShort) with JumpLabelBase {
   def order(value: Int): this.type                = { this.order = value; this }
   def parserTypeName(value: String): this.type    = { this.parserTypeName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 64, Iterator(this.parserTypeName))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 64, Iterator(this.parserTypeName))
   }
 }
 
@@ -1526,15 +1526,15 @@ class NewJumpTarget extends NewNode(28.toShort) with JumpTargetBase {
   def order(value: Int): this.type                = { this.order = value; this }
   def parserTypeName(value: String): this.type    = { this.parserTypeName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 64, Iterator(this.parserTypeName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 64, Iterator(this.parserTypeName))
   }
 }
 
@@ -1562,8 +1562,8 @@ class NewKeyValuePair extends NewNode(29.toShort) with KeyValuePairBase {
   def key(value: String): this.type   = { this.key = value; this }
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 48, Iterator(this.key))
-    interface.emplaceProperty(this, 81, Iterator(this.value))
+    interface.insertProperty(this, 48, Iterator(this.key))
+    interface.insertProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -1623,17 +1623,17 @@ class NewLiteral extends NewNode(30.toShort) with LiteralBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1697,15 +1697,15 @@ class NewLocal extends NewNode(31.toShort) with LocalBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (closureBindingId.nonEmpty) interface.emplaceProperty(this, 13, this.closureBindingId)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    if (closureBindingId.nonEmpty) interface.insertProperty(this, 13, this.closureBindingId)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1771,16 +1771,16 @@ class NewLocation extends NewNode(32.toShort) with LocationBase {
   def packageName(value: String): this.type        = { this.packageName = value; this }
   def symbol(value: String): this.type             = { this.symbol = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 11, Iterator(this.className))
-    interface.emplaceProperty(this, 12, Iterator(this.classShortName))
-    interface.emplaceProperty(this, 32, Iterator(this.filename))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
-    interface.emplaceProperty(this, 55, Iterator(this.methodShortName))
-    interface.emplaceProperty(this, 59, Iterator(this.nodeLabel))
-    interface.emplaceProperty(this, 62, Iterator(this.packageName))
-    interface.emplaceProperty(this, 77, Iterator(this.symbol))
-    if (node.nonEmpty) interface.emplaceProperty(this, 85, this.node)
+    interface.insertProperty(this, 11, Iterator(this.className))
+    interface.insertProperty(this, 12, Iterator(this.classShortName))
+    interface.insertProperty(this, 32, Iterator(this.filename))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 53, Iterator(this.methodFullName))
+    interface.insertProperty(this, 55, Iterator(this.methodShortName))
+    interface.insertProperty(this, 59, Iterator(this.nodeLabel))
+    interface.insertProperty(this, 62, Iterator(this.packageName))
+    interface.insertProperty(this, 77, Iterator(this.symbol))
+    if (node.nonEmpty) interface.insertProperty(this, 85, this.node)
   }
 }
 
@@ -1808,8 +1808,8 @@ class NewMatchInfo extends NewNode(33.toShort) with MatchInfoBase {
   def category(value: String): this.type = { this.category = value; this }
   def pattern(value: String): this.type  = { this.pattern = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 10, Iterator(this.category))
-    interface.emplaceProperty(this, 66, Iterator(this.pattern))
+    interface.insertProperty(this, 10, Iterator(this.category))
+    interface.insertProperty(this, 66, Iterator(this.pattern))
   }
 }
 
@@ -1860,14 +1860,14 @@ class NewMember extends NewNode(34.toShort) with MemberBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -1921,13 +1921,13 @@ class NewMetaData extends NewNode(35.toShort) with MetaDataBase {
   def spid(value: String): this.type                            = { this.spid = Option(value); this }
   def version(value: String): this.type                         = { this.version = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (hash.nonEmpty) interface.emplaceProperty(this, 35, this.hash)
-    interface.emplaceProperty(this, 49, Iterator(this.language))
-    if (overlays.nonEmpty) interface.emplaceProperty(this, 61, this.overlays)
-    if (policyDirectories.nonEmpty) interface.emplaceProperty(this, 67, this.policyDirectories)
-    interface.emplaceProperty(this, 70, Iterator(this.root))
-    if (spid.nonEmpty) interface.emplaceProperty(this, 75, this.spid)
-    interface.emplaceProperty(this, 84, Iterator(this.version))
+    if (hash.nonEmpty) interface.insertProperty(this, 35, this.hash)
+    interface.insertProperty(this, 49, Iterator(this.language))
+    if (overlays.nonEmpty) interface.insertProperty(this, 61, this.overlays)
+    if (policyDirectories.nonEmpty) interface.insertProperty(this, 67, this.policyDirectories)
+    interface.insertProperty(this, 70, Iterator(this.root))
+    if (spid.nonEmpty) interface.insertProperty(this, 75, this.spid)
+    interface.insertProperty(this, 84, Iterator(this.version))
   }
 }
 
@@ -2030,25 +2030,25 @@ class NewMethod extends NewNode(36.toShort) with MethodBase {
   def signature(value: String): this.type               = { this.signature = value; this }
   def varargParameter(value: Int): this.type            = { this.varargParameter = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 5, Iterator(this.astParentFullName))
-    interface.emplaceProperty(this, 6, Iterator(this.astParentType))
-    if (binarySignature.nonEmpty) interface.emplaceProperty(this, 7, this.binarySignature)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (columnNumberEnd.nonEmpty) interface.emplaceProperty(this, 17, this.columnNumberEnd)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 32, Iterator(this.filename))
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    if (hasMapping.nonEmpty) interface.emplaceProperty(this, 36, this.hasMapping)
-    if (hash.nonEmpty) interface.emplaceProperty(this, 35, this.hash)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    interface.emplaceProperty(this, 43, Iterator(this.isExternal))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    if (lineNumberEnd.nonEmpty) interface.emplaceProperty(this, 51, this.lineNumberEnd)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 72, Iterator(this.signature))
-    interface.emplaceProperty(this, 82, Iterator(this.varargParameter))
+    interface.insertProperty(this, 5, Iterator(this.astParentFullName))
+    interface.insertProperty(this, 6, Iterator(this.astParentType))
+    if (binarySignature.nonEmpty) interface.insertProperty(this, 7, this.binarySignature)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (columnNumberEnd.nonEmpty) interface.insertProperty(this, 17, this.columnNumberEnd)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 32, Iterator(this.filename))
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    if (hasMapping.nonEmpty) interface.insertProperty(this, 36, this.hasMapping)
+    if (hash.nonEmpty) interface.insertProperty(this, 35, this.hash)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    interface.insertProperty(this, 43, Iterator(this.isExternal))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    if (lineNumberEnd.nonEmpty) interface.insertProperty(this, 51, this.lineNumberEnd)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 72, Iterator(this.signature))
+    interface.insertProperty(this, 82, Iterator(this.varargParameter))
   }
 }
 
@@ -2097,14 +2097,14 @@ class NewMethodInst extends NewNode(37.toShort) with MethodInstBase {
   def order(value: Int): this.type                = { this.order = value; this }
   def signature(value: String): this.type         = { this.signature = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 72, Iterator(this.signature))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 53, Iterator(this.methodFullName))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -2186,19 +2186,19 @@ class NewMethodParameterIn extends NewNode(38.toShort) with MethodParameterInBas
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 28, Iterator(this.evaluationStrategy))
-    interface.emplaceProperty(this, 39, Iterator(this.index))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    interface.emplaceProperty(this, 46, Iterator(this.isVariadic))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 28, Iterator(this.evaluationStrategy))
+    interface.insertProperty(this, 39, Iterator(this.index))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    interface.insertProperty(this, 46, Iterator(this.isVariadic))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2264,17 +2264,17 @@ class NewMethodParameterOut extends NewNode(39.toShort) with MethodParameterOutB
   def order(value: Int): this.type                 = { this.order = value; this }
   def typeFullName(value: String): this.type       = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 28, Iterator(this.evaluationStrategy))
-    interface.emplaceProperty(this, 39, Iterator(this.index))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    interface.emplaceProperty(this, 46, Iterator(this.isVariadic))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 28, Iterator(this.evaluationStrategy))
+    interface.insertProperty(this, 39, Iterator(this.index))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    interface.insertProperty(this, 46, Iterator(this.isVariadic))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2348,19 +2348,19 @@ class NewMethodRef extends NewNode(40.toShort) with MethodRefBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 53, Iterator(this.methodFullName))
-    if (methodInstFullName.nonEmpty) interface.emplaceProperty(this, 54, this.methodInstFullName)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 53, Iterator(this.methodFullName))
+    if (methodInstFullName.nonEmpty) interface.insertProperty(this, 54, this.methodInstFullName)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2422,16 +2422,16 @@ class NewMethodReturn extends NewNode(41.toShort) with MethodReturnBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 28, Iterator(this.evaluationStrategy))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 28, Iterator(this.evaluationStrategy))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -2532,22 +2532,22 @@ class NewMethodSummary extends NewNode(42.toShort) with MethodSummaryBase {
   def routes(value: IterableOnce[RouteBase]): this.type                     = { this.routes = value.iterator.to(ArraySeq); this }
   def tags(value: IterableOnce[TagBase]): this.type                         = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (binarySignature.nonEmpty) interface.emplaceProperty(this, 7, this.binarySignature)
-    interface.emplaceProperty(this, 43, Iterator(this.isExternal))
-    interface.emplaceProperty(this, 45, Iterator(this.isStatic))
-    if (annotationParameters.nonEmpty) interface.emplaceProperty(this, 88, this.annotationParameters)
-    interface.emplaceProperty(this, 86, Iterator(this.method))
-    if (modifiers.nonEmpty) interface.emplaceProperty(this, 89, this.modifiers)
-    if (outParameters.nonEmpty) interface.emplaceProperty(this, 91, this.outParameters)
-    if (outParamTags.nonEmpty) interface.emplaceProperty(this, 90, this.outParamTags)
-    if (parameters.nonEmpty) interface.emplaceProperty(this, 93, this.parameters)
-    if (paramTags.nonEmpty) interface.emplaceProperty(this, 85, this.paramTags)
-    if (paramTypes.nonEmpty) interface.emplaceProperty(this, 92, this.paramTypes)
-    interface.emplaceProperty(this, 95, Iterator(this.returnParameter))
-    interface.emplaceProperty(this, 96, Iterator(this.returnParameterType))
-    if (returnParamTags.nonEmpty) interface.emplaceProperty(this, 94, this.returnParamTags)
-    if (routes.nonEmpty) interface.emplaceProperty(this, 97, this.routes)
-    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
+    if (binarySignature.nonEmpty) interface.insertProperty(this, 7, this.binarySignature)
+    interface.insertProperty(this, 43, Iterator(this.isExternal))
+    interface.insertProperty(this, 45, Iterator(this.isStatic))
+    if (annotationParameters.nonEmpty) interface.insertProperty(this, 88, this.annotationParameters)
+    interface.insertProperty(this, 86, Iterator(this.method))
+    if (modifiers.nonEmpty) interface.insertProperty(this, 89, this.modifiers)
+    if (outParameters.nonEmpty) interface.insertProperty(this, 91, this.outParameters)
+    if (outParamTags.nonEmpty) interface.insertProperty(this, 90, this.outParamTags)
+    if (parameters.nonEmpty) interface.insertProperty(this, 93, this.parameters)
+    if (paramTags.nonEmpty) interface.insertProperty(this, 85, this.paramTags)
+    if (paramTypes.nonEmpty) interface.insertProperty(this, 92, this.paramTypes)
+    interface.insertProperty(this, 95, Iterator(this.returnParameter))
+    interface.insertProperty(this, 96, Iterator(this.returnParameterType))
+    if (returnParamTags.nonEmpty) interface.insertProperty(this, 94, this.returnParamTags)
+    if (routes.nonEmpty) interface.insertProperty(this, 97, this.routes)
+    if (tags.nonEmpty) interface.insertProperty(this, 87, this.tags)
   }
 }
 
@@ -2587,11 +2587,11 @@ class NewModifier extends NewNode(43.toShort) with ModifierBase {
   def modifierType(value: String): this.type      = { this.modifierType = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 57, Iterator(this.modifierType))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 57, Iterator(this.modifierType))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -2631,11 +2631,11 @@ class NewNamespace extends NewNode(44.toShort) with NamespaceBase {
   def name(value: String): this.type              = { this.name = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -2681,13 +2681,13 @@ class NewNamespaceBlock extends NewNode(45.toShort) with NamespaceBlockBase {
   def name(value: String): this.type              = { this.name = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 32, Iterator(this.filename))
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 32, Iterator(this.filename))
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -2712,7 +2712,7 @@ class NewPackagePrefix extends NewNode(46.toShort) with PackagePrefixBase {
   var value: String                   = "": String
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 81, Iterator(this.value))
+    interface.insertProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -2761,14 +2761,14 @@ class NewPostExecutionCall extends NewNode(47.toShort) with PostExecutionCallBas
   def order(value: Int): this.type                = { this.order = value; this }
   def signature(value: String): this.type         = { this.signature = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 72, Iterator(this.signature))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 72, Iterator(this.signature))
   }
 }
 
@@ -2811,10 +2811,10 @@ class NewProgramPoint extends NewNode(48.toShort) with ProgramPointBase {
   def methodTags(value: IterableOnce[TagBase]): this.type = { this.methodTags = value.iterator.to(ArraySeq); this }
   def paramTags(value: IterableOnce[TagBase]): this.type  = { this.paramTags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 87, Iterator(this.elem))
-    if (method.nonEmpty) interface.emplaceProperty(this, 86, this.method)
-    if (methodTags.nonEmpty) interface.emplaceProperty(this, 88, this.methodTags)
-    if (paramTags.nonEmpty) interface.emplaceProperty(this, 85, this.paramTags)
+    interface.insertProperty(this, 87, Iterator(this.elem))
+    if (method.nonEmpty) interface.insertProperty(this, 86, this.method)
+    if (methodTags.nonEmpty) interface.insertProperty(this, 88, this.methodTags)
+    if (paramTags.nonEmpty) interface.insertProperty(this, 85, this.paramTags)
   }
 }
 
@@ -2851,9 +2851,9 @@ class NewRead extends NewNode(49.toShort) with ReadBase {
   def source(value: SourceBase): this.type                             = { this.source = value; this }
   def triggerCallChains(value: IterableOnce[CallChainBase]): this.type = { this.triggerCallChains = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 86, this.descriptorFlows)
-    interface.emplaceProperty(this, 87, Iterator(this.source))
-    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 88, this.triggerCallChains)
+    if (descriptorFlows.nonEmpty) interface.insertProperty(this, 86, this.descriptorFlows)
+    interface.insertProperty(this, 87, Iterator(this.source))
+    if (triggerCallChains.nonEmpty) interface.insertProperty(this, 88, this.triggerCallChains)
   }
 }
 
@@ -2903,14 +2903,14 @@ class NewReturn extends NewNode(50.toShort) with ReturnBase {
   def lineNumber(value: Option[Int]): this.type      = { this.lineNumber = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -2935,7 +2935,7 @@ class NewRoute extends NewNode(51.toShort) with RouteBase {
   var path: String                   = "<empty>": String
   def path(value: String): this.type = { this.path = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 65, Iterator(this.path))
+    interface.insertProperty(this, 65, Iterator(this.path))
   }
 }
 
@@ -2970,9 +2970,9 @@ class NewSensitiveDataType extends NewNode(52.toShort) with SensitiveDataTypeBas
   def members(value: IterableOnce[SensitiveMemberBase]): this.type = { this.members = value.iterator.to(ArraySeq); this }
   def names(value: IterableOnce[MatchInfoBase]): this.type         = { this.names = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    if (members.nonEmpty) interface.emplaceProperty(this, 86, this.members)
-    if (names.nonEmpty) interface.emplaceProperty(this, 85, this.names)
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    if (members.nonEmpty) interface.insertProperty(this, 86, this.members)
+    if (names.nonEmpty) interface.insertProperty(this, 85, this.names)
   }
 }
 
@@ -3002,8 +3002,8 @@ class NewSensitiveMember extends NewNode(53.toShort) with SensitiveMemberBase {
   def name(value: String): this.type                       = { this.name = value; this }
   def names(value: IterableOnce[MatchInfoBase]): this.type = { this.names = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    if (names.nonEmpty) interface.emplaceProperty(this, 85, this.names)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    if (names.nonEmpty) interface.insertProperty(this, 85, this.names)
   }
 }
 
@@ -3030,7 +3030,7 @@ class NewSensitiveReference extends NewNode(54.toShort) with SensitiveReferenceB
   var ioflows: IndexedSeq[IoflowBase]                     = ArraySeq.empty
   def ioflows(value: IterableOnce[IoflowBase]): this.type = { this.ioflows = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (ioflows.nonEmpty) interface.emplaceProperty(this, 85, this.ioflows)
+    if (ioflows.nonEmpty) interface.insertProperty(this, 85, this.ioflows)
   }
 }
 
@@ -3066,10 +3066,10 @@ class NewSensitiveVariable extends NewNode(55.toShort) with SensitiveVariableBas
   def name(value: String): this.type                     = { this.name = value; this }
   def node(value: LocalLikeBase): this.type              = { this.node = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (categories.nonEmpty) interface.emplaceProperty(this, 9, this.categories)
-    interface.emplaceProperty(this, 30, Iterator(this.evalType))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 85, Iterator(this.node))
+    if (categories.nonEmpty) interface.insertProperty(this, 9, this.categories)
+    interface.insertProperty(this, 30, Iterator(this.evalType))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 85, Iterator(this.node))
   }
 }
 
@@ -3140,16 +3140,16 @@ class NewSink extends NewNode(56.toShort) with SinkBase {
   def sinkType(value: String): this.type                           = { this.sinkType = value; this }
   def structuredFingerprint(value: String): this.type              = { this.structuredFingerprint = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 73, Iterator(this.sinkType))
-    interface.emplaceProperty(this, 76, Iterator(this.structuredFingerprint))
-    if (callingMethod.nonEmpty) interface.emplaceProperty(this, 89, this.callingMethod)
-    if (callsite.nonEmpty) interface.emplaceProperty(this, 90, this.callsite)
-    interface.emplaceProperty(this, 86, Iterator(this.method))
-    if (methodTags.nonEmpty) interface.emplaceProperty(this, 88, this.methodTags)
-    interface.emplaceProperty(this, 85, Iterator(this.node))
-    interface.emplaceProperty(this, 91, Iterator(this.nodeType))
-    if (parameterIn.nonEmpty) interface.emplaceProperty(this, 87, this.parameterIn)
-    if (parameterInTags.nonEmpty) interface.emplaceProperty(this, 92, this.parameterInTags)
+    interface.insertProperty(this, 73, Iterator(this.sinkType))
+    interface.insertProperty(this, 76, Iterator(this.structuredFingerprint))
+    if (callingMethod.nonEmpty) interface.insertProperty(this, 89, this.callingMethod)
+    if (callsite.nonEmpty) interface.insertProperty(this, 90, this.callsite)
+    interface.insertProperty(this, 86, Iterator(this.method))
+    if (methodTags.nonEmpty) interface.insertProperty(this, 88, this.methodTags)
+    interface.insertProperty(this, 85, Iterator(this.node))
+    interface.insertProperty(this, 91, Iterator(this.nodeType))
+    if (parameterIn.nonEmpty) interface.insertProperty(this, 87, this.parameterIn)
+    if (parameterInTags.nonEmpty) interface.insertProperty(this, 92, this.parameterInTags)
   }
 }
 
@@ -3214,15 +3214,15 @@ class NewSource extends NewNode(57.toShort) with SourceBase {
   def structuredFingerprint(value: String): this.type     = { this.structuredFingerprint = value; this }
   def tags(value: IterableOnce[TagBase]): this.type       = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 74, Iterator(this.sourceType))
-    interface.emplaceProperty(this, 76, Iterator(this.structuredFingerprint))
-    if (callingMethod.nonEmpty) interface.emplaceProperty(this, 89, this.callingMethod)
-    if (callsite.nonEmpty) interface.emplaceProperty(this, 90, this.callsite)
-    interface.emplaceProperty(this, 86, Iterator(this.method))
-    if (methodTags.nonEmpty) interface.emplaceProperty(this, 88, this.methodTags)
-    interface.emplaceProperty(this, 85, Iterator(this.node))
-    interface.emplaceProperty(this, 91, Iterator(this.nodeType))
-    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
+    interface.insertProperty(this, 74, Iterator(this.sourceType))
+    interface.insertProperty(this, 76, Iterator(this.structuredFingerprint))
+    if (callingMethod.nonEmpty) interface.insertProperty(this, 89, this.callingMethod)
+    if (callsite.nonEmpty) interface.insertProperty(this, 90, this.callsite)
+    interface.insertProperty(this, 86, Iterator(this.method))
+    if (methodTags.nonEmpty) interface.insertProperty(this, 88, this.methodTags)
+    interface.insertProperty(this, 85, Iterator(this.node))
+    interface.insertProperty(this, 91, Iterator(this.nodeType))
+    if (tags.nonEmpty) interface.insertProperty(this, 87, this.tags)
   }
 }
 
@@ -3256,10 +3256,10 @@ class NewSpAnnotationParameter extends NewNode(58.toShort) with SpAnnotationPara
   def name(value: String): this.type               = { this.name = value; this }
   def value(value: String): this.type              = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 1, Iterator(this.annotationFullName))
-    interface.emplaceProperty(this, 2, Iterator(this.annotationName))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 81, Iterator(this.value))
+    interface.insertProperty(this, 1, Iterator(this.annotationFullName))
+    interface.insertProperty(this, 2, Iterator(this.annotationName))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -3286,7 +3286,7 @@ class NewSpBlacklist extends NewNode(59.toShort) with SpBlacklistBase {
   var tags: IndexedSeq[TagBase]                     = ArraySeq.empty
   def tags(value: IterableOnce[TagBase]): this.type = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
+    if (tags.nonEmpty) interface.insertProperty(this, 87, this.tags)
   }
 }
 
@@ -3311,8 +3311,8 @@ class NewTag extends NewNode(60.toShort) with TagBase {
   def name(value: String): this.type  = { this.name = value; this }
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 81, Iterator(this.value))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 81, Iterator(this.value))
   }
 }
 
@@ -3339,7 +3339,7 @@ class NewTags extends NewNode(61.toShort) with TagsBase {
   var tags: IndexedSeq[TagBase]                     = ArraySeq.empty
   def tags(value: IterableOnce[TagBase]): this.type = { this.tags = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (tags.nonEmpty) interface.emplaceProperty(this, 87, this.tags)
+    if (tags.nonEmpty) interface.insertProperty(this, 87, this.tags)
   }
 }
 
@@ -3371,8 +3371,8 @@ class NewTagNodePair extends NewNode(62.toShort) with TagNodePairBase {
   def node(value: AbstractNode): this.type = { this.node = value; this }
   def tag(value: TagBase): this.type       = { this.tag = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 85, Iterator(this.node))
-    interface.emplaceProperty(this, 86, Iterator(this.tag))
+    interface.insertProperty(this, 85, Iterator(this.node))
+    interface.insertProperty(this, 86, Iterator(this.tag))
   }
 }
 
@@ -3425,15 +3425,15 @@ class NewTemplateDom extends NewNode(63.toShort) with TemplateDomBase {
   def name(value: String): this.type                 = { this.name = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -3475,10 +3475,10 @@ class NewTransform extends NewNode(64.toShort) with TransformBase {
   def sink(value: SinkBase): this.type                                 = { this.sink = value; this }
   def triggerCallChains(value: IterableOnce[CallChainBase]): this.type = { this.triggerCallChains = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 87, Iterator(this.call))
-    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 86, this.descriptorFlows)
-    interface.emplaceProperty(this, 85, Iterator(this.sink))
-    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 88, this.triggerCallChains)
+    interface.insertProperty(this, 87, Iterator(this.call))
+    if (descriptorFlows.nonEmpty) interface.insertProperty(this, 86, this.descriptorFlows)
+    interface.insertProperty(this, 85, Iterator(this.sink))
+    if (triggerCallChains.nonEmpty) interface.insertProperty(this, 88, this.triggerCallChains)
   }
 }
 
@@ -3505,7 +3505,7 @@ class NewTransformation extends NewNode(65.toShort) with TransformationBase {
   var node: TrackingPointBase                   = null
   def node(value: TrackingPointBase): this.type = { this.node = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 85, Iterator(this.node))
+    interface.insertProperty(this, 85, Iterator(this.node))
   }
 }
 
@@ -3536,9 +3536,9 @@ class NewType extends NewNode(66.toShort) with TypeBase {
   def name(value: String): this.type             = { this.name = value; this }
   def typeDeclFullName(value: String): this.type = { this.typeDeclFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 78, Iterator(this.typeDeclFullName))
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 78, Iterator(this.typeDeclFullName))
   }
 }
 
@@ -3575,10 +3575,10 @@ class NewTypeArgument extends NewNode(67.toShort) with TypeArgumentBase {
   def lineNumber(value: Option[Int]): this.type   = { this.lineNumber = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -3653,18 +3653,18 @@ class NewTypeDecl extends NewNode(68.toShort) with TypeDeclBase {
   def name(value: String): this.type            = { this.name = value; this }
   def order(value: Int): this.type              = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (aliasTypeFullName.nonEmpty) interface.emplaceProperty(this, 0, this.aliasTypeFullName)
-    interface.emplaceProperty(this, 5, Iterator(this.astParentFullName))
-    interface.emplaceProperty(this, 6, Iterator(this.astParentType))
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 32, Iterator(this.filename))
-    interface.emplaceProperty(this, 34, Iterator(this.fullName))
-    if (inheritsFromTypeFullName.nonEmpty) interface.emplaceProperty(this, 40, this.inheritsFromTypeFullName)
-    interface.emplaceProperty(this, 43, Iterator(this.isExternal))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    if (aliasTypeFullName.nonEmpty) interface.insertProperty(this, 0, this.aliasTypeFullName)
+    interface.insertProperty(this, 5, Iterator(this.astParentFullName))
+    interface.insertProperty(this, 6, Iterator(this.astParentType))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 32, Iterator(this.filename))
+    interface.insertProperty(this, 34, Iterator(this.fullName))
+    if (inheritsFromTypeFullName.nonEmpty) interface.insertProperty(this, 40, this.inheritsFromTypeFullName)
+    interface.insertProperty(this, 43, Iterator(this.isExternal))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -3704,11 +3704,11 @@ class NewTypeParameter extends NewNode(69.toShort) with TypeParameterBase {
   def name(value: String): this.type              = { this.name = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 60, Iterator(this.order))
   }
 }
 
@@ -3768,17 +3768,17 @@ class NewTypeRef extends NewNode(70.toShort) with TypeRefBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -3851,19 +3851,19 @@ class NewUnknown extends NewNode(71.toShort) with UnknownBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 3, Iterator(this.argumentIndex))
-    if (argumentName.nonEmpty) interface.emplaceProperty(this, 4, this.argumentName)
-    interface.emplaceProperty(this, 15, Iterator(this.code))
-    if (columnNumber.nonEmpty) interface.emplaceProperty(this, 16, this.columnNumber)
-    interface.emplaceProperty(this, 18, Iterator(this.containedRef))
-    interface.emplaceProperty(this, 23, Iterator(this.depthFirstOrder))
-    if (dynamicTypeHintFullName.nonEmpty) interface.emplaceProperty(this, 27, this.dynamicTypeHintFullName)
-    interface.emplaceProperty(this, 41, Iterator(this.internalFlags))
-    if (lineNumber.nonEmpty) interface.emplaceProperty(this, 50, this.lineNumber)
-    interface.emplaceProperty(this, 60, Iterator(this.order))
-    interface.emplaceProperty(this, 64, Iterator(this.parserTypeName))
-    if (possibleTypes.nonEmpty) interface.emplaceProperty(this, 68, this.possibleTypes)
-    interface.emplaceProperty(this, 79, Iterator(this.typeFullName))
+    interface.insertProperty(this, 3, Iterator(this.argumentIndex))
+    if (argumentName.nonEmpty) interface.insertProperty(this, 4, this.argumentName)
+    interface.insertProperty(this, 15, Iterator(this.code))
+    if (columnNumber.nonEmpty) interface.insertProperty(this, 16, this.columnNumber)
+    interface.insertProperty(this, 18, Iterator(this.containedRef))
+    interface.insertProperty(this, 23, Iterator(this.depthFirstOrder))
+    if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 27, this.dynamicTypeHintFullName)
+    interface.insertProperty(this, 41, Iterator(this.internalFlags))
+    if (lineNumber.nonEmpty) interface.insertProperty(this, 50, this.lineNumber)
+    interface.insertProperty(this, 60, Iterator(this.order))
+    interface.insertProperty(this, 64, Iterator(this.parserTypeName))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 68, this.possibleTypes)
+    interface.insertProperty(this, 79, Iterator(this.typeFullName))
   }
 }
 
@@ -3895,9 +3895,9 @@ class NewVariableInfo extends NewNode(72.toShort) with VariableInfoBase {
   def parameterIndex(value: Option[Int]): this.type = { this.parameterIndex = value; this }
   def varType(value: String): this.type             = { this.varType = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 29, Iterator(this.evaluationType))
-    if (parameterIndex.nonEmpty) interface.emplaceProperty(this, 63, this.parameterIndex)
-    interface.emplaceProperty(this, 83, Iterator(this.varType))
+    interface.insertProperty(this, 29, Iterator(this.evaluationType))
+    if (parameterIndex.nonEmpty) interface.insertProperty(this, 63, this.parameterIndex)
+    interface.insertProperty(this, 83, Iterator(this.varType))
   }
 }
 
@@ -3931,10 +3931,10 @@ class NewVulnerability extends NewNode(73.toShort) with VulnerabilityBase {
   def score(value: String): this.type       = { this.score = value; this }
   def url(value: String): this.type         = { this.url = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.emplaceProperty(this, 24, Iterator(this.description))
-    interface.emplaceProperty(this, 58, Iterator(this.name))
-    interface.emplaceProperty(this, 71, Iterator(this.score))
-    interface.emplaceProperty(this, 80, Iterator(this.url))
+    interface.insertProperty(this, 24, Iterator(this.description))
+    interface.insertProperty(this, 58, Iterator(this.name))
+    interface.insertProperty(this, 71, Iterator(this.score))
+    interface.insertProperty(this, 80, Iterator(this.url))
   }
 }
 
@@ -3976,9 +3976,9 @@ class NewWrite extends NewNode(74.toShort) with WriteBase {
   def sink(value: SinkBase): this.type                                 = { this.sink = value; this }
   def triggerCallChains(value: IterableOnce[CallChainBase]): this.type = { this.triggerCallChains = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (descriptorFlows.nonEmpty) interface.emplaceProperty(this, 86, this.descriptorFlows)
-    if (flows.nonEmpty) interface.emplaceProperty(this, 87, this.flows)
-    interface.emplaceProperty(this, 85, Iterator(this.sink))
-    if (triggerCallChains.nonEmpty) interface.emplaceProperty(this, 88, this.triggerCallChains)
+    if (descriptorFlows.nonEmpty) interface.insertProperty(this, 86, this.descriptorFlows)
+    if (flows.nonEmpty) interface.insertProperty(this, 87, this.flows)
+    interface.insertProperty(this, 85, Iterator(this.sink))
+    if (triggerCallChains.nonEmpty) interface.insertProperty(this, 88, this.triggerCallChains)
   }
 }
