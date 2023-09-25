@@ -15,38 +15,35 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
   private var finalized             = false
 
   def insert(key: String, value: A): Unit = {
-    if (key != null) {
-      assert(!finalized, "Cannot insert into finalized index")
-      val startPosition = hashToPos(key.hashCode())
-      insert0(key, value, position = startPosition)
-    }
-  }
+    if (key == null) return
+    assert(!finalized, "Cannot insert into finalized index")
 
-  @tailrec
-  private def insert0(key: String, value: A, position: Int, iteration: Int = 0): Unit = {
-    assert(iteration < size,
-      s"We've tried all possible slots, none of which was available - please allocate a large-enough index! iteration=$iteration, size=$size")
-
-    if (position >= size) {
-      // we've reached the end of the slots. overflow: try from index 0
-      insert0(key, value, position = 0, iteration = iteration + 1)
-    } else {
-      keys(position) match {
-        case null =>
-          // found a free slot: insert here
-          keys(position) = key
-          values(position) = value
-        case k if k == key =>
-          // found the right (preexistent) slot for this key: append to existing entries
-          values(position) match {
-            case buf: mutable.ArrayBuffer[A @unchecked] => buf.addOne(value)
-            case old =>
-              values(position) = mutable.ArrayBuffer(old, value)
-          }
-        case _ =>
-          // this slot is already taken - try the next one
-          insert0(key, value, position + 1, iteration = iteration + 1)
+    var position = hashToPos(key.hashCode())
+    var overflowed = false
+    while (true) {
+      if (position >= size) {
+        // we've reached the end of the slots. overflow: try from index 0
+        assert(!overflowed, s"We've tried all possible slots, none of which was available - please allocate a large-enough index! size=$size")
+        position = 0
+        overflowed = true
       }
+      val k = keys(position)
+      if (k == null) {
+        // found a free slot: insert here
+        keys(position) = key
+        values(position) = value
+        return
+      } else if (k == key) {
+        // found the right (preexistent) slot for this key: append to existing entries
+        values(position) match {
+          case buf: mutable.ArrayBuffer[A] => buf.addOne(value)
+          case old: A =>
+            values(position) = mutable.ArrayBuffer(old, value)
+        }
+        return
+      }
+      // this slot is already taken - try the next one
+      position += 1
     }
   }
 
