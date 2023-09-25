@@ -35,9 +35,10 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
       } else if (k == key) {
         // found the right (preexistent) slot for this key: append to existing entries
         values(position) match {
-          case buf: mutable.ArrayBuffer[A] => buf.addOne(value)
-          case old: A =>
-            values(position) = mutable.ArrayBuffer(old, value)
+          case multiple: mutable.ArrayBuffer[A @unchecked] =>
+            multiple.addOne(value)
+          case single: A @unchecked =>
+            values(position) = mutable.ArrayBuffer(single, value)
         }
         return
       }
@@ -78,8 +79,10 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
       } else if (k == key) {
         // found the right (preexistent) slot for this key: append to existing entries
         values(position) match {
-          case multiple: Array[A] => return multiple.iterator
-          case single: A => return Iterator(single)
+          case multiple: Array[A @unchecked] =>
+            return multiple.iterator
+          case single: A @unchecked =>
+            return Iterator(single)
         }
       }
       // key not found so far - try the next slot
