@@ -12,8 +12,8 @@ object DiffGraphApplier {
   }
 }
 
-/** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
-  */
+/** The class that is responsible for applying diffgraphs.
+  * This is not supposed to be public API, users should stick to applyDiff */
 private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
@@ -28,18 +28,18 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     override def emplaceProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
       val iter = propertyValues.iterator
       if (iter.hasNext) {
-        emplaceSetProperty(node.storedRef.get, propertyKind, iter)
+        emplaceProperty0(node.storedRef.get, propertyKind, iter)
       }
     }
   }
 
-  def emplaceSetProperty(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
-    val iter = propertyValues.iterator
+  private def emplaceProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
     val pos  = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
-    if (setNodeProperties(pos) == null) setNodeProperties(pos) = mutable.ArrayBuffer.empty
+    if (setNodeProperties(pos) == null)
+      setNodeProperties(pos) = mutable.ArrayBuffer.empty
     val buf   = setNodeProperties(pos)
     val start = buf.size
-    iter.foreach {
+    propertyValues.iterator.foreach {
       case dnode: DNode => buf.addOne(getGNode(dnode))
       case other        => buf.addOne(other)
     }
@@ -48,17 +48,19 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   private def emplace[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
-    if (a(pos) == null) a(pos) = mutable.ArrayBuffer.empty[T]
+    if (a(pos) == null)
+      a(pos) = mutable.ArrayBuffer.empty[T]
+
     a(pos).append(item)
   }
 
-  def drainDeferred(): Unit = {
+  private def drainDeferred(): Unit = {
     while (deferred.nonEmpty) {
       deferred.removeHead().flattenProperties(NewNodeInterface)
     }
   }
 
-  def getGNode(node: DNodeOrNode): GNode = {
+  private def getGNode(node: DNodeOrNode): GNode = {
     node match {
       case already: GNode =>
         assert(already.graph == graph, "expected a different graph instance")
@@ -80,7 +82,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def splitUpdate(): Unit = {
+  private def splitUpdate(): Unit = {
     diff.buffer.foreach {
       case delNode: DelNode if !AccessHelpers.isDeleted(delNode.node) =>
         AccessHelpers.markDeleted(delNode.node)
@@ -88,92 +90,90 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       case _ =>
     }
 
-    for (item <- diff.buffer) {
-      item match {
-        case addNode: DNode =>
-          getGNode(addNode)
-        case halfEdge: AddUnsafeHalfEdge =>
-          val src = getGNode(halfEdge.src)
-          val dst = getGNode(halfEdge.dst)
-          if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
-            Direction.fromOrdinal(halfEdge.inout) match {
-              case Direction.Incoming =>
-                emplace(
-                  newEdges,
-                  new AddEdgeProcessed(dst, src, halfEdge.edgeKind, halfEdge.property),
-                  graph.schema.neighborOffsetArrayIndex(dst.nodeKind, Incoming, halfEdge.edgeKind)
-                )
-              case Direction.Outgoing =>
-                emplace(
-                  newEdges,
-                  new AddEdgeProcessed(src, dst, halfEdge.edgeKind, halfEdge.property),
-                  graph.schema.neighborOffsetArrayIndex(src.nodeKind, Outgoing, halfEdge.edgeKind)
-                )
-            }
+    diff.buffer.foreach {
+      case addNode: DNode =>
+        getGNode(addNode)
+      case halfEdge: AddUnsafeHalfEdge =>
+        val src = getGNode(halfEdge.src)
+        val dst = getGNode(halfEdge.dst)
+        if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
+          Direction.fromOrdinal(halfEdge.inout) match {
+            case Direction.Incoming =>
+              emplace(
+                newEdges,
+                new AddEdgeProcessed(dst, src, halfEdge.edgeKind, halfEdge.property),
+                graph.schema.neighborOffsetArrayIndex(dst.nodeKind, Incoming, halfEdge.edgeKind)
+              )
+            case Direction.Outgoing =>
+              emplace(
+                newEdges,
+                new AddEdgeProcessed(src, dst, halfEdge.edgeKind, halfEdge.property),
+                graph.schema.neighborOffsetArrayIndex(src.nodeKind, Outgoing, halfEdge.edgeKind)
+              )
           }
-        case newEdge: AddEdgeUnprocessed =>
-          val src = getGNode(newEdge.src)
-          val dst = getGNode(newEdge.dst)
-          if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
-            emplace(
-              newEdges,
-              new AddEdgeProcessed(src, dst, newEdge.edgeKind, newEdge.property),
-              graph.schema.neighborOffsetArrayIndex(src.nodeKind, Outgoing, newEdge.edgeKind)
-            )
-            emplace(
-              newEdges,
-              new AddEdgeProcessed(dst, src, newEdge.edgeKind, newEdge.property),
-              graph.schema.neighborOffsetArrayIndex(dst.nodeKind, Incoming, newEdge.edgeKind)
-            )
-          } else {
-            // TODO maybe throw exception
-          }
-        case setEdgeProperty: SetEdgeProperty
-            if !AccessHelpers.isDeleted(setEdgeProperty.edge.src) && !AccessHelpers.isDeleted(setEdgeProperty.edge.dst) =>
-          val (outR, inR) = normalizeRepresentation(setEdgeProperty.edge)
+        }
+      case newEdge: AddEdgeUnprocessed =>
+        val src = getGNode(newEdge.src)
+        val dst = getGNode(newEdge.dst)
+        if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
           emplace(
-            setEdgeProperties,
-            new EdgeRepr(outR.src, outR.dst, outR.edgeKind, outR.subSeq, setEdgeProperty.property),
-            graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind)
+            newEdges,
+            new AddEdgeProcessed(src, dst, newEdge.edgeKind, newEdge.property),
+            graph.schema.neighborOffsetArrayIndex(src.nodeKind, Outgoing, newEdge.edgeKind)
           )
           emplace(
-            setEdgeProperties,
-            new EdgeRepr(inR.src, inR.dst, inR.edgeKind, inR.subSeq, setEdgeProperty.property),
-            graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind)
+            newEdges,
+            new AddEdgeProcessed(dst, src, newEdge.edgeKind, newEdge.property),
+            graph.schema.neighborOffsetArrayIndex(dst.nodeKind, Incoming, newEdge.edgeKind)
           )
-        case edgeDeletion: RemoveEdge
-            if !AccessHelpers.isDeleted(edgeDeletion.edge.src) && !AccessHelpers.isDeleted(edgeDeletion.edge.dst) =>
-          /** This is the delEdge case. It is massively annoying.
-            *
-            * In order to support edge properties, we need to grab the right edge from e.src->e.dst. If we assume that our graph was built
-            * normally, i.e. edges were sequentially/batched added without the unsafe unidirectional edges, then our graph has the following
-            * invariant: The kth edge connecting A->B corresponds to the kth edge connecting B<-A This sucks big time, because edge removal
-            * is potentially O(N**2). The degenerate behavior occurs when we have ~k edges of the same type starting in src = X or ending in
-            * the same dst = X. Each deletion then costs us ~k, and if we delete all ~k edges we pay ~ k*k.
-            *
-            * But k~N is possible where N is the graph size!
-            */
-          val (outR, inR) = normalizeRepresentation(edgeDeletion.edge)
-          emplace(delEdges, outR, graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind))
-          emplace(delEdges, inR, graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind))
+        } else {
+          // TODO maybe throw exception
+        }
+      case setEdgeProperty: SetEdgeProperty
+          if !AccessHelpers.isDeleted(setEdgeProperty.edge.src) && !AccessHelpers.isDeleted(setEdgeProperty.edge.dst) =>
+        val (outR, inR) = normalizeRepresentation(setEdgeProperty.edge)
+        emplace(
+          setEdgeProperties,
+          new EdgeRepr(outR.src, outR.dst, outR.edgeKind, outR.subSeq, setEdgeProperty.property),
+          graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind)
+        )
+        emplace(
+          setEdgeProperties,
+          new EdgeRepr(inR.src, inR.dst, inR.edgeKind, inR.subSeq, setEdgeProperty.property),
+          graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind)
+        )
+      case edgeDeletion: RemoveEdge
+          if !AccessHelpers.isDeleted(edgeDeletion.edge.src) && !AccessHelpers.isDeleted(edgeDeletion.edge.dst) =>
+        /** This is the delEdge case. It is massively annoying.
+          *
+          * In order to support edge properties, we need to grab the right edge from e.src->e.dst. If we assume that our graph was built
+          * normally, i.e. edges were sequentially/batched added without the unsafe unidirectional edges, then our graph has the following
+          * invariant: The kth edge connecting A->B corresponds to the kth edge connecting B<-A This sucks big time, because edge removal
+          * is potentially O(N**2). The degenerate behavior occurs when we have ~k edges of the same type starting in src = X or ending in
+          * the same dst = X. Each deletion then costs us ~k, and if we delete all ~k edges we pay ~ k*k.
+          *
+          * But k~N is possible where N is the graph size!
+          */
+        val (outR, inR) = normalizeRepresentation(edgeDeletion.edge)
+        emplace(delEdges, outR, graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind))
+        emplace(delEdges, inR, graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind))
 
-        case setNodeProperty: SetNodeProperty if !AccessHelpers.isDeleted(setNodeProperty.node) =>
-          val iter = setNodeProperty.property match {
-            case null                  => Iterator.empty
-            case iterable: Iterable[_] => iterable.iterator
-            case a: Array[_]           => a.iterator
-            case item                  => Iterator.single(item)
-          }
-          emplaceSetProperty(setNodeProperty.node, setNodeProperty.propertyKind, iter)
-        case delNode: DelNode =>
-          // already processed
-          assert(AccessHelpers.isDeleted(delNode.node), s"node should have been deleted already but wasn't: ${delNode.node}")
-      }
-      drainDeferred()
+      case setNodeProperty: SetNodeProperty if !AccessHelpers.isDeleted(setNodeProperty.node) =>
+        val iter = setNodeProperty.property match {
+          case null                  => Iterator.empty
+          case iterable: Iterable[_] => iterable.iterator
+          case a: Array[_]           => a.iterator
+          case item                  => Iterator.single(item)
+        }
+        emplaceProperty0(setNodeProperty.node, setNodeProperty.propertyKind, iter)
+      case delNode: DelNode =>
+        // already processed
+        assert(AccessHelpers.isDeleted(delNode.node), s"node should have been deleted already but wasn't: ${delNode.node}")
     }
+    drainDeferred()
   }
 
-  def applyUpdate(): Unit = {
+  private def applyUpdate(): Unit = {
     splitUpdate()
     // order: 1. remove edges, 2. add nodes, 3. delete nodes, 4. add edges
     for {
@@ -208,7 +208,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
 
   }
 
-  def deleteNodes(): Unit = {
+  private def deleteNodes(): Unit = {
     val replacements = new Array[AnyRef](graph.neighbors.length)
 
     def getReplacementLengths(nodeKind: Int, direction: Direction, edgeKind: Int): Array[Int] = {
@@ -243,7 +243,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         case null =>
         case oldQty: Array[Int] =>
           if (get(oldQty, deletedNode.seq() + 1) - get(oldQty, deletedNode.seq()) > 0)
-            emplaceSetProperty(deletedNode, propertyKind, Iterator.empty)
+            emplaceProperty0(deletedNode, propertyKind, Iterator.empty)
         case _ =>
       }
     }
@@ -324,7 +324,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   /** returns (out-edge, in-edge) pair */
-  def normalizeRepresentation(edge: Edge): (EdgeRepr, EdgeRepr) = {
+  private def normalizeRepresentation(edge: Edge): (EdgeRepr, EdgeRepr) = {
     val kind = edge.edgeKind
     assert(edge.subSeq != 0, "edge.subSeq must not be 0")
     if (edge.subSeq > 0) {
@@ -353,7 +353,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   /** in-place turns offset-encoded qty into length-encoded qty */
-  def ranToLen(arr: Array[Int]): Unit = {
+  private def ranToLen(arr: Array[Int]): Unit = {
     if (arr.length > 0) {
       assert(arr(0) == 0, s"first element in array was expected to be `0`, but instead is `${arr(0)}`")
       for (idx <- Range(0, arr.length - 1)) {
@@ -364,7 +364,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   /** in-place turns length-encoded qty into offset-encoded qty */
-  def lenToRan(arr: Array[Int]): Unit = {
+  private def lenToRan(arr: Array[Int]): Unit = {
     if (arr.length > 0) {
       assert(arr.last == 0, s"last element in array was expected to be `0`, but instead is `${arr.last}`")
       var count = 0
@@ -378,7 +378,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def addNodes(nodeKind: Int): Unit = {
+  private def addNodes(nodeKind: Int): Unit = {
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
       return
     }
@@ -386,7 +386,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     graph.nodeCountByKind(nodeKind) += newNodes(nodeKind).size
   }
 
-  def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     if (setEdgeProperties(pos) == null) return
     val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
@@ -406,7 +406,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
 
   }
 
-  def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val deletions = delEdges(pos)
     if (deletions == null) return
@@ -480,7 +480,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos        = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val insertions = newEdges(pos)
     if (insertions == null) {
@@ -545,7 +545,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
   }
 
-  def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
+  private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
     val pos         = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val propertyBuf = setNodeProperties(pos)
     if (propertyBuf != null) {
