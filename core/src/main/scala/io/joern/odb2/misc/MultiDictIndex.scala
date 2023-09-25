@@ -1,6 +1,5 @@
 package io.joern.odb2.misc
 
-import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
@@ -63,34 +62,30 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
   def get(key: String): Iterator[A] = {
     if (key == null) return null
     if (!finalized) throw new RuntimeException("Cannot lookup in an index that's not finalized - please invoke `shrinkFit` first")
-    val startPosition = hashToPos(key.hashCode())
-    get0(key, position = startPosition)
-  }
-
-  @tailrec
-  private def get0(key: String, position: Int, iteration: Int = 0): Iterator[A] = {
-    if (iteration >= size) {
-      // we've tried all possible slots
-      Iterator.empty
-    } else {
+    var position = hashToPos(key.hashCode())
+    var overflowed = false
+    while (true) {
       if (position >= size) {
         // we've reached the end of the slots. overflow: try from index 0
-        get0(key, position = 0, iteration = iteration + 1)
-      } else {
-        keys(position) match {
-          case null => Iterator.empty
-          case k if k == key =>
-            // found the right (preexistent) slot for this key: append to existing entries
-            values(position) match {
-              case multiple: Array[A @unchecked] => multiple.iterator
-              case single: A @unchecked => Iterator.single(single)
-            }
-          case _ =>
-            // key not found so far - try the next slot
-            get0(key, position + 1, iteration = iteration + 1)
+        assert(!overflowed, s"We've tried all possible slots, none of which was available - please allocate a large-enough index! size=$size")
+        position = 0
+        overflowed = true
+      }
+      val k = keys(position)
+      if (k == null) {
+        // found the right slot, but it's empty
+        return Iterator.empty
+      } else if (k == key) {
+        // found the right (preexistent) slot for this key: append to existing entries
+        values(position) match {
+          case multiple: Array[A] => return multiple.iterator
+          case single: A => return Iterator(single)
         }
       }
+      // key not found so far - try the next slot
+      position += 1
     }
+    throw new RuntimeException("unreachable")
   }
 
   private def hashToPos(hash0: Int): Int = {
