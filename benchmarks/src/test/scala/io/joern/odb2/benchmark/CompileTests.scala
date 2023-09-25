@@ -10,6 +10,11 @@ import org.scalatest.wordspec.AnyWordSpec
 /**
  * Verifies that the generated API (accessors via implicits) works for the joern domain.
  * Nothing really executes, we just want to verify that this code compiles and produces no ambiguity warnings.
+ *
+ * Demonstrate that users can ad-hoc subtype nodes and write extension methods for the ad-hoc  subtypes.
+ * In this example we define an ad-hoc  `IsStaticT` subtype of CALL which is "statically dispatched call", and an
+ * extension method staticCallee that safely goes to the callee.
+ * This extension method is only defined on our ad-hoc subtype.
  * */
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
@@ -22,6 +27,9 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.order
       iter.isStatic.orderGt(3).staticCallee
       iter.next.isStatic.map(_.staticCallee)
+
+      // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
+      val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
     }
   }
 
@@ -33,6 +41,9 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.order
       iter.isStatic
       iter.next.isStatic
+
+      // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
+      val _: Iterator[CallBase & StaticType[IsStaticT]] = iter.isStatic
     }
     assertDoesNotCompile("iter.isStatic.staticCallee")
     assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
@@ -46,6 +57,9 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.order
       iter.isStatic
       iter.next.isStatic
+
+      // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
+      val _: Iterator[NewCall & StaticType[IsStaticT]] = iter.isStatic
     }
     assertDoesNotCompile("iter.isStatic.staticCallee")
     assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
@@ -58,6 +72,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.order
       iter.next.order
     }
+
   }
 
   "abstract base class" in {
