@@ -1,5 +1,6 @@
 package io.joern.odb2.benchmark
 
+import io.joern.odb2.benchmark.EdgeAccessors.*
 import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes.*
 import io.shiftleft.codepropertygraph.generated.v2.traversals.Lang.*
@@ -30,6 +31,9 @@ class CompileTests extends AnyWordSpec with Matchers {
 
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
       val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
+
+      // edge accessors
+      iter.next.argument
     }
   }
 
