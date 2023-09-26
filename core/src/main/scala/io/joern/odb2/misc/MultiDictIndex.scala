@@ -67,10 +67,14 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
     var overflowed = false
     while (true) {
       if (position >= size) {
-        // we've reached the end of the slots. overflow: try from index 0
-        assert(!overflowed, s"We've tried all possible slots, none of which was available - please allocate a large-enough index! size=$size")
-        position = 0
-        overflowed = true
+        if (!overflowed) {
+          // we've reached the end of the slots. overflow: try from index 0
+          position = 0
+          overflowed = true
+        } else {
+          // we've tried all possible slots
+          return Iterator.empty
+        }
       }
       val k = keys(position)
       if (k == null) {
