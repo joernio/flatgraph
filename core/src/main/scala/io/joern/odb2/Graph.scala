@@ -5,14 +5,6 @@ import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotS
 
 import java.util.concurrent.atomic.AtomicReferenceArray
 
-object Graph {
-  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
-  // neighbors, and one array containing edge properties
-  val NeighborsSlotSize  = 3
-  val NumberOfDirections = 2
-  val PropertySlotSize   = 2
-}
-
 class Graph(val schema: Schema) {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
@@ -56,4 +48,12 @@ class Graph(val schema: Schema) {
 
     neighbors
   }
+}
+
+object Graph {
+  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
+  // neighbors, and one array containing edge properties
+  val NeighborsSlotSize  = 3
+  val NumberOfDirections = 2
+  val PropertySlotSize   = 2
 }
