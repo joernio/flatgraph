@@ -25,15 +25,15 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val setNodeProperties = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
 
   object NewNodeInterface extends BatchedUpdateInterface {
-    override def emplaceProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
+    override def insertProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
       val iter = propertyValues.iterator
       if (iter.hasNext) {
-        emplaceProperty0(node.storedRef.get, propertyKind, iter)
+        insertProperty0(node.storedRef.get, propertyKind, iter)
       }
     }
   }
 
-  private def emplaceProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
+  private def insertProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
     val pos  = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
     if (setNodeProperties(pos) == null)
       setNodeProperties(pos) = mutable.ArrayBuffer.empty
@@ -44,10 +44,10 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       case other        => buf.addOne(other)
     }
     val bound = new SetPropertyDesc(node, start, buf.size)
-    emplace(setNodeProperties, bound, pos + 1)
+    insert(setNodeProperties, bound, pos + 1)
   }
 
-  private def emplace[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
+  private def insert[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
     if (a(pos) == null)
       a(pos) = mutable.ArrayBuffer.empty[T]
 
@@ -75,7 +75,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
             val seqId    = graph.nodeCount(nodekind) + Option(newNodes(nodekind)).map { _.size }.getOrElse(0)
             val res      = graph.schema.makeNode(graph, nodekind, seqId)
             detached.storedRef = Some(res)
-            emplace(newNodes, detached, nodekind)
+            insert(newNodes, detached, nodekind)
             deferred.append(detached)
             res
         }
@@ -99,13 +99,13 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
           Direction.fromOrdinal(halfEdge.inout) match {
             case Direction.Incoming =>
-              emplace(
+              insert(
                 newEdges,
                 new AddEdgeProcessed(dst, src, halfEdge.edgeKind, halfEdge.property),
                 graph.schema.neighborOffsetArrayIndex(dst.nodeKind, Incoming, halfEdge.edgeKind)
               )
             case Direction.Outgoing =>
-              emplace(
+              insert(
                 newEdges,
                 new AddEdgeProcessed(src, dst, halfEdge.edgeKind, halfEdge.property),
                 graph.schema.neighborOffsetArrayIndex(src.nodeKind, Outgoing, halfEdge.edgeKind)
@@ -116,12 +116,12 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         val src = getGNode(newEdge.src)
         val dst = getGNode(newEdge.dst)
         if (!AccessHelpers.isDeleted(src) && !AccessHelpers.isDeleted(dst)) {
-          emplace(
+          insert(
             newEdges,
             new AddEdgeProcessed(src, dst, newEdge.edgeKind, newEdge.property),
             graph.schema.neighborOffsetArrayIndex(src.nodeKind, Outgoing, newEdge.edgeKind)
           )
-          emplace(
+          insert(
             newEdges,
             new AddEdgeProcessed(dst, src, newEdge.edgeKind, newEdge.property),
             graph.schema.neighborOffsetArrayIndex(dst.nodeKind, Incoming, newEdge.edgeKind)
@@ -132,12 +132,12 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       case setEdgeProperty: SetEdgeProperty
           if !AccessHelpers.isDeleted(setEdgeProperty.edge.src) && !AccessHelpers.isDeleted(setEdgeProperty.edge.dst) =>
         val (outR, inR) = normalizeRepresentation(setEdgeProperty.edge)
-        emplace(
+        insert(
           setEdgeProperties,
           new EdgeRepr(outR.src, outR.dst, outR.edgeKind, outR.subSeq, setEdgeProperty.property),
           graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind)
         )
-        emplace(
+        insert(
           setEdgeProperties,
           new EdgeRepr(inR.src, inR.dst, inR.edgeKind, inR.subSeq, setEdgeProperty.property),
           graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind)
@@ -155,8 +155,8 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           * But k~N is possible where N is the graph size!
           */
         val (outR, inR) = normalizeRepresentation(edgeDeletion.edge)
-        emplace(delEdges, outR, graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind))
-        emplace(delEdges, inR, graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind))
+        insert(delEdges, outR, graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind))
+        insert(delEdges, inR, graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind))
 
       case setNodeProperty: SetNodeProperty if !AccessHelpers.isDeleted(setNodeProperty.node) =>
         val iter = setNodeProperty.property match {
@@ -165,7 +165,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           case a: Array[_]           => a.iterator
           case item                  => Iterator.single(item)
         }
-        emplaceProperty0(setNodeProperty.node, setNodeProperty.propertyKind, iter)
+        insertProperty0(setNodeProperty.node, setNodeProperty.propertyKind, iter)
       case delNode: DelNode =>
         // already processed
         assert(AccessHelpers.isDeleted(delNode.node), s"node should have been deleted already but wasn't: ${delNode.node}")
@@ -243,7 +243,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
         case null =>
         case oldQty: Array[Int] =>
           if (get(oldQty, deletedNode.seq() + 1) - get(oldQty, deletedNode.seq()) > 0)
-            emplaceProperty0(deletedNode, propertyKind, Iterator.empty)
+            insertProperty0(deletedNode, propertyKind, Iterator.empty)
         case _ =>
       }
     }

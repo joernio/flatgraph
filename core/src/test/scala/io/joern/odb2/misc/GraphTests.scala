@@ -668,8 +668,8 @@ class GraphTests extends AnyWordSpec with Matchers {
       }
 
       override def flattenProperties(interface: BatchedUpdateInterface): Unit = {
-        interface.emplaceProperty(this, 0, nodes)
-        interface.emplaceProperty(this, 1, strings)
+        interface.insertProperty(this, 0, nodes)
+        interface.insertProperty(this, 1, strings)
       }
     }
 
