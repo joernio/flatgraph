@@ -1,9 +1,9 @@
 package io.joern.odb2.benchmark
 
+import io.shiftleft.codepropertygraph.generated.v2.*
 import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes.*
 import io.shiftleft.codepropertygraph.generated.v2.traversals.Lang.*
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -18,6 +18,16 @@ import org.scalatest.wordspec.AnyWordSpec
  * */
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
+
+  "starter steps" in {
+    // this would normally be defined in semanticcpg.language... maybe this can be an generated implicit conversion in the future
+    given Conversion[Cpg, CpgNodeStarters] = CpgNodeStarters.apply(_)
+
+    lazy val compiles = {
+      val cpg: Cpg = ???
+      cpg.method
+    }
+  }
 
   "concrete stored class" in {
     lazy val iter: Iterator[Call] = ???
