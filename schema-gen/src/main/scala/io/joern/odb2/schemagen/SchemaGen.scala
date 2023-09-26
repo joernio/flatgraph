@@ -588,6 +588,8 @@ object SchemaGen {
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedGraph: $domainShortName) extends AnyVal {
+         |  def all: Iterator[nodes.AbstractNode] = wrappedGraph.graph.allNodes
+         |
          |${concreteStarters.mkString("\n")}
          |
          |${baseStarters.mkString("\n")}

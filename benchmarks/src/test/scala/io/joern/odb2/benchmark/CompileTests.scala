@@ -25,6 +25,7 @@ class CompileTests extends AnyWordSpec with Matchers {
 
     lazy val compiles = {
       val cpg: Cpg = ???
+      cpg.all
       cpg.method
     }
   }
