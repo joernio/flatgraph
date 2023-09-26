@@ -27,16 +27,8 @@ class Graph(val schema: Schema) {
     else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
   
-  def allNodes: Iterator[GNode] = {
-    // TODO move to misc
-    class MultiIterator[A](iterators: IterableOnce[Iterator[A]]) extends Iterator[A] {
-      override def hasNext: Boolean = ???
-
-      override def next(): A = ???
-
-    }
-    ???
-  }
+  def allNodes: Iterator[GNode] =
+    nodesArray.iterator.flatMap(_.iterator)
 
   private def makeNodesArray(): Array[Array[GNode]] = {
     val nodes = new Array[Array[GNode]](nodeKindCount)
