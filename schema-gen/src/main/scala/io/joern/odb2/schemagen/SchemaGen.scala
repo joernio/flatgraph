@@ -567,7 +567,7 @@ object SchemaGen {
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
       s"""def ${sanitizeReservedNames(
           Helpers.camelCase(typ.name)
-        )}: Iterator[nodes.${typ.className}] = wrappedGraph.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
+        )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
     }.toList
     val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
       s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
@@ -575,24 +575,27 @@ object SchemaGen {
           .map { t => "this." + sanitizeReservedNames(Helpers.camelCase(t.name)) }
           .mkString(", ")}).flatten"""
     }.toList
+    val domainShortName = schema.domainShortName
     val domainMain =
       s"""package $basePackage
          |import io.joern.odb2
          |
-         |object ${schema.domainShortName}{
-         |  def empty: ${schema.domainShortName} = new ${schema.domainShortName}(new odb2.Graph(GraphSchema))
+         |object $domainShortName {
+         |  def empty: $domainShortName = new $domainShortName(new odb2.Graph(GraphSchema))
          |}
-         |class ${schema.domainShortName}(val graph: odb2.Graph){
+         |class $domainShortName(val graph: odb2.Graph) {
          |assert(graph.schema == GraphSchema)
          |}
          |
-         |class ${schema.domainShortName}NodeStarters(val wrappedGraph: ${schema.domainShortName}) extends AnyVal {
+         |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
+         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes
+         |
          |${concreteStarters.mkString("\n")}
          |
          |${baseStarters.mkString("\n")}
          |}
          |""".stripMargin
-    os.write(outputDir / s"${schema.domainShortName}.scala", domainMain)
+    os.write(outputDir / s"$domainShortName.scala", domainMain)
   } // end generate
 
   def typeForProperty(p: Property[_]): String = {

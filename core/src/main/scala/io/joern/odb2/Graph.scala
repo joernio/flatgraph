@@ -1,17 +1,10 @@
 package io.joern.odb2
 
 import io.joern.odb2.Edge.Direction
-import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
+import io.joern.odb2.Graph.*
+import io.joern.odb2.misc.{InitNodeIterator, InitNodeIteratorArray, InitNodeIteratorArrayFiltered}
 
 import java.util.concurrent.atomic.AtomicReferenceArray
-
-object Graph {
-  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
-  // neighbors, and one array containing edge properties
-  val NeighborsSlotSize  = 3
-  val NumberOfDirections = 2
-  val PropertySlotSize   = 2
-}
 
 class Graph(val schema: Schema) {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
@@ -29,10 +22,13 @@ class Graph(val schema: Schema) {
     nodeCountByKind(kind)
   }
 
-  def nodes(nodeKind: Int): misc.InitNodeIterator[GNode] = {
-    if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new misc.InitNodeIteratorArray[GNode](nodesArray(nodeKind))
-    else new misc.InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
+  def nodes(nodeKind: Int): InitNodeIterator[GNode] = {
+    if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
+    else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
+  
+  def allNodes: Iterator[GNode] =
+    nodesArray.iterator.flatMap(_.iterator)
 
   private def makeNodesArray(): Array[Array[GNode]] = {
     val nodes = new Array[Array[GNode]](nodeKindCount)
@@ -56,4 +52,12 @@ class Graph(val schema: Schema) {
 
     neighbors
   }
+}
+
+object Graph {
+  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
+  // neighbors, and one array containing edge properties
+  val NeighborsSlotSize  = 3
+  val NumberOfDirections = 2
+  val PropertySlotSize   = 2
 }
