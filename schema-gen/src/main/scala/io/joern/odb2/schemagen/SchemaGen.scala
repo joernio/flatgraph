@@ -567,7 +567,7 @@ object SchemaGen {
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
       s"""def ${sanitizeReservedNames(
           Helpers.camelCase(typ.name)
-        )}: Iterator[nodes.${typ.className}] = wrappedGraph.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
+        )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
     }.toList
     val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
       s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
@@ -587,8 +587,8 @@ object SchemaGen {
          |assert(graph.schema == GraphSchema)
          |}
          |
-         |class ${domainShortName}NodeStarters(val wrappedGraph: $domainShortName) extends AnyVal {
-         |  def all: Iterator[nodes.AbstractNode] = wrappedGraph.graph.allNodes
+         |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
+         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes
          |
          |${concreteStarters.mkString("\n")}
          |
