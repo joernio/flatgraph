@@ -1,7 +1,8 @@
 package io.joern.odb2
 
 import io.joern.odb2.Edge.Direction
-import io.joern.odb2.Graph.{NeighborsSlotSize, NumberOfDirections, PropertySlotSize}
+import io.joern.odb2.Graph.*
+import io.joern.odb2.misc.{InitNodeIterator, InitNodeIteratorArray, InitNodeIteratorArrayFiltered}
 
 import java.util.concurrent.atomic.AtomicReferenceArray
 
@@ -21,9 +22,9 @@ class Graph(val schema: Schema) {
     nodeCountByKind(kind)
   }
 
-  def nodes(nodeKind: Int): misc.InitNodeIterator[GNode] = {
-    if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new misc.InitNodeIteratorArray[GNode](nodesArray(nodeKind))
-    else new misc.InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
+  def nodes(nodeKind: Int): InitNodeIterator[GNode] = {
+    if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
+    else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
 
   private def makeNodesArray(): Array[Array[GNode]] = {
