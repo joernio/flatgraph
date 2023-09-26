@@ -1,7 +1,6 @@
 package io.joern.odb2.benchmark
 
-//import io.joern.odb2.benchmark.EdgeAccessors
-//import io.joern.odb2.benchmark.EdgeTraversals
+import io.joern.odb2.benchmark.EdgeAccessors.Language.*
 import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes.*
 import io.shiftleft.codepropertygraph.generated.v2.traversals.Lang.*
@@ -20,9 +19,6 @@ import org.scalatest.wordspec.AnyWordSpec
  * */
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
-
-  object EdgeLang extends EdgeAccessors with EdgeTraversals
-  import EdgeLang.*
 
   "concrete stored class" in {
     lazy val iter: Iterator[Call] = ???
