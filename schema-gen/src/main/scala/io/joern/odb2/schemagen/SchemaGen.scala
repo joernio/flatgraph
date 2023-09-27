@@ -437,8 +437,8 @@ object SchemaGen {
 
     for (p <- relevantProperties) {
       val funName = Helpers.camelCase(p.name)
-      concreteStoredAccess.addOne(
-        s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
+      concreteStoredConv.addOne(
+        s"""extension (node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]) {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
               s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
@@ -449,57 +449,62 @@ object SchemaGen {
           }}
            |}""".stripMargin
       )
-      concreteStoredConv.addOne(
-        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
-      )
-      concreteStoredAccessTrav.addOne(
-        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
+      // XX0
+//      concreteStoredConv.addOne(
+//        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+//      )
+      concreteStoredConvTrav.addOne(
+        s"""extension [NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]) {""" +
           generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
-      concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
-      )
+//      concreteStoredConvTrav.addOne(
+//        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
+//      )
 
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
         val extensionClass = s"Access_${baseType.className}Base"
-        convertForStage.addOne(
-          s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
-        )
+//        convertForStage.addOne(
+//          s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
+//        )
         val newName = if (baseType.isInstanceOf[NodeBaseType]) { baseType.className + "New" }
         else { "New" + baseType.className }
         val accessors = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
           val funName = Helpers.camelCase(p.name)
-          accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
-          | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
-          | case newNode: nodes.${newName} => newNode.${funName}
+          accessors.addOne(s"""def $funName: ${typeForProperty(p)}  = node match {
+          | case stored: nodes.StoredNode => stored.$funName
+          | case newNode: nodes.${newName} => newNode.$funName
           |}""".stripMargin)
         }
-        baseAccess.addOne(
-          accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
-        )
+        if (accessors.nonEmpty) {
+          convertForStage.addOne(
+            accessors.mkString(s"extension (node: nodes.${baseType.className}Base) {\n", "\n", "\n}")
+          )
+        }
       }
     }
     for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
-        val extensionClass = s"Traversal_${baseType.className}Base"
-        convertForStage.addOne(
-          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
-        )
+//        val extensionClass = s"Traversal_${baseType.className}Base"
+//        convertForStage.addOne(
+//          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
+//        )
         val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
           elems.addOne(generatePropertyTraversals(p, idByProperty(p)))
         }
-        baseAccessTrav.addOne(
-          elems.mkString(
-            s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
-            "\n",
-            "}"
+        if (elems.nonEmpty) {
+          convertForStage.addOne(
+            elems.mkString(
+              s"extension[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]) { ",
+              "\n",
+              "}"
+            )
           )
-        )
+        }
       }
     }
 
@@ -515,12 +520,10 @@ object SchemaGen {
         case _ =>
           (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
       }
-      convtraits.addOne(s"""trait $tname ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
-           |import Accessors._
+      convtraits.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
            |${convBuffer(idx).mkString("\n")}
            |}""".stripMargin)
-      convtraitsTrav.addOne(s"""trait $tname ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
-           |import Accessors._
+      convtraitsTrav.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
            |${convBufferTrav(idx).mkString("\n")}
            |}""".stripMargin)
     }
@@ -531,13 +534,7 @@ object SchemaGen {
          |import $basePackage.nodes
          |import scala.collection.immutable.IndexedSeq
          |
-         |object Lang extends ConcreteStoredConversions {}
-         |
-         |object Accessors {
-         |  ${concreteStoredAccess.mkString("\n")}
-         |  //
-         |  ${baseAccess.mkString("\n")}
-         |}
+         |object Lang extends ConcreteStoredConversions
          |
          |${convtraits.mkString("\n\n")}
          |""".stripMargin
@@ -549,16 +546,11 @@ object SchemaGen {
       s"""package $basePackage.traversals
          |import io.joern.odb2
          |import $basePackage.nodes
+         |import odb2.misc.Misc
+         |import $basePackage.accessors.Lang.*
          |
-         |object Lang extends ConcreteStoredConversions {}
+         |object Lang extends ConcreteStoredConversions
          |
-         |object Accessors {
-         |  import $basePackage.accessors.Lang._
-         |  import odb2.misc.Misc
-         |  ${concreteStoredAccessTrav.mkString("\n")}
-         |  //
-         |  ${baseAccessTrav.mkString("\n")}
-         |}
          |${convtraitsTrav.mkString("\n\n")}
          |""".stripMargin
     os.write(outputDir / "Traversals.scala", traversals)
