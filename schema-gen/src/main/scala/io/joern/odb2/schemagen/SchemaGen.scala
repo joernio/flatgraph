@@ -328,7 +328,7 @@ object SchemaGen {
            |${baseNodeProps.mkString("\n")}
            |${propDictItems.mkString(
             s"""override def propertiesMap: java.util.Map[String, Any] = {
-               | import $basePackage.accessors.Lang._
+               | import $basePackage.accessors.Lang.*
                | val res = new java.util.HashMap[String, Any]()
                |""".stripMargin,
             "\n",
@@ -518,11 +518,11 @@ object SchemaGen {
           (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
       }
       conversionsForProperties.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
-           |import Accessors._
+           |import Accessors.*
            |${convBuffer(idx).mkString("\n")}
            |}""".stripMargin)
       conversionsForTraversals.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
-           |import Accessors._
+           |import Accessors.*
            |${convBufferTrav(idx).mkString("\n")}
            |}""".stripMargin)
     }
@@ -559,7 +559,7 @@ object SchemaGen {
          |object Lang extends ConcreteStoredConversions
          |
          |object Accessors {
-         |  import $basePackage.accessors.Lang._
+         |  import $basePackage.accessors.Lang.*
          |  import odb2.misc.Misc
          |
          |  /* accessors for concrete stored nodes start */
