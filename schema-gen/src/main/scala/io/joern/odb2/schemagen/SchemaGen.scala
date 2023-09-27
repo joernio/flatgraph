@@ -588,7 +588,7 @@ object SchemaGen {
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
-         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes
+         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.AbstractNode]]
          |
          |${concreteStarters.mkString("\n")}
          |

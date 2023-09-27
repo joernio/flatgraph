@@ -9,7 +9,7 @@ class Cpg(val graph: odb2.Graph) {
 }
 
 class CpgNodeStarters(val wrappedCpg: Cpg) extends AnyVal {
-  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes
+  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.AbstractNode]]
 
   def annotation: Iterator[nodes.Annotation]                   = wrappedCpg.graph.nodes(0).asInstanceOf[Iterator[nodes.Annotation]]
   def annotationLiteral: Iterator[nodes.AnnotationLiteral]     = wrappedCpg.graph.nodes(1).asInstanceOf[Iterator[nodes.AnnotationLiteral]]
