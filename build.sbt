@@ -10,7 +10,6 @@ lazy val core                 = project.in(file("core"))
 lazy val schemaGen            = project.in(file("schema-gen")).dependsOn(core)
 lazy val odbConvert           = project.in(file("odb-convert")).dependsOn(core)
 lazy val joernGenerated       = project.in(file("joern-generated")).dependsOn(core)
-lazy val codescienceGenerated = project.in(file("codescience-generated")).dependsOn(core)
 lazy val benchmarks           = project.in(file("benchmarks")).dependsOn(core).dependsOn(joernGenerated)
 
 /** Only the below listed projects are included in things like `sbt compile`.
@@ -19,6 +18,11 @@ lazy val benchmarks           = project.in(file("benchmarks")).dependsOn(core).d
   */
 lazy val aggregatedProjects: Seq[ProjectReference] =
   Seq(core, schemaGen, odbConvert, joernGenerated, benchmarks)
+
+/** codescience-internal only */
+lazy val schemaGenCodescience = project.in(file("schema-gen-codescience")).dependsOn(core, schemaGen)
+lazy val codescienceGenerated = project.in(file("codescience-generated")).dependsOn(core)
+
 
 ThisBuild / libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
