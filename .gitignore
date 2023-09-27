@@ -6,6 +6,7 @@
 /schema-gen-codescience/target/
 /odb-convert/target/
 /joern-generated/target/
+/codescience-generated/src/main/scala/generated
 /codescience-generated/target/
 /benchmarks/target/
 /core/target/
