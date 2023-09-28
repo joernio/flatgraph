@@ -56,9 +56,10 @@ object SchemaGen {
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
-    val newPropsAtNodeSet: Map[AbstractNodeType, Set[Property[_]]] = schema.allNodeTypes.map { nodeType =>
-      nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
-    }.toMap
+    val newPropsAtNodeSet: Map[AbstractNodeType, Set[Property[?]]] =
+      schema.allNodeTypes.map { nodeType =>
+        nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
+      }.toMap
     val newPropsAtNodeList = newPropsAtNodeSet.view.mapValues(_.toList.sortBy(_.name))
     val newExtendzMap = schema.allNodeTypes.map { nodeType =>
       nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
@@ -151,7 +152,7 @@ object SchemaGen {
               s"def ${pname}_=(value: Option[$ptyp]): Unit",
               s"def ${pname}(value: Option[$ptyp]): this.type",
               s"def ${pname}(value: $ptyp): this.type")
-            case one: Cardinality.One[_] => Seq(
+            case one: Cardinality.One[?] => Seq(
               s"def ${pname}: $ptyp",
               s"def ${pname}_=(value: $ptyp): Unit",
               s"def ${pname}(value: $ptyp): this.type")
@@ -179,22 +180,20 @@ object SchemaGen {
         s"""package $basePackage.nodes
            |import io.joern.odb2
            |
-           |
            |""".stripMargin,
         "\n\n",
         s"\n$userMarkers\n$propertyMarkers\n"
       )
     os.write(outputDir / "BaseTypes.scala", basetypefile)
 
-    val edgeTypes_ = edgeTypes.iterator.zipWithIndex
+    val edgeTypesSource = edgeTypes.iterator.zipWithIndex
       .map { case (edgeType, idx) =>
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
         val accessor = if (edgeType.properties.length == 1) {
-          val p = edgeType.properties.head
-          p.cardinality match {
-            case _: Cardinality.One[_] =>
+          edgeType.properties.head.cardinality match {
+            case _: Cardinality.One[?] =>
               s"""{
                  |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
                  |}""".stripMargin
@@ -204,21 +203,20 @@ object SchemaGen {
                  |}""".stripMargin
             case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
           }
-
         } else ""
         // format: on
 
         s"""class ${edgeType.className}(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
            |    extends odb2.Edge(src_4762, dst_4762, $idx.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
       }.mkString(
-        s"""package ${basePackage}.edges
+        s"""package $basePackage.edges
            |import io.joern.odb2
            |
            |""".stripMargin,
         "\n",
         "\n"
       )
-    os.write(outputDir / "EdgeTypes.scala", edgeTypes_)
+    os.write(outputDir / "EdgeTypes.scala", edgeTypesSource)
 
     val concreteNodes = nodeTypes.iterator.zipWithIndex
       .map { case (nodeType, kind) =>
@@ -250,24 +248,24 @@ object SchemaGen {
             case Cardinality.List =>
               newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
               newNodeFluent.append(
-                s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.${pname} = value.iterator.to(ArraySeq); this }"
+                s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.$pname = value.iterator.to(ArraySeq); this }"
               )
               propDictItems.append(
                 s"""val tmp${p.className} = this.$pname; if(tmp${p.className}.nonEmpty) res.put("${p.name}", tmp${p.className})"""
               )
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.${pname})""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.$pname)""")
             case Cardinality.ZeroOrOne =>
               newNodeProps.append(s"var $pname: Option[$ptyp] = None")
-              newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.${pname} = value; this }")
+              newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
               newNodeFluent.append(
-                s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.${pname} = Option(value); this }"
+                s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.$pname = Option(value); this }"
               )
               propDictItems.append(s"""this.$pname.foreach{p => res.put("${p.name}", p )}""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.${pname})""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.$pname)""")
 
-            case one: Cardinality.One[_] =>
+            case one: Cardinality.One[?] =>
               newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
-              newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.${pname} = value; this }")
+              newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
               propDictItems.append(s"""res.put("${p.name}", this.$pname )""")
               flattenItems.append(s"""interface.insertProperty(this, ${idByProperty(p)}, Iterator(this.$pname))""")
           }
@@ -303,7 +301,7 @@ object SchemaGen {
               propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
               flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
 
-            case _: Cardinality.One[_] =>
+            case _: Cardinality.One[?] =>
               newNodeProps.append(s"var $pname: $ptyp = null")
               newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
               baseNodeProps.append(s"def $pname: $ptyp")
@@ -316,7 +314,7 @@ object SchemaGen {
         }
 
         val newNode =
-          s"""object New${nodeType.className}{def apply():  New${nodeType.className} = new  New${nodeType.className}}
+          s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
              |class New${nodeType.className} extends NewNode(${kindByNode(nodeType)}.toShort) with ${nodeType.className}Base {
              |type RelatedStored = ${nodeType.className}
              |override def label: String = "${nodeType.name}"
@@ -329,7 +327,10 @@ object SchemaGen {
            |$base {
            |${baseNodeProps.mkString("\n")}
            |${propDictItems.mkString(
-            s"override def propertiesMap: java.util.Map[String, Any] = {\n import $basePackage.accessors.Lang._\n val res = new java.util.HashMap[String, Any]()\n",
+            s"""override def propertiesMap: java.util.Map[String, Any] = {
+               | import $basePackage.accessors.Lang.*
+               | val res = new java.util.HashMap[String, Any]()
+               |""".stripMargin,
             "\n",
             "\n res\n}"
           )}
@@ -365,12 +366,12 @@ object SchemaGen {
          |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
          |  val edgeLabels = Array(${edgeTypes.map { e => s"\"${e.name}\"" }.mkString(",  ")})
          |  val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
-         |  val edgePropertyAllocators: Array[Int => Array[_]] = Array(${edgeTypes.zipWithIndex
+         |  val edgePropertyAllocators: Array[Int => Array[?]] = Array(${edgeTypes.zipWithIndex
           .map { case (edge, idx) =>
             edge.properties.headOption match {
               case Some(p) if p.cardinality == Cardinality.ZeroOrOne => ???
               case Some(p) =>
-                s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[_]].default)}) /* label = ${edge.name}, id = $idx */"
+                s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[?]].default)}) /* label = ${edge.name}, id = $idx */"
               case None => "size => null"
             }
           }
@@ -381,7 +382,7 @@ object SchemaGen {
          |  val edgeFactories: Array[(odb2.GNode, odb2.GNode, Int, Any) => odb2.Edge] = Array(${edgeTypes
           .map { e => s"(s, d, subseq, p) => new edges.${e.className}(s, d, subseq, p)" }
           .mkString(", ")})
-         |  val nodePropertyAllocators: Array[Int => Array[_]] = Array(${(relevantProperties.map { p =>
+         |  val nodePropertyAllocators: Array[Int => Array[?]] = Array(${(relevantProperties.map { p =>
           s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
         }.iterator ++ forbiddenSlotsByIndex.map { _ => "size => new Array[odb2.GNode](size)" }).mkString(", ")})
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
@@ -418,33 +419,33 @@ object SchemaGen {
          | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
-         | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] = edgePropertyAllocators(edgeKind)(size)
-         | override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
+         | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
+         | override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
          |}""".stripMargin
     os.write(outputDir / "GraphSchema.scala", schemaFile)
 
     // Accessors and traversals
 
-    val concreteStoredAccess = mutable.ArrayBuffer.empty[String]
-    val concreteStoredConv   = mutable.ArrayBuffer.empty[String]
-    val baseAccess           = mutable.ArrayBuffer.empty[String]
-    val baseConvert          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
+    val accessorsForConcreteStoredNodes = mutable.ArrayBuffer.empty[String]
+    val concreteStoredConv = mutable.ArrayBuffer.empty[String]
+    val accessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
+    val baseConvert = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
-    val concreteStoredAccessTrav = mutable.ArrayBuffer.empty[String]
-    val concreteStoredConvTrav   = mutable.ArrayBuffer.empty[String]
-    val baseAccessTrav           = mutable.ArrayBuffer.empty[String]
-    val baseConvertTrav          = Range(0, prioStages.length + 1).map { _ => mutable.ArrayBuffer.empty[String] }
+    val accessorsForConcreteNodeTraversals = mutable.ArrayBuffer.empty[String]
+    val concreteStoredConvTrav = mutable.ArrayBuffer.empty[String]
+    val accessorsForBaseNodeTraversals = mutable.ArrayBuffer.empty[String]
+    val baseConvertTrav = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
     for (p <- relevantProperties) {
       val funName = Helpers.camelCase(p.name)
-      concreteStoredAccess.addOne(
+      accessorsForConcreteStoredNodes.addOne(
         s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
               s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
             case Cardinality.List =>
               s"odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
-            case one: Cardinality.One[_] =>
+            case one: Cardinality.One[?] =>
               s"odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, ${idByProperty(p)}, node.seq(), ${unpackDefault(p.valueType, one.default)})"
           }}
            |}""".stripMargin
@@ -452,7 +453,7 @@ object SchemaGen {
       concreteStoredConv.addOne(
         s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
-      concreteStoredAccessTrav.addOne(
+      accessorsForConcreteNodeTraversals.addOne(
         s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
           generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
@@ -478,11 +479,12 @@ object SchemaGen {
           | case newNode: nodes.${newName} => newNode.${funName}
           |}""".stripMargin)
         }
-        baseAccess.addOne(
+        accessorsForBaseNodes.addOne(
           accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
         )
       }
     }
+
     for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
         val extensionClass = s"Traversal_${baseType.className}Base"
@@ -493,7 +495,7 @@ object SchemaGen {
         for (p <- newPropsAtNodeList(baseType)) {
           elems.addOne(generatePropertyTraversals(p, idByProperty(p)))
         }
-        baseAccessTrav.addOne(
+        accessorsForBaseNodeTraversals.addOne(
           elems.mkString(
             s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
             "\n",
@@ -503,8 +505,8 @@ object SchemaGen {
       }
     }
 
-    val convtraits     = mutable.ArrayBuffer.empty[String]
-    val convtraitsTrav = mutable.ArrayBuffer.empty[String]
+    val conversionsForProperties = mutable.ArrayBuffer.empty[String]
+    val conversionsForTraversals = mutable.ArrayBuffer.empty[String]
 
     val convBuffer     = concreteStoredConv +: baseConvert
     val convBufferTrav = concreteStoredConvTrav +: baseConvertTrav
@@ -515,12 +517,12 @@ object SchemaGen {
         case _ =>
           (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
       }
-      convtraits.addOne(s"""trait $tname ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
-           |import Accessors._
+      conversionsForProperties.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
+           |import Accessors.*
            |${convBuffer(idx).mkString("\n")}
            |}""".stripMargin)
-      convtraitsTrav.addOne(s"""trait $tname ${tparent.map { p => s" extends ${p}" }.getOrElse("")} {
-           |import Accessors._
+      conversionsForTraversals.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
+           |import Accessors.*
            |${convBufferTrav(idx).mkString("\n")}
            |}""".stripMargin)
     }
@@ -531,15 +533,19 @@ object SchemaGen {
          |import $basePackage.nodes
          |import scala.collection.immutable.IndexedSeq
          |
-         |object Lang extends ConcreteStoredConversions {}
+         |object Lang extends ConcreteStoredConversions
          |
          |object Accessors {
-         |  ${concreteStoredAccess.mkString("\n")}
-         |  //
-         |  ${baseAccess.mkString("\n")}
+         |  /* accessors for concrete stored nodes start */
+         |  ${accessorsForConcreteStoredNodes.mkString("\n")}
+         |  /* accessors for concrete stored nodes end */
+         |
+         |  /* accessors for base nodes start */
+         |  ${accessorsForBaseNodes.mkString("\n")}
+         |  /* accessors for base nodes end */
          |}
          |
-         |${convtraits.mkString("\n\n")}
+         |${conversionsForProperties.mkString("\n\n")}
          |""".stripMargin
 
     os.write(outputDir / "Accessors.scala", accessors)
@@ -550,16 +556,21 @@ object SchemaGen {
          |import io.joern.odb2
          |import $basePackage.nodes
          |
-         |object Lang extends ConcreteStoredConversions {}
+         |object Lang extends ConcreteStoredConversions
          |
          |object Accessors {
-         |  import $basePackage.accessors.Lang._
+         |  import $basePackage.accessors.Lang.*
          |  import odb2.misc.Misc
-         |  ${concreteStoredAccessTrav.mkString("\n")}
-         |  //
-         |  ${baseAccessTrav.mkString("\n")}
+         |
+         |  /* accessors for concrete stored nodes start */
+         |  ${accessorsForConcreteNodeTraversals.mkString("\n")}
+         |  /* accessors for concrete stored nodes end */
+         |
+         |  /* accessors for base nodes start */
+         |  ${accessorsForBaseNodeTraversals.mkString("\n")}
+         |  /* accessors for base nodes end */
          |}
-         |${convtraitsTrav.mkString("\n\n")}
+         |${conversionsForTraversals.mkString("\n\n")}
          |""".stripMargin
     os.write(outputDir / "Traversals.scala", traversals)
 
@@ -598,12 +609,12 @@ object SchemaGen {
     os.write(outputDir / s"$domainShortName.scala", domainMain)
   } // end generate
 
-  def typeForProperty(p: Property[_]): String = {
+  def typeForProperty(p: Property[?]): String = {
     val typ = unpackTypeUnboxed(p.valueType, isStored = true, raised = false)
     p.cardinality match {
       case Cardinality.ZeroOrOne => s"Option[$typ]"
       case Cardinality.List      => s"IndexedSeq[$typ]"
-      case _: Cardinality.One[_] => typ
+      case _: Cardinality.One[?] => typ
     }
   }
 
@@ -614,7 +625,7 @@ object SchemaGen {
     }
   }
 
-  def generatePropertyTraversals(property: Property[_], propertyId: Int): String = {
+  def generatePropertyTraversals(property: Property[?], propertyId: Int): String = {
     // fixme: also generate negated filters
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
@@ -646,7 +657,7 @@ object SchemaGen {
        |""".stripMargin
 
   }
-  def unpackDefault(typ: ValueType[_], default: Default[_]): String = {
+  def unpackDefault(typ: ValueType[?], default: Default[?]): String = {
     import org.apache.commons.text.StringEscapeUtils.escapeJava
     typ match {
       case ValueType.Boolean                                            => s"${default.value}: Boolean"
@@ -663,7 +674,7 @@ object SchemaGen {
       case _                                                            => ???
     }
   }
-  def unpackTypeUnboxed(tpe: ValueType[_], isStored: Boolean, raised: Boolean = false): String = {
+  def unpackTypeUnboxed(tpe: ValueType[?], isStored: Boolean, raised: Boolean = false): String = {
     tpe match {
       case ValueType.Boolean             => "Boolean"
       case ValueType.String              => "String"
@@ -680,7 +691,7 @@ object SchemaGen {
     }
   }
 
-  def unpackTypeBoxed(tpe: ValueType[_], isStored: Boolean): String = {
+  def unpackTypeBoxed(tpe: ValueType[?], isStored: Boolean): String = {
     tpe match {
       case ValueType.Boolean             => "java.lang.Boolean"
       case ValueType.String              => "String"
