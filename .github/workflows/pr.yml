@@ -18,4 +18,9 @@ jobs:
             ~/.sbt
             ~/.coursier
           key: ${{ runner.os }}-sbt-${{ hashfiles('**/build.sbt') }}
-      - run: sbt scalafmtCheck Test/scalafmtCheck test
+      - name: scalafmtCheck and tests
+        run: sbt scalafmtCheck Test/scalafmtCheck test
+      - name: Generate domain classes and verify everything is committed
+        run: |
+          ./generateSchema.sh
+          git status --porcelain 2>/dev/null| grep "^??" | wc -l
