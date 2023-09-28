@@ -7,15 +7,13 @@ import io.shiftleft.codepropertygraph.generated.v2.traversals.Lang.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-/**
- * Verifies that the generated API (accessors via implicits) works for the joern domain.
- * Nothing really executes, we just want to verify that this code compiles and produces no ambiguity warnings.
- *
- * Demonstrate that users can ad-hoc subtype nodes and write extension methods for the ad-hoc  subtypes.
- * In this example we define an ad-hoc  `IsStaticT` subtype of CALL which is "statically dispatched call", and an
- * extension method staticCallee that safely goes to the callee.
- * This extension method is only defined on our ad-hoc subtype.
- * */
+/** Verifies that the generated API (accessors via implicits) works for the joern domain. Nothing really executes, we just want to verify
+  * that this code compiles and produces no ambiguity warnings.
+  *
+  * Demonstrate that users can ad-hoc subtype nodes and write extension methods for the ad-hoc subtypes. In this example we define an ad-hoc
+  * `IsStaticT` subtype of CALL which is "statically dispatched call", and an extension method staticCallee that safely goes to the callee.
+  * This extension method is only defined on our ad-hoc subtype.
+  */
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
 
@@ -159,6 +157,5 @@ object CompileTests {
   implicit class StaticCallTravExt[NodeType <: Call with StaticType[IsStaticT]](val trav: Iterator[NodeType]) extends AnyVal {
     def staticCallee: Iterator[Method] = trav.map { _.staticCallee }
   }
-
 
 }

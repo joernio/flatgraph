@@ -3,26 +3,28 @@ package io.joern.odb2.misc
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
-/**
- * Memory efficient dictionary for single and/or multiple elements of type `A`.
- * Sample usage: see MultiDictIndexTest
- */
+/** Memory efficient dictionary for single and/or multiple elements of type `A`. Sample usage: see MultiDictIndexTest
+  */
 private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
-  private val size                  = sizeHint + (sizeHint >> 1)
-  private val keys: Array[String]   = new Array[String](size)
-  private val values: Array[AnyRef] = new Array[AnyRef](size) // holds single elements of type `A` and lists of type `Array[A]`, hence the use of `AnyRef`
-  private var finalized             = false
+  private val size                = sizeHint + (sizeHint >> 1)
+  private val keys: Array[String] = new Array[String](size)
+  private val values: Array[AnyRef] =
+    new Array[AnyRef](size) // holds single elements of type `A` and lists of type `Array[A]`, hence the use of `AnyRef`
+  private var finalized = false
 
   def insert(key: String, value: A): Unit = {
     if (key == null) return
     assert(!finalized, "Cannot insert into finalized index")
 
-    var position = hashToPos(key.hashCode())
+    var position   = hashToPos(key.hashCode())
     var overflowed = false
     while (true) {
       if (position >= size) {
         // we've reached the end of the slots. overflow: try from index 0
-        assert(!overflowed, s"We've tried all possible slots, none of which was available - please allocate a large-enough index! size=$size")
+        assert(
+          !overflowed,
+          s"We've tried all possible slots, none of which was available - please allocate a large-enough index! size=$size"
+        )
         position = 0
         overflowed = true
       }
@@ -53,7 +55,7 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
       values(idx) match {
         case buf: mutable.ArrayBuffer[A @unchecked] =>
           values(idx) = buf.toArray[AnyRef]
-        case _  =>
+        case _ =>
       }
       idx += 1
     }
@@ -63,7 +65,7 @@ private[odb2] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
   def get(key: String): Iterator[A] = {
     if (key == null) return null
     if (!finalized) throw new RuntimeException("Cannot lookup in an index that's not finalized - please invoke `shrinkFit` first")
-    var position = hashToPos(key.hashCode())
+    var position   = hashToPos(key.hashCode())
     var overflowed = false
     while (true) {
       if (position >= size) {

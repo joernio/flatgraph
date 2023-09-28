@@ -31,7 +31,6 @@ class SchemaGen(schema: Schema) {
     os.remove.all(outputDir0)
     os.makeDir.all(outputDir0)
 
-
     val basePackage = schema.basePackage + ".v2"
 
     val propertyContexts   = relevantPropertyContexts(schema)
@@ -55,7 +54,9 @@ class SchemaGen(schema: Schema) {
           oldForbidden.addAll(containing)
         case None =>
           containedIndexByName(name) = forbiddenSlotsByIndex.length
-          forbiddenSlotsByIndex.append(containing.filter { _ => true }) // this looks silly (because it is!) - apparently .filter copies the map, and since it's mutable...
+          forbiddenSlotsByIndex.append(
+            containing.filter(_ => true)
+          ) // this looks silly (because it is!) - apparently .filter copies the map, and since it's mutable...
       }
     }
 
@@ -80,7 +81,7 @@ class SchemaGen(schema: Schema) {
           stage.forall(other => newPropsAtNodeSet(other).intersect(props).isEmpty)
         } match {
           case Some(value) => value.addOne(baseType)
-          case None => prioStages.addOne(mutable.ArrayBuffer(baseType))
+          case None        => prioStages.addOne(mutable.ArrayBuffer(baseType))
         }
       }
       prioStages.map(_.toArray).toArray
@@ -149,20 +150,22 @@ class SchemaGen(schema: Schema) {
             property <- newProperties
             pname = Helpers.camelCase(property.name)
             ptyp  = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
-         } yield property.cardinality match {
-            case Cardinality.List => Seq(
-              s"def ${pname}: IndexedSeq[$ptyp]",
-              s"def ${pname}_=(value: IndexedSeq[$ptyp]): Unit",
-              s"def ${pname}(value: IterableOnce[$ptyp]): this.type")
-            case Cardinality.ZeroOrOne => Seq(
-              s"def ${pname}: Option[$ptyp]",
-              s"def ${pname}_=(value: Option[$ptyp]): Unit",
-              s"def ${pname}(value: Option[$ptyp]): this.type",
-              s"def ${pname}(value: $ptyp): this.type")
-            case one: Cardinality.One[?] => Seq(
-              s"def ${pname}: $ptyp",
-              s"def ${pname}_=(value: $ptyp): Unit",
-              s"def ${pname}(value: $ptyp): this.type")
+          } yield property.cardinality match {
+            case Cardinality.List =>
+              Seq(
+                s"def ${pname}: IndexedSeq[$ptyp]",
+                s"def ${pname}_=(value: IndexedSeq[$ptyp]): Unit",
+                s"def ${pname}(value: IterableOnce[$ptyp]): this.type"
+              )
+            case Cardinality.ZeroOrOne =>
+              Seq(
+                s"def ${pname}: Option[$ptyp]",
+                s"def ${pname}_=(value: Option[$ptyp]): Unit",
+                s"def ${pname}(value: Option[$ptyp]): this.type",
+                s"def ${pname}(value: $ptyp): this.type"
+              )
+            case one: Cardinality.One[?] =>
+              Seq(s"def ${pname}: $ptyp", s"def ${pname}_=(value: $ptyp): Unit", s"def ${pname}(value: $ptyp): this.type")
           }
         }.flatten
 
@@ -183,7 +186,8 @@ class SchemaGen(schema: Schema) {
            |  ${newNodeDefs.mkString("\n")}
            |}
            |""".stripMargin
-      }.mkString(
+      }
+      .mkString(
         s"""package $basePackage.nodes
            |import io.joern.odb2
            |
@@ -215,7 +219,8 @@ class SchemaGen(schema: Schema) {
 
         s"""class ${edgeType.className}(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
            |    extends odb2.Edge(src_4762, dst_4762, $idx.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
-      }.mkString(
+      }
+      .mkString(
         s"""package $basePackage.edges
            |import io.joern.odb2
            |
@@ -434,14 +439,14 @@ class SchemaGen(schema: Schema) {
     // Accessors and traversals
 
     val accessorsForConcreteStoredNodes = mutable.ArrayBuffer.empty[String]
-    val concreteStoredConv = mutable.ArrayBuffer.empty[String]
-    val accessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
-    val baseConvert = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
+    val concreteStoredConv              = mutable.ArrayBuffer.empty[String]
+    val accessorsForBaseNodes           = mutable.ArrayBuffer.empty[String]
+    val baseConvert                     = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
     val accessorsForConcreteNodeTraversals = mutable.ArrayBuffer.empty[String]
-    val concreteStoredConvTrav = mutable.ArrayBuffer.empty[String]
-    val accessorsForBaseNodeTraversals = mutable.ArrayBuffer.empty[String]
-    val baseConvertTrav = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
+    val concreteStoredConvTrav             = mutable.ArrayBuffer.empty[String]
+    val accessorsForBaseNodeTraversals     = mutable.ArrayBuffer.empty[String]
+    val baseConvertTrav                    = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
     for (p <- relevantProperties) {
       val funName = Helpers.camelCase(p.name)

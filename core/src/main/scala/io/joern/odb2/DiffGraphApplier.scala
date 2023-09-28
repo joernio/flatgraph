@@ -12,8 +12,8 @@ object DiffGraphApplier {
   }
 }
 
-/** The class that is responsible for applying diffgraphs.
-  * This is not supposed to be public API, users should stick to applyDiff */
+/** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
+  */
 private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
@@ -34,7 +34,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
   }
 
   private def insertProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
-    val pos  = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
+    val pos = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
     if (setNodeProperties(pos) == null)
       setNodeProperties(pos) = mutable.ArrayBuffer.empty
     val buf   = setNodeProperties(pos)
@@ -142,15 +142,14 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
           new EdgeRepr(inR.src, inR.dst, inR.edgeKind, inR.subSeq, setEdgeProperty.property),
           graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind)
         )
-      case edgeDeletion: RemoveEdge
-          if !AccessHelpers.isDeleted(edgeDeletion.edge.src) && !AccessHelpers.isDeleted(edgeDeletion.edge.dst) =>
+      case edgeDeletion: RemoveEdge if !AccessHelpers.isDeleted(edgeDeletion.edge.src) && !AccessHelpers.isDeleted(edgeDeletion.edge.dst) =>
         /** This is the delEdge case. It is massively annoying.
           *
           * In order to support edge properties, we need to grab the right edge from e.src->e.dst. If we assume that our graph was built
           * normally, i.e. edges were sequentially/batched added without the unsafe unidirectional edges, then our graph has the following
-          * invariant: The kth edge connecting A->B corresponds to the kth edge connecting B<-A This sucks big time, because edge removal
-          * is potentially O(N**2). The degenerate behavior occurs when we have ~k edges of the same type starting in src = X or ending in
-          * the same dst = X. Each deletion then costs us ~k, and if we delete all ~k edges we pay ~ k*k.
+          * invariant: The kth edge connecting A->B corresponds to the kth edge connecting B<-A This sucks big time, because edge removal is
+          * potentially O(N**2). The degenerate behavior occurs when we have ~k edges of the same type starting in src = X or ending in the
+          * same dst = X. Each deletion then costs us ~k, and if we delete all ~k edges we pay ~ k*k.
           *
           * But k~N is possible where N is the graph size!
           */

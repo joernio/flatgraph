@@ -124,7 +124,7 @@ object Accessors {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     graph.inverseIndices.get(pos) match {
       case exists: MultiDictIndex[GNode @unchecked] if exists != null => exists
-      case _                                        => createInverseIndex(graph, nodeKind, propertyKind)
+      case _                                                          => createInverseIndex(graph, nodeKind, propertyKind)
     }
   }
 
@@ -145,9 +145,9 @@ object Accessors {
         lock.synchronized {
           if (inverseIndices.compareAndSet(pos, null, lock)) {
             // we now own the slot.
-            val numItems = graph.properties(pos).asInstanceOf[Array[Int]]
-            val items    = graph.properties(pos + 1).asInstanceOf[Array[String]]
-            val nodes    = graph.nodesArray(nodeKind)
+            val numItems     = graph.properties(pos).asInstanceOf[Array[Int]]
+            val items        = graph.properties(pos + 1).asInstanceOf[Array[String]]
+            val nodes        = graph.nodesArray(nodeKind)
             val inverseIndex = new MultiDictIndex[GNode](items.length)
             try {
               for (idx <- Range(0, nodes.length) if idx + 1 < numItems.length) {
@@ -162,7 +162,10 @@ object Accessors {
               return inverseIndex
             } finally {
               val lock2 = inverseIndices.getAndSet(pos, inverseIndex)
-              assert(lock == lock2, s"something went wrong with the locks: expected them to be equal, but they weren't... lock=$lock, lock2=$lock2")
+              assert(
+                lock == lock2,
+                s"something went wrong with the locks: expected them to be equal, but they weren't... lock=$lock, lock2=$lock2"
+              )
             }
           }
         }

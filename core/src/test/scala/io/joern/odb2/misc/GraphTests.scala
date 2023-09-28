@@ -742,11 +742,13 @@ class GraphTests extends AnyWordSpec with Matchers {
 }
 
 object TestSchema {
-  def make(nKinds: Int,
-           nEdgeKinds: Int,
-           nProperties: Int = 0,
-           edgePropertyPrototypes: Array[AnyRef] = null,
-           nodePropertyPrototypes: Array[AnyRef] = null): Schema = {
+  def make(
+    nKinds: Int,
+    nEdgeKinds: Int,
+    nProperties: Int = 0,
+    edgePropertyPrototypes: Array[AnyRef] = null,
+    nodePropertyPrototypes: Array[AnyRef] = null
+  ): Schema = {
     new FreeSchema(
       nodeLabels = Range(0, nKinds).map { id => s"V${id}" }.toArray,
       edgeLabels = Range(0, nEdgeKinds).map { id => s"${id}" }.toArray,
@@ -758,10 +760,10 @@ object TestSchema {
 
   def testSerialization(g: Graph): Unit = {
     val orig = DebugDump.debugDump(g)
-    val fn = "/tmp/foo.fg"
+    val fn   = "/tmp/foo.fg"
     Serialization.writeGraph(g, fn)
     val deserialized = Deserialization.readGraph(fn, g.schema)
-    val newdump = DebugDump.debugDump(deserialized)
+    val newdump      = DebugDump.debugDump(deserialized)
     //    if (newdump != orig) {
     //      1 + 1 // for easier breakpoints
     //    }
@@ -769,4 +771,3 @@ object TestSchema {
   }
 
 }
-
