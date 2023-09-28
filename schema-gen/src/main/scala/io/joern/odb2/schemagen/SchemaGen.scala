@@ -203,7 +203,8 @@ class SchemaGen(schema: Schema) {
 
         // format: off
         val accessor = if (edgeType.properties.length == 1) {
-          edgeType.properties.head.cardinality match {
+          val p = edgeType.properties.head
+          p.cardinality match {
             case _: Cardinality.One[?] =>
               s"""{
                  |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
