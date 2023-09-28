@@ -585,7 +585,7 @@ class SchemaGen(schema: Schema) {
          |}
          |${conversionsForTraversals.mkString("\n\n")}
          |""".stripMargin
-    os.write(outputDir0 / "TraversalsFoo.scala", traversals)
+    os.write(outputDir0 / "Traversals.scala", traversals)
 
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
