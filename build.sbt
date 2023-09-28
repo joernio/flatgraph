@@ -10,8 +10,17 @@ lazy val core                 = project.in(file("core"))
 lazy val schemaGen            = project.in(file("schema-gen")).dependsOn(core)
 lazy val odbConvert           = project.in(file("odb-convert")).dependsOn(core)
 lazy val joernGenerated       = project.in(file("joern-generated")).dependsOn(core)
-lazy val codescienceGenerated = project.in(file("codescience-generated")).dependsOn(core)
 lazy val benchmarks           = project.in(file("benchmarks")).dependsOn(core).dependsOn(joernGenerated)
+
+/** Only the below listed projects are included in things like `sbt compile`.
+  * We explicitly want to exclude schemaGenCodescience and codescienceGenerated here, in order to be able
+  * to build outside of a qwiet.ai / shiftleft environment - specifically on CI
+  */
+lazy val root = (project in file(".")).aggregate(core, schemaGen, odbConvert, joernGenerated, benchmarks)
+
+lazy val schemaGenCodescience = project.in(file("schema-gen-codescience")).dependsOn(core, schemaGen)
+lazy val codescienceGenerated = project.in(file("codescience-generated")).dependsOn(core)
+
 
 ThisBuild / libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
@@ -33,7 +42,7 @@ ThisBuild / compile / javacOptions ++= Seq(
 ThisBuild / resolvers ++= Seq(
   Resolver.mavenLocal,
   "Sonatype OSS" at "https://oss.sonatype.org/content/repositories/public",
-  // TODO take out, we're currently relying on closed source in an open source build (codescience-schema)
+  // only relevant for `codescienceGenerated` which is not part of the `aggregatedProjects`
   "Artifactory release local" at "https://shiftleft.jfrog.io/shiftleft/libs-release-local",
 )
 

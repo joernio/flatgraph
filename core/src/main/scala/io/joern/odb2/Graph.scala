@@ -26,7 +26,7 @@ class Graph(val schema: Schema) {
     if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
     else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
-  
+
   def allNodes: Iterator[GNode] =
     nodesArray.iterator.flatMap(_.iterator)
 
