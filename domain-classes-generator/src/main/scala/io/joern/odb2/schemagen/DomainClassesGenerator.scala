@@ -1,6 +1,6 @@
-package io.joern.odb2.schemagen
+package io.joern.odb2.codegen
 
-import io.joern.odb2.schemagen.CodeSnippets.FilterSteps
+import io.joern.odb2.codegen.CodeSnippets.FilterSteps
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
@@ -9,13 +9,13 @@ import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
 
-object SchemaGenMain {
+object DomainClassesGeneratorCpg {
   def main(args: Array[String]): Unit = {
-    new SchemaGen(io.shiftleft.codepropertygraph.schema.CpgSchema.instance).main(args)
+    new DomainClassesGenerator(io.shiftleft.codepropertygraph.schema.CpgSchema.instance).main(args)
   }
 }
 
-class SchemaGen(schema: Schema) {
+class DomainClassesGenerator(schema: Schema) {
   def main(args: Array[String]): Unit = {
     if (args.length < 1) {
       System.err.println("usage: CodeGen <outputDir>")

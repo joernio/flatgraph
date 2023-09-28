@@ -1,4 +1,4 @@
-name := "schema-gen"
+name := "domain-classes-generator"
 enablePlugins(JavaAppPackaging)
 
 libraryDependencies ++= Seq(

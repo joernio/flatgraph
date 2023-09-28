@@ -6,19 +6,19 @@ publish / skip := true
 val cpgVersion = "1.4.22"
 val joernVersion = "2.0.86"
 
-lazy val core                 = project.in(file("core"))
-lazy val schemaGen            = project.in(file("schema-gen")).dependsOn(core)
-lazy val odbConvert           = project.in(file("odb-convert")).dependsOn(core)
-lazy val joernGenerated       = project.in(file("joern-generated")).dependsOn(core)
-lazy val benchmarks           = project.in(file("benchmarks")).dependsOn(core).dependsOn(joernGenerated)
+lazy val core                   = project.in(file("core"))
+lazy val domainClassesGenerator = project.in(file("domain-classes-generator")).dependsOn(core)
+lazy val odbConvert             = project.in(file("odb-convert")).dependsOn(core)
+lazy val joernGenerated         = project.in(file("joern-generated")).dependsOn(core)
+lazy val benchmarks             = project.in(file("benchmarks")).dependsOn(core).dependsOn(joernGenerated)
 
 /** Only the below listed projects are included in things like `sbt compile`.
-  * We explicitly want to exclude schemaGenCodescience and codescienceGenerated here, in order to be able
+  * We explicitly want to exclude domainClassesGeneratorCodescience and codescienceGenerated here, in order to be able
   * to build outside of a qwiet.ai / shiftleft environment - specifically on CI
   */
-lazy val root = (project in file(".")).aggregate(core, schemaGen, odbConvert, joernGenerated, benchmarks)
+lazy val root = (project in file(".")).aggregate(core, domainClassesGenerator, odbConvert, joernGenerated, benchmarks)
 
-lazy val schemaGenCodescience = project.in(file("schema-gen-codescience")).dependsOn(core, schemaGen)
+lazy val domainClassesGeneratorCodescience = project.in(file("domain-classes-generator-codescience")).dependsOn(core, domainClassesGenerator)
 lazy val codescienceGenerated = project.in(file("codescience-generated")).dependsOn(core)
 
 
