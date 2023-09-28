@@ -2,8 +2,8 @@
 /project/target/
 /project/project/
 /benchJoern/target/
-/schema-gen/target/
-/schema-gen-codescience/target/
+/domain-classes-generator/target/
+/domain-classes-generator-codescience/target/
 /odb-convert/target/
 /joern-generated/target/
 /codescience-generated/src/main/scala/generated

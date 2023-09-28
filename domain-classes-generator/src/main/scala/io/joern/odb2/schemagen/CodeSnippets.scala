@@ -1,4 +1,4 @@
-package io.joern.odb2.schemagen
+package io.joern.odb2.codegen
 
 object CodeSnippets {
 
