@@ -1,5 +1,6 @@
 package io.shiftleft.codepropertygraph.generated.v2
 import io.joern.odb2
+import io.shiftleft.codepropertygraph.generated.v2.nodes.*
 
 object Cpg {
   def empty: Cpg = new Cpg(new odb2.Graph(GraphSchema))
@@ -9,55 +10,55 @@ class Cpg(val graph: odb2.Graph) {
 }
 
 class CpgNodeStarters(val wrappedCpg: Cpg) extends AnyVal {
-  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.AbstractNode]]
+  def all: Iterator[AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[AbstractNode]]
 
-  def annotation: Iterator[nodes.Annotation]                   = wrappedCpg.graph.nodes(0).asInstanceOf[Iterator[nodes.Annotation]]
-  def annotationLiteral: Iterator[nodes.AnnotationLiteral]     = wrappedCpg.graph.nodes(1).asInstanceOf[Iterator[nodes.AnnotationLiteral]]
-  def annotationParameter: Iterator[nodes.AnnotationParameter] = wrappedCpg.graph.nodes(2).asInstanceOf[Iterator[nodes.AnnotationParameter]]
-  def annotationParameterAssign: Iterator[nodes.AnnotationParameterAssign] =
-    wrappedCpg.graph.nodes(3).asInstanceOf[Iterator[nodes.AnnotationParameterAssign]]
-  def arrayInitializer: Iterator[nodes.ArrayInitializer]     = wrappedCpg.graph.nodes(4).asInstanceOf[Iterator[nodes.ArrayInitializer]]
-  def binding: Iterator[nodes.Binding]                       = wrappedCpg.graph.nodes(5).asInstanceOf[Iterator[nodes.Binding]]
-  def block: Iterator[nodes.Block]                           = wrappedCpg.graph.nodes(6).asInstanceOf[Iterator[nodes.Block]]
-  def call: Iterator[nodes.Call]                             = wrappedCpg.graph.nodes(7).asInstanceOf[Iterator[nodes.Call]]
-  def closureBinding: Iterator[nodes.ClosureBinding]         = wrappedCpg.graph.nodes(8).asInstanceOf[Iterator[nodes.ClosureBinding]]
-  def comment: Iterator[nodes.Comment]                       = wrappedCpg.graph.nodes(9).asInstanceOf[Iterator[nodes.Comment]]
-  def configFile: Iterator[nodes.ConfigFile]                 = wrappedCpg.graph.nodes(10).asInstanceOf[Iterator[nodes.ConfigFile]]
-  def controlStructure: Iterator[nodes.ControlStructure]     = wrappedCpg.graph.nodes(11).asInstanceOf[Iterator[nodes.ControlStructure]]
-  def dependency: Iterator[nodes.Dependency]                 = wrappedCpg.graph.nodes(12).asInstanceOf[Iterator[nodes.Dependency]]
-  def fieldIdentifier: Iterator[nodes.FieldIdentifier]       = wrappedCpg.graph.nodes(13).asInstanceOf[Iterator[nodes.FieldIdentifier]]
-  def file: Iterator[nodes.File]                             = wrappedCpg.graph.nodes(14).asInstanceOf[Iterator[nodes.File]]
-  def finding: Iterator[nodes.Finding]                       = wrappedCpg.graph.nodes(15).asInstanceOf[Iterator[nodes.Finding]]
-  def identifier: Iterator[nodes.Identifier]                 = wrappedCpg.graph.nodes(16).asInstanceOf[Iterator[nodes.Identifier]]
-  def imports: Iterator[nodes.Import]                        = wrappedCpg.graph.nodes(17).asInstanceOf[Iterator[nodes.Import]]
-  def jumpLabel: Iterator[nodes.JumpLabel]                   = wrappedCpg.graph.nodes(18).asInstanceOf[Iterator[nodes.JumpLabel]]
-  def jumpTarget: Iterator[nodes.JumpTarget]                 = wrappedCpg.graph.nodes(19).asInstanceOf[Iterator[nodes.JumpTarget]]
-  def keyValuePair: Iterator[nodes.KeyValuePair]             = wrappedCpg.graph.nodes(20).asInstanceOf[Iterator[nodes.KeyValuePair]]
-  def literal: Iterator[nodes.Literal]                       = wrappedCpg.graph.nodes(21).asInstanceOf[Iterator[nodes.Literal]]
-  def local: Iterator[nodes.Local]                           = wrappedCpg.graph.nodes(22).asInstanceOf[Iterator[nodes.Local]]
-  def location: Iterator[nodes.Location]                     = wrappedCpg.graph.nodes(23).asInstanceOf[Iterator[nodes.Location]]
-  def member: Iterator[nodes.Member]                         = wrappedCpg.graph.nodes(24).asInstanceOf[Iterator[nodes.Member]]
-  def metaData: Iterator[nodes.MetaData]                     = wrappedCpg.graph.nodes(25).asInstanceOf[Iterator[nodes.MetaData]]
-  def method: Iterator[nodes.Method]                         = wrappedCpg.graph.nodes(26).asInstanceOf[Iterator[nodes.Method]]
-  def methodParameterIn: Iterator[nodes.MethodParameterIn]   = wrappedCpg.graph.nodes(27).asInstanceOf[Iterator[nodes.MethodParameterIn]]
-  def methodParameterOut: Iterator[nodes.MethodParameterOut] = wrappedCpg.graph.nodes(28).asInstanceOf[Iterator[nodes.MethodParameterOut]]
-  def methodRef: Iterator[nodes.MethodRef]                   = wrappedCpg.graph.nodes(29).asInstanceOf[Iterator[nodes.MethodRef]]
-  def methodReturn: Iterator[nodes.MethodReturn]             = wrappedCpg.graph.nodes(30).asInstanceOf[Iterator[nodes.MethodReturn]]
-  def modifier: Iterator[nodes.Modifier]                     = wrappedCpg.graph.nodes(31).asInstanceOf[Iterator[nodes.Modifier]]
-  def namespace: Iterator[nodes.Namespace]                   = wrappedCpg.graph.nodes(32).asInstanceOf[Iterator[nodes.Namespace]]
-  def namespaceBlock: Iterator[nodes.NamespaceBlock]         = wrappedCpg.graph.nodes(33).asInstanceOf[Iterator[nodes.NamespaceBlock]]
-  def ret: Iterator[nodes.Return]                            = wrappedCpg.graph.nodes(34).asInstanceOf[Iterator[nodes.Return]]
-  def tag: Iterator[nodes.Tag]                               = wrappedCpg.graph.nodes(35).asInstanceOf[Iterator[nodes.Tag]]
-  def tagNodePair: Iterator[nodes.TagNodePair]               = wrappedCpg.graph.nodes(36).asInstanceOf[Iterator[nodes.TagNodePair]]
-  def templateDom: Iterator[nodes.TemplateDom]               = wrappedCpg.graph.nodes(37).asInstanceOf[Iterator[nodes.TemplateDom]]
-  def typ: Iterator[nodes.Type]                              = wrappedCpg.graph.nodes(38).asInstanceOf[Iterator[nodes.Type]]
-  def typeArgument: Iterator[nodes.TypeArgument]             = wrappedCpg.graph.nodes(39).asInstanceOf[Iterator[nodes.TypeArgument]]
-  def typeDecl: Iterator[nodes.TypeDecl]                     = wrappedCpg.graph.nodes(40).asInstanceOf[Iterator[nodes.TypeDecl]]
-  def typeParameter: Iterator[nodes.TypeParameter]           = wrappedCpg.graph.nodes(41).asInstanceOf[Iterator[nodes.TypeParameter]]
-  def typeRef: Iterator[nodes.TypeRef]                       = wrappedCpg.graph.nodes(42).asInstanceOf[Iterator[nodes.TypeRef]]
-  def unknown: Iterator[nodes.Unknown]                       = wrappedCpg.graph.nodes(43).asInstanceOf[Iterator[nodes.Unknown]]
+  def annotation: Iterator[Annotation]                   = wrappedCpg.graph.nodes(0).asInstanceOf[Iterator[Annotation]]
+  def annotationLiteral: Iterator[AnnotationLiteral]     = wrappedCpg.graph.nodes(1).asInstanceOf[Iterator[AnnotationLiteral]]
+  def annotationParameter: Iterator[AnnotationParameter] = wrappedCpg.graph.nodes(2).asInstanceOf[Iterator[AnnotationParameter]]
+  def annotationParameterAssign: Iterator[AnnotationParameterAssign] =
+    wrappedCpg.graph.nodes(3).asInstanceOf[Iterator[AnnotationParameterAssign]]
+  def arrayInitializer: Iterator[ArrayInitializer]     = wrappedCpg.graph.nodes(4).asInstanceOf[Iterator[ArrayInitializer]]
+  def binding: Iterator[Binding]                       = wrappedCpg.graph.nodes(5).asInstanceOf[Iterator[Binding]]
+  def block: Iterator[Block]                           = wrappedCpg.graph.nodes(6).asInstanceOf[Iterator[Block]]
+  def call: Iterator[Call]                             = wrappedCpg.graph.nodes(7).asInstanceOf[Iterator[Call]]
+  def closureBinding: Iterator[ClosureBinding]         = wrappedCpg.graph.nodes(8).asInstanceOf[Iterator[ClosureBinding]]
+  def comment: Iterator[Comment]                       = wrappedCpg.graph.nodes(9).asInstanceOf[Iterator[Comment]]
+  def configFile: Iterator[ConfigFile]                 = wrappedCpg.graph.nodes(10).asInstanceOf[Iterator[ConfigFile]]
+  def controlStructure: Iterator[ControlStructure]     = wrappedCpg.graph.nodes(11).asInstanceOf[Iterator[ControlStructure]]
+  def dependency: Iterator[Dependency]                 = wrappedCpg.graph.nodes(12).asInstanceOf[Iterator[Dependency]]
+  def fieldIdentifier: Iterator[FieldIdentifier]       = wrappedCpg.graph.nodes(13).asInstanceOf[Iterator[FieldIdentifier]]
+  def file: Iterator[File]                             = wrappedCpg.graph.nodes(14).asInstanceOf[Iterator[File]]
+  def finding: Iterator[Finding]                       = wrappedCpg.graph.nodes(15).asInstanceOf[Iterator[Finding]]
+  def identifier: Iterator[Identifier]                 = wrappedCpg.graph.nodes(16).asInstanceOf[Iterator[Identifier]]
+  def imports: Iterator[Import]                        = wrappedCpg.graph.nodes(17).asInstanceOf[Iterator[Import]]
+  def jumpLabel: Iterator[JumpLabel]                   = wrappedCpg.graph.nodes(18).asInstanceOf[Iterator[JumpLabel]]
+  def jumpTarget: Iterator[JumpTarget]                 = wrappedCpg.graph.nodes(19).asInstanceOf[Iterator[JumpTarget]]
+  def keyValuePair: Iterator[KeyValuePair]             = wrappedCpg.graph.nodes(20).asInstanceOf[Iterator[KeyValuePair]]
+  def literal: Iterator[Literal]                       = wrappedCpg.graph.nodes(21).asInstanceOf[Iterator[Literal]]
+  def local: Iterator[Local]                           = wrappedCpg.graph.nodes(22).asInstanceOf[Iterator[Local]]
+  def location: Iterator[Location]                     = wrappedCpg.graph.nodes(23).asInstanceOf[Iterator[Location]]
+  def member: Iterator[Member]                         = wrappedCpg.graph.nodes(24).asInstanceOf[Iterator[Member]]
+  def metaData: Iterator[MetaData]                     = wrappedCpg.graph.nodes(25).asInstanceOf[Iterator[MetaData]]
+  def method: Iterator[Method]                         = wrappedCpg.graph.nodes(26).asInstanceOf[Iterator[Method]]
+  def methodParameterIn: Iterator[MethodParameterIn]   = wrappedCpg.graph.nodes(27).asInstanceOf[Iterator[MethodParameterIn]]
+  def methodParameterOut: Iterator[MethodParameterOut] = wrappedCpg.graph.nodes(28).asInstanceOf[Iterator[MethodParameterOut]]
+  def methodRef: Iterator[MethodRef]                   = wrappedCpg.graph.nodes(29).asInstanceOf[Iterator[MethodRef]]
+  def methodReturn: Iterator[MethodReturn]             = wrappedCpg.graph.nodes(30).asInstanceOf[Iterator[MethodReturn]]
+  def modifier: Iterator[Modifier]                     = wrappedCpg.graph.nodes(31).asInstanceOf[Iterator[Modifier]]
+  def namespace: Iterator[Namespace]                   = wrappedCpg.graph.nodes(32).asInstanceOf[Iterator[Namespace]]
+  def namespaceBlock: Iterator[NamespaceBlock]         = wrappedCpg.graph.nodes(33).asInstanceOf[Iterator[NamespaceBlock]]
+  def ret: Iterator[Return]                            = wrappedCpg.graph.nodes(34).asInstanceOf[Iterator[Return]]
+  def tag: Iterator[Tag]                               = wrappedCpg.graph.nodes(35).asInstanceOf[Iterator[Tag]]
+  def tagNodePair: Iterator[TagNodePair]               = wrappedCpg.graph.nodes(36).asInstanceOf[Iterator[TagNodePair]]
+  def templateDom: Iterator[TemplateDom]               = wrappedCpg.graph.nodes(37).asInstanceOf[Iterator[TemplateDom]]
+  def typ: Iterator[Type]                              = wrappedCpg.graph.nodes(38).asInstanceOf[Iterator[Type]]
+  def typeArgument: Iterator[TypeArgument]             = wrappedCpg.graph.nodes(39).asInstanceOf[Iterator[TypeArgument]]
+  def typeDecl: Iterator[TypeDecl]                     = wrappedCpg.graph.nodes(40).asInstanceOf[Iterator[TypeDecl]]
+  def typeParameter: Iterator[TypeParameter]           = wrappedCpg.graph.nodes(41).asInstanceOf[Iterator[TypeParameter]]
+  def typeRef: Iterator[TypeRef]                       = wrappedCpg.graph.nodes(42).asInstanceOf[Iterator[TypeRef]]
+  def unknown: Iterator[Unknown]                       = wrappedCpg.graph.nodes(43).asInstanceOf[Iterator[Unknown]]
 
-  def astNode: Iterator[nodes.AstNode] = Iterator(
+  def astNode: Iterator[AstNode] = Iterator(
     this.annotation,
     this.annotationLiteral,
     this.annotationParameter,
@@ -92,8 +93,8 @@ class CpgNodeStarters(val wrappedCpg: Cpg) extends AnyVal {
     this.typeRef,
     this.unknown
   ).flatten
-  def callRepr: Iterator[nodes.CallRepr] = Iterator(this.call).flatten
-  def cfgNode: Iterator[nodes.CfgNode] = Iterator(
+  def callRepr: Iterator[CallRepr] = Iterator(this.call).flatten
+  def cfgNode: Iterator[CfgNode] = Iterator(
     this.annotation,
     this.annotationLiteral,
     this.arrayInitializer,
@@ -114,9 +115,9 @@ class CpgNodeStarters(val wrappedCpg: Cpg) extends AnyVal {
     this.typeRef,
     this.unknown
   ).flatten
-  def declaration: Iterator[nodes.Declaration] =
+  def declaration: Iterator[Declaration] =
     Iterator(this.local, this.member, this.method, this.methodParameterIn, this.methodParameterOut).flatten
-  def expression: Iterator[nodes.Expression] = Iterator(
+  def expression: Iterator[Expression] = Iterator(
     this.annotation,
     this.annotationLiteral,
     this.arrayInitializer,

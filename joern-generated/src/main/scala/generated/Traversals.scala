@@ -1,6 +1,6 @@
 package io.shiftleft.codepropertygraph.generated.v2.traversals
 import io.joern.odb2
-import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.v2.nodes.*
 
 object Lang extends ConcreteStoredConversions
 
@@ -9,7 +9,7 @@ object Accessors {
   import odb2.misc.Misc
 
   /* accessors for concrete stored nodes start */
-  final class Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]](
+  final class Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType <: StoredNode with StaticType[HasAliasTypeFullNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -62,7 +62,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_ARGUMENT_INDEX[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentIndexT]](
+  final class Traversal_Property_ARGUMENT_INDEX[NodeType <: StoredNode with StaticType[HasArgumentIndexT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -103,9 +103,8 @@ object Accessors {
       traversal.filter { _.argumentIndex <= value }
 
   }
-  final class Traversal_Property_ARGUMENT_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentNameT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_ARGUMENT_NAME[NodeType <: StoredNode with StaticType[HasArgumentNameT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to argumentName property */
     def argumentName: Iterator[String] =
@@ -156,7 +155,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_AST_PARENT_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentFullNameT]](
+  final class Traversal_Property_AST_PARENT_FULL_NAME[NodeType <: StoredNode with StaticType[HasAstParentFullNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -200,7 +199,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_AST_PARENT_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentTypeT]](
+  final class Traversal_Property_AST_PARENT_TYPE[NodeType <: StoredNode with StaticType[HasAstParentTypeT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -244,7 +243,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CANONICAL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCanonicalNameT]](
+  final class Traversal_Property_CANONICAL_NAME[NodeType <: StoredNode with StaticType[HasCanonicalNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -288,9 +287,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CLASS_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassNameT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_CLASS_NAME[NodeType <: StoredNode with StaticType[HasClassNameT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to className property */
     def className: Iterator[String] =
@@ -332,7 +330,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CLASS_SHORT_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassShortNameT]](
+  final class Traversal_Property_CLASS_SHORT_NAME[NodeType <: StoredNode with StaticType[HasClassShortNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -376,7 +374,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CLOSURE_BINDING_ID[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureBindingIdT]](
+  final class Traversal_Property_CLOSURE_BINDING_ID[NodeType <: StoredNode with StaticType[HasClosureBindingIdT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -429,7 +427,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CLOSURE_ORIGINAL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureOriginalNameT]](
+  final class Traversal_Property_CLOSURE_ORIGINAL_NAME[NodeType <: StoredNode with StaticType[HasClosureOriginalNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -482,8 +480,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CODE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCodeT]](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_CODE[NodeType <: StoredNode with StaticType[HasCodeT]](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to code property */
     def code: Iterator[String] =
@@ -525,9 +522,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_COLUMN_NUMBER[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_COLUMN_NUMBER[NodeType <: StoredNode with StaticType[HasColumnNumberT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to columnNumber property */
     def columnNumber: Iterator[Int] =
@@ -578,7 +574,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_COLUMN_NUMBER_END[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberEndT]](
+  final class Traversal_Property_COLUMN_NUMBER_END[NodeType <: StoredNode with StaticType[HasColumnNumberEndT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -631,9 +627,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CONTAINED_REF[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContainedRefT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_CONTAINED_REF[NodeType <: StoredNode with StaticType[HasContainedRefT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to containedRef property */
     def containedRef: Iterator[String] =
@@ -675,9 +670,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CONTENT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContentT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_CONTENT[NodeType <: StoredNode with StaticType[HasContentT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to content property */
     def content: Iterator[String] =
@@ -719,7 +713,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_CONTROL_STRUCTURE_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasControlStructureTypeT]](
+  final class Traversal_Property_CONTROL_STRUCTURE_TYPE[NodeType <: StoredNode with StaticType[HasControlStructureTypeT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -763,7 +757,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_DEPENDENCY_GROUP_ID[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDependencyGroupIdT]](
+  final class Traversal_Property_DEPENDENCY_GROUP_ID[NodeType <: StoredNode with StaticType[HasDependencyGroupIdT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -816,9 +810,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_DISPATCH_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDispatchTypeT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_DISPATCH_TYPE[NodeType <: StoredNode with StaticType[HasDispatchTypeT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to dispatchType property */
     def dispatchType: Iterator[String] =
@@ -860,17 +853,16 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME[
-    NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDynamicTypeHintFullNameT]
-  ](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME[NodeType <: StoredNode with StaticType[HasDynamicTypeHintFullNameT]](
+    val traversal: Iterator[NodeType]
+  ) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
       traversal.flatMap(_.dynamicTypeHintFullName)
 
   }
-  final class Traversal_Property_EVALUATION_STRATEGY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasEvaluationStrategyT]](
+  final class Traversal_Property_EVALUATION_STRATEGY[NodeType <: StoredNode with StaticType[HasEvaluationStrategyT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -914,9 +906,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_EXPLICIT_AS[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasExplicitAsT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_EXPLICIT_AS[NodeType <: StoredNode with StaticType[HasExplicitAsT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to explicitAs property */
     def explicitAs: Iterator[Boolean] =
@@ -928,9 +919,8 @@ object Accessors {
       traversal.filter { node => node.explicitAs.isDefined && node.explicitAs.get == value }
 
   }
-  final class Traversal_Property_FILENAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFilenameT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_FILENAME[NodeType <: StoredNode with StaticType[HasFilenameT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
@@ -972,9 +962,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFullNameT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_FULL_NAME[NodeType <: StoredNode with StaticType[HasFullNameT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
@@ -1016,8 +1005,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_HASH[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasHashT]](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_HASH[NodeType <: StoredNode with StaticType[HasHashT]](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
@@ -1068,9 +1056,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_IMPORTED_AS[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedAsT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_IMPORTED_AS[NodeType <: StoredNode with StaticType[HasImportedAsT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to importedAs property */
     def importedAs: Iterator[String] =
@@ -1121,7 +1108,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_IMPORTED_ENTITY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedEntityT]](
+  final class Traversal_Property_IMPORTED_ENTITY[NodeType <: StoredNode with StaticType[HasImportedEntityT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -1174,9 +1161,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_INDEX[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIndexT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_INDEX[NodeType <: StoredNode with StaticType[HasIndexT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to index property */
     def index: Iterator[Int] =
@@ -1215,19 +1201,17 @@ object Accessors {
       traversal.filter { _.index <= value }
 
   }
-  final class Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[
-    NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasInheritsFromTypeFullNameT]
-  ](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[NodeType <: StoredNode with StaticType[HasInheritsFromTypeFullNameT]](
+    val traversal: Iterator[NodeType]
+  ) extends AnyVal {
 
     /** Traverse to inheritsFromTypeFullName property */
     def inheritsFromTypeFullName: Iterator[String] =
       traversal.flatMap(_.inheritsFromTypeFullName)
 
   }
-  final class Traversal_Property_IS_EXPLICIT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExplicitT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_IS_EXPLICIT[NodeType <: StoredNode with StaticType[HasIsExplicitT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to isExplicit property */
     def isExplicit: Iterator[Boolean] =
@@ -1239,9 +1223,8 @@ object Accessors {
       traversal.filter { node => node.isExplicit.isDefined && node.isExplicit.get == value }
 
   }
-  final class Traversal_Property_IS_EXTERNAL[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExternalT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_IS_EXTERNAL[NodeType <: StoredNode with StaticType[HasIsExternalT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to isExternal property */
     def isExternal: Iterator[Boolean] =
@@ -1253,9 +1236,8 @@ object Accessors {
       traversal.filter { _.isExternal == value }
 
   }
-  final class Traversal_Property_IS_VARIADIC[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsVariadicT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_IS_VARIADIC[NodeType <: StoredNode with StaticType[HasIsVariadicT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to isVariadic property */
     def isVariadic: Iterator[Boolean] =
@@ -1267,9 +1249,8 @@ object Accessors {
       traversal.filter { _.isVariadic == value }
 
   }
-  final class Traversal_Property_IS_WILDCARD[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsWildcardT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_IS_WILDCARD[NodeType <: StoredNode with StaticType[HasIsWildcardT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to isWildcard property */
     def isWildcard: Iterator[Boolean] =
@@ -1281,8 +1262,7 @@ object Accessors {
       traversal.filter { node => node.isWildcard.isDefined && node.isWildcard.get == value }
 
   }
-  final class Traversal_Property_KEY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasKeyT]](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_KEY[NodeType <: StoredNode with StaticType[HasKeyT]](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to key property */
     def key: Iterator[String] =
@@ -1324,9 +1304,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_LANGUAGE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLanguageT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_LANGUAGE[NodeType <: StoredNode with StaticType[HasLanguageT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to language property */
     def language: Iterator[String] =
@@ -1368,9 +1347,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_LINE_NUMBER[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_LINE_NUMBER[NodeType <: StoredNode with StaticType[HasLineNumberT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to lineNumber property */
     def lineNumber: Iterator[Int] =
@@ -1421,7 +1399,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_LINE_NUMBER_END[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberEndT]](
+  final class Traversal_Property_LINE_NUMBER_END[NodeType <: StoredNode with StaticType[HasLineNumberEndT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -1474,7 +1452,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_METHOD_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodFullNameT]](
+  final class Traversal_Property_METHOD_FULL_NAME[NodeType <: StoredNode with StaticType[HasMethodFullNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -1518,7 +1496,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_METHOD_SHORT_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodShortNameT]](
+  final class Traversal_Property_METHOD_SHORT_NAME[NodeType <: StoredNode with StaticType[HasMethodShortNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -1562,9 +1540,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_MODIFIER_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasModifierTypeT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_MODIFIER_TYPE[NodeType <: StoredNode with StaticType[HasModifierTypeT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to modifierType property */
     def modifierType: Iterator[String] =
@@ -1606,8 +1583,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNameT]](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_NAME[NodeType <: StoredNode with StaticType[HasNameT]](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -1649,9 +1625,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_NODE_LABEL[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNodeLabelT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_NODE_LABEL[NodeType <: StoredNode with StaticType[HasNodeLabelT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to nodeLabel property */
     def nodeLabel: Iterator[String] =
@@ -1693,9 +1668,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_ORDER[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOrderT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_ORDER[NodeType <: StoredNode with StaticType[HasOrderT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to order property */
     def order: Iterator[Int] =
@@ -1734,18 +1708,16 @@ object Accessors {
       traversal.filter { _.order <= value }
 
   }
-  final class Traversal_Property_OVERLAYS[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOverlaysT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_OVERLAYS[NodeType <: StoredNode with StaticType[HasOverlaysT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to overlays property */
     def overlays: Iterator[String] =
       traversal.flatMap(_.overlays)
 
   }
-  final class Traversal_Property_PACKAGE_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPackageNameT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_PACKAGE_NAME[NodeType <: StoredNode with StaticType[HasPackageNameT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to packageName property */
     def packageName: Iterator[String] =
@@ -1787,7 +1759,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_PARSER_TYPE_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasParserTypeNameT]](
+  final class Traversal_Property_PARSER_TYPE_NAME[NodeType <: StoredNode with StaticType[HasParserTypeNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -1831,7 +1803,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_POSSIBLE_TYPES[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesT]](
+  final class Traversal_Property_POSSIBLE_TYPES[NodeType <: StoredNode with StaticType[HasPossibleTypesT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -1840,8 +1812,7 @@ object Accessors {
       traversal.flatMap(_.possibleTypes)
 
   }
-  final class Traversal_Property_ROOT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasRootT]](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_ROOT[NodeType <: StoredNode with StaticType[HasRootT]](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to root property */
     def root: Iterator[String] =
@@ -1883,9 +1854,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_SIGNATURE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSignatureT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_SIGNATURE[NodeType <: StoredNode with StaticType[HasSignatureT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to signature property */
     def signature: Iterator[String] =
@@ -1927,9 +1897,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_SYMBOL[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSymbolT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_SYMBOL[NodeType <: StoredNode with StaticType[HasSymbolT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to symbol property */
     def symbol: Iterator[String] =
@@ -1971,7 +1940,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_TYPE_DECL_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeDeclFullNameT]](
+  final class Traversal_Property_TYPE_DECL_FULL_NAME[NodeType <: StoredNode with StaticType[HasTypeDeclFullNameT]](
     val traversal: Iterator[NodeType]
   ) extends AnyVal {
 
@@ -2015,9 +1984,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_TYPE_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeFullNameT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_TYPE_FULL_NAME[NodeType <: StoredNode with StaticType[HasTypeFullNameT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
@@ -2059,9 +2027,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_VALUE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasValueT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_VALUE[NodeType <: StoredNode with StaticType[HasValueT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to value property */
     def value: Iterator[String] =
@@ -2103,9 +2070,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_Property_VERSION[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasVersionT]](
-    val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_VERSION[NodeType <: StoredNode with StaticType[HasVersionT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to version property */
     def version: Iterator[String] =
@@ -2150,7 +2116,7 @@ object Accessors {
   /* accessors for concrete stored nodes end */
 
   /* accessors for base nodes start */
-  final class Traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_AnnotationBase[NodeType <: AnnotationBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
@@ -2231,7 +2197,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_AnnotationLiteralBase[NodeType <: nodes.AnnotationLiteralBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_AnnotationLiteralBase[NodeType <: AnnotationLiteralBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -2273,12 +2239,11 @@ object Accessors {
       }
 
   }
-  final class Traversal_AnnotationParameterBase[NodeType <: nodes.AnnotationParameterBase](val traversal: Iterator[NodeType])
+  final class Traversal_AnnotationParameterBase[NodeType <: AnnotationParameterBase](val traversal: Iterator[NodeType]) extends AnyVal {}
+  final class Traversal_AnnotationParameterAssignBase[NodeType <: AnnotationParameterAssignBase](val traversal: Iterator[NodeType])
       extends AnyVal {}
-  final class Traversal_AnnotationParameterAssignBase[NodeType <: nodes.AnnotationParameterAssignBase](val traversal: Iterator[NodeType])
-      extends AnyVal {}
-  final class Traversal_ArrayInitializerBase[NodeType <: nodes.ArrayInitializerBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_BindingBase[NodeType <: nodes.BindingBase](val traversal: Iterator[NodeType])                   extends AnyVal {
+  final class Traversal_ArrayInitializerBase[NodeType <: ArrayInitializerBase](val traversal: Iterator[NodeType]) extends AnyVal {}
+  final class Traversal_BindingBase[NodeType <: BindingBase](val traversal: Iterator[NodeType])                   extends AnyVal {
 
     /** Traverse to methodFullName property */
     def methodFullName: Iterator[String] =
@@ -2398,7 +2363,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_BlockBase[NodeType <: nodes.BlockBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_BlockBase[NodeType <: BlockBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -2448,7 +2413,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_CallBase[NodeType <: nodes.CallBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CallBase[NodeType <: CallBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dispatchType property */
     def dispatchType: Iterator[String] =
@@ -2576,7 +2541,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_ClosureBindingBase[NodeType <: nodes.ClosureBindingBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ClosureBindingBase[NodeType <: ClosureBindingBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to closureBindingId property */
     def closureBindingId: Iterator[String] =
@@ -2714,7 +2679,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_CommentBase[NodeType <: nodes.CommentBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CommentBase[NodeType <: CommentBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
@@ -2756,7 +2721,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_ConfigFileBase[NodeType <: nodes.ConfigFileBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ConfigFileBase[NodeType <: ConfigFileBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to content property */
     def content: Iterator[String] =
@@ -2837,7 +2802,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_ControlStructureBase[NodeType <: nodes.ControlStructureBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ControlStructureBase[NodeType <: ControlStructureBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to controlStructureType property */
     def controlStructureType: Iterator[String] =
@@ -2918,7 +2883,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_DependencyBase[NodeType <: nodes.DependencyBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_DependencyBase[NodeType <: DependencyBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dependencyGroupId property */
     def dependencyGroupId: Iterator[String] =
@@ -3047,7 +3012,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_FieldIdentifierBase[NodeType <: nodes.FieldIdentifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_FieldIdentifierBase[NodeType <: FieldIdentifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to canonicalName property */
     def canonicalName: Iterator[String] =
@@ -3089,7 +3054,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_FileBase[NodeType <: nodes.FileBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_FileBase[NodeType <: FileBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
@@ -3179,8 +3144,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_FindingBase[NodeType <: nodes.FindingBase](val traversal: Iterator[NodeType])       extends AnyVal {}
-  final class Traversal_IdentifierBase[NodeType <: nodes.IdentifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_FindingBase[NodeType <: FindingBase](val traversal: Iterator[NodeType])       extends AnyVal {}
+  final class Traversal_IdentifierBase[NodeType <: IdentifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -3269,7 +3234,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_ImportBase[NodeType <: nodes.ImportBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ImportBase[NodeType <: ImportBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to explicitAs property */
     def explicitAs: Iterator[Boolean] =
@@ -3395,7 +3360,7 @@ object Accessors {
       traversal.filter { node => node.isWildcard.isDefined && node.isWildcard.get == value }
 
   }
-  final class Traversal_JumpLabelBase[NodeType <: nodes.JumpLabelBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_JumpLabelBase[NodeType <: JumpLabelBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -3476,7 +3441,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_JumpTargetBase[NodeType <: nodes.JumpTargetBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_JumpTargetBase[NodeType <: JumpTargetBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to argumentIndex property */
     def argumentIndex: Iterator[Int] =
@@ -3593,7 +3558,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_KeyValuePairBase[NodeType <: nodes.KeyValuePairBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_KeyValuePairBase[NodeType <: KeyValuePairBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to key property */
     def key: Iterator[String] =
@@ -3674,7 +3639,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_LiteralBase[NodeType <: nodes.LiteralBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_LiteralBase[NodeType <: LiteralBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -3724,7 +3689,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_LocalBase[NodeType <: nodes.LocalBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_LocalBase[NodeType <: LocalBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to closureBindingId property */
     def closureBindingId: Iterator[String] =
@@ -3822,7 +3787,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_LocationBase[NodeType <: nodes.LocationBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_LocationBase[NodeType <: LocationBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to className property */
     def className: Iterator[String] =
@@ -4185,7 +4150,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MemberBase[NodeType <: nodes.MemberBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MemberBase[NodeType <: MemberBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -4235,7 +4200,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MetaDataBase[NodeType <: nodes.MetaDataBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MetaDataBase[NodeType <: MetaDataBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
@@ -4407,7 +4372,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MethodBase[NodeType <: nodes.MethodBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodBase[NodeType <: MethodBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to astParentFullName property */
     def astParentFullName: Iterator[String] =
@@ -4758,7 +4723,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MethodParameterInBase[NodeType <: nodes.MethodParameterInBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodParameterInBase[NodeType <: MethodParameterInBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -4892,7 +4857,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MethodParameterOutBase[NodeType <: nodes.MethodParameterOutBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodParameterOutBase[NodeType <: MethodParameterOutBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to evaluationStrategy property */
     def evaluationStrategy: Iterator[String] =
@@ -5018,7 +4983,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MethodRefBase[NodeType <: nodes.MethodRefBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodRefBase[NodeType <: MethodRefBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -5107,7 +5072,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_MethodReturnBase[NodeType <: nodes.MethodReturnBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodReturnBase[NodeType <: MethodReturnBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -5196,7 +5161,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_ModifierBase[NodeType <: nodes.ModifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ModifierBase[NodeType <: ModifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to modifierType property */
     def modifierType: Iterator[String] =
@@ -5238,7 +5203,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_NamespaceBase[NodeType <: nodes.NamespaceBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_NamespaceBase[NodeType <: NamespaceBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -5280,7 +5245,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_NamespaceBlockBase[NodeType <: nodes.NamespaceBlockBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_NamespaceBlockBase[NodeType <: NamespaceBlockBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
@@ -5400,8 +5365,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_ReturnBase[NodeType <: nodes.ReturnBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_TagBase[NodeType <: nodes.TagBase](val traversal: Iterator[NodeType])       extends AnyVal {
+  final class Traversal_ReturnBase[NodeType <: ReturnBase](val traversal: Iterator[NodeType]) extends AnyVal {}
+  final class Traversal_TagBase[NodeType <: TagBase](val traversal: Iterator[NodeType])       extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -5482,8 +5447,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_TagNodePairBase[NodeType <: nodes.TagNodePairBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_TemplateDomBase[NodeType <: nodes.TemplateDomBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TagNodePairBase[NodeType <: TagNodePairBase](val traversal: Iterator[NodeType]) extends AnyVal {}
+  final class Traversal_TemplateDomBase[NodeType <: TemplateDomBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -5525,7 +5490,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_TypeBase[NodeType <: nodes.TypeBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TypeBase[NodeType <: TypeBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
@@ -5645,8 +5610,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_TypeArgumentBase[NodeType <: nodes.TypeArgumentBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_TypeDeclBase[NodeType <: nodes.TypeDeclBase](val traversal: Iterator[NodeType])         extends AnyVal {
+  final class Traversal_TypeArgumentBase[NodeType <: TypeArgumentBase](val traversal: Iterator[NodeType]) extends AnyVal {}
+  final class Traversal_TypeDeclBase[NodeType <: TypeDeclBase](val traversal: Iterator[NodeType])         extends AnyVal {
 
     /** Traverse to aliasTypeFullName property */
     def aliasTypeFullName: Iterator[String] =
@@ -5905,7 +5870,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_TypeParameterBase[NodeType <: nodes.TypeParameterBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TypeParameterBase[NodeType <: TypeParameterBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -5947,7 +5912,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_TypeRefBase[NodeType <: nodes.TypeRefBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TypeRefBase[NodeType <: TypeRefBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
@@ -5997,7 +5962,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_UnknownBase[NodeType <: nodes.UnknownBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_UnknownBase[NodeType <: UnknownBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to containedRef property */
     def containedRef: Iterator[String] =
@@ -6125,7 +6090,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_AstNodeBase[NodeType <: AstNodeBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to code property */
     def code: Iterator[String] =
@@ -6299,7 +6264,7 @@ object Accessors {
       traversal.filter { _.order <= value }
 
   }
-  final class Traversal_CallReprBase[NodeType <: nodes.CallReprBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CallReprBase[NodeType <: CallReprBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -6380,8 +6345,8 @@ object Accessors {
       }
 
   }
-  final class Traversal_CfgNodeBase[NodeType <: nodes.CfgNodeBase](val traversal: Iterator[NodeType])       extends AnyVal {}
-  final class Traversal_ExpressionBase[NodeType <: nodes.ExpressionBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CfgNodeBase[NodeType <: CfgNodeBase](val traversal: Iterator[NodeType])       extends AnyVal {}
+  final class Traversal_ExpressionBase[NodeType <: ExpressionBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to argumentIndex property */
     def argumentIndex: Iterator[Int] =
@@ -6468,7 +6433,7 @@ object Accessors {
       }
 
   }
-  final class Traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_DeclarationBase[NodeType <: DeclarationBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -6514,297 +6479,288 @@ object Accessors {
 }
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
   import Accessors.*
-  implicit def accessPropertyAliasTypeFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameT]](
+  implicit def accessPropertyAliasTypeFullName[NodeType <: StoredNode with StaticType[HasAliasTypeFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType] = new Traversal_Property_ALIAS_TYPE_FULL_NAME(traversal)
-  implicit def accessPropertyArgumentIndex[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentIndexT]](
+  implicit def accessPropertyArgumentIndex[NodeType <: StoredNode with StaticType[HasArgumentIndexT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ARGUMENT_INDEX[NodeType] = new Traversal_Property_ARGUMENT_INDEX(traversal)
-  implicit def accessPropertyArgumentName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentNameT]](
+  implicit def accessPropertyArgumentName[NodeType <: StoredNode with StaticType[HasArgumentNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ARGUMENT_NAME[NodeType] = new Traversal_Property_ARGUMENT_NAME(traversal)
-  implicit def accessPropertyAstParentFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentFullNameT]](
+  implicit def accessPropertyAstParentFullName[NodeType <: StoredNode with StaticType[HasAstParentFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_AST_PARENT_FULL_NAME[NodeType] = new Traversal_Property_AST_PARENT_FULL_NAME(traversal)
-  implicit def accessPropertyAstParentType[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentTypeT]](
+  implicit def accessPropertyAstParentType[NodeType <: StoredNode with StaticType[HasAstParentTypeT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_AST_PARENT_TYPE[NodeType] = new Traversal_Property_AST_PARENT_TYPE(traversal)
-  implicit def accessPropertyCanonicalName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCanonicalNameT]](
+  implicit def accessPropertyCanonicalName[NodeType <: StoredNode with StaticType[HasCanonicalNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CANONICAL_NAME[NodeType] = new Traversal_Property_CANONICAL_NAME(traversal)
-  implicit def accessPropertyClassName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassNameT]](
+  implicit def accessPropertyClassName[NodeType <: StoredNode with StaticType[HasClassNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CLASS_NAME[NodeType] = new Traversal_Property_CLASS_NAME(traversal)
-  implicit def accessPropertyClassShortName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassShortNameT]](
+  implicit def accessPropertyClassShortName[NodeType <: StoredNode with StaticType[HasClassShortNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CLASS_SHORT_NAME[NodeType] = new Traversal_Property_CLASS_SHORT_NAME(traversal)
-  implicit def accessPropertyClosureBindingId[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureBindingIdT]](
+  implicit def accessPropertyClosureBindingId[NodeType <: StoredNode with StaticType[HasClosureBindingIdT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CLOSURE_BINDING_ID[NodeType] = new Traversal_Property_CLOSURE_BINDING_ID(traversal)
-  implicit def accessPropertyClosureOriginalName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureOriginalNameT]](
+  implicit def accessPropertyClosureOriginalName[NodeType <: StoredNode with StaticType[HasClosureOriginalNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CLOSURE_ORIGINAL_NAME[NodeType] = new Traversal_Property_CLOSURE_ORIGINAL_NAME(traversal)
-  implicit def accessPropertyCode[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCodeT]](
+  implicit def accessPropertyCode[NodeType <: StoredNode with StaticType[HasCodeT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CODE[NodeType] = new Traversal_Property_CODE(traversal)
-  implicit def accessPropertyColumnNumber[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberT]](
+  implicit def accessPropertyColumnNumber[NodeType <: StoredNode with StaticType[HasColumnNumberT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_COLUMN_NUMBER[NodeType] = new Traversal_Property_COLUMN_NUMBER(traversal)
-  implicit def accessPropertyColumnNumberEnd[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberEndT]](
+  implicit def accessPropertyColumnNumberEnd[NodeType <: StoredNode with StaticType[HasColumnNumberEndT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_COLUMN_NUMBER_END[NodeType] = new Traversal_Property_COLUMN_NUMBER_END(traversal)
-  implicit def accessPropertyContainedRef[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContainedRefT]](
+  implicit def accessPropertyContainedRef[NodeType <: StoredNode with StaticType[HasContainedRefT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CONTAINED_REF[NodeType] = new Traversal_Property_CONTAINED_REF(traversal)
-  implicit def accessPropertyContent[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContentT]](
+  implicit def accessPropertyContent[NodeType <: StoredNode with StaticType[HasContentT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CONTENT[NodeType] = new Traversal_Property_CONTENT(traversal)
-  implicit def accessPropertyControlStructureType[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasControlStructureTypeT]](
+  implicit def accessPropertyControlStructureType[NodeType <: StoredNode with StaticType[HasControlStructureTypeT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_CONTROL_STRUCTURE_TYPE[NodeType] = new Traversal_Property_CONTROL_STRUCTURE_TYPE(traversal)
-  implicit def accessPropertyDependencyGroupId[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDependencyGroupIdT]](
+  implicit def accessPropertyDependencyGroupId[NodeType <: StoredNode with StaticType[HasDependencyGroupIdT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_DEPENDENCY_GROUP_ID[NodeType] = new Traversal_Property_DEPENDENCY_GROUP_ID(traversal)
-  implicit def accessPropertyDispatchType[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDispatchTypeT]](
+  implicit def accessPropertyDispatchType[NodeType <: StoredNode with StaticType[HasDispatchTypeT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_DISPATCH_TYPE[NodeType] = new Traversal_Property_DISPATCH_TYPE(traversal)
-  implicit def accessPropertyDynamicTypeHintFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDynamicTypeHintFullNameT]](
+  implicit def accessPropertyDynamicTypeHintFullName[NodeType <: StoredNode with StaticType[HasDynamicTypeHintFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME[NodeType] = new Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME(traversal)
-  implicit def accessPropertyEvaluationStrategy[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasEvaluationStrategyT]](
+  implicit def accessPropertyEvaluationStrategy[NodeType <: StoredNode with StaticType[HasEvaluationStrategyT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_EVALUATION_STRATEGY[NodeType] = new Traversal_Property_EVALUATION_STRATEGY(traversal)
-  implicit def accessPropertyExplicitAs[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasExplicitAsT]](
+  implicit def accessPropertyExplicitAs[NodeType <: StoredNode with StaticType[HasExplicitAsT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_EXPLICIT_AS[NodeType] = new Traversal_Property_EXPLICIT_AS(traversal)
-  implicit def accessPropertyFilename[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFilenameT]](
+  implicit def accessPropertyFilename[NodeType <: StoredNode with StaticType[HasFilenameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_FILENAME[NodeType] = new Traversal_Property_FILENAME(traversal)
-  implicit def accessPropertyFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFullNameT]](
+  implicit def accessPropertyFullName[NodeType <: StoredNode with StaticType[HasFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_FULL_NAME[NodeType] = new Traversal_Property_FULL_NAME(traversal)
-  implicit def accessPropertyHash[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasHashT]](
+  implicit def accessPropertyHash[NodeType <: StoredNode with StaticType[HasHashT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_HASH[NodeType] = new Traversal_Property_HASH(traversal)
-  implicit def accessPropertyImportedAs[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedAsT]](
+  implicit def accessPropertyImportedAs[NodeType <: StoredNode with StaticType[HasImportedAsT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_IMPORTED_AS[NodeType] = new Traversal_Property_IMPORTED_AS(traversal)
-  implicit def accessPropertyImportedEntity[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedEntityT]](
+  implicit def accessPropertyImportedEntity[NodeType <: StoredNode with StaticType[HasImportedEntityT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_IMPORTED_ENTITY[NodeType] = new Traversal_Property_IMPORTED_ENTITY(traversal)
-  implicit def accessPropertyIndex[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIndexT]](
+  implicit def accessPropertyIndex[NodeType <: StoredNode with StaticType[HasIndexT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_INDEX[NodeType] = new Traversal_Property_INDEX(traversal)
-  implicit def accessPropertyInheritsFromTypeFullName[
-    NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasInheritsFromTypeFullNameT]
-  ](traversal: Iterator[NodeType]): Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[NodeType] =
-    new Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME(traversal)
-  implicit def accessPropertyIsExplicit[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExplicitT]](
+  implicit def accessPropertyInheritsFromTypeFullName[NodeType <: StoredNode with StaticType[HasInheritsFromTypeFullNameT]](
+    traversal: Iterator[NodeType]
+  ): Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[NodeType] = new Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME(traversal)
+  implicit def accessPropertyIsExplicit[NodeType <: StoredNode with StaticType[HasIsExplicitT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_IS_EXPLICIT[NodeType] = new Traversal_Property_IS_EXPLICIT(traversal)
-  implicit def accessPropertyIsExternal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExternalT]](
+  implicit def accessPropertyIsExternal[NodeType <: StoredNode with StaticType[HasIsExternalT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_IS_EXTERNAL[NodeType] = new Traversal_Property_IS_EXTERNAL(traversal)
-  implicit def accessPropertyIsVariadic[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsVariadicT]](
+  implicit def accessPropertyIsVariadic[NodeType <: StoredNode with StaticType[HasIsVariadicT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_IS_VARIADIC[NodeType] = new Traversal_Property_IS_VARIADIC(traversal)
-  implicit def accessPropertyIsWildcard[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsWildcardT]](
+  implicit def accessPropertyIsWildcard[NodeType <: StoredNode with StaticType[HasIsWildcardT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_IS_WILDCARD[NodeType] = new Traversal_Property_IS_WILDCARD(traversal)
-  implicit def accessPropertyKey[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasKeyT]](
+  implicit def accessPropertyKey[NodeType <: StoredNode with StaticType[HasKeyT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_KEY[NodeType] = new Traversal_Property_KEY(traversal)
-  implicit def accessPropertyLanguage[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLanguageT]](
+  implicit def accessPropertyLanguage[NodeType <: StoredNode with StaticType[HasLanguageT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_LANGUAGE[NodeType] = new Traversal_Property_LANGUAGE(traversal)
-  implicit def accessPropertyLineNumber[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberT]](
+  implicit def accessPropertyLineNumber[NodeType <: StoredNode with StaticType[HasLineNumberT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_LINE_NUMBER[NodeType] = new Traversal_Property_LINE_NUMBER(traversal)
-  implicit def accessPropertyLineNumberEnd[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberEndT]](
+  implicit def accessPropertyLineNumberEnd[NodeType <: StoredNode with StaticType[HasLineNumberEndT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_LINE_NUMBER_END[NodeType] = new Traversal_Property_LINE_NUMBER_END(traversal)
-  implicit def accessPropertyMethodFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodFullNameT]](
+  implicit def accessPropertyMethodFullName[NodeType <: StoredNode with StaticType[HasMethodFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_METHOD_FULL_NAME[NodeType] = new Traversal_Property_METHOD_FULL_NAME(traversal)
-  implicit def accessPropertyMethodShortName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodShortNameT]](
+  implicit def accessPropertyMethodShortName[NodeType <: StoredNode with StaticType[HasMethodShortNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_METHOD_SHORT_NAME[NodeType] = new Traversal_Property_METHOD_SHORT_NAME(traversal)
-  implicit def accessPropertyModifierType[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasModifierTypeT]](
+  implicit def accessPropertyModifierType[NodeType <: StoredNode with StaticType[HasModifierTypeT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_MODIFIER_TYPE[NodeType] = new Traversal_Property_MODIFIER_TYPE(traversal)
-  implicit def accessPropertyName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNameT]](
+  implicit def accessPropertyName[NodeType <: StoredNode with StaticType[HasNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_NAME[NodeType] = new Traversal_Property_NAME(traversal)
-  implicit def accessPropertyNodeLabel[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNodeLabelT]](
+  implicit def accessPropertyNodeLabel[NodeType <: StoredNode with StaticType[HasNodeLabelT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_NODE_LABEL[NodeType] = new Traversal_Property_NODE_LABEL(traversal)
-  implicit def accessPropertyOrder[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOrderT]](
+  implicit def accessPropertyOrder[NodeType <: StoredNode with StaticType[HasOrderT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ORDER[NodeType] = new Traversal_Property_ORDER(traversal)
-  implicit def accessPropertyOverlays[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOverlaysT]](
+  implicit def accessPropertyOverlays[NodeType <: StoredNode with StaticType[HasOverlaysT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_OVERLAYS[NodeType] = new Traversal_Property_OVERLAYS(traversal)
-  implicit def accessPropertyPackageName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPackageNameT]](
+  implicit def accessPropertyPackageName[NodeType <: StoredNode with StaticType[HasPackageNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_PACKAGE_NAME[NodeType] = new Traversal_Property_PACKAGE_NAME(traversal)
-  implicit def accessPropertyParserTypeName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasParserTypeNameT]](
+  implicit def accessPropertyParserTypeName[NodeType <: StoredNode with StaticType[HasParserTypeNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_PARSER_TYPE_NAME[NodeType] = new Traversal_Property_PARSER_TYPE_NAME(traversal)
-  implicit def accessPropertyPossibleTypes[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesT]](
+  implicit def accessPropertyPossibleTypes[NodeType <: StoredNode with StaticType[HasPossibleTypesT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_POSSIBLE_TYPES[NodeType] = new Traversal_Property_POSSIBLE_TYPES(traversal)
-  implicit def accessPropertyRoot[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasRootT]](
+  implicit def accessPropertyRoot[NodeType <: StoredNode with StaticType[HasRootT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_ROOT[NodeType] = new Traversal_Property_ROOT(traversal)
-  implicit def accessPropertySignature[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSignatureT]](
+  implicit def accessPropertySignature[NodeType <: StoredNode with StaticType[HasSignatureT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_SIGNATURE[NodeType] = new Traversal_Property_SIGNATURE(traversal)
-  implicit def accessPropertySymbol[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSymbolT]](
+  implicit def accessPropertySymbol[NodeType <: StoredNode with StaticType[HasSymbolT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_SYMBOL[NodeType] = new Traversal_Property_SYMBOL(traversal)
-  implicit def accessPropertyTypeDeclFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeDeclFullNameT]](
+  implicit def accessPropertyTypeDeclFullName[NodeType <: StoredNode with StaticType[HasTypeDeclFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_TYPE_DECL_FULL_NAME[NodeType] = new Traversal_Property_TYPE_DECL_FULL_NAME(traversal)
-  implicit def accessPropertyTypeFullName[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeFullNameT]](
+  implicit def accessPropertyTypeFullName[NodeType <: StoredNode with StaticType[HasTypeFullNameT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_TYPE_FULL_NAME[NodeType] = new Traversal_Property_TYPE_FULL_NAME(traversal)
-  implicit def accessPropertyValue[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasValueT]](
+  implicit def accessPropertyValue[NodeType <: StoredNode with StaticType[HasValueT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_VALUE[NodeType] = new Traversal_Property_VALUE(traversal)
-  implicit def accessPropertyVersion[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasVersionT]](
+  implicit def accessPropertyVersion[NodeType <: StoredNode with StaticType[HasVersionT]](
     traversal: Iterator[NodeType]
   ): Traversal_Property_VERSION[NodeType] = new Traversal_Property_VERSION(traversal)
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
   import Accessors.*
-  implicit def traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_AnnotationBase[NodeType] = new Traversal_AnnotationBase(traversal)
-  implicit def traversal_AnnotationLiteralBase[NodeType <: nodes.AnnotationLiteralBase](
+  implicit def traversal_AnnotationBase[NodeType <: AnnotationBase](traversal: Iterator[NodeType]): Traversal_AnnotationBase[NodeType] =
+    new Traversal_AnnotationBase(traversal)
+  implicit def traversal_AnnotationLiteralBase[NodeType <: AnnotationLiteralBase](
     traversal: Iterator[NodeType]
   ): Traversal_AnnotationLiteralBase[NodeType] = new Traversal_AnnotationLiteralBase(traversal)
-  implicit def traversal_AnnotationParameterBase[NodeType <: nodes.AnnotationParameterBase](
+  implicit def traversal_AnnotationParameterBase[NodeType <: AnnotationParameterBase](
     traversal: Iterator[NodeType]
   ): Traversal_AnnotationParameterBase[NodeType] = new Traversal_AnnotationParameterBase(traversal)
-  implicit def traversal_AnnotationParameterAssignBase[NodeType <: nodes.AnnotationParameterAssignBase](
+  implicit def traversal_AnnotationParameterAssignBase[NodeType <: AnnotationParameterAssignBase](
     traversal: Iterator[NodeType]
   ): Traversal_AnnotationParameterAssignBase[NodeType] = new Traversal_AnnotationParameterAssignBase(traversal)
-  implicit def traversal_ArrayInitializerBase[NodeType <: nodes.ArrayInitializerBase](
+  implicit def traversal_ArrayInitializerBase[NodeType <: ArrayInitializerBase](
     traversal: Iterator[NodeType]
   ): Traversal_ArrayInitializerBase[NodeType] = new Traversal_ArrayInitializerBase(traversal)
-  implicit def traversal_BindingBase[NodeType <: nodes.BindingBase](traversal: Iterator[NodeType]): Traversal_BindingBase[NodeType] =
+  implicit def traversal_BindingBase[NodeType <: BindingBase](traversal: Iterator[NodeType]): Traversal_BindingBase[NodeType] =
     new Traversal_BindingBase(traversal)
-  implicit def traversal_BlockBase[NodeType <: nodes.BlockBase](traversal: Iterator[NodeType]): Traversal_BlockBase[NodeType] =
+  implicit def traversal_BlockBase[NodeType <: BlockBase](traversal: Iterator[NodeType]): Traversal_BlockBase[NodeType] =
     new Traversal_BlockBase(traversal)
-  implicit def traversal_CallBase[NodeType <: nodes.CallBase](traversal: Iterator[NodeType]): Traversal_CallBase[NodeType] =
+  implicit def traversal_CallBase[NodeType <: CallBase](traversal: Iterator[NodeType]): Traversal_CallBase[NodeType] =
     new Traversal_CallBase(traversal)
-  implicit def traversal_ClosureBindingBase[NodeType <: nodes.ClosureBindingBase](
+  implicit def traversal_ClosureBindingBase[NodeType <: ClosureBindingBase](
     traversal: Iterator[NodeType]
   ): Traversal_ClosureBindingBase[NodeType] = new Traversal_ClosureBindingBase(traversal)
-  implicit def traversal_CommentBase[NodeType <: nodes.CommentBase](traversal: Iterator[NodeType]): Traversal_CommentBase[NodeType] =
+  implicit def traversal_CommentBase[NodeType <: CommentBase](traversal: Iterator[NodeType]): Traversal_CommentBase[NodeType] =
     new Traversal_CommentBase(traversal)
-  implicit def traversal_ConfigFileBase[NodeType <: nodes.ConfigFileBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_ConfigFileBase[NodeType] = new Traversal_ConfigFileBase(traversal)
-  implicit def traversal_ControlStructureBase[NodeType <: nodes.ControlStructureBase](
+  implicit def traversal_ConfigFileBase[NodeType <: ConfigFileBase](traversal: Iterator[NodeType]): Traversal_ConfigFileBase[NodeType] =
+    new Traversal_ConfigFileBase(traversal)
+  implicit def traversal_ControlStructureBase[NodeType <: ControlStructureBase](
     traversal: Iterator[NodeType]
   ): Traversal_ControlStructureBase[NodeType] = new Traversal_ControlStructureBase(traversal)
-  implicit def traversal_DependencyBase[NodeType <: nodes.DependencyBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_DependencyBase[NodeType] = new Traversal_DependencyBase(traversal)
-  implicit def traversal_FieldIdentifierBase[NodeType <: nodes.FieldIdentifierBase](
+  implicit def traversal_DependencyBase[NodeType <: DependencyBase](traversal: Iterator[NodeType]): Traversal_DependencyBase[NodeType] =
+    new Traversal_DependencyBase(traversal)
+  implicit def traversal_FieldIdentifierBase[NodeType <: FieldIdentifierBase](
     traversal: Iterator[NodeType]
   ): Traversal_FieldIdentifierBase[NodeType] = new Traversal_FieldIdentifierBase(traversal)
-  implicit def traversal_FileBase[NodeType <: nodes.FileBase](traversal: Iterator[NodeType]): Traversal_FileBase[NodeType] =
+  implicit def traversal_FileBase[NodeType <: FileBase](traversal: Iterator[NodeType]): Traversal_FileBase[NodeType] =
     new Traversal_FileBase(traversal)
-  implicit def traversal_FindingBase[NodeType <: nodes.FindingBase](traversal: Iterator[NodeType]): Traversal_FindingBase[NodeType] =
+  implicit def traversal_FindingBase[NodeType <: FindingBase](traversal: Iterator[NodeType]): Traversal_FindingBase[NodeType] =
     new Traversal_FindingBase(traversal)
-  implicit def traversal_IdentifierBase[NodeType <: nodes.IdentifierBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_IdentifierBase[NodeType] = new Traversal_IdentifierBase(traversal)
-  implicit def traversal_ImportBase[NodeType <: nodes.ImportBase](traversal: Iterator[NodeType]): Traversal_ImportBase[NodeType] =
+  implicit def traversal_IdentifierBase[NodeType <: IdentifierBase](traversal: Iterator[NodeType]): Traversal_IdentifierBase[NodeType] =
+    new Traversal_IdentifierBase(traversal)
+  implicit def traversal_ImportBase[NodeType <: ImportBase](traversal: Iterator[NodeType]): Traversal_ImportBase[NodeType] =
     new Traversal_ImportBase(traversal)
-  implicit def traversal_JumpLabelBase[NodeType <: nodes.JumpLabelBase](traversal: Iterator[NodeType]): Traversal_JumpLabelBase[NodeType] =
+  implicit def traversal_JumpLabelBase[NodeType <: JumpLabelBase](traversal: Iterator[NodeType]): Traversal_JumpLabelBase[NodeType] =
     new Traversal_JumpLabelBase(traversal)
-  implicit def traversal_JumpTargetBase[NodeType <: nodes.JumpTargetBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_JumpTargetBase[NodeType] = new Traversal_JumpTargetBase(traversal)
-  implicit def traversal_KeyValuePairBase[NodeType <: nodes.KeyValuePairBase](
+  implicit def traversal_JumpTargetBase[NodeType <: JumpTargetBase](traversal: Iterator[NodeType]): Traversal_JumpTargetBase[NodeType] =
+    new Traversal_JumpTargetBase(traversal)
+  implicit def traversal_KeyValuePairBase[NodeType <: KeyValuePairBase](
     traversal: Iterator[NodeType]
   ): Traversal_KeyValuePairBase[NodeType] = new Traversal_KeyValuePairBase(traversal)
-  implicit def traversal_LiteralBase[NodeType <: nodes.LiteralBase](traversal: Iterator[NodeType]): Traversal_LiteralBase[NodeType] =
+  implicit def traversal_LiteralBase[NodeType <: LiteralBase](traversal: Iterator[NodeType]): Traversal_LiteralBase[NodeType] =
     new Traversal_LiteralBase(traversal)
-  implicit def traversal_LocalBase[NodeType <: nodes.LocalBase](traversal: Iterator[NodeType]): Traversal_LocalBase[NodeType] =
+  implicit def traversal_LocalBase[NodeType <: LocalBase](traversal: Iterator[NodeType]): Traversal_LocalBase[NodeType] =
     new Traversal_LocalBase(traversal)
-  implicit def traversal_LocationBase[NodeType <: nodes.LocationBase](traversal: Iterator[NodeType]): Traversal_LocationBase[NodeType] =
+  implicit def traversal_LocationBase[NodeType <: LocationBase](traversal: Iterator[NodeType]): Traversal_LocationBase[NodeType] =
     new Traversal_LocationBase(traversal)
-  implicit def traversal_MemberBase[NodeType <: nodes.MemberBase](traversal: Iterator[NodeType]): Traversal_MemberBase[NodeType] =
+  implicit def traversal_MemberBase[NodeType <: MemberBase](traversal: Iterator[NodeType]): Traversal_MemberBase[NodeType] =
     new Traversal_MemberBase(traversal)
-  implicit def traversal_MetaDataBase[NodeType <: nodes.MetaDataBase](traversal: Iterator[NodeType]): Traversal_MetaDataBase[NodeType] =
+  implicit def traversal_MetaDataBase[NodeType <: MetaDataBase](traversal: Iterator[NodeType]): Traversal_MetaDataBase[NodeType] =
     new Traversal_MetaDataBase(traversal)
-  implicit def traversal_MethodBase[NodeType <: nodes.MethodBase](traversal: Iterator[NodeType]): Traversal_MethodBase[NodeType] =
+  implicit def traversal_MethodBase[NodeType <: MethodBase](traversal: Iterator[NodeType]): Traversal_MethodBase[NodeType] =
     new Traversal_MethodBase(traversal)
-  implicit def traversal_MethodParameterInBase[NodeType <: nodes.MethodParameterInBase](
+  implicit def traversal_MethodParameterInBase[NodeType <: MethodParameterInBase](
     traversal: Iterator[NodeType]
   ): Traversal_MethodParameterInBase[NodeType] = new Traversal_MethodParameterInBase(traversal)
-  implicit def traversal_MethodParameterOutBase[NodeType <: nodes.MethodParameterOutBase](
+  implicit def traversal_MethodParameterOutBase[NodeType <: MethodParameterOutBase](
     traversal: Iterator[NodeType]
   ): Traversal_MethodParameterOutBase[NodeType] = new Traversal_MethodParameterOutBase(traversal)
-  implicit def traversal_MethodRefBase[NodeType <: nodes.MethodRefBase](traversal: Iterator[NodeType]): Traversal_MethodRefBase[NodeType] =
+  implicit def traversal_MethodRefBase[NodeType <: MethodRefBase](traversal: Iterator[NodeType]): Traversal_MethodRefBase[NodeType] =
     new Traversal_MethodRefBase(traversal)
-  implicit def traversal_MethodReturnBase[NodeType <: nodes.MethodReturnBase](
+  implicit def traversal_MethodReturnBase[NodeType <: MethodReturnBase](
     traversal: Iterator[NodeType]
   ): Traversal_MethodReturnBase[NodeType] = new Traversal_MethodReturnBase(traversal)
-  implicit def traversal_ModifierBase[NodeType <: nodes.ModifierBase](traversal: Iterator[NodeType]): Traversal_ModifierBase[NodeType] =
+  implicit def traversal_ModifierBase[NodeType <: ModifierBase](traversal: Iterator[NodeType]): Traversal_ModifierBase[NodeType] =
     new Traversal_ModifierBase(traversal)
-  implicit def traversal_NamespaceBase[NodeType <: nodes.NamespaceBase](traversal: Iterator[NodeType]): Traversal_NamespaceBase[NodeType] =
+  implicit def traversal_NamespaceBase[NodeType <: NamespaceBase](traversal: Iterator[NodeType]): Traversal_NamespaceBase[NodeType] =
     new Traversal_NamespaceBase(traversal)
-  implicit def traversal_NamespaceBlockBase[NodeType <: nodes.NamespaceBlockBase](
+  implicit def traversal_NamespaceBlockBase[NodeType <: NamespaceBlockBase](
     traversal: Iterator[NodeType]
   ): Traversal_NamespaceBlockBase[NodeType] = new Traversal_NamespaceBlockBase(traversal)
-  implicit def traversal_ReturnBase[NodeType <: nodes.ReturnBase](traversal: Iterator[NodeType]): Traversal_ReturnBase[NodeType] =
+  implicit def traversal_ReturnBase[NodeType <: ReturnBase](traversal: Iterator[NodeType]): Traversal_ReturnBase[NodeType] =
     new Traversal_ReturnBase(traversal)
-  implicit def traversal_TagBase[NodeType <: nodes.TagBase](traversal: Iterator[NodeType]): Traversal_TagBase[NodeType] =
-    new Traversal_TagBase(traversal)
-  implicit def traversal_TagNodePairBase[NodeType <: nodes.TagNodePairBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_TagNodePairBase[NodeType] = new Traversal_TagNodePairBase(traversal)
-  implicit def traversal_TemplateDomBase[NodeType <: nodes.TemplateDomBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_TemplateDomBase[NodeType] = new Traversal_TemplateDomBase(traversal)
-  implicit def traversal_TypeBase[NodeType <: nodes.TypeBase](traversal: Iterator[NodeType]): Traversal_TypeBase[NodeType] =
+  implicit def traversal_TagBase[NodeType <: TagBase](traversal: Iterator[NodeType]): Traversal_TagBase[NodeType] = new Traversal_TagBase(
+    traversal
+  )
+  implicit def traversal_TagNodePairBase[NodeType <: TagNodePairBase](traversal: Iterator[NodeType]): Traversal_TagNodePairBase[NodeType] =
+    new Traversal_TagNodePairBase(traversal)
+  implicit def traversal_TemplateDomBase[NodeType <: TemplateDomBase](traversal: Iterator[NodeType]): Traversal_TemplateDomBase[NodeType] =
+    new Traversal_TemplateDomBase(traversal)
+  implicit def traversal_TypeBase[NodeType <: TypeBase](traversal: Iterator[NodeType]): Traversal_TypeBase[NodeType] =
     new Traversal_TypeBase(traversal)
-  implicit def traversal_TypeArgumentBase[NodeType <: nodes.TypeArgumentBase](
+  implicit def traversal_TypeArgumentBase[NodeType <: TypeArgumentBase](
     traversal: Iterator[NodeType]
   ): Traversal_TypeArgumentBase[NodeType] = new Traversal_TypeArgumentBase(traversal)
-  implicit def traversal_TypeDeclBase[NodeType <: nodes.TypeDeclBase](traversal: Iterator[NodeType]): Traversal_TypeDeclBase[NodeType] =
+  implicit def traversal_TypeDeclBase[NodeType <: TypeDeclBase](traversal: Iterator[NodeType]): Traversal_TypeDeclBase[NodeType] =
     new Traversal_TypeDeclBase(traversal)
-  implicit def traversal_TypeParameterBase[NodeType <: nodes.TypeParameterBase](
+  implicit def traversal_TypeParameterBase[NodeType <: TypeParameterBase](
     traversal: Iterator[NodeType]
   ): Traversal_TypeParameterBase[NodeType] = new Traversal_TypeParameterBase(traversal)
-  implicit def traversal_TypeRefBase[NodeType <: nodes.TypeRefBase](traversal: Iterator[NodeType]): Traversal_TypeRefBase[NodeType] =
+  implicit def traversal_TypeRefBase[NodeType <: TypeRefBase](traversal: Iterator[NodeType]): Traversal_TypeRefBase[NodeType] =
     new Traversal_TypeRefBase(traversal)
-  implicit def traversal_UnknownBase[NodeType <: nodes.UnknownBase](traversal: Iterator[NodeType]): Traversal_UnknownBase[NodeType] =
+  implicit def traversal_UnknownBase[NodeType <: UnknownBase](traversal: Iterator[NodeType]): Traversal_UnknownBase[NodeType] =
     new Traversal_UnknownBase(traversal)
 }
 
 trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
   import Accessors.*
-  implicit def traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](traversal: Iterator[NodeType]): Traversal_AstNodeBase[NodeType] =
+  implicit def traversal_AstNodeBase[NodeType <: AstNodeBase](traversal: Iterator[NodeType]): Traversal_AstNodeBase[NodeType] =
     new Traversal_AstNodeBase(traversal)
-  implicit def traversal_CallReprBase[NodeType <: nodes.CallReprBase](traversal: Iterator[NodeType]): Traversal_CallReprBase[NodeType] =
+  implicit def traversal_CallReprBase[NodeType <: CallReprBase](traversal: Iterator[NodeType]): Traversal_CallReprBase[NodeType] =
     new Traversal_CallReprBase(traversal)
-  implicit def traversal_CfgNodeBase[NodeType <: nodes.CfgNodeBase](traversal: Iterator[NodeType]): Traversal_CfgNodeBase[NodeType] =
+  implicit def traversal_CfgNodeBase[NodeType <: CfgNodeBase](traversal: Iterator[NodeType]): Traversal_CfgNodeBase[NodeType] =
     new Traversal_CfgNodeBase(traversal)
-  implicit def traversal_ExpressionBase[NodeType <: nodes.ExpressionBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_ExpressionBase[NodeType] = new Traversal_ExpressionBase(traversal)
+  implicit def traversal_ExpressionBase[NodeType <: ExpressionBase](traversal: Iterator[NodeType]): Traversal_ExpressionBase[NodeType] =
+    new Traversal_ExpressionBase(traversal)
 }
 
 trait AbstractBaseConversions1 {
   import Accessors.*
-  implicit def traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](
-    traversal: Iterator[NodeType]
-  ): Traversal_DeclarationBase[NodeType] = new Traversal_DeclarationBase(traversal)
+  implicit def traversal_DeclarationBase[NodeType <: DeclarationBase](traversal: Iterator[NodeType]): Traversal_DeclarationBase[NodeType] =
+    new Traversal_DeclarationBase(traversal)
 }

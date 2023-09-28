@@ -452,7 +452,7 @@ class SchemaGen(schema: Schema) {
     for (p <- relevantProperties) {
       val funName = Helpers.camelCase(p.name)
       accessorsForConcreteStoredNodes.addOne(
-        s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
+        s"""final class Access_Property_${p.name}(val node: StoredNode) extends AnyVal {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
               s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
@@ -464,14 +464,14 @@ class SchemaGen(schema: Schema) {
            |}""".stripMargin
       )
       concreteStoredConv.addOne(
-        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+        s"""implicit def accessProperty${p.className}(node: StoredNode with StaticType[Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
       accessorsForConcreteNodeTraversals.addOne(
-        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
+        s"""final class Traversal_Property_${p.name}[NodeType <: StoredNode with StaticType[Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
           generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
+        s"""implicit def accessProperty${p.className}[NodeType <: StoredNode with StaticType[Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
       )
 
     }
@@ -480,7 +480,7 @@ class SchemaGen(schema: Schema) {
       stage.foreach { baseType =>
         val extensionClass = s"Access_${baseType.className}Base"
         convertForStage.addOne(
-          s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
+          s"implicit def access_${baseType.className}Base(node: ${baseType.className}Base): $extensionClass = new $extensionClass(node)"
         )
         val newName = if (baseType.isInstanceOf[NodeBaseType]) { baseType.className + "New" }
         else { "New" + baseType.className }
@@ -488,12 +488,12 @@ class SchemaGen(schema: Schema) {
         for (p <- newPropsAtNodeList(baseType)) {
           val funName = Helpers.camelCase(p.name)
           accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
-          | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
-          | case newNode: nodes.${newName} => newNode.${funName}
+          | case stored: StoredNode => new Access_Property_${p.name}(stored).${funName}
+          | case newNode: ${newName} => newNode.${funName}
           |}""".stripMargin)
         }
         accessorsForBaseNodes.addOne(
-          accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
+          accessors.mkString(s"final class ${extensionClass}(val node: ${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
         )
       }
     }
@@ -502,7 +502,7 @@ class SchemaGen(schema: Schema) {
       stage.foreach { baseType =>
         val extensionClass = s"Traversal_${baseType.className}Base"
         convertForStage.addOne(
-          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
+          s"implicit def traversal_${baseType.className}Base[NodeType <: ${baseType.className}Base](traversal: Iterator[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
         )
         val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
@@ -510,7 +510,7 @@ class SchemaGen(schema: Schema) {
         }
         accessorsForBaseNodeTraversals.addOne(
           elems.mkString(
-            s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
+            s"final class $extensionClass[NodeType <: ${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
             "\n",
             "}"
           )
@@ -543,7 +543,7 @@ class SchemaGen(schema: Schema) {
     val accessors =
       s"""package $basePackage.accessors
          |import io.joern.odb2
-         |import $basePackage.nodes
+         |import $basePackage.nodes.*
          |import scala.collection.immutable.IndexedSeq
          |
          |object Lang extends ConcreteStoredConversions
@@ -567,7 +567,7 @@ class SchemaGen(schema: Schema) {
     val traversals =
       s"""package $basePackage.traversals
          |import io.joern.odb2
-         |import $basePackage.nodes
+         |import $basePackage.nodes.*
          |
          |object Lang extends ConcreteStoredConversions
          |
@@ -591,10 +591,10 @@ class SchemaGen(schema: Schema) {
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
       s"""def ${sanitizeReservedNames(
           Helpers.camelCase(typ.name)
-        )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
+        )}: Iterator[${typ.className}] = wrappedCpg.graph.nodes($idx).asInstanceOf[Iterator[${typ.className}]]"""
     }.toList
     val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
-      s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
+      s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[${baseType.className}] = Iterator(${nodeTypes
           .filter { _.extendzRecursively.contains(baseType) }
           .map { t => "this." + sanitizeReservedNames(Helpers.camelCase(t.name)) }
           .mkString(", ")}).flatten"""
@@ -603,6 +603,7 @@ class SchemaGen(schema: Schema) {
     val domainMain =
       s"""package $basePackage
          |import io.joern.odb2
+         |import $basePackage.nodes.*
          |
          |object $domainShortName {
          |  def empty: $domainShortName = new $domainShortName(new odb2.Graph(GraphSchema))
@@ -612,7 +613,7 @@ class SchemaGen(schema: Schema) {
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
-         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.AbstractNode]]
+         |  def all: Iterator[AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[AbstractNode]]
          |
          |${concreteStarters.mkString("\n")}
          |
@@ -698,8 +699,8 @@ class SchemaGen(schema: Schema) {
       case ValueType.Float               => "Float"
       case ValueType.Double              => "Double"
       case ValueType.NodeRef if raised   => s"odb2.GNode"
-      case ValueType.NodeRef if isStored => s"nodes.StoredNode"
-      case ValueType.NodeRef             => s"nodes.AbstractNode"
+      case ValueType.NodeRef if isStored => s"StoredNode"
+      case ValueType.NodeRef             => s"AbstractNode"
       case _                             => ???
     }
   }
@@ -714,8 +715,8 @@ class SchemaGen(schema: Schema) {
       case ValueType.Long                => "java.lang.Long"
       case ValueType.Float               => "java.lang.Float"
       case ValueType.Double              => "java.lang.Double"
-      case ValueType.NodeRef if isStored => s"nodes.StoredNode"
-      case ValueType.NodeRef             => s"nodes.AbstractNode"
+      case ValueType.NodeRef if isStored => s"StoredNode"
+      case ValueType.NodeRef             => s"AbstractNode"
       case _                             => ???
     }
   }
