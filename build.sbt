@@ -13,13 +13,11 @@ lazy val joernGenerated       = project.in(file("joern-generated")).dependsOn(co
 lazy val benchmarks           = project.in(file("benchmarks")).dependsOn(core).dependsOn(joernGenerated)
 
 /** Only the below listed projects are included in things like `sbt compile`.
-  * We explicitly want to exclude codescienceGenerated here, in order to be able
+  * We explicitly want to exclude schemaGenCodescience and codescienceGenerated here, in order to be able
   * to build outside of a qwiet.ai / shiftleft environment - specifically on CI
   */
-lazy val aggregatedProjects: Seq[ProjectReference] =
-  Seq(core, schemaGen, odbConvert, joernGenerated, benchmarks)
+lazy val root = (project in file(".")).aggregate(core, schemaGen, odbConvert, joernGenerated, benchmarks)
 
-/** codescience-internal only */
 lazy val schemaGenCodescience = project.in(file("schema-gen-codescience")).dependsOn(core, schemaGen)
 lazy val codescienceGenerated = project.in(file("codescience-generated")).dependsOn(core)
 
