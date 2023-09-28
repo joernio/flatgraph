@@ -27,7 +27,7 @@ object CodeSnippets {
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
          |def ${nameCamelCase}Exact(value: $baseType): Iterator[NodeType] = traversal match {
-         |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
+         |    case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
          |      val someNode = init.next
          |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, value).asInstanceOf[Iterator[NodeType]]
          |    case _ => traversal.filter{_.$nameCamelCase == value}
@@ -70,7 +70,7 @@ object CodeSnippets {
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
          |  * */
          |def ${nameCamelCase}Exact(value: $baseType): Iterator[NodeType] = traversal match {
-         |    case init: odb2.misc.InitNodeIterator[odb2.GNode] if init.isVirgin && init.hasNext =>
+         |    case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
          |      val someNode = init.next
          |      odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, value).asInstanceOf[Iterator[NodeType]]
          |     case _ => traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}

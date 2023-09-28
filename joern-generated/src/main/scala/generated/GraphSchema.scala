@@ -78,7 +78,7 @@ object GraphSchema extends odb2.Schema {
     "TAGGED_BY"
   )
   val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
-  val edgePropertyAllocators: Array[Int => Array[_]] = Array(
+  val edgePropertyAllocators: Array[Int => Array[?]] = Array(
     size => null,
     size => null,
     size => null,
@@ -176,7 +176,7 @@ object GraphSchema extends odb2.Schema {
     (s, d, subseq, p) => new edges.SourceFile(s, d, subseq, p),
     (s, d, subseq, p) => new edges.TaggedBy(s, d, subseq, p)
   )
-  val nodePropertyAllocators: Array[Int => Array[_]] = Array(
+  val nodePropertyAllocators: Array[Int => Array[?]] = Array(
     size => new Array[String](size),
     size => new Array[Int](size),
     size => new Array[String](size),
@@ -311,7 +311,7 @@ object GraphSchema extends odb2.Schema {
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[_] =
+  override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[?] =
     edgePropertyAllocators(edgeKind)(size)
-  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] = nodePropertyAllocators(propertyKind)(size)
+  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
 }
