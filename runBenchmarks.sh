@@ -22,3 +22,9 @@ time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttach
 
 echo "odbv2 load+mem benchmarked. Results are in odb2Results.txt. Running JMH benchmarks (this will take some time...)"
 time ./benchmarks/target/universal/stage/bin/benchmarks jmh
+
+RESULTS_FILE=benchmarks/results-history/$(date +"%Y%m%d")_$(git log -1 --pretty=format:%h)-results.csv
+cp benchmarks/target/results.csv $RESULTS_FILE
+git add $RESULTS_FILE
+
+echo "benchmark results archived in $RESULTS_FILE - please commit those to collect more data points"
