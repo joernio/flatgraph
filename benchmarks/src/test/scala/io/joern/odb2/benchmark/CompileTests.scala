@@ -39,6 +39,11 @@ class CompileTests extends AnyWordSpec with Matchers {
 
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
       val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
+
+      import io.joern.odb2.benchmark.EdgeAccessors.Language.*
+      // edge accessors
+      iter.next.argument
+      iter.argument
     }
   }
 
