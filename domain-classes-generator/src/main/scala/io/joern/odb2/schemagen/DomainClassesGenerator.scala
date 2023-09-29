@@ -437,8 +437,8 @@ class DomainClassesGenerator(schema: Schema) {
          |}""".stripMargin
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
 
-    // Accessors and traversals
-
+    // Accessors and traversals: start
+    // TODO extract into separate method
     val accessorsForConcreteStoredNodes = mutable.ArrayBuffer.empty[String]
     val concreteStoredConv              = mutable.ArrayBuffer.empty[String]
     val accessorsForBaseNodes           = mutable.ArrayBuffer.empty[String]
@@ -473,7 +473,6 @@ class DomainClassesGenerator(schema: Schema) {
       concreteStoredConvTrav.addOne(
         s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
       )
-
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
@@ -563,7 +562,6 @@ class DomainClassesGenerator(schema: Schema) {
 
     os.write(outputDir0 / "Accessors.scala", accessors)
 
-    // fixme: Also generate edge accessors
     val traversals =
       s"""package $basePackage.traversals
          |import io.joern.odb2
@@ -586,7 +584,10 @@ class DomainClassesGenerator(schema: Schema) {
          |${conversionsForTraversals.mkString("\n\n")}
          |""".stripMargin
     os.write(outputDir0 / "Traversals.scala", traversals)
+    // Accessors and traversals: end
 
+    // domain object and starters: start
+    // TODO: extract into separate method
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
       s"""def ${sanitizeReservedNames(
@@ -620,7 +621,9 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |""".stripMargin
     os.write(outputDir0 / s"$domainShortName.scala", domainMain)
-  } // end generate
+  }
+  // domain object and starters: end
+  // end generate
 
   def typeForProperty(p: Property[?]): String = {
     val typ = unpackTypeUnboxed(p.valueType, isStored = true, raised = false)
