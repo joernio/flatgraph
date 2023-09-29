@@ -1,23 +1,19 @@
 package io.joern.odb2.benchmark
 
 import io.joern.odb2.Traversal.*
-import io.shiftleft.codepropertygraph.generated.v2.nodes.*
+import io.shiftleft.codepropertygraph.generated.v2.nodes
 
 // TODO generate these by codegen, then remove this file
 
 object EdgeAccessors {
-  object Language extends ForNodes with ForTraversals
+  object Language {
 
-  object ForNodes extends ForNodes
-  trait ForNodes {
-    extension (call: Call) {
-      def argument: Iterator[Expression] = call._argumentOut.iterator.collectAll[Expression]
+    final implicit class Access_Edge_Argument(call: nodes.Call) extends AnyVal {
+      def argument: Iterator[nodes.Expression] = call._argumentOut.iterator.collectAll[nodes.Expression]
     }
-  }
 
-  trait ForTraversals {
-    extension (iter: Iterator[Call]) {
-      def argument: Iterator[Expression] = iter.flatMap(ForNodes.argument)
+    final implicit class Access_Traversal_Edge_Argument(iter: Iterator[nodes.Call]) extends AnyVal {
+      def argument: Iterator[nodes.Expression] = iter.flatMap(_.argument)
     }
   }
 

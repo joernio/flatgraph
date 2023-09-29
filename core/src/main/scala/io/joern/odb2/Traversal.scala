@@ -3,7 +3,7 @@ package io.joern.odb2
 import scala.reflect.ClassTag
 
 object Traversal {
-
+  
   given Conversion[IterableOnce[?], Iterator[?]] =
     iterable => iterable.iterator
 
