@@ -4,7 +4,7 @@ import io.joern.odb2.codegen.CodeSnippets.FilterSteps
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{AbstractNodeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import overflowdb.schema.{AbstractNodeType, AdjacentNode, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
@@ -584,6 +584,98 @@ class DomainClassesGenerator(schema: Schema) {
          |${conversionsForTraversals.mkString("\n\n")}
          |""".stripMargin
     os.write(outputDir0 / "Traversals.scala", traversals)
+
+    // TODO extract to separate method
+    val edgeAccessors = {
+      val neighborAccessorsForConcreteNodes = mutable.ArrayBuffer.empty[String]
+      val neighborAccessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
+
+      val newInEdgesByNodeType: Map[AbstractNodeType, Set[AdjacentNode]] =
+        schema.allNodeTypes.map { nodeType =>
+          nodeType -> nodeType.inEdges.toSet.diff(nodeType.extendzRecursively.flatMap(_.inEdges).toSet)
+        }.toMap
+      val newOutEdgesByNodeType: Map[AbstractNodeType, Set[AdjacentNode]] =
+        schema.allNodeTypes.map { nodeType =>
+          nodeType -> nodeType.outEdges.toSet.diff(nodeType.extendzRecursively.flatMap(_.outEdges).toSet)
+        }.toMap
+
+      val prioStages: Array[Array[NodeBaseType]] = {
+        val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
+        for (baseType <- schema.nodeBaseTypes) {
+          val inEdges = newInEdgesByNodeType(baseType)
+          val outEdges = newOutEdgesByNodeType(baseType)
+          prioStages.find { stage =>
+            stage.forall(other => newInEdgesByNodeType(other).intersect(inEdges).isEmpty &&
+                                 newOutEdgesByNodeType(other).intersect(outEdges).isEmpty)
+          } match {
+            case Some(value) => value.addOne(baseType)
+            case None => prioStages.addOne(mutable.ArrayBuffer(baseType))
+          }
+        }
+        prioStages.map(_.toArray).toArray
+      }
+
+      val baseConvert = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
+
+      for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
+        stage.foreach { baseType =>
+          val extensionClass = s"Access_${baseType.className}Base"
+          convertForStage.addOne(
+            s"//XX0 implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
+          )
+          val accessors = mutable.ArrayBuffer.empty[String]
+          for (p <- newPropsAtNodeList(baseType)) {
+            val funName = Helpers.camelCase(p.name)
+            accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
+            | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
+            | // XX1 case newNode: nodes.newName /XX1b => newNode.${funName}
+            |}""".stripMargin)
+          }
+          accessorsForBaseNodes.addOne(
+            accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
+          )
+        }
+      }
+
+      // TODO: abstract and reuse: prioritized traits names
+      val conversionsForNeighborAccessors = mutable.ArrayBuffer.empty[String]
+      val convBuffer = concreteStoredConv +: baseConvert
+      for (idx <- Range(0, baseConvert.length + 1)) {
+        val (tname, tparent) = idx match {
+          case 0 => ("ConcreteStoredConversions", Some("ConcreteBaseConversions"))
+          case 1 => ("ConcreteBaseConversions", if (baseConvert.length > 1) Some("AbstractBaseConversions0") else None)
+          case _ =>
+            (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
+        }
+        conversionsForNeighborAccessors.addOne(
+          s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
+             |import Accessors.*
+             |${convBuffer(idx).mkString("\n")}
+             |}""".stripMargin)
+      }
+
+      s"""package $basePackage.neighboraccessors
+         |import io.joern.odb2
+         |//import $basePackage.nodes
+         |
+         |// object Lang extends ConcreteStoredConversions
+         |
+         |object Accessors {
+         |  import $basePackage.accessors.Lang.*
+         |  import odb2.misc.Misc
+         |
+         |  /* accessors for concrete stored nodes start */
+         |  ${neighborAccessorsForConcreteNodes.mkString("\n")}
+         |  /* accessors for concrete stored nodes end */
+         |
+         |  /* accessors for base nodes start */
+         |  ${neighborAccessorsForBaseNodes.mkString("\n")}
+         |  /* accessors for base nodes end */
+         |}
+         |${conversionsForNeighborAccessors.mkString("\n\n")}
+         |""".stripMargin
+    }
+    os.write(outputDir0 / "NeighborAccessors.scala", edgeAccessors)
     // Accessors and traversals: end
 
     // domain object and starters: start
