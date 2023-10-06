@@ -592,6 +592,8 @@ class DomainClassesGenerator(schema: Schema) {
 
       val concreteStoredConv2 = mutable.ArrayBuffer.empty[String]
       schema.allNodeTypes.foreach { nodeType =>
+        // TODO deduplicate: group by edge and direction
+        // maybe we can get away without the 'consolidatedCardinality' computation? seems a little complex
         val stepsSources = for {
           direction <- Direction.all
           AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
@@ -611,22 +613,20 @@ class DomainClassesGenerator(schema: Schema) {
                  |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
                  |  }
                  |}""".stripMargin
-//              "// asd"
           }
 
-//        //TODO handle customStepNames additionally         |// $customStepName
-//                 |// $customStepDoc
+        //TODO additionally generate step aliases for customStepNames
         }
         val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
         neighborAccessorsForConcreteNodes.addOne(
           s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
-             |  ${stepsSources.sorted.mkString("\n\n")}
+             |  ${stepsSources.sorted.distinct.mkString("\n\n")}
              |}
              |""".stripMargin
         )
       }
 
-      // TODO later
+      // TODO cleanup
       /*
         for (p <- relevantProperties) {
         concreteStoredConv.addOne(

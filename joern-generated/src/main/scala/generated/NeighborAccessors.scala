@@ -225,8 +225,6 @@ object Accessors {
 
     def _localViaAstOut: Iterator[nodes.Local] = node._astOut.iterator.collectAll[nodes.Local]
 
-    def _localViaAstOut: Iterator[nodes.Local] = node._astOut.iterator.collectAll[nodes.Local]
-
     def _methodParameterOutViaReachingDefOut: Iterator[nodes.MethodParameterOut] =
       node._reachingDefOut.iterator.collectAll[nodes.MethodParameterOut]
 
@@ -1705,8 +1703,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForLocal(val node: nodes.Local) extends AnyVal {
-    def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
-
     def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
 
     def _closureBindingViaCapturedByOut: Iterator[nodes.ClosureBinding] = node._capturedByOut.iterator.collectAll[nodes.ClosureBinding]
