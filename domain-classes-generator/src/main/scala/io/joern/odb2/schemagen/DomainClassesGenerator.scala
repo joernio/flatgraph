@@ -4,7 +4,7 @@ import io.joern.odb2.codegen.CodeSnippets.FilterSteps
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{AbstractNodeType, AdjacentNode, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
@@ -590,6 +590,49 @@ class DomainClassesGenerator(schema: Schema) {
       val neighborAccessorsForConcreteNodes = mutable.ArrayBuffer.empty[String]
       val neighborAccessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
 
+      val concreteStoredConv2 = mutable.ArrayBuffer.empty[String]
+      schema.allNodeTypes.foreach { nodeType =>
+        val stepsSources = for {
+          direction <- Direction.all
+          AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
+          methodName = Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction")
+        } yield {
+          val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
+          val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
+          cardinality match {
+            case EdgeType.Cardinality.List =>
+              s"def _$methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
+            case EdgeType.Cardinality.ZeroOrOne =>
+              s"def _$methodName: Option[nodes.${neighbor.className}] = $accessorImpl0.nextOption()"
+            case EdgeType.Cardinality.One =>
+              s"""def _$methodName: nodes.${neighbor.className} = {
+                 |  try { $accessorImpl0.next() } catch {
+                 |    case e: java.util.NoSuchElementException =>
+                 |      throw new overflowdb.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with id=" + id, e)
+                 |  }""".stripMargin
+              "// asd"
+          }
+
+//        //TODO handle customStepNames additionally         |// $customStepName
+//                 |// $customStepDoc
+        }
+        val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
+        neighborAccessorsForConcreteNodes.addOne(
+          s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
+             |  ${stepsSources.sorted.mkString("\n\n")}
+             |}
+             |""".stripMargin
+        )
+      }
+
+      // TODO later
+      /*
+        for (p <- relevantProperties) {
+        concreteStoredConv.addOne(
+          s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+        )
+       */
+
       val newInEdgesByNodeType: Map[AbstractNodeType, Set[AdjacentNode]] =
         schema.allNodeTypes.map { nodeType =>
           nodeType -> nodeType.inEdges.toSet.diff(nodeType.extendzRecursively.flatMap(_.inEdges).toSet)
@@ -621,7 +664,7 @@ class DomainClassesGenerator(schema: Schema) {
         stage.foreach { baseType =>
           val extensionClass = s"Access_${baseType.className}Base"
           convertForStage.addOne(
-            s"//XX0 implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
+            s"//XX2 implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
           )
           val accessors = mutable.ArrayBuffer.empty[String]
           for (p <- newPropsAtNodeList(baseType)) {
@@ -639,7 +682,7 @@ class DomainClassesGenerator(schema: Schema) {
 
       // TODO: abstract and reuse: prioritized traits names
       val conversionsForNeighborAccessors = mutable.ArrayBuffer.empty[String]
-      val convBuffer = concreteStoredConv +: baseConvert
+      val convBuffer = concreteStoredConv2 +: baseConvert
       for (idx <- Range(0, baseConvert.length + 1)) {
         val (tname, tparent) = idx match {
           case 0 => ("ConcreteStoredConversions", Some("ConcreteBaseConversions"))
@@ -651,25 +694,26 @@ class DomainClassesGenerator(schema: Schema) {
           s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
              |import Accessors.*
              |${convBuffer(idx).mkString("\n")}
-             |}""".stripMargin)
+             |}""".stripMargin
+        )
       }
 
       s"""package $basePackage.neighboraccessors
          |import io.joern.odb2
-         |//import $basePackage.nodes
+         |import io.joern.odb2.Traversal.*
+         |import $basePackage.nodes
          |
          |// object Lang extends ConcreteStoredConversions
          |
          |object Accessors {
-         |  import $basePackage.accessors.Lang.*
-         |  import odb2.misc.Misc
+         |  // import $basePackage.accessors.Lang.*
          |
          |  /* accessors for concrete stored nodes start */
-         |  ${neighborAccessorsForConcreteNodes.mkString("\n")}
+         |  ${neighborAccessorsForConcreteNodes.mkString("\n\n")}
          |  /* accessors for concrete stored nodes end */
          |
          |  /* accessors for base nodes start */
-         |  ${neighborAccessorsForBaseNodes.mkString("\n")}
+         |  ${neighborAccessorsForBaseNodes.mkString("\n\n")}
          |  /* accessors for base nodes end */
          |}
          |${conversionsForNeighborAccessors.mkString("\n\n")}
