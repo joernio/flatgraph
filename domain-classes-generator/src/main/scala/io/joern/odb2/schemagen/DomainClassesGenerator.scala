@@ -586,45 +586,55 @@ class DomainClassesGenerator(schema: Schema) {
     os.write(outputDir0 / "Traversals.scala", traversals)
 
     // TODO extract to separate method
-    val edgeAccessors = {
-      val neighborAccessorsForConcreteNodes = mutable.ArrayBuffer.empty[String]
-      val neighborAccessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
-
-      val concreteStoredConv2 = mutable.ArrayBuffer.empty[String]
-      schema.allNodeTypes.foreach { nodeType =>
-        // TODO deduplicate: group by edge and direction
-        // maybe we can get away without the 'consolidatedCardinality' computation? seems a little complex
-        val stepsSources = for {
-          direction <- Direction.all
-          AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
-          methodName = Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction")
-        } yield {
-          val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
-          val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
-          cardinality match {
-            case EdgeType.Cardinality.List =>
-              s"def _$methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
-            case EdgeType.Cardinality.ZeroOrOne =>
-              s"def _$methodName: Option[nodes.${neighbor.className}] = $accessorImpl0.nextOption()"
-            case EdgeType.Cardinality.One =>
-              s"""def _$methodName: nodes.${neighbor.className} = {
-                 |  try { $accessorImpl0.next() } catch {
-                 |    case e: java.util.NoSuchElementException =>
-                 |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
-                 |  }
-                 |}""".stripMargin
+    val neighborAccessors = {
+      val neighborAccessorsForConcreteNodes = {
+        val neighborAccessorsForConcreteNodes = Seq.newBuilder[String]
+        schema.allNodeTypes.foreach { nodeType =>
+          val stepImplementations = Seq.newBuilder[String]
+          for {
+            direction <- Direction.all
+            AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
+          } {
+            def addStepImplementation(methodName: String): Unit = {
+              val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
+              val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
+              val source = cardinality match {
+                case EdgeType.Cardinality.List =>
+                  s"def $methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
+                case EdgeType.Cardinality.ZeroOrOne =>
+                  s"def $methodName: Option[nodes.${neighbor.className}] = $accessorImpl0.nextOption()"
+                case EdgeType.Cardinality.One =>
+                  s"""def $methodName: nodes.${neighbor.className} = {
+                     |  try { $accessorImpl0.next() } catch {
+                     |    case e: java.util.NoSuchElementException =>
+                     |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
+                     |  }
+                     |}""".stripMargin
+              }
+              val scaladoc = s"""/** ${customStepDoc.getOrElse("")}
+                                |  * Traverse to ${neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
+              stepImplementations.addOne(
+                s"""$scaladoc
+                   |$source
+                   |""".stripMargin)
+            }
+            addStepImplementation(methodName = "_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
+            customStepName.foreach(addStepImplementation)
           }
-
-        //TODO additionally generate step aliases for customStepNames
+          val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
+          neighborAccessorsForConcreteNodes.addOne(
+            s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
+               |  ${stepImplementations.result().sorted.distinct.mkString("\n\n")}
+               |}
+               |""".stripMargin
+          )
         }
-        val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
-        neighborAccessorsForConcreteNodes.addOne(
-          s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
-             |  ${stepsSources.sorted.distinct.mkString("\n\n")}
-             |}
-             |""".stripMargin
-        )
+        neighborAccessorsForConcreteNodes.result()
       }
+
+      val neighborAccessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
+      val concreteStoredConv2 = mutable.ArrayBuffer.empty[String]
+
 
       // TODO cleanup
       /*
@@ -720,7 +730,7 @@ class DomainClassesGenerator(schema: Schema) {
          |${conversionsForNeighborAccessors.mkString("\n\n")}
          |""".stripMargin
     }
-    os.write(outputDir0 / "NeighborAccessors.scala", edgeAccessors)
+    os.write(outputDir0 / "NeighborAccessors.scala", neighborAccessors)
     // Accessors and traversals: end
 
     // domain object and starters: start
