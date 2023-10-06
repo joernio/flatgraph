@@ -65,15 +65,40 @@ object Accessors {
   }
 
   final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
-    // asd
+    def _methodViaRefOut: nodes.Method = {
+      try { node._refOut.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this BINDING node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
-// asd
+    def _typeDeclViaBindsIn: nodes.TypeDecl = {
+      try { node._bindsIn.iterator.collectAll[nodes.TypeDecl].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label BINDS to an adjacent TYPE_DECL is mandatory, but not defined for this BINDING node with seq=" + node.seq,
+            e
+          )
+      }
+    }
   }
 
   final class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
-    // asd
-
-// asd
+    def _blockViaAstIn: nodes.Block = {
+      try { node._astIn.iterator.collectAll[nodes.Block].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent BLOCK is mandatory, but not defined for this BLOCK node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _blockViaAstOut: Iterator[nodes.Block] = node._astOut.iterator.collectAll[nodes.Block]
 
@@ -227,6 +252,17 @@ object Accessors {
 
     def _methodReturnViaPostDominateIn: Iterator[nodes.MethodReturn] = node._postDominateIn.iterator.collectAll[nodes.MethodReturn]
 
+    def _methodViaAstIn: nodes.Method = {
+      try { node._astIn.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this BLOCK node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _methodViaContainsIn: Iterator[nodes.Method] = node._containsIn.iterator.collectAll[nodes.Method]
 
     def _methodViaDominateIn: Iterator[nodes.Method] = node._dominateIn.iterator.collectAll[nodes.Method]
@@ -289,8 +325,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForCall(val node: nodes.Call) extends AnyVal {
-    // asd
-
     def _blockViaArgumentOut: Iterator[nodes.Block] = node._argumentOut.iterator.collectAll[nodes.Block]
 
     def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
@@ -344,6 +378,17 @@ object Accessors {
     def _cfgNodeViaCfgOut: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
 
     def _controlStructureViaArgumentOut: Iterator[nodes.ControlStructure] = node._argumentOut.iterator.collectAll[nodes.ControlStructure]
+
+    def _controlStructureViaAstIn: nodes.ControlStructure = {
+      try { node._astIn.iterator.collectAll[nodes.ControlStructure].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent CONTROL_STRUCTURE is mandatory, but not defined for this CALL node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _controlStructureViaAstOut: Iterator[nodes.ControlStructure] = node._astOut.iterator.collectAll[nodes.ControlStructure]
 
@@ -562,9 +607,18 @@ object Accessors {
   }
 
   final class AccessNeighborsForClosureBinding(val node: nodes.ClosureBinding) extends AnyVal {
-    // asd
-
     def _localViaCapturedByIn: Iterator[nodes.Local] = node._capturedByIn.iterator.collectAll[nodes.Local]
+
+    def _localViaRefOut: nodes.Local = {
+      try { node._refOut.iterator.collectAll[nodes.Local].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label REF to an adjacent LOCAL is mandatory, but not defined for this CLOSURE_BINDING node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _methodParameterInViaRefOut: Iterator[nodes.MethodParameterIn] = node._refOut.iterator.collectAll[nodes.MethodParameterIn]
 
@@ -818,12 +872,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) extends AnyVal {
-    // asd
-
-// asd
-
-// asd
-
     def _blockViaCdgIn: Iterator[nodes.Block] = node._cdgIn.iterator.collectAll[nodes.Block]
 
     def _blockViaCdgOut: Iterator[nodes.Block] = node._cdgOut.iterator.collectAll[nodes.Block]
@@ -836,9 +884,42 @@ object Accessors {
 
     def _blockViaPostDominateOut: Iterator[nodes.Block] = node._postDominateOut.iterator.collectAll[nodes.Block]
 
+    def _callViaArgumentIn: nodes.Call = {
+      try { node._argumentIn.iterator.collectAll[nodes.Call].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label ARGUMENT to an adjacent CALL is mandatory, but not defined for this FIELD_IDENTIFIER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
+    def _callViaAstIn: nodes.Call = {
+      try { node._astIn.iterator.collectAll[nodes.Call].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent CALL is mandatory, but not defined for this FIELD_IDENTIFIER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _callViaCdgIn: Iterator[nodes.Call] = node._cdgIn.iterator.collectAll[nodes.Call]
 
     def _callViaCdgOut: Iterator[nodes.Call] = node._cdgOut.iterator.collectAll[nodes.Call]
+
+    def _callViaCfgOut: nodes.Call = {
+      try { node._cfgOut.iterator.collectAll[nodes.Call].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label CFG to an adjacent CALL is mandatory, but not defined for this FIELD_IDENTIFIER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _callViaDominateIn: Iterator[nodes.Call] = node._dominateIn.iterator.collectAll[nodes.Call]
 
@@ -1400,8 +1481,6 @@ object Accessors {
   final class AccessNeighborsForKeyValuePair(val node: nodes.KeyValuePair) extends AnyVal {}
 
   final class AccessNeighborsForLiteral(val node: nodes.Literal) extends AnyVal {
-    // asd
-
     def _annotationViaAstOut: Iterator[nodes.Annotation] = node._astOut.iterator.collectAll[nodes.Annotation]
 
     def _arrayInitializerViaAstIn: Iterator[nodes.ArrayInitializer] = node._astIn.iterator.collectAll[nodes.ArrayInitializer]
@@ -1445,6 +1524,17 @@ object Accessors {
     def _callViaReceiverIn: Option[nodes.Call] = node._receiverIn.iterator.collectAll[nodes.Call].nextOption()
 
     def _cfgNodeViaCfgOut: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
+
+    def _controlStructureViaAstIn: nodes.ControlStructure = {
+      try { node._astIn.iterator.collectAll[nodes.ControlStructure].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent CONTROL_STRUCTURE is mandatory, but not defined for this LITERAL node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _controlStructureViaCdgIn: Iterator[nodes.ControlStructure] = node._cdgIn.iterator.collectAll[nodes.ControlStructure]
 
@@ -1637,8 +1727,6 @@ object Accessors {
   final class AccessNeighborsForLocation(val node: nodes.Location) extends AnyVal {}
 
   final class AccessNeighborsForMember(val node: nodes.Member) extends AnyVal {
-    // asd
-
     def _annotationViaAstOut: Iterator[nodes.Annotation] = node._astOut.iterator.collectAll[nodes.Annotation]
 
     def _callViaRefIn: Iterator[nodes.Call] = node._refIn.iterator.collectAll[nodes.Call]
@@ -1646,6 +1734,17 @@ object Accessors {
     def _modifierViaAstOut: Iterator[nodes.Modifier] = node._astOut.iterator.collectAll[nodes.Modifier]
 
     def _tagViaTaggedByOut: Iterator[nodes.Tag] = node._taggedByOut.iterator.collectAll[nodes.Tag]
+
+    def _typeDeclViaAstIn: nodes.TypeDecl = {
+      try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent TYPE_DECL is mandatory, but not defined for this MEMBER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
@@ -1655,13 +1754,20 @@ object Accessors {
   final class AccessNeighborsForMetaData(val node: nodes.MetaData) extends AnyVal {}
 
   final class AccessNeighborsForMethod(val node: nodes.Method) extends AnyVal {
-    // asd
-
-// asd
-
     def _annotationViaAstOut: Iterator[nodes.Annotation] = node._astOut.iterator.collectAll[nodes.Annotation]
 
     def _bindingViaRefIn: Iterator[nodes.Binding] = node._refIn.iterator.collectAll[nodes.Binding]
+
+    def _blockViaAstOut: nodes.Block = {
+      try { node._astOut.iterator.collectAll[nodes.Block].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label AST to an adjacent BLOCK is mandatory, but not defined for this METHOD node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _blockViaContainsOut: Iterator[nodes.Block] = node._containsOut.iterator.collectAll[nodes.Block]
 
@@ -1734,6 +1840,17 @@ object Accessors {
 
     def _methodRefViaRefIn: Iterator[nodes.MethodRef] = node._refIn.iterator.collectAll[nodes.MethodRef]
 
+    def _methodReturnViaAstOut: nodes.MethodReturn = {
+      try { node._astOut.iterator.collectAll[nodes.MethodReturn].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label AST to an adjacent METHOD_RETURN is mandatory, but not defined for this METHOD node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _methodReturnViaCfgOut: Option[nodes.MethodReturn] = node._cfgOut.iterator.collectAll[nodes.MethodReturn].nextOption()
 
     def _methodReturnViaDominateOut: Iterator[nodes.MethodReturn] = node._dominateOut.iterator.collectAll[nodes.MethodReturn]
@@ -1784,10 +1901,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForMethodParameterIn(val node: nodes.MethodParameterIn) extends AnyVal {
-    // asd
-
-// asd
-
     def _annotationViaAstOut: Iterator[nodes.Annotation] = node._astOut.iterator.collectAll[nodes.Annotation]
 
     def _callViaReachingDefOut: Iterator[nodes.Call] = node._reachingDefOut.iterator.collectAll[nodes.Call]
@@ -1808,6 +1921,17 @@ object Accessors {
 
     def _methodRefViaReachingDefOut: Iterator[nodes.MethodRef] = node._reachingDefOut.iterator.collectAll[nodes.MethodRef]
 
+    def _methodViaAstIn: nodes.Method = {
+      try { node._astIn.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_PARAMETER_IN node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _methodViaReachingDefIn: Iterator[nodes.Method] = node._reachingDefIn.iterator.collectAll[nodes.Method]
 
     def _returnViaReachingDefOut: Iterator[nodes.Return] = node._reachingDefOut.iterator.collectAll[nodes.Return]
@@ -1816,12 +1940,21 @@ object Accessors {
 
     def _typeRefViaReachingDefOut: Iterator[nodes.TypeRef] = node._reachingDefOut.iterator.collectAll[nodes.TypeRef]
 
+    def _typeViaEvalTypeOut: nodes.Type = {
+      try { node._evalTypeOut.iterator.collectAll[nodes.Type].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label EVAL_TYPE to an adjacent TYPE is mandatory, but not defined for this METHOD_PARAMETER_IN node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _unknownViaAstOut: Iterator[nodes.Unknown] = node._astOut.iterator.collectAll[nodes.Unknown]
   }
 
   final class AccessNeighborsForMethodParameterOut(val node: nodes.MethodParameterOut) extends AnyVal {
-    // asd
-
     def _blockViaReachingDefIn: Iterator[nodes.Block] = node._reachingDefIn.iterator.collectAll[nodes.Block]
 
     def _callViaReachingDefIn: Iterator[nodes.Call] = node._reachingDefIn.iterator.collectAll[nodes.Call]
@@ -1849,6 +1982,17 @@ object Accessors {
 
     def _methodRefViaReachingDefOut: Iterator[nodes.MethodRef] = node._reachingDefOut.iterator.collectAll[nodes.MethodRef]
 
+    def _methodViaAstIn: nodes.Method = {
+      try { node._astIn.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_PARAMETER_OUT node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _methodViaReachingDefIn: Iterator[nodes.Method] = node._reachingDefIn.iterator.collectAll[nodes.Method]
 
     def _returnViaReachingDefIn: Iterator[nodes.Return] = node._reachingDefIn.iterator.collectAll[nodes.Return]
@@ -1867,10 +2011,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForMethodRef(val node: nodes.MethodRef) extends AnyVal {
-    // asd
-
-// asd
-
     def _annotationViaAstOut: Iterator[nodes.Annotation] = node._astOut.iterator.collectAll[nodes.Annotation]
 
     def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
@@ -1914,6 +2054,17 @@ object Accessors {
     def _cfgNodeViaCfgOut: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
 
     def _closureBindingViaCaptureOut: Iterator[nodes.ClosureBinding] = node._captureOut.iterator.collectAll[nodes.ClosureBinding]
+
+    def _controlStructureViaAstIn: nodes.ControlStructure = {
+      try { node._astIn.iterator.collectAll[nodes.ControlStructure].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent CONTROL_STRUCTURE is mandatory, but not defined for this METHOD_REF node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _controlStructureViaCdgIn: Iterator[nodes.ControlStructure] = node._cdgIn.iterator.collectAll[nodes.ControlStructure]
 
@@ -2032,6 +2183,17 @@ object Accessors {
 
     def _methodViaReachingDefIn: Iterator[nodes.Method] = node._reachingDefIn.iterator.collectAll[nodes.Method]
 
+    def _methodViaRefOut: nodes.Method = {
+      try { node._refOut.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this METHOD_REF node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _returnViaArgumentIn: Option[nodes.Return] = node._argumentIn.iterator.collectAll[nodes.Return].nextOption()
 
     def _returnViaAstIn: Iterator[nodes.Return] = node._astIn.iterator.collectAll[nodes.Return]
@@ -2086,8 +2248,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends AnyVal {
-    // asd
-
     def _blockViaCdgIn: Iterator[nodes.Block] = node._cdgIn.iterator.collectAll[nodes.Block]
 
     def _blockViaDominateIn: Iterator[nodes.Block] = node._dominateIn.iterator.collectAll[nodes.Block]
@@ -2138,6 +2298,17 @@ object Accessors {
 
     def _methodRefViaPostDominateOut: Iterator[nodes.MethodRef] = node._postDominateOut.iterator.collectAll[nodes.MethodRef]
 
+    def _methodViaAstIn: nodes.Method = {
+      try { node._astIn.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_RETURN node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
     def _methodViaCfgIn: Option[nodes.Method] = node._cfgIn.iterator.collectAll[nodes.Method].nextOption()
 
     def _methodViaDominateIn: Iterator[nodes.Method] = node._dominateIn.iterator.collectAll[nodes.Method]
@@ -2172,13 +2343,31 @@ object Accessors {
   }
 
   final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal {
-    // asd
-
-// asd
-
     def _controlStructureViaAstIn: Iterator[nodes.ControlStructure] = node._astIn.iterator.collectAll[nodes.ControlStructure]
 
     def _memberViaAstIn: Iterator[nodes.Member] = node._astIn.iterator.collectAll[nodes.Member]
+
+    def _methodViaAstIn: nodes.Method = {
+      try { node._astIn.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this MODIFIER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
+
+    def _typeDeclViaAstIn: nodes.TypeDecl = {
+      try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent TYPE_DECL is mandatory, but not defined for this MODIFIER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _unknownViaAstIn: Iterator[nodes.Unknown] = node._astIn.iterator.collectAll[nodes.Unknown]
   }
@@ -2200,8 +2389,6 @@ object Accessors {
   }
 
   final class AccessNeighborsForReturn(val node: nodes.Return) extends AnyVal {
-    // asd
-
     def _blockViaArgumentOut: Option[nodes.Block] = node._argumentOut.iterator.collectAll[nodes.Block].nextOption()
 
     def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
@@ -2346,6 +2533,17 @@ object Accessors {
     def _methodRefViaReachingDefIn: Iterator[nodes.MethodRef] = node._reachingDefIn.iterator.collectAll[nodes.MethodRef]
 
     def _methodRefViaReachingDefOut: Iterator[nodes.MethodRef] = node._reachingDefOut.iterator.collectAll[nodes.MethodRef]
+
+    def _methodReturnViaCfgOut: nodes.MethodReturn = {
+      try { node._cfgOut.iterator.collectAll[nodes.MethodReturn].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "OUT edge with label CFG to an adjacent METHOD_RETURN is mandatory, but not defined for this RETURN node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _methodReturnViaDominateOut: Iterator[nodes.MethodReturn] = node._dominateOut.iterator.collectAll[nodes.MethodReturn]
 
@@ -2565,7 +2763,16 @@ object Accessors {
   }
 
   final class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) extends AnyVal {
-    // asd
+    def _methodViaAstIn: nodes.Method = {
+      try { node._astIn.iterator.collectAll[nodes.Method].next() }
+      catch {
+        case e: java.util.NoSuchElementException =>
+          throw new io.joern.odb2.SchemaViolationException(
+            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this TYPE_PARAMETER node with seq=" + node.seq,
+            e
+          )
+      }
+    }
 
     def _typeArgumentViaBindsToIn: Iterator[nodes.TypeArgument] = node._bindsToIn.iterator.collectAll[nodes.TypeArgument]
 

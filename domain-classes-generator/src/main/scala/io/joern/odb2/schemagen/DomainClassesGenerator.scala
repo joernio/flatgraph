@@ -608,9 +608,10 @@ class DomainClassesGenerator(schema: Schema) {
               s"""def _$methodName: nodes.${neighbor.className} = {
                  |  try { $accessorImpl0.next() } catch {
                  |    case e: java.util.NoSuchElementException =>
-                 |      throw new overflowdb.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with id=" + id, e)
-                 |  }""".stripMargin
-              "// asd"
+                 |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
+                 |  }
+                 |}""".stripMargin
+//              "// asd"
           }
 
 //        //TODO handle customStepNames additionally         |// $customStepName
