@@ -118,38 +118,12 @@ object Accessors {
 
     /** Traverse to METHOD via REF OUT edge.
       */
-    def _methodViaRefOut: nodes.Method = {
-      try { node._refOut.iterator.collectAll[nodes.Method].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this BINDING node with seq=" + node.seq,
-            e
-          )
-      }
-    }
-
-    /** Traverse to METHOD via REF OUT edge.
-      */
     def boundMethod: nodes.Method = {
       try { node._refOut.iterator.collectAll[nodes.Method].next() }
       catch {
         case e: java.util.NoSuchElementException =>
           throw new io.joern.odb2.SchemaViolationException(
             "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this BINDING node with seq=" + node.seq,
-            e
-          )
-      }
-    }
-
-    /** Traverse to TYPE_DECL via BINDS IN edge.
-      */
-    def _typeDeclViaBindsIn: nodes.TypeDecl = {
-      try { node._bindsIn.iterator.collectAll[nodes.TypeDecl].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "IN edge with label BINDS to an adjacent TYPE_DECL is mandatory, but not defined for this BINDING node with seq=" + node.seq,
             e
           )
       }
@@ -613,10 +587,6 @@ object Accessors {
     /** Traverse to UNKNOWN via POST_DOMINATE OUT edge.
       */
     def _unknownViaPostDominateOut: Iterator[nodes.Unknown] = node._postDominateOut.iterator.collectAll[nodes.Unknown]
-
-    /** Traverse to locals of this block. Traverse to LOCAL via AST OUT edge.
-      */
-    def _localViaAstOut: Iterator[nodes.Local] = node._astOut.iterator.collectAll[nodes.Local]
 
     /** Traverse to locals of this block. Traverse to LOCAL via AST OUT edge.
       */
@@ -1168,10 +1138,6 @@ object Accessors {
 
     /** Traverse to referenced members Traverse to MEMBER via REF OUT edge.
       */
-    def _memberViaRefOut: Iterator[nodes.Member] = node._refOut.iterator.collectAll[nodes.Member]
-
-    /** Traverse to referenced members Traverse to MEMBER via REF OUT edge.
-      */
     def referencedMember: Iterator[nodes.Member] = node._refOut.iterator.collectAll[nodes.Member]
 
   }
@@ -1214,10 +1180,6 @@ object Accessors {
     /** Traverse to COMMENT via SOURCE_FILE IN edge.
       */
     def _commentViaSourceFileIn: Iterator[nodes.Comment] = node._sourceFileIn.iterator.collectAll[nodes.Comment]
-
-    /** Traverse to COMMENT via SOURCE_FILE OUT edge.
-      */
-    def _commentViaSourceFileOut: Iterator[nodes.Comment] = node._sourceFileOut.iterator.collectAll[nodes.Comment]
 
     /** Traverse to COMMENT via SOURCE_FILE OUT edge.
       */
@@ -2041,10 +2003,6 @@ object Accessors {
 
     /** Traverse to COMMENT via AST OUT edge.
       */
-    def _commentViaAstOut: Iterator[nodes.Comment] = node._astOut.iterator.collectAll[nodes.Comment]
-
-    /** Traverse to COMMENT via AST OUT edge.
-      */
     def comment: Iterator[nodes.Comment] = node._astOut.iterator.collectAll[nodes.Comment]
 
     /** Traverse to IMPORT via AST OUT edge.
@@ -2057,19 +2015,11 @@ object Accessors {
 
     /** Traverse to METHOD via SOURCE_FILE IN edge.
       */
-    def _methodViaSourceFileIn: Iterator[nodes.Method] = node._sourceFileIn.iterator.collectAll[nodes.Method]
-
-    /** Traverse to METHOD via SOURCE_FILE IN edge.
-      */
     def method: Iterator[nodes.Method] = node._sourceFileIn.iterator.collectAll[nodes.Method]
 
     /** Traverse to NAMESPACE_BLOCK via AST OUT edge.
       */
     def _namespaceBlockViaAstOut: Iterator[nodes.NamespaceBlock] = node._astOut.iterator.collectAll[nodes.NamespaceBlock]
-
-    /** Traverse to NAMESPACE_BLOCK via SOURCE_FILE IN edge.
-      */
-    def _namespaceBlockViaSourceFileIn: Iterator[nodes.NamespaceBlock] = node._sourceFileIn.iterator.collectAll[nodes.NamespaceBlock]
 
     /** Traverse to NAMESPACE_BLOCK via SOURCE_FILE IN edge.
       */
@@ -2086,10 +2036,6 @@ object Accessors {
     /** Traverse to TYPE_DECL via CONTAINS OUT edge.
       */
     def _typeDeclViaContainsOut: Iterator[nodes.TypeDecl] = node._containsOut.iterator.collectAll[nodes.TypeDecl]
-
-    /** Traverse to TYPE_DECL via SOURCE_FILE IN edge.
-      */
-    def _typeDeclViaSourceFileIn: Iterator[nodes.TypeDecl] = node._sourceFileIn.iterator.collectAll[nodes.TypeDecl]
 
     /** Traverse to TYPE_DECL via SOURCE_FILE IN edge.
       */
@@ -3344,23 +3290,11 @@ object Accessors {
 
     /** Places (identifier) where this local is being referenced Traverse to IDENTIFIER via REF IN edge.
       */
-    def _identifierViaRefIn: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
-
-    /** Places (identifier) where this local is being referenced Traverse to IDENTIFIER via REF IN edge.
-      */
     def referencingIdentifiers: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
 
     /** The block in which local is declared. Traverse to BLOCK via AST IN edge.
       */
-    def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
-
-    /** The block in which local is declared. Traverse to BLOCK via AST IN edge.
-      */
     def definingBlock: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
-
-    /** The type of the local. Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
     /** The type of the local. Traverse to TYPE via EVAL_TYPE OUT edge.
       */
@@ -3394,19 +3328,6 @@ object Accessors {
 
     /** The type declaration this member is defined in Traverse to TYPE_DECL via AST IN edge.
       */
-    def _typeDeclViaAstIn: nodes.TypeDecl = {
-      try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "IN edge with label AST to an adjacent TYPE_DECL is mandatory, but not defined for this MEMBER node with seq=" + node.seq,
-            e
-          )
-      }
-    }
-
-    /** The type declaration this member is defined in Traverse to TYPE_DECL via AST IN edge.
-      */
     def typeDecl: nodes.TypeDecl = {
       try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
       catch {
@@ -3417,10 +3338,6 @@ object Accessors {
           )
       }
     }
-
-    /** Traverse to member type Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
     /** Traverse to member type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
@@ -3665,24 +3582,7 @@ object Accessors {
 
     /** First control flow graph node Traverse to CFG_NODE via CFG OUT edge.
       */
-    def _cfgNodeViaCfgOut: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
-
-    /** First control flow graph node Traverse to CFG_NODE via CFG OUT edge.
-      */
     def cfgFirst: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
-
-    /** Formal return parameters Traverse to METHOD_RETURN via AST OUT edge.
-      */
-    def _methodReturnViaAstOut: nodes.MethodReturn = {
-      try { node._astOut.iterator.collectAll[nodes.MethodReturn].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "OUT edge with label AST to an adjacent METHOD_RETURN is mandatory, but not defined for this METHOD node with seq=" + node.seq,
-            e
-          )
-      }
-    }
 
     /** Formal return parameters Traverse to METHOD_RETURN via AST OUT edge.
       */
@@ -3699,32 +3599,11 @@ object Accessors {
 
     /** Literals used in the method Traverse to LITERAL via CONTAINS OUT edge.
       */
-    def _literalViaContainsOut: Iterator[nodes.Literal] = node._containsOut.iterator.collectAll[nodes.Literal]
-
-    /** Literals used in the method Traverse to LITERAL via CONTAINS OUT edge.
-      */
     def literal: Iterator[nodes.Literal] = node._containsOut.iterator.collectAll[nodes.Literal]
 
     /** Parameters of the method Traverse to METHOD_PARAMETER_IN via AST OUT edge.
       */
-    def _methodParameterInViaAstOut: Iterator[nodes.MethodParameterIn] = node._astOut.iterator.collectAll[nodes.MethodParameterIn]
-
-    /** Parameters of the method Traverse to METHOD_PARAMETER_IN via AST OUT edge.
-      */
     def parameter: Iterator[nodes.MethodParameterIn] = node._astOut.iterator.collectAll[nodes.MethodParameterIn]
-
-    /** Root of the abstract syntax tree Traverse to BLOCK via AST OUT edge.
-      */
-    def _blockViaAstOut: nodes.Block = {
-      try { node._astOut.iterator.collectAll[nodes.Block].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "OUT edge with label AST to an adjacent BLOCK is mandatory, but not defined for this METHOD node with seq=" + node.seq,
-            e
-          )
-      }
-    }
 
     /** Root of the abstract syntax tree Traverse to BLOCK via AST OUT edge.
       */
@@ -3794,33 +3673,11 @@ object Accessors {
 
     /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
       */
-    def _identifierViaRefIn: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
-
-    /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
-      */
     def referencingIdentifiers: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
 
     /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
       */
-    def _methodParameterOutViaParameterLinkOut: Iterator[nodes.MethodParameterOut] =
-      node._parameterLinkOut.iterator.collectAll[nodes.MethodParameterOut]
-
-    /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
-      */
     def asOutput: Iterator[nodes.MethodParameterOut] = node._parameterLinkOut.iterator.collectAll[nodes.MethodParameterOut]
-
-    /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
-      */
-    def _methodViaAstIn: nodes.Method = {
-      try { node._astIn.iterator.collectAll[nodes.Method].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_PARAMETER_IN node with seq=" + node.seq,
-            e
-          )
-      }
-    }
 
     /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
       */
@@ -3830,19 +3687,6 @@ object Accessors {
         case e: java.util.NoSuchElementException =>
           throw new io.joern.odb2.SchemaViolationException(
             "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_PARAMETER_IN node with seq=" + node.seq,
-            e
-          )
-      }
-    }
-
-    /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def _typeViaEvalTypeOut: nodes.Type = {
-      try { node._evalTypeOut.iterator.collectAll[nodes.Type].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "OUT edge with label EVAL_TYPE to an adjacent TYPE is mandatory, but not defined for this METHOD_PARAMETER_IN node with seq=" + node.seq,
             e
           )
       }
@@ -3900,19 +3744,6 @@ object Accessors {
 
     /** Traverse to METHOD via AST IN edge.
       */
-    def _methodViaAstIn: nodes.Method = {
-      try { node._astIn.iterator.collectAll[nodes.Method].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_PARAMETER_OUT node with seq=" + node.seq,
-            e
-          )
-      }
-    }
-
-    /** Traverse to METHOD via AST IN edge.
-      */
     def method: nodes.Method = {
       try { node._astIn.iterator.collectAll[nodes.Method].next() }
       catch {
@@ -3927,11 +3758,6 @@ object Accessors {
     /** Traverse to METHOD via REACHING_DEF IN edge.
       */
     def _methodViaReachingDefIn: Iterator[nodes.Method] = node._reachingDefIn.iterator.collectAll[nodes.Method]
-
-    /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
-      */
-    def _methodParameterInViaParameterLinkIn: Iterator[nodes.MethodParameterIn] =
-      node._parameterLinkIn.iterator.collectAll[nodes.MethodParameterIn]
 
     /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
       */
@@ -3973,10 +3799,6 @@ object Accessors {
     /** Traverse to UNKNOWN via REACHING_DEF IN edge.
       */
     def _unknownViaReachingDefIn: Iterator[nodes.Unknown] = node._reachingDefIn.iterator.collectAll[nodes.Unknown]
-
-    /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
     /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
@@ -4420,19 +4242,6 @@ object Accessors {
 
     /** Traverse to referenced method. Traverse to METHOD via REF OUT edge.
       */
-    def _methodViaRefOut: nodes.Method = {
-      try { node._refOut.iterator.collectAll[nodes.Method].next() }
-      catch {
-        case e: java.util.NoSuchElementException =>
-          throw new io.joern.odb2.SchemaViolationException(
-            "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this METHOD_REF node with seq=" + node.seq,
-            e
-          )
-      }
-    }
-
-    /** Traverse to referenced method. Traverse to METHOD via REF OUT edge.
-      */
     def referencedMethod: nodes.Method = {
       try { node._refOut.iterator.collectAll[nodes.Method].next() }
       catch {
@@ -4570,10 +4379,6 @@ object Accessors {
     /** Traverse to METHOD_REF via POST_DOMINATE OUT edge.
       */
     def _methodRefViaPostDominateOut: Iterator[nodes.MethodRef] = node._postDominateOut.iterator.collectAll[nodes.MethodRef]
-
-    /** Traverse to RETURN via CFG IN edge.
-      */
-    def _returnViaCfgIn: Iterator[nodes.Return] = node._cfgIn.iterator.collectAll[nodes.Return]
 
     /** Traverse to RETURN via CFG IN edge.
       */
@@ -5335,15 +5140,7 @@ object Accessors {
 
     /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
       */
-    def _typeDeclViaAliasOfIn: Iterator[nodes.TypeDecl] = node._aliasOfIn.iterator.collectAll[nodes.TypeDecl]
-
-    /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
-      */
     def aliasTypeDecl: Iterator[nodes.TypeDecl] = node._aliasOfIn.iterator.collectAll[nodes.TypeDecl]
-
-    /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
-      */
-    def _typeDeclViaRefOut: Iterator[nodes.TypeDecl] = node._refOut.iterator.collectAll[nodes.TypeDecl]
 
     /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
       */
@@ -5411,15 +5208,7 @@ object Accessors {
 
     /** Traverse to NAMESPACE_BLOCK via AST IN edge.
       */
-    def _namespaceBlockViaAstIn: Option[nodes.NamespaceBlock] = node._astIn.iterator.collectAll[nodes.NamespaceBlock].nextOption()
-
-    /** Traverse to NAMESPACE_BLOCK via AST IN edge.
-      */
     def namespaceBlock: Option[nodes.NamespaceBlock] = node._astIn.iterator.collectAll[nodes.NamespaceBlock].nextOption()
-
-    /** Traverse to TYPE via ALIAS_OF OUT edge.
-      */
-    def _typeViaAliasOfOut: Iterator[nodes.Type] = node._aliasOfOut.iterator.collectAll[nodes.Type]
 
     /** Traverse to TYPE via ALIAS_OF OUT edge.
       */

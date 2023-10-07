@@ -618,8 +618,8 @@ class DomainClassesGenerator(schema: Schema) {
                    |$source
                    |""".stripMargin)
             }
-            addStepImplementation(methodName = "_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
-            customStepName.foreach(addStepImplementation)
+
+            addStepImplementation(methodName = customStepName.getOrElse("_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction")))
           }
           val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
           neighborAccessorsForConcreteNodes.addOne(
