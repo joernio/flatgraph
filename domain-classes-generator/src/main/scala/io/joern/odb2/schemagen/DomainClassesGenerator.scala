@@ -605,6 +605,7 @@ class DomainClassesGenerator(schema: Schema) {
             methodName = customStepName.getOrElse("_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
           } yield StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc)
 
+          // e.g. `def _blockViaArgumentOut: Iterator[nodes.Block] = node._argumentOut.iterator.collectAll[nodes.Block]`
           val forSingleNode = {
             val stepImplementations = stepContexts.map { case StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc) =>
               val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
@@ -634,6 +635,7 @@ class DomainClassesGenerator(schema: Schema) {
                |""".stripMargin
           }
 
+          // e.g. `def _blockViaArgumentOut: Iterator[nodes.Block] = traversal.flatMap(_._blockViaArgumentOut)`
           val forTraversal = {
             val stepImplementations = stepContexts.map { case StepContext(_, neighbor, _, cardinality, methodName, scaladoc) =>
               val mapOrFlatMap = if (cardinality == EdgeType.Cardinality.One) "map" else "flatMap"
