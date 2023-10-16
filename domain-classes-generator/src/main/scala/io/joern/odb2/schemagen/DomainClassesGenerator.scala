@@ -4,6 +4,7 @@ import io.joern.odb2.codegen.CodeSnippets.FilterSteps
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
+import overflowdb.codegen.Helpers.deriveCommonRootType
 import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
@@ -605,6 +606,7 @@ class DomainClassesGenerator(schema: Schema) {
             methodName = customStepName.getOrElse("_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
           } yield StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc)
 
+          // e.g. `def _blockViaArgumentOut: Iterator[nodes.Block] = node._argumentOut.iterator.collectAll[nodes.Block]`
           val forSingleNode = {
             val stepImplementations = stepContexts.map { case StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc) =>
               val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
@@ -634,6 +636,7 @@ class DomainClassesGenerator(schema: Schema) {
                |""".stripMargin
           }
 
+          // e.g. `def _blockViaArgumentOut: Iterator[nodes.Block] = traversal.flatMap(_._blockViaArgumentOut)`
           val forTraversal = {
             val stepImplementations = stepContexts.map { case StepContext(_, neighbor, _, cardinality, methodName, scaladoc) =>
               val mapOrFlatMap = if (cardinality == EdgeType.Cardinality.One) "map" else "flatMap"
@@ -649,9 +652,30 @@ class DomainClassesGenerator(schema: Schema) {
                |""".stripMargin
           }
 
+          // e.g. `TODO fillme`
+          val consolidatedForSingleNode = {
+            val stepImplementations = Direction.all.flatMap { direction =>
+              nodeType.edges(direction)
+                .groupMap(_.viaEdge)(adjacentNode => (adjacentNode.neighbor, adjacentNode.cardinality))
+                .map { case (edgeType, neighborInfos) =>
+                  val nodeTypes = neighborInfos.map(_._1)
+                  val consolidatedNeighborNodeType = deriveCommonRootType(nodeTypes.toSet)
+
+                  val methodName = "_" + Helpers.camelCase(s"${edge.name}_$direction")
+                  s"def $methodName: Iterator[$consolidatedNeighborNodeType] = TODO"
+                }
+            }
+            "// TODO"
+          }
+
+          // e.g. `TODO fillme`
+          val consolidatedForTraversal = "// TODO"
+
           s"""
             |$forSingleNode
             |$forTraversal
+            |$consolidatedForSingleNode
+            |$consolidatedForTraversal
             |""".stripMargin
         }
       }
