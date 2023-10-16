@@ -44,6 +44,10 @@ class CompileTests extends AnyWordSpec with Matchers {
       // edge accessors
       iter.next.argument
       iter.argument
+
+      import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
+      iter.next._blockViaArgumentOut
+      iter._blockViaArgumentOut
     }
   }
 
@@ -80,11 +84,16 @@ class CompileTests extends AnyWordSpec with Matchers {
   }
 
   "abstract stored class" in {
-    lazy val iter: Iterator[CallRepr] = ???
+    lazy val iter: Iterator[CfgNode] = ???
     lazy val compiles = {
-      iter.name("a")
+      iter.code("a")
       iter.order
       iter.next.order
+
+      // edge accessors
+      import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
+      iter.next._blockViaCfgIn
+      iter._blockViaCfgIn
     }
 
   }
