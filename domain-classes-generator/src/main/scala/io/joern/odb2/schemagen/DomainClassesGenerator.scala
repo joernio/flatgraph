@@ -588,8 +588,14 @@ class DomainClassesGenerator(schema: Schema) {
     // TODO extract to separate method
     val neighborAccessors = {
       val neighborAccessors: Seq[String] = {
-        // TODO refactor
-        case class StepContext(edge: EdgeType, neighbor: AbstractNodeType, direction: Direction.Value, cardinality: EdgeType.Cardinality, methodName: String, scaladoc: String)
+        case class StepContext(
+          edge: EdgeType,
+          neighbor: AbstractNodeType,
+          direction: Direction.Value,
+          cardinality: EdgeType.Cardinality,
+          methodName: String,
+          scaladoc: String)
+
         schema.allNodeTypes.map { nodeType =>
           val stepContexts = for {
             direction <- Direction.all
