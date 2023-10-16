@@ -587,7 +587,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     // TODO extract to separate method
     val neighborAccessors = {
-      val neighborAccessorsForConcreteNodes: Seq[String] = {
+      val neighborAccessors: Seq[String] = {
         schema.allNodeTypes.map { nodeType =>
           val stepImplementations = for {
             direction <- Direction.all
@@ -618,14 +618,13 @@ class DomainClassesGenerator(schema: Schema) {
           }
 
           val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
-          s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
+          s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
              |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
              |}
              |""".stripMargin
         }
       }
       
-      val neighborAccessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
       val concreteStoredConv2 = mutable.ArrayBuffer.empty[String]
 
       val newInEdgesByNodeType: Map[AbstractNodeType, Set[AdjacentNode]] =
@@ -661,17 +660,17 @@ class DomainClassesGenerator(schema: Schema) {
           convertForStage.addOne(
             s"//XX2 implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
           )
-          val accessors = mutable.ArrayBuffer.empty[String]
-          for (p <- newPropsAtNodeList(baseType)) {
-            val funName = Helpers.camelCase(p.name)
-            accessors.addOne(s"""def $funName: ${typeForProperty(p)}  = node match {
-            | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
-            | // XX1 case newNode: nodes.newName /XX1b => newNode.${funName}
-            |}""".stripMargin)
-          }
-          neighborAccessorsForBaseNodes.addOne(
-            accessors.mkString(s"final class $extensionClass(val node: nodes.${baseType.className}Base with nodes.StoredNode) extends AnyVal {\n", "\n", "\n}")
-          )
+//          val accessors = mutable.ArrayBuffer.empty[String]
+//          for (p <- newPropsAtNodeList(baseType)) {
+//            val funName = Helpers.camelCase(p.name)
+//            accessors.addOne(s"""def $funName: ${typeForProperty(p)}  = node match {
+//            | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
+//            | // XX1 case newNode: nodes.newName /XX1b => newNode.${funName}
+//            |}""".stripMargin)
+//          }
+//          neighborAccessorsForBaseNodes.addOne(
+//            accessors.mkString(s"final class $extensionClass(val node: nodes.${baseType.className}Base with nodes.StoredNode) extends AnyVal {\n", "\n", "\n}")
+//          )
         }
       }
 
@@ -685,12 +684,14 @@ class DomainClassesGenerator(schema: Schema) {
           case _ =>
             (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
         }
+        /*
         conversionsForNeighborAccessors.addOne(
           s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
              |import Accessors.*
              |${convBuffer(idx).mkString("\n")}
              |}""".stripMargin
         )
+         */
       }
 
       s"""package $basePackage.neighboraccessors
@@ -698,18 +699,8 @@ class DomainClassesGenerator(schema: Schema) {
          |import io.joern.odb2.Traversal.*
          |import $basePackage.nodes
          |
-         |// object Lang extends ConcreteStoredConversions
-         |
-         |object Accessors {
-         |  // import $basePackage.accessors.Lang.*
-         |
-         |  /* accessors for concrete stored nodes start */
-         |  ${neighborAccessorsForConcreteNodes.mkString("\n\n")}
-         |  /* accessors for concrete stored nodes end */
-         |
-         |  /* accessors for base nodes start */
-         |  ${neighborAccessorsForBaseNodes.mkString("\n\n")}
-         |  /* accessors for base nodes end */
+         |object Lang {
+         |  ${neighborAccessors.mkString("\n\n")}
          |}
          |${conversionsForNeighborAccessors.mkString("\n\n")}
          |""".stripMargin

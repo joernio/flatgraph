@@ -3,13 +3,8 @@ import io.joern.odb2
 import io.joern.odb2.Traversal.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes
 
-// object Lang extends ConcreteStoredConversions
-
-object Accessors {
-  // import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
-
-  /* accessors for concrete stored nodes start */
-  final class AccessNeighborsForAnnotation(val node: nodes.Annotation) extends AnyVal {
+object Lang {
+  final implicit class AccessNeighborsForAnnotation(val node: nodes.Annotation) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -55,7 +50,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForAnnotationLiteral(val node: nodes.AnnotationLiteral) extends AnyVal {
+  final implicit class AccessNeighborsForAnnotationLiteral(val node: nodes.AnnotationLiteral) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -64,7 +59,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForAnnotationParameter(val node: nodes.AnnotationParameter) extends AnyVal {
+  final implicit class AccessNeighborsForAnnotationParameter(val node: nodes.AnnotationParameter) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -73,7 +68,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForAnnotationParameterAssign(val node: nodes.AnnotationParameterAssign) extends AnyVal {
+  final implicit class AccessNeighborsForAnnotationParameterAssign(val node: nodes.AnnotationParameterAssign) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST IN edge.
       */
@@ -97,7 +92,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForArrayInitializer(val node: nodes.ArrayInitializer) extends AnyVal {
+  final implicit class AccessNeighborsForArrayInitializer(val node: nodes.ArrayInitializer) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -114,7 +109,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
+  final implicit class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
 
     /** Traverse to METHOD via REF OUT edge.
       */
@@ -144,7 +139,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
+  final implicit class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -594,7 +589,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForCall(val node: nodes.Call) extends AnyVal {
+  final implicit class AccessNeighborsForCall(val node: nodes.Call) extends AnyVal {
 
     /** Traverse to BLOCK via ARGUMENT OUT edge.
       */
@@ -1142,7 +1137,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForClosureBinding(val node: nodes.ClosureBinding) extends AnyVal {
+  final implicit class AccessNeighborsForClosureBinding(val node: nodes.ClosureBinding) extends AnyVal {
 
     /** Traverse to LOCAL via CAPTURED_BY IN edge.
       */
@@ -1175,7 +1170,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForComment(val node: nodes.Comment) extends AnyVal {
+  final implicit class AccessNeighborsForComment(val node: nodes.Comment) extends AnyVal {
 
     /** Traverse to COMMENT via SOURCE_FILE IN edge.
       */
@@ -1191,9 +1186,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForConfigFile(val node: nodes.ConfigFile) extends AnyVal {}
+  final implicit class AccessNeighborsForConfigFile(val node: nodes.ConfigFile) extends AnyVal {}
 
-  final class AccessNeighborsForControlStructure(val node: nodes.ControlStructure) extends AnyVal {
+  final implicit class AccessNeighborsForControlStructure(val node: nodes.ControlStructure) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -1649,7 +1644,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForDependency(val node: nodes.Dependency) extends AnyVal {
+  final implicit class AccessNeighborsForDependency(val node: nodes.Dependency) extends AnyVal {
 
     /** Traverse to IMPORT via IMPORTS IN edge.
       */
@@ -1657,7 +1652,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) extends AnyVal {
+  final implicit class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) extends AnyVal {
 
     /** Traverse to BLOCK via CDG IN edge.
       */
@@ -1999,7 +1994,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForFile(val node: nodes.File) extends AnyVal {
+  final implicit class AccessNeighborsForFile(val node: nodes.File) extends AnyVal {
 
     /** Traverse to COMMENT via AST OUT edge.
       */
@@ -2043,9 +2038,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForFinding(val node: nodes.Finding) extends AnyVal {}
+  final implicit class AccessNeighborsForFinding(val node: nodes.Finding) extends AnyVal {}
 
-  final class AccessNeighborsForIdentifier(val node: nodes.Identifier) extends AnyVal {
+  final implicit class AccessNeighborsForIdentifier(val node: nodes.Identifier) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -2477,7 +2472,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForImport(val node: nodes.Import) extends AnyVal {
+  final implicit class AccessNeighborsForImport(val node: nodes.Import) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -2505,7 +2500,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForJumpLabel(val node: nodes.JumpLabel) extends AnyVal {
+  final implicit class AccessNeighborsForJumpLabel(val node: nodes.JumpLabel) extends AnyVal {
 
     /** Traverse to CONTROL_STRUCTURE via AST IN edge.
       */
@@ -2513,7 +2508,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForJumpTarget(val node: nodes.JumpTarget) extends AnyVal {
+  final implicit class AccessNeighborsForJumpTarget(val node: nodes.JumpTarget) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -2828,9 +2823,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForKeyValuePair(val node: nodes.KeyValuePair) extends AnyVal {}
+  final implicit class AccessNeighborsForKeyValuePair(val node: nodes.KeyValuePair) extends AnyVal {}
 
-  final class AccessNeighborsForLiteral(val node: nodes.Literal) extends AnyVal {
+  final implicit class AccessNeighborsForLiteral(val node: nodes.Literal) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -3262,7 +3257,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForLocal(val node: nodes.Local) extends AnyVal {
+  final implicit class AccessNeighborsForLocal(val node: nodes.Local) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -3302,9 +3297,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForLocation(val node: nodes.Location) extends AnyVal {}
+  final implicit class AccessNeighborsForLocation(val node: nodes.Location) extends AnyVal {}
 
-  final class AccessNeighborsForMember(val node: nodes.Member) extends AnyVal {
+  final implicit class AccessNeighborsForMember(val node: nodes.Member) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -3345,9 +3340,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForMetaData(val node: nodes.MetaData) extends AnyVal {}
+  final implicit class AccessNeighborsForMetaData(val node: nodes.MetaData) extends AnyVal {}
 
-  final class AccessNeighborsForMethod(val node: nodes.Method) extends AnyVal {
+  final implicit class AccessNeighborsForMethod(val node: nodes.Method) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -3620,7 +3615,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForMethodParameterIn(val node: nodes.MethodParameterIn) extends AnyVal {
+  final implicit class AccessNeighborsForMethodParameterIn(val node: nodes.MethodParameterIn) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -3707,7 +3702,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForMethodParameterOut(val node: nodes.MethodParameterOut) extends AnyVal {
+  final implicit class AccessNeighborsForMethodParameterOut(val node: nodes.MethodParameterOut) extends AnyVal {
 
     /** Traverse to BLOCK via REACHING_DEF IN edge.
       */
@@ -3806,7 +3801,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForMethodRef(val node: nodes.MethodRef) extends AnyVal {
+  final implicit class AccessNeighborsForMethodRef(val node: nodes.MethodRef) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -4255,7 +4250,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends AnyVal {
+  final implicit class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends AnyVal {
 
     /** Traverse to BLOCK via CDG IN edge.
       */
@@ -4434,7 +4429,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal {
+  final implicit class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal {
 
     /** Traverse to CONTROL_STRUCTURE via AST IN edge.
       */
@@ -4476,7 +4471,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForNamespace(val node: nodes.Namespace) extends AnyVal {
+  final implicit class AccessNeighborsForNamespace(val node: nodes.Namespace) extends AnyVal {
 
     /** Traverse to NAMESPACE_BLOCK via REF IN edge.
       */
@@ -4484,7 +4479,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForNamespaceBlock(val node: nodes.NamespaceBlock) extends AnyVal {
+  final implicit class AccessNeighborsForNamespaceBlock(val node: nodes.NamespaceBlock) extends AnyVal {
 
     /** Traverse to FILE via AST IN edge.
       */
@@ -4508,7 +4503,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForReturn(val node: nodes.Return) extends AnyVal {
+  final implicit class AccessNeighborsForReturn(val node: nodes.Return) extends AnyVal {
 
     /** Traverse to BLOCK via ARGUMENT OUT edge.
       */
@@ -4944,7 +4939,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForTag(val node: nodes.Tag) extends AnyVal {
+  final implicit class AccessNeighborsForTag(val node: nodes.Tag) extends AnyVal {
 
     /** Traverse to BLOCK via TAGGED_BY IN edge.
       */
@@ -5037,9 +5032,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForTagNodePair(val node: nodes.TagNodePair) extends AnyVal {}
+  final implicit class AccessNeighborsForTagNodePair(val node: nodes.TagNodePair) extends AnyVal {}
 
-  final class AccessNeighborsForTemplateDom(val node: nodes.TemplateDom) extends AnyVal {
+  final implicit class AccessNeighborsForTemplateDom(val node: nodes.TemplateDom) extends AnyVal {
 
     /** Traverse to EXPRESSION via ARGUMENT IN edge.
       */
@@ -5067,7 +5062,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForType(val node: nodes.Type) extends AnyVal {
+  final implicit class AccessNeighborsForType(val node: nodes.Type) extends AnyVal {
 
     /** Traverse to ARRAY_INITIALIZER via EVAL_TYPE IN edge.
       */
@@ -5148,7 +5143,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForTypeArgument(val node: nodes.TypeArgument) extends AnyVal {
+  final implicit class AccessNeighborsForTypeArgument(val node: nodes.TypeArgument) extends AnyVal {
 
     /** Traverse to TYPE via AST IN edge.
       */
@@ -5164,7 +5159,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForTypeDecl(val node: nodes.TypeDecl) extends AnyVal {
+  final implicit class AccessNeighborsForTypeDecl(val node: nodes.TypeDecl) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -5236,7 +5231,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) extends AnyVal {
+  final implicit class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) extends AnyVal {
 
     /** Traverse to METHOD via AST IN edge.
       */
@@ -5261,7 +5256,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForTypeRef(val node: nodes.TypeRef) extends AnyVal {
+  final implicit class AccessNeighborsForTypeRef(val node: nodes.TypeRef) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -5684,7 +5679,7 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForUnknown(val node: nodes.Unknown) extends AnyVal {
+  final implicit class AccessNeighborsForUnknown(val node: nodes.Unknown) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -6104,11 +6099,11 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForAstNode(val node: nodes.AstNode) extends AnyVal {}
+  final implicit class AccessNeighborsForAstNode(val node: nodes.AstNode) extends AnyVal {}
 
-  final class AccessNeighborsForCallRepr(val node: nodes.CallRepr) extends AnyVal {}
+  final implicit class AccessNeighborsForCallRepr(val node: nodes.CallRepr) extends AnyVal {}
 
-  final class AccessNeighborsForCfgNode(val node: nodes.CfgNode) extends AnyVal {
+  final implicit class AccessNeighborsForCfgNode(val node: nodes.CfgNode) extends AnyVal {
 
     /** Traverse to BLOCK via CFG IN edge.
       */
@@ -6156,9 +6151,9 @@ object Accessors {
 
   }
 
-  final class AccessNeighborsForDeclaration(val node: nodes.Declaration) extends AnyVal {}
+  final implicit class AccessNeighborsForDeclaration(val node: nodes.Declaration) extends AnyVal {}
 
-  final class AccessNeighborsForExpression(val node: nodes.Expression) extends AnyVal {
+  final implicit class AccessNeighborsForExpression(val node: nodes.Expression) extends AnyVal {
 
     /** Traverse to TEMPLATE_DOM via ARGUMENT OUT edge.
       */
@@ -6174,735 +6169,4 @@ object Accessors {
 
   }
 
-  /* accessors for concrete stored nodes end */
-
-  /* accessors for base nodes start */
-  final class Access_AnnotationBase(val node: nodes.AnnotationBase with nodes.StoredNode) extends AnyVal {
-    def fullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FULL_NAME(stored).fullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.fullName
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_AnnotationLiteralBase(val node: nodes.AnnotationLiteralBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_AnnotationParameterBase(val node: nodes.AnnotationParameterBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_AnnotationParameterAssignBase(val node: nodes.AnnotationParameterAssignBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_ArrayInitializerBase(val node: nodes.ArrayInitializerBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_BindingBase(val node: nodes.BindingBase with nodes.StoredNode) extends AnyVal {
-    def methodFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_METHOD_FULL_NAME(stored).methodFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.methodFullName
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def signature: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_SIGNATURE(stored).signature
-      // XX1 case newNode: nodes.newName /XX1b => newNode.signature
-    }
-  }
-
-  final class Access_BlockBase(val node: nodes.BlockBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_CallBase(val node: nodes.CallBase with nodes.StoredNode) extends AnyVal {
-    def dispatchType: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_DISPATCH_TYPE(stored).dispatchType
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dispatchType
-    }
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def methodFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_METHOD_FULL_NAME(stored).methodFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.methodFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_ClosureBindingBase(val node: nodes.ClosureBindingBase with nodes.StoredNode) extends AnyVal {
-    def closureBindingId: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_CLOSURE_BINDING_ID(stored).closureBindingId
-      // XX1 case newNode: nodes.newName /XX1b => newNode.closureBindingId
-    }
-    def closureOriginalName: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_CLOSURE_ORIGINAL_NAME(stored).closureOriginalName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.closureOriginalName
-    }
-    def evaluationStrategy: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_EVALUATION_STRATEGY(stored).evaluationStrategy
-      // XX1 case newNode: nodes.newName /XX1b => newNode.evaluationStrategy
-    }
-  }
-
-  final class Access_CommentBase(val node: nodes.CommentBase with nodes.StoredNode) extends AnyVal {
-    def filename: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FILENAME(stored).filename
-      // XX1 case newNode: nodes.newName /XX1b => newNode.filename
-    }
-  }
-
-  final class Access_ConfigFileBase(val node: nodes.ConfigFileBase with nodes.StoredNode) extends AnyVal {
-    def content: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CONTENT(stored).content
-      // XX1 case newNode: nodes.newName /XX1b => newNode.content
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_ControlStructureBase(val node: nodes.ControlStructureBase with nodes.StoredNode) extends AnyVal {
-    def controlStructureType: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CONTROL_STRUCTURE_TYPE(stored).controlStructureType
-      // XX1 case newNode: nodes.newName /XX1b => newNode.controlStructureType
-    }
-    def parserTypeName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_PARSER_TYPE_NAME(stored).parserTypeName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.parserTypeName
-    }
-  }
-
-  final class Access_DependencyBase(val node: nodes.DependencyBase with nodes.StoredNode) extends AnyVal {
-    def dependencyGroupId: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DEPENDENCY_GROUP_ID(stored).dependencyGroupId
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dependencyGroupId
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def version: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_VERSION(stored).version
-      // XX1 case newNode: nodes.newName /XX1b => newNode.version
-    }
-  }
-
-  final class Access_FieldIdentifierBase(val node: nodes.FieldIdentifierBase with nodes.StoredNode) extends AnyVal {
-    def canonicalName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CANONICAL_NAME(stored).canonicalName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.canonicalName
-    }
-  }
-
-  final class Access_FileBase(val node: nodes.FileBase with nodes.StoredNode) extends AnyVal {
-    def hash: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_HASH(stored).hash
-      // XX1 case newNode: nodes.newName /XX1b => newNode.hash
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_FindingBase(val node: nodes.FindingBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_IdentifierBase(val node: nodes.IdentifierBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_ImportBase(val node: nodes.ImportBase with nodes.StoredNode) extends AnyVal {
-    def explicitAs: Option[Boolean] = node match {
-      case stored: nodes.StoredNode => new Access_Property_EXPLICIT_AS(stored).explicitAs
-      // XX1 case newNode: nodes.newName /XX1b => newNode.explicitAs
-    }
-    def importedAs: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_IMPORTED_AS(stored).importedAs
-      // XX1 case newNode: nodes.newName /XX1b => newNode.importedAs
-    }
-    def importedEntity: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_IMPORTED_ENTITY(stored).importedEntity
-      // XX1 case newNode: nodes.newName /XX1b => newNode.importedEntity
-    }
-    def isExplicit: Option[Boolean] = node match {
-      case stored: nodes.StoredNode => new Access_Property_IS_EXPLICIT(stored).isExplicit
-      // XX1 case newNode: nodes.newName /XX1b => newNode.isExplicit
-    }
-    def isWildcard: Option[Boolean] = node match {
-      case stored: nodes.StoredNode => new Access_Property_IS_WILDCARD(stored).isWildcard
-      // XX1 case newNode: nodes.newName /XX1b => newNode.isWildcard
-    }
-  }
-
-  final class Access_JumpLabelBase(val node: nodes.JumpLabelBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def parserTypeName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_PARSER_TYPE_NAME(stored).parserTypeName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.parserTypeName
-    }
-  }
-
-  final class Access_JumpTargetBase(val node: nodes.JumpTargetBase with nodes.StoredNode) extends AnyVal {
-    def argumentIndex: Int = node match {
-      case stored: nodes.StoredNode => new Access_Property_ARGUMENT_INDEX(stored).argumentIndex
-      // XX1 case newNode: nodes.newName /XX1b => newNode.argumentIndex
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def parserTypeName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_PARSER_TYPE_NAME(stored).parserTypeName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.parserTypeName
-    }
-  }
-
-  final class Access_KeyValuePairBase(val node: nodes.KeyValuePairBase with nodes.StoredNode) extends AnyVal {
-    def key: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_KEY(stored).key
-      // XX1 case newNode: nodes.newName /XX1b => newNode.key
-    }
-    def value: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_VALUE(stored).value
-      // XX1 case newNode: nodes.newName /XX1b => newNode.value
-    }
-  }
-
-  final class Access_LiteralBase(val node: nodes.LiteralBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_LocalBase(val node: nodes.LocalBase with nodes.StoredNode) extends AnyVal {
-    def closureBindingId: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_CLOSURE_BINDING_ID(stored).closureBindingId
-      // XX1 case newNode: nodes.newName /XX1b => newNode.closureBindingId
-    }
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_LocationBase(val node: nodes.LocationBase with nodes.StoredNode) extends AnyVal {
-    def className: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CLASS_NAME(stored).className
-      // XX1 case newNode: nodes.newName /XX1b => newNode.className
-    }
-    def classShortName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CLASS_SHORT_NAME(stored).classShortName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.classShortName
-    }
-    def filename: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FILENAME(stored).filename
-      // XX1 case newNode: nodes.newName /XX1b => newNode.filename
-    }
-    def lineNumber: Option[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_LINE_NUMBER(stored).lineNumber
-      // XX1 case newNode: nodes.newName /XX1b => newNode.lineNumber
-    }
-    def methodFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_METHOD_FULL_NAME(stored).methodFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.methodFullName
-    }
-    def methodShortName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_METHOD_SHORT_NAME(stored).methodShortName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.methodShortName
-    }
-    def nodeLabel: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NODE_LABEL(stored).nodeLabel
-      // XX1 case newNode: nodes.newName /XX1b => newNode.nodeLabel
-    }
-    def packageName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_PACKAGE_NAME(stored).packageName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.packageName
-    }
-    def symbol: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_SYMBOL(stored).symbol
-      // XX1 case newNode: nodes.newName /XX1b => newNode.symbol
-    }
-  }
-
-  final class Access_MemberBase(val node: nodes.MemberBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_MetaDataBase(val node: nodes.MetaDataBase with nodes.StoredNode) extends AnyVal {
-    def hash: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_HASH(stored).hash
-      // XX1 case newNode: nodes.newName /XX1b => newNode.hash
-    }
-    def language: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_LANGUAGE(stored).language
-      // XX1 case newNode: nodes.newName /XX1b => newNode.language
-    }
-    def overlays: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_OVERLAYS(stored).overlays
-      // XX1 case newNode: nodes.newName /XX1b => newNode.overlays
-    }
-    def root: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_ROOT(stored).root
-      // XX1 case newNode: nodes.newName /XX1b => newNode.root
-    }
-    def version: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_VERSION(stored).version
-      // XX1 case newNode: nodes.newName /XX1b => newNode.version
-    }
-  }
-
-  final class Access_MethodBase(val node: nodes.MethodBase with nodes.StoredNode) extends AnyVal {
-    def astParentFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_AST_PARENT_FULL_NAME(stored).astParentFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.astParentFullName
-    }
-    def astParentType: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_AST_PARENT_TYPE(stored).astParentType
-      // XX1 case newNode: nodes.newName /XX1b => newNode.astParentType
-    }
-    def columnNumberEnd: Option[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_COLUMN_NUMBER_END(stored).columnNumberEnd
-      // XX1 case newNode: nodes.newName /XX1b => newNode.columnNumberEnd
-    }
-    def filename: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FILENAME(stored).filename
-      // XX1 case newNode: nodes.newName /XX1b => newNode.filename
-    }
-    def fullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FULL_NAME(stored).fullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.fullName
-    }
-    def hash: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_HASH(stored).hash
-      // XX1 case newNode: nodes.newName /XX1b => newNode.hash
-    }
-    def isExternal: Boolean = node match {
-      case stored: nodes.StoredNode => new Access_Property_IS_EXTERNAL(stored).isExternal
-      // XX1 case newNode: nodes.newName /XX1b => newNode.isExternal
-    }
-    def lineNumberEnd: Option[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_LINE_NUMBER_END(stored).lineNumberEnd
-      // XX1 case newNode: nodes.newName /XX1b => newNode.lineNumberEnd
-    }
-    def signature: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_SIGNATURE(stored).signature
-      // XX1 case newNode: nodes.newName /XX1b => newNode.signature
-    }
-  }
-
-  final class Access_MethodParameterInBase(val node: nodes.MethodParameterInBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def evaluationStrategy: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_EVALUATION_STRATEGY(stored).evaluationStrategy
-      // XX1 case newNode: nodes.newName /XX1b => newNode.evaluationStrategy
-    }
-    def index: Int = node match {
-      case stored: nodes.StoredNode => new Access_Property_INDEX(stored).index
-      // XX1 case newNode: nodes.newName /XX1b => newNode.index
-    }
-    def isVariadic: Boolean = node match {
-      case stored: nodes.StoredNode => new Access_Property_IS_VARIADIC(stored).isVariadic
-      // XX1 case newNode: nodes.newName /XX1b => newNode.isVariadic
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_MethodParameterOutBase(val node: nodes.MethodParameterOutBase with nodes.StoredNode) extends AnyVal {
-    def evaluationStrategy: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_EVALUATION_STRATEGY(stored).evaluationStrategy
-      // XX1 case newNode: nodes.newName /XX1b => newNode.evaluationStrategy
-    }
-    def index: Int = node match {
-      case stored: nodes.StoredNode => new Access_Property_INDEX(stored).index
-      // XX1 case newNode: nodes.newName /XX1b => newNode.index
-    }
-    def isVariadic: Boolean = node match {
-      case stored: nodes.StoredNode => new Access_Property_IS_VARIADIC(stored).isVariadic
-      // XX1 case newNode: nodes.newName /XX1b => newNode.isVariadic
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_MethodRefBase(val node: nodes.MethodRefBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def methodFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_METHOD_FULL_NAME(stored).methodFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.methodFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_MethodReturnBase(val node: nodes.MethodReturnBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def evaluationStrategy: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_EVALUATION_STRATEGY(stored).evaluationStrategy
-      // XX1 case newNode: nodes.newName /XX1b => newNode.evaluationStrategy
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_ModifierBase(val node: nodes.ModifierBase with nodes.StoredNode) extends AnyVal {
-    def modifierType: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_MODIFIER_TYPE(stored).modifierType
-      // XX1 case newNode: nodes.newName /XX1b => newNode.modifierType
-    }
-  }
-
-  final class Access_NamespaceBase(val node: nodes.NamespaceBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_NamespaceBlockBase(val node: nodes.NamespaceBlockBase with nodes.StoredNode) extends AnyVal {
-    def filename: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FILENAME(stored).filename
-      // XX1 case newNode: nodes.newName /XX1b => newNode.filename
-    }
-    def fullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FULL_NAME(stored).fullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.fullName
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_ReturnBase(val node: nodes.ReturnBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_TagBase(val node: nodes.TagBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def value: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_VALUE(stored).value
-      // XX1 case newNode: nodes.newName /XX1b => newNode.value
-    }
-  }
-
-  final class Access_TagNodePairBase(val node: nodes.TagNodePairBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_TemplateDomBase(val node: nodes.TemplateDomBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_TypeBase(val node: nodes.TypeBase with nodes.StoredNode) extends AnyVal {
-    def fullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FULL_NAME(stored).fullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.fullName
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def typeDeclFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_DECL_FULL_NAME(stored).typeDeclFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeDeclFullName
-    }
-  }
-
-  final class Access_TypeArgumentBase(val node: nodes.TypeArgumentBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_TypeDeclBase(val node: nodes.TypeDeclBase with nodes.StoredNode) extends AnyVal {
-    def aliasTypeFullName: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_ALIAS_TYPE_FULL_NAME(stored).aliasTypeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.aliasTypeFullName
-    }
-    def astParentFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_AST_PARENT_FULL_NAME(stored).astParentFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.astParentFullName
-    }
-    def astParentType: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_AST_PARENT_TYPE(stored).astParentType
-      // XX1 case newNode: nodes.newName /XX1b => newNode.astParentType
-    }
-    def filename: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FILENAME(stored).filename
-      // XX1 case newNode: nodes.newName /XX1b => newNode.filename
-    }
-    def fullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_FULL_NAME(stored).fullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.fullName
-    }
-    def inheritsFromTypeFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_INHERITS_FROM_TYPE_FULL_NAME(stored).inheritsFromTypeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.inheritsFromTypeFullName
-    }
-    def isExternal: Boolean = node match {
-      case stored: nodes.StoredNode => new Access_Property_IS_EXTERNAL(stored).isExternal
-      // XX1 case newNode: nodes.newName /XX1b => newNode.isExternal
-    }
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_TypeParameterBase(val node: nodes.TypeParameterBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_TypeRefBase(val node: nodes.TypeRefBase with nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_UnknownBase(val node: nodes.UnknownBase with nodes.StoredNode) extends AnyVal {
-    def containedRef: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CONTAINED_REF(stored).containedRef
-      // XX1 case newNode: nodes.newName /XX1b => newNode.containedRef
-    }
-    def dynamicTypeHintFullName: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.dynamicTypeHintFullName
-    }
-    def parserTypeName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_PARSER_TYPE_NAME(stored).parserTypeName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.parserTypeName
-    }
-    def possibleTypes: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_POSSIBLE_TYPES(stored).possibleTypes
-      // XX1 case newNode: nodes.newName /XX1b => newNode.possibleTypes
-    }
-    def typeFullName: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_TYPE_FULL_NAME(stored).typeFullName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.typeFullName
-    }
-  }
-
-  final class Access_AstNodeBase(val node: nodes.AstNodeBase with nodes.StoredNode) extends AnyVal {
-    def code: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_CODE(stored).code
-      // XX1 case newNode: nodes.newName /XX1b => newNode.code
-    }
-    def columnNumber: Option[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_COLUMN_NUMBER(stored).columnNumber
-      // XX1 case newNode: nodes.newName /XX1b => newNode.columnNumber
-    }
-    def lineNumber: Option[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_LINE_NUMBER(stored).lineNumber
-      // XX1 case newNode: nodes.newName /XX1b => newNode.lineNumber
-    }
-    def order: Int = node match {
-      case stored: nodes.StoredNode => new Access_Property_ORDER(stored).order
-      // XX1 case newNode: nodes.newName /XX1b => newNode.order
-    }
-  }
-
-  final class Access_CallReprBase(val node: nodes.CallReprBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-    def signature: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_SIGNATURE(stored).signature
-      // XX1 case newNode: nodes.newName /XX1b => newNode.signature
-    }
-  }
-
-  final class Access_CfgNodeBase(val node: nodes.CfgNodeBase with nodes.StoredNode) extends AnyVal {}
-
-  final class Access_DeclarationBase(val node: nodes.DeclarationBase with nodes.StoredNode) extends AnyVal {
-    def name: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_NAME(stored).name
-      // XX1 case newNode: nodes.newName /XX1b => newNode.name
-    }
-  }
-
-  final class Access_ExpressionBase(val node: nodes.ExpressionBase with nodes.StoredNode) extends AnyVal {
-    def argumentIndex: Int = node match {
-      case stored: nodes.StoredNode => new Access_Property_ARGUMENT_INDEX(stored).argumentIndex
-      // XX1 case newNode: nodes.newName /XX1b => newNode.argumentIndex
-    }
-    def argumentName: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_ARGUMENT_NAME(stored).argumentName
-      // XX1 case newNode: nodes.newName /XX1b => newNode.argumentName
-    }
-  }
-  /* accessors for base nodes end */
-}
-trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors.*
-
-}
-
-trait ConcreteBaseConversions extends AbstractBaseConversions0 {
-  import Accessors.*
-//XX2 implicit def access_AnnotationBase(node: nodes.AnnotationBase): Access_AnnotationBase = new Access_AnnotationBase(node)
-//XX2 implicit def access_AnnotationLiteralBase(node: nodes.AnnotationLiteralBase): Access_AnnotationLiteralBase = new Access_AnnotationLiteralBase(node)
-//XX2 implicit def access_AnnotationParameterBase(node: nodes.AnnotationParameterBase): Access_AnnotationParameterBase = new Access_AnnotationParameterBase(node)
-//XX2 implicit def access_AnnotationParameterAssignBase(node: nodes.AnnotationParameterAssignBase): Access_AnnotationParameterAssignBase = new Access_AnnotationParameterAssignBase(node)
-//XX2 implicit def access_ArrayInitializerBase(node: nodes.ArrayInitializerBase): Access_ArrayInitializerBase = new Access_ArrayInitializerBase(node)
-//XX2 implicit def access_BindingBase(node: nodes.BindingBase): Access_BindingBase = new Access_BindingBase(node)
-//XX2 implicit def access_BlockBase(node: nodes.BlockBase): Access_BlockBase = new Access_BlockBase(node)
-//XX2 implicit def access_CallBase(node: nodes.CallBase): Access_CallBase = new Access_CallBase(node)
-//XX2 implicit def access_ClosureBindingBase(node: nodes.ClosureBindingBase): Access_ClosureBindingBase = new Access_ClosureBindingBase(node)
-//XX2 implicit def access_CommentBase(node: nodes.CommentBase): Access_CommentBase = new Access_CommentBase(node)
-//XX2 implicit def access_ConfigFileBase(node: nodes.ConfigFileBase): Access_ConfigFileBase = new Access_ConfigFileBase(node)
-//XX2 implicit def access_ControlStructureBase(node: nodes.ControlStructureBase): Access_ControlStructureBase = new Access_ControlStructureBase(node)
-//XX2 implicit def access_DependencyBase(node: nodes.DependencyBase): Access_DependencyBase = new Access_DependencyBase(node)
-//XX2 implicit def access_FieldIdentifierBase(node: nodes.FieldIdentifierBase): Access_FieldIdentifierBase = new Access_FieldIdentifierBase(node)
-//XX2 implicit def access_FileBase(node: nodes.FileBase): Access_FileBase = new Access_FileBase(node)
-//XX2 implicit def access_FindingBase(node: nodes.FindingBase): Access_FindingBase = new Access_FindingBase(node)
-//XX2 implicit def access_IdentifierBase(node: nodes.IdentifierBase): Access_IdentifierBase = new Access_IdentifierBase(node)
-//XX2 implicit def access_ImportBase(node: nodes.ImportBase): Access_ImportBase = new Access_ImportBase(node)
-//XX2 implicit def access_JumpLabelBase(node: nodes.JumpLabelBase): Access_JumpLabelBase = new Access_JumpLabelBase(node)
-//XX2 implicit def access_JumpTargetBase(node: nodes.JumpTargetBase): Access_JumpTargetBase = new Access_JumpTargetBase(node)
-//XX2 implicit def access_KeyValuePairBase(node: nodes.KeyValuePairBase): Access_KeyValuePairBase = new Access_KeyValuePairBase(node)
-//XX2 implicit def access_LiteralBase(node: nodes.LiteralBase): Access_LiteralBase = new Access_LiteralBase(node)
-//XX2 implicit def access_LocalBase(node: nodes.LocalBase): Access_LocalBase = new Access_LocalBase(node)
-//XX2 implicit def access_LocationBase(node: nodes.LocationBase): Access_LocationBase = new Access_LocationBase(node)
-//XX2 implicit def access_MemberBase(node: nodes.MemberBase): Access_MemberBase = new Access_MemberBase(node)
-//XX2 implicit def access_MetaDataBase(node: nodes.MetaDataBase): Access_MetaDataBase = new Access_MetaDataBase(node)
-//XX2 implicit def access_MethodBase(node: nodes.MethodBase): Access_MethodBase = new Access_MethodBase(node)
-//XX2 implicit def access_MethodParameterInBase(node: nodes.MethodParameterInBase): Access_MethodParameterInBase = new Access_MethodParameterInBase(node)
-//XX2 implicit def access_MethodParameterOutBase(node: nodes.MethodParameterOutBase): Access_MethodParameterOutBase = new Access_MethodParameterOutBase(node)
-//XX2 implicit def access_MethodRefBase(node: nodes.MethodRefBase): Access_MethodRefBase = new Access_MethodRefBase(node)
-//XX2 implicit def access_MethodReturnBase(node: nodes.MethodReturnBase): Access_MethodReturnBase = new Access_MethodReturnBase(node)
-//XX2 implicit def access_ModifierBase(node: nodes.ModifierBase): Access_ModifierBase = new Access_ModifierBase(node)
-//XX2 implicit def access_NamespaceBase(node: nodes.NamespaceBase): Access_NamespaceBase = new Access_NamespaceBase(node)
-//XX2 implicit def access_NamespaceBlockBase(node: nodes.NamespaceBlockBase): Access_NamespaceBlockBase = new Access_NamespaceBlockBase(node)
-//XX2 implicit def access_ReturnBase(node: nodes.ReturnBase): Access_ReturnBase = new Access_ReturnBase(node)
-//XX2 implicit def access_TagBase(node: nodes.TagBase): Access_TagBase = new Access_TagBase(node)
-//XX2 implicit def access_TagNodePairBase(node: nodes.TagNodePairBase): Access_TagNodePairBase = new Access_TagNodePairBase(node)
-//XX2 implicit def access_TemplateDomBase(node: nodes.TemplateDomBase): Access_TemplateDomBase = new Access_TemplateDomBase(node)
-//XX2 implicit def access_TypeBase(node: nodes.TypeBase): Access_TypeBase = new Access_TypeBase(node)
-//XX2 implicit def access_TypeArgumentBase(node: nodes.TypeArgumentBase): Access_TypeArgumentBase = new Access_TypeArgumentBase(node)
-//XX2 implicit def access_TypeDeclBase(node: nodes.TypeDeclBase): Access_TypeDeclBase = new Access_TypeDeclBase(node)
-//XX2 implicit def access_TypeParameterBase(node: nodes.TypeParameterBase): Access_TypeParameterBase = new Access_TypeParameterBase(node)
-//XX2 implicit def access_TypeRefBase(node: nodes.TypeRefBase): Access_TypeRefBase = new Access_TypeRefBase(node)
-//XX2 implicit def access_UnknownBase(node: nodes.UnknownBase): Access_UnknownBase = new Access_UnknownBase(node)
-}
-
-trait AbstractBaseConversions0 {
-  import Accessors.*
-//XX2 implicit def access_AstNodeBase(node: nodes.AstNodeBase): Access_AstNodeBase = new Access_AstNodeBase(node)
-//XX2 implicit def access_CallReprBase(node: nodes.CallReprBase): Access_CallReprBase = new Access_CallReprBase(node)
-//XX2 implicit def access_CfgNodeBase(node: nodes.CfgNodeBase): Access_CfgNodeBase = new Access_CfgNodeBase(node)
-//XX2 implicit def access_DeclarationBase(node: nodes.DeclarationBase): Access_DeclarationBase = new Access_DeclarationBase(node)
-//XX2 implicit def access_ExpressionBase(node: nodes.ExpressionBase): Access_ExpressionBase = new Access_ExpressionBase(node)
 }
