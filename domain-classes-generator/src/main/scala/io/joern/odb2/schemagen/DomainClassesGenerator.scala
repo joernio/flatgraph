@@ -624,17 +624,9 @@ class DomainClassesGenerator(schema: Schema) {
              |""".stripMargin
         }
       }
-
+      
       val neighborAccessorsForBaseNodes = mutable.ArrayBuffer.empty[String]
       val concreteStoredConv2 = mutable.ArrayBuffer.empty[String]
-
-      // TODO cleanup
-      /*
-        for (p <- relevantProperties) {
-        concreteStoredConv.addOne(
-          s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
-        )
-       */
 
       val newInEdgesByNodeType: Map[AbstractNodeType, Set[AdjacentNode]] =
         schema.allNodeTypes.map { nodeType =>
@@ -672,13 +664,13 @@ class DomainClassesGenerator(schema: Schema) {
           val accessors = mutable.ArrayBuffer.empty[String]
           for (p <- newPropsAtNodeList(baseType)) {
             val funName = Helpers.camelCase(p.name)
-            accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
+            accessors.addOne(s"""def $funName: ${typeForProperty(p)}  = node match {
             | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
             | // XX1 case newNode: nodes.newName /XX1b => newNode.${funName}
             |}""".stripMargin)
           }
-          accessorsForBaseNodes.addOne(
-            accessors.mkString(s"final class ${extensionClass}(val node: nodes.${baseType.className}Base) extends AnyVal {\n", "\n", "\n}")
+          neighborAccessorsForBaseNodes.addOne(
+            accessors.mkString(s"final class $extensionClass(val node: nodes.${baseType.className}Base with nodes.StoredNode) extends AnyVal {\n", "\n", "\n}")
           )
         }
       }
