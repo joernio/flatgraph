@@ -588,40 +588,65 @@ class DomainClassesGenerator(schema: Schema) {
     // TODO extract to separate method
     val neighborAccessors = {
       val neighborAccessors: Seq[String] = {
+        // TODO refactor
+        case class StepContext(edge: EdgeType, neighbor: AbstractNodeType, direction: Direction.Value, cardinality: EdgeType.Cardinality, methodName: String, scaladoc: String)
         schema.allNodeTypes.map { nodeType =>
-          val stepImplementations = for {
+          val stepContexts = for {
             direction <- Direction.all
             AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
-          } yield {
-            val scaladoc =
-              s"""/** ${customStepDoc.getOrElse("")}
+            scaladoc = s"""/** ${customStepDoc.getOrElse("")}
                  |  * Traverse to ${neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
-            val methodName = customStepName.getOrElse("_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
-            val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
-            val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
-            val source = cardinality match {
-              case EdgeType.Cardinality.List =>
-                s"def $methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
-              case EdgeType.Cardinality.ZeroOrOne =>
-                s"def $methodName: Option[nodes.${neighbor.className}] = $accessorImpl0.nextOption()"
-              case EdgeType.Cardinality.One =>
-                s"""def $methodName: nodes.${neighbor.className} = {
-                   |  try { $accessorImpl0.next() } catch {
-                   |    case e: java.util.NoSuchElementException =>
-                   |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
-                   |  }
-                   |}""".stripMargin
+            methodName = customStepName.getOrElse("_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
+          } yield StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc)
+
+          val forSingleNode = {
+            val stepImplementations = stepContexts.map { case StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc) =>
+              val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
+              val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
+              val source = cardinality match {
+                case EdgeType.Cardinality.List =>
+                  s"def $methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
+                case EdgeType.Cardinality.ZeroOrOne =>
+                  s"def $methodName: Option[nodes.${neighbor.className}] = $accessorImpl0.nextOption()"
+                case EdgeType.Cardinality.One =>
+                  s"""def $methodName: nodes.${neighbor.className} = {
+                     |  try { $accessorImpl0.next() } catch {
+                     |    case e: java.util.NoSuchElementException =>
+                     |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
+                     |  }
+                     |}""".stripMargin
               }
-            s"""$scaladoc
-               |$source
+              s"""$scaladoc
+                 |$source
+                 |""".stripMargin
+            }
+
+            val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
+            s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
+               |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
+               |}
                |""".stripMargin
           }
 
-          val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
-          s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
-             |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
-             |}
-             |""".stripMargin
+          val forTraversal = {
+            val stepImplementations = stepContexts.map { case StepContext(_, neighbor, _, cardinality, methodName, scaladoc) =>
+              val mapOrFlatMap = if (cardinality == EdgeType.Cardinality.One) "map" else "flatMap"
+              s"""$scaladoc
+                 |def $methodName: Iterator[nodes.${neighbor.className}] = traversal.$mapOrFlatMap(_.$methodName)
+                 |""".stripMargin
+            }
+
+            val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traveral")
+            s"""final implicit class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
+               |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
+               |}
+               |""".stripMargin
+          }
+
+          s"""
+            |$forSingleNode
+            |$forTraversal
+            |""".stripMargin
         }
       }
       
