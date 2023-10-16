@@ -220,7 +220,7 @@ object Lang {
 
     /** Traverse to METHOD via REF OUT edge.
       */
-    def _methodViaRefOut: nodes.Method = {
+    def boundMethod: nodes.Method = {
       try { node._refOut.iterator.collectAll[nodes.Method].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -231,13 +231,9 @@ object Lang {
       }
     }
 
-    /** Traverse to METHOD via REF OUT edge.
-      */
-    def boundMethod: nodes.Method = _methodViaRefOut
-
     /** Traverse to TYPE_DECL via BINDS IN edge.
       */
-    def _typeDeclViaBindsIn: nodes.TypeDecl = {
+    def bindingTypeDecl: nodes.TypeDecl = {
       try { node._bindsIn.iterator.collectAll[nodes.TypeDecl].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -248,21 +244,17 @@ object Lang {
       }
     }
 
-    /** Traverse to TYPE_DECL via BINDS IN edge.
-      */
-    def bindingTypeDecl: nodes.TypeDecl = _typeDeclViaBindsIn
-
   }
 
   final implicit class AccessNeighborsForBindingTraveral(val traversal: Iterator[nodes.Binding]) extends AnyVal {
 
     /** Traverse to METHOD via REF OUT edge.
       */
-    def _methodViaRefOut: Iterator[nodes.Method] = traversal.map(_._methodViaRefOut)
+    def boundMethod: Iterator[nodes.Method] = traversal.map(_.boundMethod)
 
     /** Traverse to TYPE_DECL via BINDS IN edge.
       */
-    def _typeDeclViaBindsIn: Iterator[nodes.TypeDecl] = traversal.map(_._typeDeclViaBindsIn)
+    def bindingTypeDecl: Iterator[nodes.TypeDecl] = traversal.map(_.bindingTypeDecl)
 
   }
 
@@ -712,11 +704,7 @@ object Lang {
 
     /** Traverse to locals of this block. Traverse to LOCAL via AST OUT edge.
       */
-    def _localViaAstOut: Iterator[nodes.Local] = node._astOut.iterator.collectAll[nodes.Local]
-
-    /** Traverse to locals of this block. Traverse to LOCAL via AST OUT edge.
-      */
-    def local: Iterator[nodes.Local] = _localViaAstOut
+    def local: Iterator[nodes.Local] = node._astOut.iterator.collectAll[nodes.Local]
 
   }
 
@@ -1144,7 +1132,7 @@ object Lang {
 
     /** Traverse to locals of this block. Traverse to LOCAL via AST OUT edge.
       */
-    def _localViaAstOut: Iterator[nodes.Local] = traversal.flatMap(_._localViaAstOut)
+    def local: Iterator[nodes.Local] = traversal.flatMap(_.local)
 
   }
 
@@ -1692,11 +1680,7 @@ object Lang {
 
     /** Traverse to referenced members Traverse to MEMBER via REF OUT edge.
       */
-    def _memberViaRefOut: Iterator[nodes.Member] = node._refOut.iterator.collectAll[nodes.Member]
-
-    /** Traverse to referenced members Traverse to MEMBER via REF OUT edge.
-      */
-    def referencedMember: Iterator[nodes.Member] = _memberViaRefOut
+    def referencedMember: Iterator[nodes.Member] = node._refOut.iterator.collectAll[nodes.Member]
 
   }
 
@@ -2228,7 +2212,7 @@ object Lang {
 
     /** Traverse to referenced members Traverse to MEMBER via REF OUT edge.
       */
-    def _memberViaRefOut: Iterator[nodes.Member] = traversal.flatMap(_._memberViaRefOut)
+    def referencedMember: Iterator[nodes.Member] = traversal.flatMap(_.referencedMember)
 
   }
 
@@ -2297,11 +2281,7 @@ object Lang {
 
     /** Traverse to COMMENT via SOURCE_FILE OUT edge.
       */
-    def _commentViaSourceFileOut: Iterator[nodes.Comment] = node._sourceFileOut.iterator.collectAll[nodes.Comment]
-
-    /** Traverse to COMMENT via SOURCE_FILE OUT edge.
-      */
-    def file: Iterator[nodes.Comment] = _commentViaSourceFileOut
+    def file: Iterator[nodes.Comment] = node._sourceFileOut.iterator.collectAll[nodes.Comment]
 
     /** Traverse to FILE via AST IN edge.
       */
@@ -2317,7 +2297,7 @@ object Lang {
 
     /** Traverse to COMMENT via SOURCE_FILE OUT edge.
       */
-    def _commentViaSourceFileOut: Iterator[nodes.Comment] = traversal.flatMap(_._commentViaSourceFileOut)
+    def file: Iterator[nodes.Comment] = traversal.flatMap(_.file)
 
     /** Traverse to FILE via AST IN edge.
       */
@@ -3911,11 +3891,7 @@ object Lang {
 
     /** Traverse to COMMENT via AST OUT edge.
       */
-    def _commentViaAstOut: Iterator[nodes.Comment] = node._astOut.iterator.collectAll[nodes.Comment]
-
-    /** Traverse to COMMENT via AST OUT edge.
-      */
-    def comment: Iterator[nodes.Comment] = _commentViaAstOut
+    def comment: Iterator[nodes.Comment] = node._astOut.iterator.collectAll[nodes.Comment]
 
     /** Traverse to IMPORT via AST OUT edge.
       */
@@ -3927,11 +3903,7 @@ object Lang {
 
     /** Traverse to METHOD via SOURCE_FILE IN edge.
       */
-    def _methodViaSourceFileIn: Iterator[nodes.Method] = node._sourceFileIn.iterator.collectAll[nodes.Method]
-
-    /** Traverse to METHOD via SOURCE_FILE IN edge.
-      */
-    def method: Iterator[nodes.Method] = _methodViaSourceFileIn
+    def method: Iterator[nodes.Method] = node._sourceFileIn.iterator.collectAll[nodes.Method]
 
     /** Traverse to NAMESPACE_BLOCK via AST OUT edge.
       */
@@ -3939,11 +3911,7 @@ object Lang {
 
     /** Traverse to NAMESPACE_BLOCK via SOURCE_FILE IN edge.
       */
-    def _namespaceBlockViaSourceFileIn: Iterator[nodes.NamespaceBlock] = node._sourceFileIn.iterator.collectAll[nodes.NamespaceBlock]
-
-    /** Traverse to NAMESPACE_BLOCK via SOURCE_FILE IN edge.
-      */
-    def namespaceBlock: Iterator[nodes.NamespaceBlock] = _namespaceBlockViaSourceFileIn
+    def namespaceBlock: Iterator[nodes.NamespaceBlock] = node._sourceFileIn.iterator.collectAll[nodes.NamespaceBlock]
 
     /** Traverse to TAG via TAGGED_BY OUT edge.
       */
@@ -3959,11 +3927,7 @@ object Lang {
 
     /** Traverse to TYPE_DECL via SOURCE_FILE IN edge.
       */
-    def _typeDeclViaSourceFileIn: Iterator[nodes.TypeDecl] = node._sourceFileIn.iterator.collectAll[nodes.TypeDecl]
-
-    /** Traverse to TYPE_DECL via SOURCE_FILE IN edge.
-      */
-    def typeDecl: Iterator[nodes.TypeDecl] = _typeDeclViaSourceFileIn
+    def typeDecl: Iterator[nodes.TypeDecl] = node._sourceFileIn.iterator.collectAll[nodes.TypeDecl]
 
   }
 
@@ -3971,7 +3935,7 @@ object Lang {
 
     /** Traverse to COMMENT via AST OUT edge.
       */
-    def _commentViaAstOut: Iterator[nodes.Comment] = traversal.flatMap(_._commentViaAstOut)
+    def comment: Iterator[nodes.Comment] = traversal.flatMap(_.comment)
 
     /** Traverse to IMPORT via AST OUT edge.
       */
@@ -3983,7 +3947,7 @@ object Lang {
 
     /** Traverse to METHOD via SOURCE_FILE IN edge.
       */
-    def _methodViaSourceFileIn: Iterator[nodes.Method] = traversal.flatMap(_._methodViaSourceFileIn)
+    def method: Iterator[nodes.Method] = traversal.flatMap(_.method)
 
     /** Traverse to NAMESPACE_BLOCK via AST OUT edge.
       */
@@ -3991,7 +3955,7 @@ object Lang {
 
     /** Traverse to NAMESPACE_BLOCK via SOURCE_FILE IN edge.
       */
-    def _namespaceBlockViaSourceFileIn: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_._namespaceBlockViaSourceFileIn)
+    def namespaceBlock: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_.namespaceBlock)
 
     /** Traverse to TAG via TAGGED_BY OUT edge.
       */
@@ -4007,7 +3971,7 @@ object Lang {
 
     /** Traverse to TYPE_DECL via SOURCE_FILE IN edge.
       */
-    def _typeDeclViaSourceFileIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_._typeDeclViaSourceFileIn)
+    def typeDecl: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDecl)
 
   }
 
@@ -6450,27 +6414,15 @@ object Lang {
 
     /** Places (identifier) where this local is being referenced Traverse to IDENTIFIER via REF IN edge.
       */
-    def _identifierViaRefIn: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
-
-    /** Places (identifier) where this local is being referenced Traverse to IDENTIFIER via REF IN edge.
-      */
-    def referencingIdentifiers: Iterator[nodes.Identifier] = _identifierViaRefIn
+    def referencingIdentifiers: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
 
     /** The block in which local is declared. Traverse to BLOCK via AST IN edge.
       */
-    def _blockViaAstIn: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
-
-    /** The block in which local is declared. Traverse to BLOCK via AST IN edge.
-      */
-    def definingBlock: Iterator[nodes.Block] = _blockViaAstIn
+    def definingBlock: Iterator[nodes.Block] = node._astIn.iterator.collectAll[nodes.Block]
 
     /** The type of the local. Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
-
-    /** The type of the local. Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def typ: Iterator[nodes.Type] = _typeViaEvalTypeOut
+    def typ: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
   }
 
@@ -6502,15 +6454,15 @@ object Lang {
 
     /** Places (identifier) where this local is being referenced Traverse to IDENTIFIER via REF IN edge.
       */
-    def _identifierViaRefIn: Iterator[nodes.Identifier] = traversal.flatMap(_._identifierViaRefIn)
+    def referencingIdentifiers: Iterator[nodes.Identifier] = traversal.flatMap(_.referencingIdentifiers)
 
     /** The block in which local is declared. Traverse to BLOCK via AST IN edge.
       */
-    def _blockViaAstIn: Iterator[nodes.Block] = traversal.flatMap(_._blockViaAstIn)
+    def definingBlock: Iterator[nodes.Block] = traversal.flatMap(_.definingBlock)
 
     /** The type of the local. Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_._typeViaEvalTypeOut)
+    def typ: Iterator[nodes.Type] = traversal.flatMap(_.typ)
 
   }
 
@@ -6542,7 +6494,7 @@ object Lang {
 
     /** The type declaration this member is defined in Traverse to TYPE_DECL via AST IN edge.
       */
-    def _typeDeclViaAstIn: nodes.TypeDecl = {
+    def typeDecl: nodes.TypeDecl = {
       try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -6553,17 +6505,9 @@ object Lang {
       }
     }
 
-    /** The type declaration this member is defined in Traverse to TYPE_DECL via AST IN edge.
-      */
-    def typeDecl: nodes.TypeDecl = _typeDeclViaAstIn
-
     /** Traverse to member type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
-
-    /** Traverse to member type Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def typ: Iterator[nodes.Type] = _typeViaEvalTypeOut
+    def typ: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
   }
 
@@ -6591,11 +6535,11 @@ object Lang {
 
     /** The type declaration this member is defined in Traverse to TYPE_DECL via AST IN edge.
       */
-    def _typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.map(_._typeDeclViaAstIn)
+    def typeDecl: Iterator[nodes.TypeDecl] = traversal.map(_.typeDecl)
 
     /** Traverse to member type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_._typeViaEvalTypeOut)
+    def typ: Iterator[nodes.Type] = traversal.flatMap(_.typ)
 
   }
 
@@ -6838,15 +6782,11 @@ object Lang {
 
     /** First control flow graph node Traverse to CFG_NODE via CFG OUT edge.
       */
-    def _cfgNodeViaCfgOut: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
-
-    /** First control flow graph node Traverse to CFG_NODE via CFG OUT edge.
-      */
-    def cfgFirst: Iterator[nodes.CfgNode] = _cfgNodeViaCfgOut
+    def cfgFirst: Iterator[nodes.CfgNode] = node._cfgOut.iterator.collectAll[nodes.CfgNode]
 
     /** Formal return parameters Traverse to METHOD_RETURN via AST OUT edge.
       */
-    def _methodReturnViaAstOut: nodes.MethodReturn = {
+    def methodReturn: nodes.MethodReturn = {
       try { node._astOut.iterator.collectAll[nodes.MethodReturn].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -6857,29 +6797,17 @@ object Lang {
       }
     }
 
-    /** Formal return parameters Traverse to METHOD_RETURN via AST OUT edge.
-      */
-    def methodReturn: nodes.MethodReturn = _methodReturnViaAstOut
-
     /** Literals used in the method Traverse to LITERAL via CONTAINS OUT edge.
       */
-    def _literalViaContainsOut: Iterator[nodes.Literal] = node._containsOut.iterator.collectAll[nodes.Literal]
-
-    /** Literals used in the method Traverse to LITERAL via CONTAINS OUT edge.
-      */
-    def literal: Iterator[nodes.Literal] = _literalViaContainsOut
+    def literal: Iterator[nodes.Literal] = node._containsOut.iterator.collectAll[nodes.Literal]
 
     /** Parameters of the method Traverse to METHOD_PARAMETER_IN via AST OUT edge.
       */
-    def _methodParameterInViaAstOut: Iterator[nodes.MethodParameterIn] = node._astOut.iterator.collectAll[nodes.MethodParameterIn]
-
-    /** Parameters of the method Traverse to METHOD_PARAMETER_IN via AST OUT edge.
-      */
-    def parameter: Iterator[nodes.MethodParameterIn] = _methodParameterInViaAstOut
+    def parameter: Iterator[nodes.MethodParameterIn] = node._astOut.iterator.collectAll[nodes.MethodParameterIn]
 
     /** Root of the abstract syntax tree Traverse to BLOCK via AST OUT edge.
       */
-    def _blockViaAstOut: nodes.Block = {
+    def block: nodes.Block = {
       try { node._astOut.iterator.collectAll[nodes.Block].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -6889,10 +6817,6 @@ object Lang {
           )
       }
     }
-
-    /** Root of the abstract syntax tree Traverse to BLOCK via AST OUT edge.
-      */
-    def block: nodes.Block = _blockViaAstOut
 
   }
 
@@ -7128,23 +7052,23 @@ object Lang {
 
     /** First control flow graph node Traverse to CFG_NODE via CFG OUT edge.
       */
-    def _cfgNodeViaCfgOut: Iterator[nodes.CfgNode] = traversal.flatMap(_._cfgNodeViaCfgOut)
+    def cfgFirst: Iterator[nodes.CfgNode] = traversal.flatMap(_.cfgFirst)
 
     /** Formal return parameters Traverse to METHOD_RETURN via AST OUT edge.
       */
-    def _methodReturnViaAstOut: Iterator[nodes.MethodReturn] = traversal.map(_._methodReturnViaAstOut)
+    def methodReturn: Iterator[nodes.MethodReturn] = traversal.map(_.methodReturn)
 
     /** Literals used in the method Traverse to LITERAL via CONTAINS OUT edge.
       */
-    def _literalViaContainsOut: Iterator[nodes.Literal] = traversal.flatMap(_._literalViaContainsOut)
+    def literal: Iterator[nodes.Literal] = traversal.flatMap(_.literal)
 
     /** Parameters of the method Traverse to METHOD_PARAMETER_IN via AST OUT edge.
       */
-    def _methodParameterInViaAstOut: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_._methodParameterInViaAstOut)
+    def parameter: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.parameter)
 
     /** Root of the abstract syntax tree Traverse to BLOCK via AST OUT edge.
       */
-    def _blockViaAstOut: Iterator[nodes.Block] = traversal.map(_._blockViaAstOut)
+    def block: Iterator[nodes.Block] = traversal.map(_.block)
 
   }
 
@@ -7201,24 +7125,15 @@ object Lang {
 
     /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
       */
-    def _identifierViaRefIn: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
-
-    /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
-      */
-    def referencingIdentifiers: Iterator[nodes.Identifier] = _identifierViaRefIn
+    def referencingIdentifiers: Iterator[nodes.Identifier] = node._refIn.iterator.collectAll[nodes.Identifier]
 
     /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
       */
-    def _methodParameterOutViaParameterLinkOut: Iterator[nodes.MethodParameterOut] =
-      node._parameterLinkOut.iterator.collectAll[nodes.MethodParameterOut]
-
-    /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
-      */
-    def asOutput: Iterator[nodes.MethodParameterOut] = _methodParameterOutViaParameterLinkOut
+    def asOutput: Iterator[nodes.MethodParameterOut] = node._parameterLinkOut.iterator.collectAll[nodes.MethodParameterOut]
 
     /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
       */
-    def _methodViaAstIn: nodes.Method = {
+    def method: nodes.Method = {
       try { node._astIn.iterator.collectAll[nodes.Method].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -7229,13 +7144,9 @@ object Lang {
       }
     }
 
-    /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
-      */
-    def method: nodes.Method = _methodViaAstIn
-
     /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: nodes.Type = {
+    def typ: nodes.Type = {
       try { node._evalTypeOut.iterator.collectAll[nodes.Type].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -7245,10 +7156,6 @@ object Lang {
           )
       }
     }
-
-    /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def typ: nodes.Type = _typeViaEvalTypeOut
 
   }
 
@@ -7304,20 +7211,19 @@ object Lang {
 
     /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
       */
-    def _identifierViaRefIn: Iterator[nodes.Identifier] = traversal.flatMap(_._identifierViaRefIn)
+    def referencingIdentifiers: Iterator[nodes.Identifier] = traversal.flatMap(_.referencingIdentifiers)
 
     /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
       */
-    def _methodParameterOutViaParameterLinkOut: Iterator[nodes.MethodParameterOut] =
-      traversal.flatMap(_._methodParameterOutViaParameterLinkOut)
+    def asOutput: Iterator[nodes.MethodParameterOut] = traversal.flatMap(_.asOutput)
 
     /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
       */
-    def _methodViaAstIn: Iterator[nodes.Method] = traversal.map(_._methodViaAstIn)
+    def method: Iterator[nodes.Method] = traversal.map(_.method)
 
     /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.map(_._typeViaEvalTypeOut)
+    def typ: Iterator[nodes.Type] = traversal.map(_.typ)
 
   }
 
@@ -7358,7 +7264,7 @@ object Lang {
 
     /** Traverse to METHOD via AST IN edge.
       */
-    def _methodViaAstIn: nodes.Method = {
+    def method: nodes.Method = {
       try { node._astIn.iterator.collectAll[nodes.Method].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -7369,22 +7275,13 @@ object Lang {
       }
     }
 
-    /** Traverse to METHOD via AST IN edge.
-      */
-    def method: nodes.Method = _methodViaAstIn
-
     /** Traverse to METHOD via REACHING_DEF IN edge.
       */
     def _methodViaReachingDefIn: Iterator[nodes.Method] = node._reachingDefIn.iterator.collectAll[nodes.Method]
 
     /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
       */
-    def _methodParameterInViaParameterLinkIn: Iterator[nodes.MethodParameterIn] =
-      node._parameterLinkIn.iterator.collectAll[nodes.MethodParameterIn]
-
-    /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
-      */
-    def asInput: Iterator[nodes.MethodParameterIn] = _methodParameterInViaParameterLinkIn
+    def asInput: Iterator[nodes.MethodParameterIn] = node._parameterLinkIn.iterator.collectAll[nodes.MethodParameterIn]
 
     /** Traverse to METHOD_PARAMETER_IN via REACHING_DEF IN edge.
       */
@@ -7425,11 +7322,7 @@ object Lang {
 
     /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
-
-    /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
-      */
-    def typ: Iterator[nodes.Type] = _typeViaEvalTypeOut
+    def typ: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
 
   }
 
@@ -7469,7 +7362,7 @@ object Lang {
 
     /** Traverse to METHOD via AST IN edge.
       */
-    def _methodViaAstIn: Iterator[nodes.Method] = traversal.map(_._methodViaAstIn)
+    def method: Iterator[nodes.Method] = traversal.map(_.method)
 
     /** Traverse to METHOD via REACHING_DEF IN edge.
       */
@@ -7477,7 +7370,7 @@ object Lang {
 
     /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
       */
-    def _methodParameterInViaParameterLinkIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_._methodParameterInViaParameterLinkIn)
+    def asInput: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.asInput)
 
     /** Traverse to METHOD_PARAMETER_IN via REACHING_DEF IN edge.
       */
@@ -7517,7 +7410,7 @@ object Lang {
 
     /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
       */
-    def _typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_._typeViaEvalTypeOut)
+    def typ: Iterator[nodes.Type] = traversal.flatMap(_.typ)
 
   }
 
@@ -7957,7 +7850,7 @@ object Lang {
 
     /** Traverse to referenced method. Traverse to METHOD via REF OUT edge.
       */
-    def _methodViaRefOut: nodes.Method = {
+    def referencedMethod: nodes.Method = {
       try { node._refOut.iterator.collectAll[nodes.Method].next() }
       catch {
         case e: java.util.NoSuchElementException =>
@@ -7967,10 +7860,6 @@ object Lang {
           )
       }
     }
-
-    /** Traverse to referenced method. Traverse to METHOD via REF OUT edge.
-      */
-    def referencedMethod: nodes.Method = _methodViaRefOut
 
   }
 
@@ -8394,7 +8283,7 @@ object Lang {
 
     /** Traverse to referenced method. Traverse to METHOD via REF OUT edge.
       */
-    def _methodViaRefOut: Iterator[nodes.Method] = traversal.map(_._methodViaRefOut)
+    def referencedMethod: Iterator[nodes.Method] = traversal.map(_.referencedMethod)
 
   }
 
@@ -8525,11 +8414,7 @@ object Lang {
 
     /** Traverse to RETURN via CFG IN edge.
       */
-    def _returnViaCfgIn: Iterator[nodes.Return] = node._cfgIn.iterator.collectAll[nodes.Return]
-
-    /** Traverse to RETURN via CFG IN edge.
-      */
-    def toReturn: Iterator[nodes.Return] = _returnViaCfgIn
+    def toReturn: Iterator[nodes.Return] = node._cfgIn.iterator.collectAll[nodes.Return]
 
     /** Traverse to RETURN via DOMINATE IN edge.
       */
@@ -8697,7 +8582,7 @@ object Lang {
 
     /** Traverse to RETURN via CFG IN edge.
       */
-    def _returnViaCfgIn: Iterator[nodes.Return] = traversal.flatMap(_._returnViaCfgIn)
+    def toReturn: Iterator[nodes.Return] = traversal.flatMap(_.toReturn)
 
     /** Traverse to RETURN via DOMINATE IN edge.
       */
@@ -10053,19 +9938,11 @@ object Lang {
 
     /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
       */
-    def _typeDeclViaAliasOfIn: Iterator[nodes.TypeDecl] = node._aliasOfIn.iterator.collectAll[nodes.TypeDecl]
-
-    /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
-      */
-    def aliasTypeDecl: Iterator[nodes.TypeDecl] = _typeDeclViaAliasOfIn
+    def aliasTypeDecl: Iterator[nodes.TypeDecl] = node._aliasOfIn.iterator.collectAll[nodes.TypeDecl]
 
     /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
       */
-    def _typeDeclViaRefOut: Iterator[nodes.TypeDecl] = node._refOut.iterator.collectAll[nodes.TypeDecl]
-
-    /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
-      */
-    def referencedTypeDecl: Iterator[nodes.TypeDecl] = _typeDeclViaRefOut
+    def referencedTypeDecl: Iterator[nodes.TypeDecl] = node._refOut.iterator.collectAll[nodes.TypeDecl]
 
   }
 
@@ -10141,11 +10018,11 @@ object Lang {
 
     /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
       */
-    def _typeDeclViaAliasOfIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_._typeDeclViaAliasOfIn)
+    def aliasTypeDecl: Iterator[nodes.TypeDecl] = traversal.flatMap(_.aliasTypeDecl)
 
     /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
       */
-    def _typeDeclViaRefOut: Iterator[nodes.TypeDecl] = traversal.flatMap(_._typeDeclViaRefOut)
+    def referencedTypeDecl: Iterator[nodes.TypeDecl] = traversal.flatMap(_.referencedTypeDecl)
 
   }
 
@@ -10225,19 +10102,11 @@ object Lang {
 
     /** Traverse to NAMESPACE_BLOCK via AST IN edge.
       */
-    def _namespaceBlockViaAstIn: Option[nodes.NamespaceBlock] = node._astIn.iterator.collectAll[nodes.NamespaceBlock].nextOption()
-
-    /** Traverse to NAMESPACE_BLOCK via AST IN edge.
-      */
-    def namespaceBlock: Option[nodes.NamespaceBlock] = _namespaceBlockViaAstIn
+    def namespaceBlock: Option[nodes.NamespaceBlock] = node._astIn.iterator.collectAll[nodes.NamespaceBlock].nextOption()
 
     /** Traverse to TYPE via ALIAS_OF OUT edge.
       */
-    def _typeViaAliasOfOut: Iterator[nodes.Type] = node._aliasOfOut.iterator.collectAll[nodes.Type]
-
-    /** Traverse to TYPE via ALIAS_OF OUT edge.
-      */
-    def aliasedType: Iterator[nodes.Type] = _typeViaAliasOfOut
+    def aliasedType: Iterator[nodes.Type] = node._aliasOfOut.iterator.collectAll[nodes.Type]
 
     /** Traverse to TYPE via INHERITS_FROM OUT edge.
       */
@@ -10305,11 +10174,11 @@ object Lang {
 
     /** Traverse to NAMESPACE_BLOCK via AST IN edge.
       */
-    def _namespaceBlockViaAstIn: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_._namespaceBlockViaAstIn)
+    def namespaceBlock: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_.namespaceBlock)
 
     /** Traverse to TYPE via ALIAS_OF OUT edge.
       */
-    def _typeViaAliasOfOut: Iterator[nodes.Type] = traversal.flatMap(_._typeViaAliasOfOut)
+    def aliasedType: Iterator[nodes.Type] = traversal.flatMap(_.aliasedType)
 
     /** Traverse to TYPE via INHERITS_FROM OUT edge.
       */
