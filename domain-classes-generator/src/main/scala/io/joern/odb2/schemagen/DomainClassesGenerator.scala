@@ -588,36 +588,54 @@ class DomainClassesGenerator(schema: Schema) {
     // TODO extract to separate method
     val neighborAccessors = {
       val neighborAccessors: Seq[String] = {
-        // TODO refactor
-        case class StepContext(edge: EdgeType, neighbor: AbstractNodeType, direction: Direction.Value, cardinality: EdgeType.Cardinality, methodName: String, scaladoc: String)
+        case class StepContext(
+          edge: EdgeType,
+          neighbor: AbstractNodeType,
+          direction: Direction.Value,
+          cardinality: EdgeType.Cardinality,
+          methodName: String,
+          customStepName: Option[String],
+          scaladoc: String)
+
         schema.allNodeTypes.map { nodeType =>
           val stepContexts = for {
             direction <- Direction.all
             AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
             scaladoc = s"""/** ${customStepDoc.getOrElse("")}
                  |  * Traverse to ${neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
-            methodName = customStepName.getOrElse("_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction"))
-          } yield StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc)
+            methodName = "_" + Helpers.camelCase(s"${neighbor.name}_Via_${edge.name}_$direction")
+          } yield StepContext(edge, neighbor, direction, cardinality, methodName, customStepName, scaladoc)
 
           val forSingleNode = {
-            val stepImplementations = stepContexts.map { case StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc) =>
+            val stepImplementations = stepContexts.map { case StepContext(edge, neighbor, direction, cardinality, methodName, customStepName, scaladoc) =>
               val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
               val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
-              val source = cardinality match {
+              val (returnType, implementation) = cardinality match {
                 case EdgeType.Cardinality.List =>
-                  s"def $methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
+                  (s"Iterator[nodes.${neighbor.className}]", accessorImpl0)
                 case EdgeType.Cardinality.ZeroOrOne =>
-                  s"def $methodName: Option[nodes.${neighbor.className}] = $accessorImpl0.nextOption()"
+                  (s"Option[nodes.${neighbor.className}]", s"$accessorImpl0.nextOption()")
                 case EdgeType.Cardinality.One =>
-                  s"""def $methodName: nodes.${neighbor.className} = {
-                     |  try { $accessorImpl0.next() } catch {
-                     |    case e: java.util.NoSuchElementException =>
-                     |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
-                     |  }
-                     |}""".stripMargin
+                  (s"nodes.${neighbor.className}",
+                    s"""{
+                       |  try { $accessorImpl0.next() } catch {
+                       |    case e: java.util.NoSuchElementException =>
+                       |      throw new io.joern.odb2.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
+                       |  }
+                       |}""".stripMargin
+                  )
               }
-              s"""$scaladoc
-                 |$source
+
+              val generatedStepSource =
+                s"""$scaladoc
+                   |def $methodName: $returnType = $implementation""".stripMargin
+              val customStepNameSourceMaybe = customStepName.map { customStepName =>
+                s"""$scaladoc
+                   |def $customStepName: $returnType = $methodName""".stripMargin
+              }.getOrElse("")
+
+              s"""$generatedStepSource
+                 |$customStepNameSourceMaybe
                  |""".stripMargin
             }
 
@@ -629,7 +647,7 @@ class DomainClassesGenerator(schema: Schema) {
           }
 
           val forTraversal = {
-            val stepImplementations = stepContexts.map { case StepContext(_, neighbor, _, cardinality, methodName, scaladoc) =>
+            val stepImplementations = stepContexts.map { case StepContext(_, neighbor, _, cardinality, methodName, customStepName, scaladoc) =>
               val mapOrFlatMap = if (cardinality == EdgeType.Cardinality.One) "map" else "flatMap"
               s"""$scaladoc
                  |def $methodName: Iterator[nodes.${neighbor.className}] = traversal.$mapOrFlatMap(_.$methodName)
