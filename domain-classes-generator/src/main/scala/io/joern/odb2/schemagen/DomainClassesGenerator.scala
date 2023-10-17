@@ -586,6 +586,7 @@ class DomainClassesGenerator(schema: Schema) {
     os.write(outputDir0 / "Traversals.scala", traversals)
 
     val neighborAccessors = {
+      val conversions = Seq.newBuilder[String]
       val neighborAccessors: Seq[String] = {
         case class StepContext(
           edge: EdgeType,
@@ -631,6 +632,10 @@ class DomainClassesGenerator(schema: Schema) {
               ""
             } else {
               val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
+              conversions.addOne(
+                s"""implicit def accessNeighborsFor${nodeType.className}(node: nodes.${nodeType.className}): $className =
+                   |  new $className(node)""".stripMargin
+              )
               s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
                  |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
                  |}
@@ -650,7 +655,11 @@ class DomainClassesGenerator(schema: Schema) {
             if (stepImplementations.isEmpty) {
               ""
             } else {
-              val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traveral")
+              val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traversal")
+              conversions.addOne(
+                s"""implicit def accessNeighborsFor${nodeType.className}Traversal(traversal: Iterator[nodes.${nodeType.className}]): $className =
+                   |  new $className(traversal)""".stripMargin
+              )
               s"""final implicit class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
                  |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
                  |}
@@ -670,7 +679,15 @@ class DomainClassesGenerator(schema: Schema) {
          |import io.joern.odb2.Traversal.*
          |import $basePackage.nodes
          |
-         |object Lang {
+         |object Lang extends Conversions
+         |
+         |trait Conversions {
+         |  import Accessors.*
+         |
+         |  ${conversions.result().mkString("\n\n")}
+         |}
+         |
+         |object Accessors {
          |  ${neighborAccessors.mkString("\n\n")}
          |}
          |""".stripMargin

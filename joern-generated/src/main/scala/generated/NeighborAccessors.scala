@@ -3,7 +3,277 @@ import io.joern.odb2
 import io.joern.odb2.Traversal.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes
 
-object Lang {
+object Lang extends Conversions
+
+trait Conversions {
+  import Accessors.*
+
+  implicit def accessNeighborsForAnnotation(node: nodes.Annotation): AccessNeighborsForAnnotation =
+    new AccessNeighborsForAnnotation(node)
+
+  implicit def accessNeighborsForAnnotationTraversal(traversal: Iterator[nodes.Annotation]): AccessNeighborsForAnnotationTraversal =
+    new AccessNeighborsForAnnotationTraversal(traversal)
+
+  implicit def accessNeighborsForAnnotationLiteral(node: nodes.AnnotationLiteral): AccessNeighborsForAnnotationLiteral =
+    new AccessNeighborsForAnnotationLiteral(node)
+
+  implicit def accessNeighborsForAnnotationLiteralTraversal(
+    traversal: Iterator[nodes.AnnotationLiteral]
+  ): AccessNeighborsForAnnotationLiteralTraversal =
+    new AccessNeighborsForAnnotationLiteralTraversal(traversal)
+
+  implicit def accessNeighborsForAnnotationParameter(node: nodes.AnnotationParameter): AccessNeighborsForAnnotationParameter =
+    new AccessNeighborsForAnnotationParameter(node)
+
+  implicit def accessNeighborsForAnnotationParameterTraversal(
+    traversal: Iterator[nodes.AnnotationParameter]
+  ): AccessNeighborsForAnnotationParameterTraversal =
+    new AccessNeighborsForAnnotationParameterTraversal(traversal)
+
+  implicit def accessNeighborsForAnnotationParameterAssign(
+    node: nodes.AnnotationParameterAssign
+  ): AccessNeighborsForAnnotationParameterAssign =
+    new AccessNeighborsForAnnotationParameterAssign(node)
+
+  implicit def accessNeighborsForAnnotationParameterAssignTraversal(
+    traversal: Iterator[nodes.AnnotationParameterAssign]
+  ): AccessNeighborsForAnnotationParameterAssignTraversal =
+    new AccessNeighborsForAnnotationParameterAssignTraversal(traversal)
+
+  implicit def accessNeighborsForArrayInitializer(node: nodes.ArrayInitializer): AccessNeighborsForArrayInitializer =
+    new AccessNeighborsForArrayInitializer(node)
+
+  implicit def accessNeighborsForArrayInitializerTraversal(
+    traversal: Iterator[nodes.ArrayInitializer]
+  ): AccessNeighborsForArrayInitializerTraversal =
+    new AccessNeighborsForArrayInitializerTraversal(traversal)
+
+  implicit def accessNeighborsForBinding(node: nodes.Binding): AccessNeighborsForBinding =
+    new AccessNeighborsForBinding(node)
+
+  implicit def accessNeighborsForBindingTraversal(traversal: Iterator[nodes.Binding]): AccessNeighborsForBindingTraversal =
+    new AccessNeighborsForBindingTraversal(traversal)
+
+  implicit def accessNeighborsForBlock(node: nodes.Block): AccessNeighborsForBlock =
+    new AccessNeighborsForBlock(node)
+
+  implicit def accessNeighborsForBlockTraversal(traversal: Iterator[nodes.Block]): AccessNeighborsForBlockTraversal =
+    new AccessNeighborsForBlockTraversal(traversal)
+
+  implicit def accessNeighborsForCall(node: nodes.Call): AccessNeighborsForCall =
+    new AccessNeighborsForCall(node)
+
+  implicit def accessNeighborsForCallTraversal(traversal: Iterator[nodes.Call]): AccessNeighborsForCallTraversal =
+    new AccessNeighborsForCallTraversal(traversal)
+
+  implicit def accessNeighborsForClosureBinding(node: nodes.ClosureBinding): AccessNeighborsForClosureBinding =
+    new AccessNeighborsForClosureBinding(node)
+
+  implicit def accessNeighborsForClosureBindingTraversal(
+    traversal: Iterator[nodes.ClosureBinding]
+  ): AccessNeighborsForClosureBindingTraversal =
+    new AccessNeighborsForClosureBindingTraversal(traversal)
+
+  implicit def accessNeighborsForComment(node: nodes.Comment): AccessNeighborsForComment =
+    new AccessNeighborsForComment(node)
+
+  implicit def accessNeighborsForCommentTraversal(traversal: Iterator[nodes.Comment]): AccessNeighborsForCommentTraversal =
+    new AccessNeighborsForCommentTraversal(traversal)
+
+  implicit def accessNeighborsForControlStructure(node: nodes.ControlStructure): AccessNeighborsForControlStructure =
+    new AccessNeighborsForControlStructure(node)
+
+  implicit def accessNeighborsForControlStructureTraversal(
+    traversal: Iterator[nodes.ControlStructure]
+  ): AccessNeighborsForControlStructureTraversal =
+    new AccessNeighborsForControlStructureTraversal(traversal)
+
+  implicit def accessNeighborsForDependency(node: nodes.Dependency): AccessNeighborsForDependency =
+    new AccessNeighborsForDependency(node)
+
+  implicit def accessNeighborsForDependencyTraversal(traversal: Iterator[nodes.Dependency]): AccessNeighborsForDependencyTraversal =
+    new AccessNeighborsForDependencyTraversal(traversal)
+
+  implicit def accessNeighborsForFieldIdentifier(node: nodes.FieldIdentifier): AccessNeighborsForFieldIdentifier =
+    new AccessNeighborsForFieldIdentifier(node)
+
+  implicit def accessNeighborsForFieldIdentifierTraversal(
+    traversal: Iterator[nodes.FieldIdentifier]
+  ): AccessNeighborsForFieldIdentifierTraversal =
+    new AccessNeighborsForFieldIdentifierTraversal(traversal)
+
+  implicit def accessNeighborsForFile(node: nodes.File): AccessNeighborsForFile =
+    new AccessNeighborsForFile(node)
+
+  implicit def accessNeighborsForFileTraversal(traversal: Iterator[nodes.File]): AccessNeighborsForFileTraversal =
+    new AccessNeighborsForFileTraversal(traversal)
+
+  implicit def accessNeighborsForIdentifier(node: nodes.Identifier): AccessNeighborsForIdentifier =
+    new AccessNeighborsForIdentifier(node)
+
+  implicit def accessNeighborsForIdentifierTraversal(traversal: Iterator[nodes.Identifier]): AccessNeighborsForIdentifierTraversal =
+    new AccessNeighborsForIdentifierTraversal(traversal)
+
+  implicit def accessNeighborsForImport(node: nodes.Import): AccessNeighborsForImport =
+    new AccessNeighborsForImport(node)
+
+  implicit def accessNeighborsForImportTraversal(traversal: Iterator[nodes.Import]): AccessNeighborsForImportTraversal =
+    new AccessNeighborsForImportTraversal(traversal)
+
+  implicit def accessNeighborsForJumpLabel(node: nodes.JumpLabel): AccessNeighborsForJumpLabel =
+    new AccessNeighborsForJumpLabel(node)
+
+  implicit def accessNeighborsForJumpLabelTraversal(traversal: Iterator[nodes.JumpLabel]): AccessNeighborsForJumpLabelTraversal =
+    new AccessNeighborsForJumpLabelTraversal(traversal)
+
+  implicit def accessNeighborsForJumpTarget(node: nodes.JumpTarget): AccessNeighborsForJumpTarget =
+    new AccessNeighborsForJumpTarget(node)
+
+  implicit def accessNeighborsForJumpTargetTraversal(traversal: Iterator[nodes.JumpTarget]): AccessNeighborsForJumpTargetTraversal =
+    new AccessNeighborsForJumpTargetTraversal(traversal)
+
+  implicit def accessNeighborsForLiteral(node: nodes.Literal): AccessNeighborsForLiteral =
+    new AccessNeighborsForLiteral(node)
+
+  implicit def accessNeighborsForLiteralTraversal(traversal: Iterator[nodes.Literal]): AccessNeighborsForLiteralTraversal =
+    new AccessNeighborsForLiteralTraversal(traversal)
+
+  implicit def accessNeighborsForLocal(node: nodes.Local): AccessNeighborsForLocal =
+    new AccessNeighborsForLocal(node)
+
+  implicit def accessNeighborsForLocalTraversal(traversal: Iterator[nodes.Local]): AccessNeighborsForLocalTraversal =
+    new AccessNeighborsForLocalTraversal(traversal)
+
+  implicit def accessNeighborsForMember(node: nodes.Member): AccessNeighborsForMember =
+    new AccessNeighborsForMember(node)
+
+  implicit def accessNeighborsForMemberTraversal(traversal: Iterator[nodes.Member]): AccessNeighborsForMemberTraversal =
+    new AccessNeighborsForMemberTraversal(traversal)
+
+  implicit def accessNeighborsForMethod(node: nodes.Method): AccessNeighborsForMethod =
+    new AccessNeighborsForMethod(node)
+
+  implicit def accessNeighborsForMethodTraversal(traversal: Iterator[nodes.Method]): AccessNeighborsForMethodTraversal =
+    new AccessNeighborsForMethodTraversal(traversal)
+
+  implicit def accessNeighborsForMethodParameterIn(node: nodes.MethodParameterIn): AccessNeighborsForMethodParameterIn =
+    new AccessNeighborsForMethodParameterIn(node)
+
+  implicit def accessNeighborsForMethodParameterInTraversal(
+    traversal: Iterator[nodes.MethodParameterIn]
+  ): AccessNeighborsForMethodParameterInTraversal =
+    new AccessNeighborsForMethodParameterInTraversal(traversal)
+
+  implicit def accessNeighborsForMethodParameterOut(node: nodes.MethodParameterOut): AccessNeighborsForMethodParameterOut =
+    new AccessNeighborsForMethodParameterOut(node)
+
+  implicit def accessNeighborsForMethodParameterOutTraversal(
+    traversal: Iterator[nodes.MethodParameterOut]
+  ): AccessNeighborsForMethodParameterOutTraversal =
+    new AccessNeighborsForMethodParameterOutTraversal(traversal)
+
+  implicit def accessNeighborsForMethodRef(node: nodes.MethodRef): AccessNeighborsForMethodRef =
+    new AccessNeighborsForMethodRef(node)
+
+  implicit def accessNeighborsForMethodRefTraversal(traversal: Iterator[nodes.MethodRef]): AccessNeighborsForMethodRefTraversal =
+    new AccessNeighborsForMethodRefTraversal(traversal)
+
+  implicit def accessNeighborsForMethodReturn(node: nodes.MethodReturn): AccessNeighborsForMethodReturn =
+    new AccessNeighborsForMethodReturn(node)
+
+  implicit def accessNeighborsForMethodReturnTraversal(traversal: Iterator[nodes.MethodReturn]): AccessNeighborsForMethodReturnTraversal =
+    new AccessNeighborsForMethodReturnTraversal(traversal)
+
+  implicit def accessNeighborsForModifier(node: nodes.Modifier): AccessNeighborsForModifier =
+    new AccessNeighborsForModifier(node)
+
+  implicit def accessNeighborsForModifierTraversal(traversal: Iterator[nodes.Modifier]): AccessNeighborsForModifierTraversal =
+    new AccessNeighborsForModifierTraversal(traversal)
+
+  implicit def accessNeighborsForNamespace(node: nodes.Namespace): AccessNeighborsForNamespace =
+    new AccessNeighborsForNamespace(node)
+
+  implicit def accessNeighborsForNamespaceTraversal(traversal: Iterator[nodes.Namespace]): AccessNeighborsForNamespaceTraversal =
+    new AccessNeighborsForNamespaceTraversal(traversal)
+
+  implicit def accessNeighborsForNamespaceBlock(node: nodes.NamespaceBlock): AccessNeighborsForNamespaceBlock =
+    new AccessNeighborsForNamespaceBlock(node)
+
+  implicit def accessNeighborsForNamespaceBlockTraversal(
+    traversal: Iterator[nodes.NamespaceBlock]
+  ): AccessNeighborsForNamespaceBlockTraversal =
+    new AccessNeighborsForNamespaceBlockTraversal(traversal)
+
+  implicit def accessNeighborsForReturn(node: nodes.Return): AccessNeighborsForReturn =
+    new AccessNeighborsForReturn(node)
+
+  implicit def accessNeighborsForReturnTraversal(traversal: Iterator[nodes.Return]): AccessNeighborsForReturnTraversal =
+    new AccessNeighborsForReturnTraversal(traversal)
+
+  implicit def accessNeighborsForTag(node: nodes.Tag): AccessNeighborsForTag =
+    new AccessNeighborsForTag(node)
+
+  implicit def accessNeighborsForTagTraversal(traversal: Iterator[nodes.Tag]): AccessNeighborsForTagTraversal =
+    new AccessNeighborsForTagTraversal(traversal)
+
+  implicit def accessNeighborsForTemplateDom(node: nodes.TemplateDom): AccessNeighborsForTemplateDom =
+    new AccessNeighborsForTemplateDom(node)
+
+  implicit def accessNeighborsForTemplateDomTraversal(traversal: Iterator[nodes.TemplateDom]): AccessNeighborsForTemplateDomTraversal =
+    new AccessNeighborsForTemplateDomTraversal(traversal)
+
+  implicit def accessNeighborsForType(node: nodes.Type): AccessNeighborsForType =
+    new AccessNeighborsForType(node)
+
+  implicit def accessNeighborsForTypeTraversal(traversal: Iterator[nodes.Type]): AccessNeighborsForTypeTraversal =
+    new AccessNeighborsForTypeTraversal(traversal)
+
+  implicit def accessNeighborsForTypeArgument(node: nodes.TypeArgument): AccessNeighborsForTypeArgument =
+    new AccessNeighborsForTypeArgument(node)
+
+  implicit def accessNeighborsForTypeArgumentTraversal(traversal: Iterator[nodes.TypeArgument]): AccessNeighborsForTypeArgumentTraversal =
+    new AccessNeighborsForTypeArgumentTraversal(traversal)
+
+  implicit def accessNeighborsForTypeDecl(node: nodes.TypeDecl): AccessNeighborsForTypeDecl =
+    new AccessNeighborsForTypeDecl(node)
+
+  implicit def accessNeighborsForTypeDeclTraversal(traversal: Iterator[nodes.TypeDecl]): AccessNeighborsForTypeDeclTraversal =
+    new AccessNeighborsForTypeDeclTraversal(traversal)
+
+  implicit def accessNeighborsForTypeParameter(node: nodes.TypeParameter): AccessNeighborsForTypeParameter =
+    new AccessNeighborsForTypeParameter(node)
+
+  implicit def accessNeighborsForTypeParameterTraversal(
+    traversal: Iterator[nodes.TypeParameter]
+  ): AccessNeighborsForTypeParameterTraversal =
+    new AccessNeighborsForTypeParameterTraversal(traversal)
+
+  implicit def accessNeighborsForTypeRef(node: nodes.TypeRef): AccessNeighborsForTypeRef =
+    new AccessNeighborsForTypeRef(node)
+
+  implicit def accessNeighborsForTypeRefTraversal(traversal: Iterator[nodes.TypeRef]): AccessNeighborsForTypeRefTraversal =
+    new AccessNeighborsForTypeRefTraversal(traversal)
+
+  implicit def accessNeighborsForUnknown(node: nodes.Unknown): AccessNeighborsForUnknown =
+    new AccessNeighborsForUnknown(node)
+
+  implicit def accessNeighborsForUnknownTraversal(traversal: Iterator[nodes.Unknown]): AccessNeighborsForUnknownTraversal =
+    new AccessNeighborsForUnknownTraversal(traversal)
+
+  implicit def accessNeighborsForCfgNode(node: nodes.CfgNode): AccessNeighborsForCfgNode =
+    new AccessNeighborsForCfgNode(node)
+
+  implicit def accessNeighborsForCfgNodeTraversal(traversal: Iterator[nodes.CfgNode]): AccessNeighborsForCfgNodeTraversal =
+    new AccessNeighborsForCfgNodeTraversal(traversal)
+
+  implicit def accessNeighborsForExpression(node: nodes.Expression): AccessNeighborsForExpression =
+    new AccessNeighborsForExpression(node)
+
+  implicit def accessNeighborsForExpressionTraversal(traversal: Iterator[nodes.Expression]): AccessNeighborsForExpressionTraversal =
+    new AccessNeighborsForExpressionTraversal(traversal)
+}
+
+object Accessors {
 
   final implicit class AccessNeighborsForAnnotation(val node: nodes.Annotation) extends AnyVal {
 
@@ -51,7 +321,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForAnnotationTraveral(val traversal: Iterator[nodes.Annotation]) extends AnyVal {
+  final implicit class AccessNeighborsForAnnotationTraversal(val traversal: Iterator[nodes.Annotation]) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -106,7 +376,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForAnnotationLiteralTraveral(val traversal: Iterator[nodes.AnnotationLiteral]) extends AnyVal {
+  final implicit class AccessNeighborsForAnnotationLiteralTraversal(val traversal: Iterator[nodes.AnnotationLiteral]) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -124,7 +394,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForAnnotationParameterTraveral(val traversal: Iterator[nodes.AnnotationParameter]) extends AnyVal {
+  final implicit class AccessNeighborsForAnnotationParameterTraversal(val traversal: Iterator[nodes.AnnotationParameter]) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -157,7 +427,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForAnnotationParameterAssignTraveral(val traversal: Iterator[nodes.AnnotationParameterAssign])
+  final implicit class AccessNeighborsForAnnotationParameterAssignTraversal(val traversal: Iterator[nodes.AnnotationParameterAssign])
       extends AnyVal {
 
     /** Traverse to ANNOTATION via AST IN edge.
@@ -199,7 +469,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForArrayInitializerTraveral(val traversal: Iterator[nodes.ArrayInitializer]) extends AnyVal {
+  final implicit class AccessNeighborsForArrayInitializerTraversal(val traversal: Iterator[nodes.ArrayInitializer]) extends AnyVal {
 
     /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
       */
@@ -246,7 +516,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForBindingTraveral(val traversal: Iterator[nodes.Binding]) extends AnyVal {
+  final implicit class AccessNeighborsForBindingTraversal(val traversal: Iterator[nodes.Binding]) extends AnyVal {
 
     /** Traverse to METHOD via REF OUT edge.
       */
@@ -708,7 +978,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForBlockTraveral(val traversal: Iterator[nodes.Block]) extends AnyVal {
+  final implicit class AccessNeighborsForBlockTraversal(val traversal: Iterator[nodes.Block]) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -1684,7 +1954,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForCallTraveral(val traversal: Iterator[nodes.Call]) extends AnyVal {
+  final implicit class AccessNeighborsForCallTraversal(val traversal: Iterator[nodes.Call]) extends AnyVal {
 
     /** Traverse to BLOCK via ARGUMENT OUT edge.
       */
@@ -2249,7 +2519,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForClosureBindingTraveral(val traversal: Iterator[nodes.ClosureBinding]) extends AnyVal {
+  final implicit class AccessNeighborsForClosureBindingTraversal(val traversal: Iterator[nodes.ClosureBinding]) extends AnyVal {
 
     /** Traverse to LOCAL via CAPTURED_BY IN edge.
       */
@@ -2289,7 +2559,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForCommentTraveral(val traversal: Iterator[nodes.Comment]) extends AnyVal {
+  final implicit class AccessNeighborsForCommentTraversal(val traversal: Iterator[nodes.Comment]) extends AnyVal {
 
     /** Traverse to COMMENT via SOURCE_FILE IN edge.
       */
@@ -2304,10 +2574,6 @@ object Lang {
     def _fileViaAstIn: Iterator[nodes.File] = traversal.flatMap(_._fileViaAstIn)
 
   }
-
-  final implicit class AccessNeighborsForConfigFile(val node: nodes.ConfigFile) extends AnyVal {}
-
-  final implicit class AccessNeighborsForConfigFileTraveral(val traversal: Iterator[nodes.ConfigFile]) extends AnyVal {}
 
   final implicit class AccessNeighborsForControlStructure(val node: nodes.ControlStructure) extends AnyVal {
 
@@ -2765,7 +3031,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForControlStructureTraveral(val traversal: Iterator[nodes.ControlStructure]) extends AnyVal {
+  final implicit class AccessNeighborsForControlStructureTraversal(val traversal: Iterator[nodes.ControlStructure]) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -3225,7 +3491,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForDependencyTraveral(val traversal: Iterator[nodes.Dependency]) extends AnyVal {
+  final implicit class AccessNeighborsForDependencyTraversal(val traversal: Iterator[nodes.Dependency]) extends AnyVal {
 
     /** Traverse to IMPORT via IMPORTS IN edge.
       */
@@ -3575,7 +3841,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForFieldIdentifierTraveral(val traversal: Iterator[nodes.FieldIdentifier]) extends AnyVal {
+  final implicit class AccessNeighborsForFieldIdentifierTraversal(val traversal: Iterator[nodes.FieldIdentifier]) extends AnyVal {
 
     /** Traverse to BLOCK via CDG IN edge.
       */
@@ -3931,7 +4197,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForFileTraveral(val traversal: Iterator[nodes.File]) extends AnyVal {
+  final implicit class AccessNeighborsForFileTraversal(val traversal: Iterator[nodes.File]) extends AnyVal {
 
     /** Traverse to COMMENT via AST OUT edge.
       */
@@ -3974,10 +4240,6 @@ object Lang {
     def typeDecl: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDecl)
 
   }
-
-  final implicit class AccessNeighborsForFinding(val node: nodes.Finding) extends AnyVal {}
-
-  final implicit class AccessNeighborsForFindingTraveral(val traversal: Iterator[nodes.Finding]) extends AnyVal {}
 
   final implicit class AccessNeighborsForIdentifier(val node: nodes.Identifier) extends AnyVal {
 
@@ -4411,7 +4673,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForIdentifierTraveral(val traversal: Iterator[nodes.Identifier]) extends AnyVal {
+  final implicit class AccessNeighborsForIdentifierTraversal(val traversal: Iterator[nodes.Identifier]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -4863,7 +5125,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForImportTraveral(val traversal: Iterator[nodes.Import]) extends AnyVal {
+  final implicit class AccessNeighborsForImportTraversal(val traversal: Iterator[nodes.Import]) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -4899,7 +5161,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForJumpLabelTraveral(val traversal: Iterator[nodes.JumpLabel]) extends AnyVal {
+  final implicit class AccessNeighborsForJumpLabelTraversal(val traversal: Iterator[nodes.JumpLabel]) extends AnyVal {
 
     /** Traverse to CONTROL_STRUCTURE via AST IN edge.
       */
@@ -5222,7 +5484,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForJumpTargetTraveral(val traversal: Iterator[nodes.JumpTarget]) extends AnyVal {
+  final implicit class AccessNeighborsForJumpTargetTraversal(val traversal: Iterator[nodes.JumpTarget]) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -5533,10 +5795,6 @@ object Lang {
     def _unknownViaPostDominateOut: Iterator[nodes.Unknown] = traversal.flatMap(_._unknownViaPostDominateOut)
 
   }
-
-  final implicit class AccessNeighborsForKeyValuePair(val node: nodes.KeyValuePair) extends AnyVal {}
-
-  final implicit class AccessNeighborsForKeyValuePairTraveral(val traversal: Iterator[nodes.KeyValuePair]) extends AnyVal {}
 
   final implicit class AccessNeighborsForLiteral(val node: nodes.Literal) extends AnyVal {
 
@@ -5970,7 +6228,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForLiteralTraveral(val traversal: Iterator[nodes.Literal]) extends AnyVal {
+  final implicit class AccessNeighborsForLiteralTraversal(val traversal: Iterator[nodes.Literal]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -6426,7 +6684,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForLocalTraveral(val traversal: Iterator[nodes.Local]) extends AnyVal {
+  final implicit class AccessNeighborsForLocalTraversal(val traversal: Iterator[nodes.Local]) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -6465,10 +6723,6 @@ object Lang {
     def typ: Iterator[nodes.Type] = traversal.flatMap(_.typ)
 
   }
-
-  final implicit class AccessNeighborsForLocation(val node: nodes.Location) extends AnyVal {}
-
-  final implicit class AccessNeighborsForLocationTraveral(val traversal: Iterator[nodes.Location]) extends AnyVal {}
 
   final implicit class AccessNeighborsForMember(val node: nodes.Member) extends AnyVal {
 
@@ -6511,7 +6765,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForMemberTraveral(val traversal: Iterator[nodes.Member]) extends AnyVal {
+  final implicit class AccessNeighborsForMemberTraversal(val traversal: Iterator[nodes.Member]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -6542,10 +6796,6 @@ object Lang {
     def typ: Iterator[nodes.Type] = traversal.flatMap(_.typ)
 
   }
-
-  final implicit class AccessNeighborsForMetaData(val node: nodes.MetaData) extends AnyVal {}
-
-  final implicit class AccessNeighborsForMetaDataTraveral(val traversal: Iterator[nodes.MetaData]) extends AnyVal {}
 
   final implicit class AccessNeighborsForMethod(val node: nodes.Method) extends AnyVal {
 
@@ -6820,7 +7070,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForMethodTraveral(val traversal: Iterator[nodes.Method]) extends AnyVal {
+  final implicit class AccessNeighborsForMethodTraversal(val traversal: Iterator[nodes.Method]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -7159,7 +7409,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForMethodParameterInTraveral(val traversal: Iterator[nodes.MethodParameterIn]) extends AnyVal {
+  final implicit class AccessNeighborsForMethodParameterInTraversal(val traversal: Iterator[nodes.MethodParameterIn]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -7326,7 +7576,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForMethodParameterOutTraveral(val traversal: Iterator[nodes.MethodParameterOut]) extends AnyVal {
+  final implicit class AccessNeighborsForMethodParameterOutTraversal(val traversal: Iterator[nodes.MethodParameterOut]) extends AnyVal {
 
     /** Traverse to BLOCK via REACHING_DEF IN edge.
       */
@@ -7863,7 +8113,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForMethodRefTraveral(val traversal: Iterator[nodes.MethodRef]) extends AnyVal {
+  final implicit class AccessNeighborsForMethodRefTraversal(val traversal: Iterator[nodes.MethodRef]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -8466,7 +8716,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForMethodReturnTraveral(val traversal: Iterator[nodes.MethodReturn]) extends AnyVal {
+  final implicit class AccessNeighborsForMethodReturnTraversal(val traversal: Iterator[nodes.MethodReturn]) extends AnyVal {
 
     /** Traverse to BLOCK via CDG IN edge.
       */
@@ -8676,7 +8926,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForModifierTraveral(val traversal: Iterator[nodes.Modifier]) extends AnyVal {
+  final implicit class AccessNeighborsForModifierTraversal(val traversal: Iterator[nodes.Modifier]) extends AnyVal {
 
     /** Traverse to CONTROL_STRUCTURE via AST IN edge.
       */
@@ -8708,7 +8958,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForNamespaceTraveral(val traversal: Iterator[nodes.Namespace]) extends AnyVal {
+  final implicit class AccessNeighborsForNamespaceTraversal(val traversal: Iterator[nodes.Namespace]) extends AnyVal {
 
     /** Traverse to NAMESPACE_BLOCK via REF IN edge.
       */
@@ -8740,7 +8990,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForNamespaceBlockTraveral(val traversal: Iterator[nodes.NamespaceBlock]) extends AnyVal {
+  final implicit class AccessNeighborsForNamespaceBlockTraversal(val traversal: Iterator[nodes.NamespaceBlock]) extends AnyVal {
 
     /** Traverse to FILE via AST IN edge.
       */
@@ -9200,7 +9450,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForReturnTraveral(val traversal: Iterator[nodes.Return]) extends AnyVal {
+  final implicit class AccessNeighborsForReturnTraversal(val traversal: Iterator[nodes.Return]) extends AnyVal {
 
     /** Traverse to BLOCK via ARGUMENT OUT edge.
       */
@@ -9713,7 +9963,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTagTraveral(val traversal: Iterator[nodes.Tag]) extends AnyVal {
+  final implicit class AccessNeighborsForTagTraversal(val traversal: Iterator[nodes.Tag]) extends AnyVal {
 
     /** Traverse to BLOCK via TAGGED_BY IN edge.
       */
@@ -9805,10 +10055,6 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTagNodePair(val node: nodes.TagNodePair) extends AnyVal {}
-
-  final implicit class AccessNeighborsForTagNodePairTraveral(val traversal: Iterator[nodes.TagNodePair]) extends AnyVal {}
-
   final implicit class AccessNeighborsForTemplateDom(val node: nodes.TemplateDom) extends AnyVal {
 
     /** Traverse to EXPRESSION via ARGUMENT IN edge.
@@ -9837,7 +10083,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTemplateDomTraveral(val traversal: Iterator[nodes.TemplateDom]) extends AnyVal {
+  final implicit class AccessNeighborsForTemplateDomTraversal(val traversal: Iterator[nodes.TemplateDom]) extends AnyVal {
 
     /** Traverse to EXPRESSION via ARGUMENT IN edge.
       */
@@ -9946,7 +10192,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTypeTraveral(val traversal: Iterator[nodes.Type]) extends AnyVal {
+  final implicit class AccessNeighborsForTypeTraversal(val traversal: Iterator[nodes.Type]) extends AnyVal {
 
     /** Traverse to ARRAY_INITIALIZER via EVAL_TYPE IN edge.
       */
@@ -10042,7 +10288,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTypeArgumentTraveral(val traversal: Iterator[nodes.TypeArgument]) extends AnyVal {
+  final implicit class AccessNeighborsForTypeArgumentTraversal(val traversal: Iterator[nodes.TypeArgument]) extends AnyVal {
 
     /** Traverse to TYPE via AST IN edge.
       */
@@ -10130,7 +10376,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTypeDeclTraveral(val traversal: Iterator[nodes.TypeDecl]) extends AnyVal {
+  final implicit class AccessNeighborsForTypeDeclTraversal(val traversal: Iterator[nodes.TypeDecl]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -10227,7 +10473,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTypeParameterTraveral(val traversal: Iterator[nodes.TypeParameter]) extends AnyVal {
+  final implicit class AccessNeighborsForTypeParameterTraversal(val traversal: Iterator[nodes.TypeParameter]) extends AnyVal {
 
     /** Traverse to METHOD via AST IN edge.
       */
@@ -10666,7 +10912,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForTypeRefTraveral(val traversal: Iterator[nodes.TypeRef]) extends AnyVal {
+  final implicit class AccessNeighborsForTypeRefTraversal(val traversal: Iterator[nodes.TypeRef]) extends AnyVal {
 
     /** Traverse to BLOCK via AST IN edge.
       */
@@ -11502,7 +11748,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForUnknownTraveral(val traversal: Iterator[nodes.Unknown]) extends AnyVal {
+  final implicit class AccessNeighborsForUnknownTraversal(val traversal: Iterator[nodes.Unknown]) extends AnyVal {
 
     /** Traverse to ANNOTATION via AST OUT edge.
       */
@@ -11918,14 +12164,6 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForAstNode(val node: nodes.AstNode) extends AnyVal {}
-
-  final implicit class AccessNeighborsForAstNodeTraveral(val traversal: Iterator[nodes.AstNode]) extends AnyVal {}
-
-  final implicit class AccessNeighborsForCallRepr(val node: nodes.CallRepr) extends AnyVal {}
-
-  final implicit class AccessNeighborsForCallReprTraveral(val traversal: Iterator[nodes.CallRepr]) extends AnyVal {}
-
   final implicit class AccessNeighborsForCfgNode(val node: nodes.CfgNode) extends AnyVal {
 
     /** Traverse to BLOCK via CFG IN edge.
@@ -11974,7 +12212,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForCfgNodeTraveral(val traversal: Iterator[nodes.CfgNode]) extends AnyVal {
+  final implicit class AccessNeighborsForCfgNodeTraversal(val traversal: Iterator[nodes.CfgNode]) extends AnyVal {
 
     /** Traverse to BLOCK via CFG IN edge.
       */
@@ -12022,10 +12260,6 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForDeclaration(val node: nodes.Declaration) extends AnyVal {}
-
-  final implicit class AccessNeighborsForDeclarationTraveral(val traversal: Iterator[nodes.Declaration]) extends AnyVal {}
-
   final implicit class AccessNeighborsForExpression(val node: nodes.Expression) extends AnyVal {
 
     /** Traverse to TEMPLATE_DOM via ARGUMENT OUT edge.
@@ -12042,7 +12276,7 @@ object Lang {
 
   }
 
-  final implicit class AccessNeighborsForExpressionTraveral(val traversal: Iterator[nodes.Expression]) extends AnyVal {
+  final implicit class AccessNeighborsForExpressionTraversal(val traversal: Iterator[nodes.Expression]) extends AnyVal {
 
     /** Traverse to TEMPLATE_DOM via ARGUMENT OUT edge.
       */
