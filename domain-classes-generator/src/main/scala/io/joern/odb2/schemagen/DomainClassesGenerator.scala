@@ -64,11 +64,11 @@ class DomainClassesGenerator(schema: Schema) {
     val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
     val edgeIdByType = edgeTypes.zipWithIndex.toMap
 
-    val newPropsAtNodeSet: Map[AbstractNodeType, Set[Property[?]]] =
+    val newPropertiesByNodeType: Map[AbstractNodeType, Set[Property[?]]] =
       schema.allNodeTypes.map { nodeType =>
         nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
       }.toMap
-    val newPropsAtNodeList = newPropsAtNodeSet.view.mapValues(_.toList.sortBy(_.name))
+    val newPropsAtNodeList = newPropertiesByNodeType.view.mapValues(_.toList.sortBy(_.name))
     val newExtendzMap = schema.allNodeTypes.map { nodeType =>
       nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
@@ -76,9 +76,9 @@ class DomainClassesGenerator(schema: Schema) {
     val prioStages: Array[Array[NodeBaseType]] = {
       val prioStages = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NodeBaseType]]
       for (baseType <- schema.nodeBaseTypes) {
-        val props = newPropsAtNodeSet(baseType)
+        val props = newPropertiesByNodeType(baseType)
         prioStages.find { stage =>
-          stage.forall(other => newPropsAtNodeSet(other).intersect(props).isEmpty)
+          stage.forall(other => newPropertiesByNodeType(other).intersect(props).isEmpty)
         } match {
           case Some(value) => value.addOne(baseType)
           case None        => prioStages.addOne(mutable.ArrayBuffer(baseType))
@@ -585,7 +585,6 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     os.write(outputDir0 / "Traversals.scala", traversals)
 
-    // TODO extract to separate method
     val neighborAccessors = {
       val neighborAccessors: Seq[String] = {
         case class StepContext(
