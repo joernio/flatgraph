@@ -594,11 +594,12 @@ class DomainClassesGenerator(schema: Schema) {
           direction: Direction.Value,
           cardinality: EdgeType.Cardinality,
           methodName: String,
-          scaladoc: String)
+          scaladoc: String
+        )
 
         schema.allNodeTypes.map { nodeType =>
           val stepContexts = for {
-            direction <- Direction.all
+            direction                                                                <- Direction.all
             AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
             scaladoc = s"""/** ${customStepDoc.getOrElse("")}
                  |  * Traverse to ${neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
@@ -609,7 +610,7 @@ class DomainClassesGenerator(schema: Schema) {
           val forSingleNode = {
             val stepImplementations = stepContexts.map { case StepContext(edge, neighbor, direction, cardinality, methodName, scaladoc) =>
               val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
-              val accessorImpl0 = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
+              val accessorImpl0    = s"node._$edgeAccessorName.iterator.collectAll[nodes.${neighbor.className}]"
               val source = cardinality match {
                 case EdgeType.Cardinality.List =>
                   s"def $methodName: Iterator[nodes.${neighbor.className}] = $accessorImpl0"
@@ -632,10 +633,8 @@ class DomainClassesGenerator(schema: Schema) {
               ""
             } else {
               val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
-              conversions.addOne(
-                s"""implicit def accessNeighborsFor${nodeType.className}(node: nodes.${nodeType.className}): $className =
-                   |  new $className(node)""".stripMargin
-              )
+              conversions.addOne(s"""implicit def accessNeighborsFor${nodeType.className}(node: nodes.${nodeType.className}): $className =
+                   |  new $className(node)""".stripMargin)
               s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
                  |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
                  |}

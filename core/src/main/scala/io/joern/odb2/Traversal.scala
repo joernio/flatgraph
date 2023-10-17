@@ -3,18 +3,17 @@ package io.joern.odb2
 import scala.reflect.ClassTag
 
 object Traversal {
-  
+
   given Conversion[IterableOnce[?], Iterator[?]] =
     iterable => iterable.iterator
 
+  extension [A](iterator: Iterator[A]) {
 
-  extension[A] (iterator: Iterator[A]) {
-
-    /** casts all elements to given type
-     * note: this can lead to casting errors
-     *
-     * @see {{{collectAll}}} as a safe alternative
-     */
+    /** casts all elements to given type note: this can lead to casting errors
+      *
+      * @see
+      *   {{{collectAll}}} as a safe alternative
+      */
     // TODO reimplement  @Doc(info = "casts all elements to given type")
     def cast[B]: Iterator[B] =
       iterator.asInstanceOf[Iterator[B]]
