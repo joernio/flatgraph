@@ -628,11 +628,15 @@ class DomainClassesGenerator(schema: Schema) {
                  |""".stripMargin
             }
 
-            val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
-            s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
-               |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
-               |}
-               |""".stripMargin
+            if (stepImplementations.isEmpty) {
+              ""
+            } else {
+              val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
+              s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
+                 |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
+                 |}
+                 |""".stripMargin
+            }
           }
 
           // e.g. `def _blockViaArgumentOut: Iterator[nodes.Block] = traversal.flatMap(_._blockViaArgumentOut)`
@@ -644,11 +648,15 @@ class DomainClassesGenerator(schema: Schema) {
                  |""".stripMargin
             }
 
-            val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traveral")
-            s"""final implicit class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
-               |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
-               |}
-               |""".stripMargin
+            if (stepImplementations.isEmpty) {
+              ""
+            } else {
+              val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traveral")
+              s"""final implicit class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
+                 |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
+                 |}
+                 |""".stripMargin
+            }
           }
 
           s"""
