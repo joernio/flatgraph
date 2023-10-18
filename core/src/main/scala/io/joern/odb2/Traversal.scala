@@ -2,7 +2,9 @@ package io.joern.odb2
 
 import scala.reflect.ClassTag
 
-object Traversal {
+object Traversal extends Traversal
+
+trait Traversal {
 
   given Conversion[IterableOnce[?], Iterator[?]] =
     iterable => iterable.iterator
