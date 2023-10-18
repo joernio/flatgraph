@@ -635,7 +635,7 @@ class DomainClassesGenerator(schema: Schema) {
               val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
               conversions.addOne(s"""implicit def accessNeighborsFor${nodeType.className}(node: nodes.${nodeType.className}): $className =
                    |  new $className(node)""".stripMargin)
-              s"""final implicit class $className(val node: nodes.${nodeType.className}) extends AnyVal {
+              s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
                  |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
                  |}
                  |""".stripMargin
@@ -659,7 +659,7 @@ class DomainClassesGenerator(schema: Schema) {
                 s"""implicit def accessNeighborsFor${nodeType.className}Traversal(traversal: Iterator[nodes.${nodeType.className}]): $className =
                    |  new $className(traversal)""".stripMargin
               )
-              s"""final implicit class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
+              s"""final class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
                  |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
                  |}
                  |""".stripMargin
