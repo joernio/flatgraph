@@ -687,6 +687,7 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |
          |object Accessors {
+         |  import Lang.*
          |  ${neighborAccessors.mkString("\n\n")}
          |}
          |""".stripMargin
