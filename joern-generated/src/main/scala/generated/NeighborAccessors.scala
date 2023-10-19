@@ -1589,10 +1589,6 @@ object Accessors {
       */
     def _fieldIdentifierViaCdgOut: Iterator[nodes.FieldIdentifier] = node._cdgOut.iterator.collectAll[nodes.FieldIdentifier]
 
-    /** Traverse to FIELD_IDENTIFIER via CFG IN edge.
-      */
-    def _fieldIdentifierViaCfgIn: Option[nodes.FieldIdentifier] = node._cfgIn.iterator.collectAll[nodes.FieldIdentifier].nextOption()
-
     /** Traverse to FIELD_IDENTIFIER via DOMINATE IN edge.
       */
     def _fieldIdentifierViaDominateIn: Iterator[nodes.FieldIdentifier] = node._dominateIn.iterator.collectAll[nodes.FieldIdentifier]
@@ -2124,10 +2120,6 @@ object Accessors {
     /** Traverse to FIELD_IDENTIFIER via CDG OUT edge.
       */
     def _fieldIdentifierViaCdgOut: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_._fieldIdentifierViaCdgOut)
-
-    /** Traverse to FIELD_IDENTIFIER via CFG IN edge.
-      */
-    def _fieldIdentifierViaCfgIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_._fieldIdentifierViaCfgIn)
 
     /** Traverse to FIELD_IDENTIFIER via DOMINATE IN edge.
       */
@@ -8635,10 +8627,6 @@ object Accessors {
       }
     }
 
-    /** Traverse to METHOD via CFG IN edge.
-      */
-    def _methodViaCfgIn: Option[nodes.Method] = node._cfgIn.iterator.collectAll[nodes.Method].nextOption()
-
     /** Traverse to METHOD via DOMINATE IN edge.
       */
     def _methodViaDominateIn: Iterator[nodes.Method] = node._dominateIn.iterator.collectAll[nodes.Method]
@@ -8650,10 +8638,6 @@ object Accessors {
     /** Traverse to METHOD_REF via CDG IN edge.
       */
     def _methodRefViaCdgIn: Iterator[nodes.MethodRef] = node._cdgIn.iterator.collectAll[nodes.MethodRef]
-
-    /** Traverse to METHOD_REF via CFG IN edge.
-      */
-    def _methodRefViaCfgIn: Iterator[nodes.MethodRef] = node._cfgIn.iterator.collectAll[nodes.MethodRef]
 
     /** Traverse to METHOD_REF via DOMINATE IN edge.
       */
@@ -8690,10 +8674,6 @@ object Accessors {
     /** Traverse to TYPE_REF via CDG IN edge.
       */
     def _typeRefViaCdgIn: Iterator[nodes.TypeRef] = node._cdgIn.iterator.collectAll[nodes.TypeRef]
-
-    /** Traverse to TYPE_REF via CFG IN edge.
-      */
-    def _typeRefViaCfgIn: Iterator[nodes.TypeRef] = node._cfgIn.iterator.collectAll[nodes.TypeRef]
 
     /** Traverse to TYPE_REF via DOMINATE IN edge.
       */
@@ -8803,10 +8783,6 @@ object Accessors {
       */
     def _methodViaAstIn: Iterator[nodes.Method] = traversal.map(_._methodViaAstIn)
 
-    /** Traverse to METHOD via CFG IN edge.
-      */
-    def _methodViaCfgIn: Iterator[nodes.Method] = traversal.flatMap(_._methodViaCfgIn)
-
     /** Traverse to METHOD via DOMINATE IN edge.
       */
     def _methodViaDominateIn: Iterator[nodes.Method] = traversal.flatMap(_._methodViaDominateIn)
@@ -8818,10 +8794,6 @@ object Accessors {
     /** Traverse to METHOD_REF via CDG IN edge.
       */
     def _methodRefViaCdgIn: Iterator[nodes.MethodRef] = traversal.flatMap(_._methodRefViaCdgIn)
-
-    /** Traverse to METHOD_REF via CFG IN edge.
-      */
-    def _methodRefViaCfgIn: Iterator[nodes.MethodRef] = traversal.flatMap(_._methodRefViaCfgIn)
 
     /** Traverse to METHOD_REF via DOMINATE IN edge.
       */
@@ -8858,10 +8830,6 @@ object Accessors {
     /** Traverse to TYPE_REF via CDG IN edge.
       */
     def _typeRefViaCdgIn: Iterator[nodes.TypeRef] = traversal.flatMap(_._typeRefViaCdgIn)
-
-    /** Traverse to TYPE_REF via CFG IN edge.
-      */
-    def _typeRefViaCfgIn: Iterator[nodes.TypeRef] = traversal.flatMap(_._typeRefViaCfgIn)
 
     /** Traverse to TYPE_REF via DOMINATE IN edge.
       */
