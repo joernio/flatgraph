@@ -599,8 +599,11 @@ class DomainClassesGenerator(schema: Schema) {
 
         schema.allNodeTypes.map { nodeType =>
           val stepContexts = for {
-            direction                                                                <- Direction.all
-            inheritedNeighbors = nodeType.extendzRecursively.flatMap(_.edges(direction)).map(adjacentNode => (adjacentNode.viaEdge, adjacentNode.neighbor)).toSet
+            direction <- Direction.all
+            inheritedNeighbors = nodeType.extendzRecursively
+              .flatMap(_.edges(direction))
+              .map(adjacentNode => (adjacentNode.viaEdge, adjacentNode.neighbor))
+              .toSet
             AdjacentNode(edge, neighbor, cardinality, customStepName, customStepDoc) <- nodeType.edges(direction)
             // to ensure we generate each `_neighborViaEdgeDirection` step only once for each node type hierarchy tree, only generate it for the highest-up node type
             // this is to avoid any 'presumably' duplicate steps, which would cause to unambiguous implicits
