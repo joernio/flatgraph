@@ -1,8 +1,5 @@
-package io.shiftleft.codepropertygraph.generated;
+package io.shiftleft.codepropertygraph.generated.v2;
 
-import overflowdb.*;
-
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 

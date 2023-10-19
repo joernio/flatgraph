@@ -765,11 +765,8 @@ class DomainClassesGenerator(schema: Schema) {
            |""".stripMargin
       val file = outputDir/s"$className.java"
       os.write(file,
-        s"""package ${schema.basePackage};
+        s"""package ${schema.basePackage}.v2;
            |
-           |import overflowdb.*;
-           |
-           |import java.util.Collection;
            |import java.util.HashSet;
            |import java.util.Set;
            |
@@ -796,21 +793,6 @@ class DomainClassesGenerator(schema: Schema) {
         ConstantContext(constant.name, s"""public static final String ${constant.name} = "${constant.value}";""", constant.comment)
       })
     }
-
-    writeConstantsFile("Properties", schema.properties.map { property =>
-      val src = {
-        val valueType = typeFor(property)
-        val cardinality = property.cardinality
-        import Property.Cardinality
-        val completeType = cardinality match {
-          case Cardinality.One(_) => valueType
-          case Cardinality.ZeroOrOne => valueType
-          case Cardinality.List => s"scala.collection.IndexedSeq<$valueType>"
-        }
-        s"""public static final overflowdb.PropertyKey<$completeType> ${property.name} = new overflowdb.PropertyKey<>("${property.name}");"""
-      }
-      ConstantContext(property.name, src, property.comment)
-    })
 
     results.result()
   }
