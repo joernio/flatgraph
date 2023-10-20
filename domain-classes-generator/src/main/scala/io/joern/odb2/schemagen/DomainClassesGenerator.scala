@@ -748,23 +748,28 @@ class DomainClassesGenerator(schema: Schema) {
   private def writeConstants(outputDir: os.Path, schema: Schema): Seq[os.Path] = {
     val results = Seq.newBuilder[os.Path]
     def writeConstantsFile(className: String, constants: Seq[ConstantContext]) = {
-      val constantsSource = constants.map { constant =>
-        val documentation = constant.documentation.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
-        s"""$documentation
+      val constantsSource = constants
+        .map { constant =>
+          val documentation = constant.documentation.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
+          s"""$documentation
            |${constant.source}
            |""".stripMargin
-      }.mkString("\n")
+        }
+        .mkString("\n")
       val allConstantsSetType = if (constantsSource.contains("PropertyKey")) "PropertyKey<?>" else "String"
-      val allConstantsBody = constants.map { constant =>
-        s"add(${constant.name});"
-      }.mkString("\n")
+      val allConstantsBody = constants
+        .map { constant =>
+          s"add(${constant.name});"
+        }
+        .mkString("\n")
       val allConstantsSet =
         s"""public static Set<$allConstantsSetType> ALL = new HashSet<$allConstantsSetType>() {{
            |$allConstantsBody
            |}};
            |""".stripMargin
-      val file = outputDir/s"$className.java"
-      os.write(file,
+      val file = outputDir / s"$className.java"
+      os.write(
+        file,
         s"""package ${schema.basePackage}.v2;
            |
            |import java.util.HashSet;
@@ -779,19 +784,31 @@ class DomainClassesGenerator(schema: Schema) {
       results.addOne(file)
     }
 
-    writeConstantsFile("PropertyNames", schema.properties.map { property =>
-      ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
-    })
-    writeConstantsFile("NodeTypes", schema.nodeTypes.map { nodeType =>
-      ConstantContext(nodeType.name, s"""public static final String ${nodeType.name} = "${nodeType.name}";""", nodeType.comment)
-    })
-    writeConstantsFile("EdgeTypes", schema.edgeTypes.map { edgeType =>
-      ConstantContext(edgeType.name, s"""public static final String ${edgeType.name} = "${edgeType.name}";""", edgeType.comment)
-    })
+    writeConstantsFile(
+      "PropertyNames",
+      schema.properties.map { property =>
+        ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
+      }
+    )
+    writeConstantsFile(
+      "NodeTypes",
+      schema.nodeTypes.map { nodeType =>
+        ConstantContext(nodeType.name, s"""public static final String ${nodeType.name} = "${nodeType.name}";""", nodeType.comment)
+      }
+    )
+    writeConstantsFile(
+      "EdgeTypes",
+      schema.edgeTypes.map { edgeType =>
+        ConstantContext(edgeType.name, s"""public static final String ${edgeType.name} = "${edgeType.name}";""", edgeType.comment)
+      }
+    )
     schema.constantsByCategory.foreach { case (category, constants) =>
-      writeConstantsFile(category, constants.map { constant =>
-        ConstantContext(constant.name, s"""public static final String ${constant.name} = "${constant.value}";""", constant.comment)
-      })
+      writeConstantsFile(
+        category,
+        constants.map { constant =>
+          ConstantContext(constant.name, s"""public static final String ${constant.name} = "${constant.value}";""", constant.comment)
+        }
+      )
     }
 
     results.result()
