@@ -11,7 +11,6 @@ trait Traversal {
   given Conversion[IterableOnce[?], Iterator[?]] =
     iterable => iterable.iterator
 
-
   extension [A](iterator: Iterator[A]) {
 
     /** Execute the traversal and convert the result to a list - shorthand for `toList` */
@@ -28,20 +27,19 @@ trait Traversal {
     def groupCount[B](by: A => B): Map[B, Int] = {
       val counts = mutable.Map.empty[B, Int].withDefaultValue(0)
       iterator.foreach { a =>
-        val b = by(a)
+        val b        = by(a)
         val newValue = counts(b) + 1
         counts.update(b, newValue)
       }
       counts.to(Map)
     }
 
-    def groupBy[K](f: A => K): Map[K, List[A]] = l.groupBy(f)
-    def groupMap[K, B](key: A => K)(f: A => B): Map[K, List[B]] = l.groupMap(key)(f)
+    def groupBy[K](f: A => K): Map[K, List[A]]                                       = l.groupBy(f)
+    def groupMap[K, B](key: A => K)(f: A => B): Map[K, List[B]]                      = l.groupMap(key)(f)
     def groupMapReduce[K, B](key: A => K)(f: A => B)(reduce: (B, B) => B): Map[K, B] = l.groupMapReduce(key)(f)(reduce)
 
-    /** Execute the traversal and return a mutable.Set (better performance than `immutableSet` and has stable iterator
-     * order)
-     */
+    /** Execute the traversal and return a mutable.Set (better performance than `immutableSet` and has stable iterator order)
+      */
     def toSetMutable[B >: A]: mutable.LinkedHashSet[B] = mutable.LinkedHashSet.from(iterator)
 
     /** Execute the traversal and convert the result to an immutable Set. */
@@ -105,10 +103,10 @@ trait Traversal {
     def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Seq[A] =
       iterator.to(ArraySeq.untagged).sortBy(f)
 
-    /** Print help/documentation based on the current elementType `A`. Relies on all step extensions being annotated with
-     * \@Traversal / @Doc Note that this works independently of tab completion and implicit conversions in scope - it
-     * will simply list all documented steps in the classpath
-     */
+    /** Print help/documentation based on the current elementType `A`. Relies on all step extensions being annotated with \@Traversal / @Doc
+      * Note that this works independently of tab completion and implicit conversions in scope - it will simply list all documented steps in
+      * the classpath
+      */
     // TODO reimplement  @Doc(info = "print help/documentation based on the current elementType `A`.")
 //    def help[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
 //      new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
@@ -139,12 +137,14 @@ trait Traversal {
         // TODO bring back PathAwareTraversal?
 //        case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal._sideEffect(fun)
         case _ =>
-          iterator.map { a => fun(a); a }
+          iterator.map { a =>
+            fun(a); a
+          }
       }
 
-    /** perform side effect without changing the contents of the traversal will only apply the partialFunction if it is
-     * defined for the given input - analogous to `collect`
-     */
+    /** perform side effect without changing the contents of the traversal will only apply the partialFunction if it is defined for the
+      * given input - analogous to `collect`
+      */
     // TODO reimplement @Doc(info = "perform side effect without changing the contents of the traversal")
     def sideEffectPF(pf: PartialFunction[A, _]): Iterator[A] =
       sideEffect(pf.lift)
@@ -168,12 +168,12 @@ trait Traversal {
     def not(trav: Iterator[A] => Iterator[_]): Iterator[A] =
       whereNot(trav)
 
-    /** only preserves elements for which _at least one of_ the given traversals has at least one result Works for
-     * arbitrary amount of 'OR' traversals.
-     *
-     * @example
-     *   {{{.or(_.label("someLabel"), _.has("someProperty"))}}}
-     */
+    /** only preserves elements for which _at least one of_ the given traversals has at least one result Works for arbitrary amount of 'OR'
+      * traversals.
+      *
+      * @example
+      *   {{{.or(_.label("someLabel"), _.has("someProperty"))}}}
+      */
     // TODO reimplement @Doc(info = "only preserves elements for which _at least one of_ the given traversals has at least one result")
     def or(traversals: (Iterator[A] => Iterator[_])*): Iterator[A] = {
       iterator.filter { (a: A) =>
@@ -183,12 +183,12 @@ trait Traversal {
       }
     }
 
-    /** only preserves elements for which _all of_ the given traversals have at least one result Works for arbitrary
-     * amount of 'AND' traversals.
-     *
-     * @example
-     *   {{{.and(_.label("someLabel"), _.has("someProperty"))}}}
-     */
+    /** only preserves elements for which _all of_ the given traversals have at least one result Works for arbitrary amount of 'AND'
+      * traversals.
+      *
+      * @example
+      *   {{{.and(_.label("someLabel"), _.has("someProperty"))}}}
+      */
     // TODO reimplement @Doc(info = "only preserves elements for which _all of_ the given traversals have at least one result")
     def and(traversals: (Iterator[A] => Iterator[_])*): Iterator[A] = {
       iterator.filter { (a: A) =>
@@ -199,12 +199,12 @@ trait Traversal {
     }
 
     /** union step from the current point
-     *
-     * @param traversals
-     *   to be executed from here, results are being aggregated/summed/unioned
-     * @example
-     *   {{{.union(_.out, _.in)}}}
-     */
+      *
+      * @param traversals
+      *   to be executed from here, results are being aggregated/summed/unioned
+      * @example
+      *   {{{.union(_.out, _.in)}}}
+      */
     // TODO reimplement @Doc(info = "union/sum/aggregate/join given traversals from the current point")
     def union[B](traversals: (Iterator[A] => Iterator[B])*): Iterator[B] = iterator match {
       // TODO bring back PathAwareTraversal?
@@ -215,34 +215,33 @@ trait Traversal {
         }
     }
 
-    /** Branch step: based on the current element, match on something given a traversal, and provide resulting traversals
-     * based on the matched element. Allows to implement conditional semantics: if, if/else, if/elseif, if/elseif/else,
-     * ...
-     *
-     * @param on
-     *   Traversal to get to what you want to match on
-     * @tparam BranchOn
-     *   required to be >: Null because the implementation is using `null` as the default value. I didn't find a better
-     *   way to implement all semantics with the niceties of PartialFunction, and also yolo...
-     * @param options
-     *   PartialFunction from the matched element to the resulting traversal
-     * @tparam NewEnd
-     *   The element type of the resulting traversal
-     * @example
-     *   {{{
-     * .choose(_.property(Name)) {
-     *   case "L1" => _.out
-     *   case "R1" => _.repeat(_.out)(_.maxDepth(3))
-     *   case _ => _.in
-     * }
-     *   }}}
-     * @see
-     *   LogicalStepsTests
-     */
+    /** Branch step: based on the current element, match on something given a traversal, and provide resulting traversals based on the
+      * matched element. Allows to implement conditional semantics: if, if/else, if/elseif, if/elseif/else, ...
+      *
+      * @param on
+      *   Traversal to get to what you want to match on
+      * @tparam BranchOn
+      *   required to be >: Null because the implementation is using `null` as the default value. I didn't find a better way to implement
+      *   all semantics with the niceties of PartialFunction, and also yolo...
+      * @param options
+      *   PartialFunction from the matched element to the resulting traversal
+      * @tparam NewEnd
+      *   The element type of the resulting traversal
+      * @example
+      *   {{{
+      * .choose(_.property(Name)) {
+      *   case "L1" => _.out
+      *   case "R1" => _.repeat(_.out)(_.maxDepth(3))
+      *   case _ => _.in
+      * }
+      *   }}}
+      * @see
+      *   LogicalStepsTests
+      */
     // TODO reimplement @Doc(info = "allows to implement conditional semantics: if, if/else, if/elseif, if/elseif/else, ...")
     def choose[BranchOn >: Null, NewEnd](
-                                          on: Iterator[A] => Iterator[BranchOn]
-                                        )(options: PartialFunction[BranchOn, Iterator[A] => Iterator[NewEnd]]): Iterator[NewEnd] = iterator match {
+      on: Iterator[A] => Iterator[BranchOn]
+    )(options: PartialFunction[BranchOn, Iterator[A] => Iterator[NewEnd]]): Iterator[NewEnd] = iterator match {
       // TODO bring back PathAwareTraversal?
 //      case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal._choose[BranchOn, NewEnd](on)(options)
       case _ =>
@@ -287,13 +286,13 @@ trait Traversal {
 //    def isPathTracking: Boolean = iterator.isInstanceOf[PathAwareTraversal[_]]
 
     /** retrieve entire path that has been traversed thus far prerequisite: enablePathTracking has been called previously
-     *
-     * @example
-     *   {{{
-     *  myTraversal.enablePathTracking.out.out.path.toList
-     *   }}}
-     *   TODO would be nice to preserve the types of the elements, at least if they have a common supertype
-     */
+      *
+      * @example
+      *   {{{
+      *  myTraversal.enablePathTracking.out.out.path.toList
+      *   }}}
+      *   TODO would be nice to preserve the types of the elements, at least if they have a common supertype
+      */
     // TODO reimplement @Doc(info = "retrieve entire path that has been traversed thus far")
     def path: Iterator[Vector[Any]] = iterator match {
       // TODO bring back PathAwareTraversal?
@@ -320,34 +319,32 @@ trait Traversal {
     }
 
     /** Repeat the given traversal
-     *
-     * By default it will continue repeating until there's no more results, not emit anything along the way, and use
-     * depth first search.
-     *
-     * The @param behaviourBuilder allows you to configure end conditions (until|whilst|maxDepth), whether it should emit
-     * elements it passes by, and which search algorithm to use (depth-first or breadth-first).
-     *
-     * Search algorithm: Depth First Search (DFS) vs Breadth First Search (BFS): DFS means the repeat step will go deep
-     * before wide. BFS does the opposite: wide before deep. For example, given the graph
-     * {{{L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4}}} DFS will iterate the nodes in the order:
-     * {{{Center, L1, L2, L3, R1, R2, R3, R4}}} BFS will iterate the nodes in the order:
-     * {{{Center, L1, R1, R1, R2, L3, R3, R4}}}
-     *
-     * @example
-     *   {{{
-     * .repeat(_.out)                            // repeat until there's no more elements, emit nothing, use DFS
-     * .repeat(_.out)(_.maxDepth(3))                            // perform exactly three repeat iterations
-     * .repeat(_.out)(_.until(_.property(Name).endsWith("2")))  // repeat until the 'Name' property ends with '2'
-     * .repeat(_.out)(_.emit)                                   // emit everything along the way
-     * .repeat(_.out)(_.emit.breadthFirstSearch)                // emit everything, use BFS
-     * .repeat(_.out)(_.emit(_.property(Name).startsWith("L"))) // emit if the 'Name' property starts with 'L'
-     *   }}}
-     * @note
-     *   this works for domain-specific steps as well as generic graph steps - for details please take a look at the
-     *   examples in RepeatTraversalTests: both '''.followedBy''' and '''.out''' work.
-     * @see
-     *   RepeatTraversalTests for more detail and examples for all of the above.
-     */
+      *
+      * By default it will continue repeating until there's no more results, not emit anything along the way, and use depth first search.
+      *
+      * The @param behaviourBuilder allows you to configure end conditions (until|whilst|maxDepth), whether it should emit elements it
+      * passes by, and which search algorithm to use (depth-first or breadth-first).
+      *
+      * Search algorithm: Depth First Search (DFS) vs Breadth First Search (BFS): DFS means the repeat step will go deep before wide. BFS
+      * does the opposite: wide before deep. For example, given the graph {{{L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4}}} DFS will
+      * iterate the nodes in the order: {{{Center, L1, L2, L3, R1, R2, R3, R4}}} BFS will iterate the nodes in the order:
+      * {{{Center, L1, R1, R1, R2, L3, R3, R4}}}
+      *
+      * @example
+      *   {{{
+      * .repeat(_.out)                            // repeat until there's no more elements, emit nothing, use DFS
+      * .repeat(_.out)(_.maxDepth(3))                            // perform exactly three repeat iterations
+      * .repeat(_.out)(_.until(_.property(Name).endsWith("2")))  // repeat until the 'Name' property ends with '2'
+      * .repeat(_.out)(_.emit)                                   // emit everything along the way
+      * .repeat(_.out)(_.emit.breadthFirstSearch)                // emit everything, use BFS
+      * .repeat(_.out)(_.emit(_.property(Name).startsWith("L"))) // emit if the 'Name' property starts with 'L'
+      *   }}}
+      * @note
+      *   this works for domain-specific steps as well as generic graph steps - for details please take a look at the examples in
+      *   RepeatTraversalTests: both '''.followedBy''' and '''.out''' work.
+      * @see
+      *   RepeatTraversalTests for more detail and examples for all of the above.
+      */
     // @Doc(info = "repeat the given traversal")
     // TODO bring back repeat step
 //    def repeat[B >: A](
