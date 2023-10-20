@@ -832,16 +832,18 @@ class DomainClassesGenerator(schema: Schema) {
     }
   }
 
-  /** Generate accessors for all edge types on all Traversals for each node type.
-   * Analogous to the steps directly on StoredNode */
+  /** Generate accessors for all edge types on all Traversals for each node type. Analogous to the steps directly on StoredNode
+    */
   def generateRootTypesTraversals(schema: Schema): String = {
-    val neighborSteps = schema.edgeTypes.map { edgeType =>
-      val stepNameBase = s"_${Helpers.camelCase(edgeType.name)}"
-      s"""
+    val neighborSteps = schema.edgeTypes
+      .map { edgeType =>
+        val stepNameBase = s"_${Helpers.camelCase(edgeType.name)}"
+        s"""
          |final def ${stepNameBase}Out: Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}Out)
          |final def ${stepNameBase}In:  Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}In)
          |""".stripMargin
-    }.mkString("\n")
+      }
+      .mkString("\n")
 
     s"""
        |package ${schema.basePackage}.v2.nodes
