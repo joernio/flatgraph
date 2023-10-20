@@ -1,9 +1,11 @@
 package io.joern.odb2.codegen
 
 import io.joern.odb2.codegen.CodeSnippets.FilterSteps
+import overflowdb.codegen.CodeGen.ConstantContext
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
+import overflowdb.codegen.Helpers.typeFor
 import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
@@ -737,9 +739,80 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |""".stripMargin
     os.write(outputDir0 / s"$domainShortName.scala", domainMain)
+    // domain object and starters: end
+
+    writeConstants(outputDir0, schema)
+    // end `run`
   }
-  // domain object and starters: end
-  // end generate
+
+  private def writeConstants(outputDir: os.Path, schema: Schema): Seq[os.Path] = {
+    val results = Seq.newBuilder[os.Path]
+    def writeConstantsFile(className: String, constants: Seq[ConstantContext]) = {
+      val constantsSource = constants
+        .map { constant =>
+          val documentation = constant.documentation.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
+          s"""$documentation
+           |${constant.source}
+           |""".stripMargin
+        }
+        .mkString("\n")
+      val allConstantsSetType = if (constantsSource.contains("PropertyKey")) "PropertyKey<?>" else "String"
+      val allConstantsBody = constants
+        .map { constant =>
+          s"add(${constant.name});"
+        }
+        .mkString("\n")
+      val allConstantsSet =
+        s"""public static Set<$allConstantsSetType> ALL = new HashSet<$allConstantsSetType>() {{
+           |$allConstantsBody
+           |}};
+           |""".stripMargin
+      val file = outputDir / s"$className.java"
+      os.write(
+        file,
+        s"""package ${schema.basePackage}.v2;
+           |
+           |import java.util.HashSet;
+           |import java.util.Set;
+           |
+           |public class $className {
+           |
+           |$constantsSource
+           |$allConstantsSet
+           |}""".stripMargin
+      )
+      results.addOne(file)
+    }
+
+    writeConstantsFile(
+      "PropertyNames",
+      schema.properties.map { property =>
+        ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
+      }
+    )
+    writeConstantsFile(
+      "NodeTypes",
+      schema.nodeTypes.map { nodeType =>
+        ConstantContext(nodeType.name, s"""public static final String ${nodeType.name} = "${nodeType.name}";""", nodeType.comment)
+      }
+    )
+    writeConstantsFile(
+      "EdgeTypes",
+      schema.edgeTypes.map { edgeType =>
+        ConstantContext(edgeType.name, s"""public static final String ${edgeType.name} = "${edgeType.name}";""", edgeType.comment)
+      }
+    )
+    schema.constantsByCategory.foreach { case (category, constants) =>
+      writeConstantsFile(
+        category,
+        constants.map { constant =>
+          ConstantContext(constant.name, s"""public static final String ${constant.name} = "${constant.value}";""", constant.comment)
+        }
+      )
+    }
+
+    results.result()
+  }
 
   def typeForProperty(p: Property[?]): String = {
     val typ = unpackTypeUnboxed(p.valueType, isStored = true, raised = false)
