@@ -39,6 +39,14 @@ class CompileTests extends AnyWordSpec with Matchers {
 
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
       val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
+
+      // edge accessors
+      // TODO inherit lang import from top level Lang?
+      import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
+      iter.next._blockViaArgumentOut
+      iter._blockViaArgumentOut
+      iter.next.referencedMember
+      iter.referencedMember
     }
   }
 
@@ -75,11 +83,16 @@ class CompileTests extends AnyWordSpec with Matchers {
   }
 
   "abstract stored class" in {
-    lazy val iter: Iterator[CallRepr] = ???
+    lazy val iter: Iterator[CfgNode] = ???
     lazy val compiles = {
-      iter.name("a")
+      iter.code("a")
       iter.order
       iter.next.order
+
+      // edge accessors
+      import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
+      iter.next._blockViaCfgIn
+      iter._blockViaCfgIn
     }
 
   }
