@@ -131,6 +131,8 @@ class DomainClassesGenerator(schema: Schema) {
 
     os.write(outputDir0 / "RootTypes.scala", rootTypes)
 
+    os.write(outputDir0 / "RootTypesTraversals.scala", generateRootTypesTraversals(schema))
+
     val propertyMarkers = relevantProperties.map(p => s"trait Has${p.className}T").mkString("\n")
     val basetypefile = schema.nodeBaseTypes
       .map { baseType =>
@@ -429,7 +431,7 @@ class DomainClassesGenerator(schema: Schema) {
           .sorted
           .mkString("\n")}
          |    else null
-         | 
+         |
          | override def getPropertyIdByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
          | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
@@ -828,6 +830,26 @@ class DomainClassesGenerator(schema: Schema) {
       case "StoredNode" => "AbstractNode"
       case other        => s"${other}Base"
     }
+  }
+
+  /** Generate accessors for all edge types on all Traversals for each node type.
+   * Analogous to the steps directly on StoredNode */
+  def generateRootTypesTraversals(schema: Schema): String = {
+    val neighborSteps = schema.edgeTypes.map { edgeType =>
+      val stepNameBase = s"_${Helpers.camelCase(edgeType.name)}"
+      s"""
+         |final def ${stepNameBase}Out: Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}Out)
+         |final def ${stepNameBase}In:  Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}In)
+         |""".stripMargin
+    }.mkString("\n")
+
+    s"""
+       |package ${schema.basePackage}.v2.nodes
+       |
+       |extension (iterator: Iterator[StoredNode]) {
+       |  $neighborSteps
+       |}
+       |""".stripMargin
   }
 
   def generatePropertyTraversals(property: Property[?], propertyId: Int): String = {
