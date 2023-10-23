@@ -1,9 +1,8 @@
 package io.joern.odb2.benchmark
 
 import io.shiftleft.codepropertygraph.generated.v2.*
-import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes.*
-import io.shiftleft.codepropertygraph.generated.v2.traversals.Lang.*
+import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -41,8 +40,6 @@ class CompileTests extends AnyWordSpec with Matchers {
       val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
 
       // edge accessors
-      // TODO inherit lang import from top level Lang?
-      import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
       iter.next._blockViaArgumentOut
       iter._blockViaArgumentOut
       iter.next.referencedMember
