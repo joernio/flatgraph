@@ -99,7 +99,7 @@ class DomainClassesGenerator(schema: Schema) {
     }.mkString("\n")
     // format: on
 
-    val userMarkers = schema.allNodeTypes
+    val schemaDefinedMarkerTraits = schema.allNodeTypes
       .flatMap(_.markerTraits)
       .distinct
       .map { case MarkerTrait(name) => s"trait $name" }
@@ -133,7 +133,13 @@ class DomainClassesGenerator(schema: Schema) {
 
     os.write(outputDir0 / "RootTypesTraversals.scala", generateRootTypesTraversals(schema))
 
-    val propertyMarkers = relevantProperties.map(p => s"trait Has${p.className}T").mkString("\n")
+    val markerTraitsForProperties = relevantProperties
+      .map { p =>
+        s"""/** Node types with this marker trait are guaranteed to have the ${p.name} property.
+         |   * EMT stands for: "erased marker trait", it exists only at compile time in order to improve type safety. */
+         |trait Has${p.className}EMT""".stripMargin
+      }
+      .mkString("\n")
     val basetypefile = schema.nodeBaseTypes
       .map { baseType =>
         val newExtendz = newExtendzMap(baseType)
@@ -144,8 +150,9 @@ class DomainClassesGenerator(schema: Schema) {
         val mixinsNew =
           List("NewNode", s"${baseType.className}Base") ++ baseType.extendz.map(_.className + "New") ++ baseType.markerTraits.map(_.name)
         val newProperties = newPropsAtNodeList(baseType)
-        val mixinsT =
-          (List("AnyRef") ++ newExtendz.map { _.className + "T" } ++ newProperties.map { p => s"Has${p.className}T" }).mkString(" with ")
+        val mixinsEMT =
+          (List("AnyRef") ++ newExtendz.map { p => s"${p.className}EMT" } ++ newProperties.map { p => s"Has${p.className}EMT" })
+            .mkString(" with ")
         val oldProperties = baseType.properties.toSet.diff(newProperties.toSet).toList.sortBy(_.name)
         val oldExtendz    = baseType.extendzRecursively.toSet.diff(newExtendz.toSet).toList.sortBy(_.name)
 
@@ -173,9 +180,9 @@ class DomainClassesGenerator(schema: Schema) {
           }
         }.flatten
 
-        s"""trait ${baseType.className}T extends $mixinsT
+        s"""trait ${baseType.className}EMT extends $mixinsEMT
            |
-           |trait ${baseType.className}Base extends ${mixinsBase.mkString(" with ")} with StaticType[${baseType.className}T]
+           |trait ${baseType.className}Base extends ${mixinsBase.mkString(" with ")} with StaticType[${baseType.className}EMT]
            | // new properties: ${newProperties.map { _.name }.mkString(", ")}
            | // inherited properties: ${oldProperties.map { _.name }.mkString(", ")}
            | // inherited interfaces: ${oldExtendz.map(_.name).mkString(", ")}
@@ -183,9 +190,9 @@ class DomainClassesGenerator(schema: Schema) {
             .filter { n => n.extendzRecursively.contains(baseType) }
             .map(_.name)
             .mkString(", ")}
-           |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}T]
+           |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}EMT]
            |
-           |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}T]{
+           |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
            |  type RelatedStored <:  ${baseType.className}
            |  ${newNodeDefs.mkString("\n")}
            |}
@@ -197,7 +204,7 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |""".stripMargin,
         "\n\n",
-        s"\n$userMarkers\n$propertyMarkers\n"
+        s"\n$schemaDefinedMarkerTraits\n$markerTraitsForProperties\n"
       )
     os.write(outputDir0 / "BaseTypes.scala", basetypefile)
 
@@ -240,16 +247,16 @@ class DomainClassesGenerator(schema: Schema) {
         val newExtendz    = newExtendzMap(nodeType)
         val newProperties = newPropsAtNodeList(nodeType)
         val staticTyp =
-          (s"""trait ${nodeType.className}T extends AnyRef""" +: newExtendz.map { b => s"${b.className}T" } ++: newProperties.map { p =>
-            s"Has${p.className}T"
+          (s"""trait ${nodeType.className}EMT extends AnyRef""" +: newExtendz.map { b => s"${b.className}EMT" } ++: newProperties.map { p =>
+            s"Has${p.className}EMT"
           }).mkString(" with ")
 
         val base = (s"""trait ${nodeType.className}Base extends AbstractNode""" +: newExtendz
-          .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
+          .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
 
         val stored =
           (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
-            .map { base => base.className } ++: List(s"StaticType[${nodeType.className}T]")).mkString(" with ")
+            .map { base => base.className } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
         // val base = (s"""class ${nodeType.className}""")
         val newNodeProps    = mutable.ArrayBuffer.empty[String]
         val newNodeFluent   = mutable.ArrayBuffer.empty[String]
@@ -468,14 +475,14 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin
       )
       concreteStoredConv.addOne(
-        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
       accessorsForConcreteNodeTraversals.addOne(
-        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
+        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
           generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}T]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
+        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
       )
     }
 

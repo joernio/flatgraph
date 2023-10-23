@@ -10,8 +10,8 @@ import org.scalatest.wordspec.AnyWordSpec
   * that this code compiles and produces no ambiguity warnings.
   *
   * Demonstrate that users can ad-hoc subtype nodes and write extension methods for the ad-hoc subtypes. In this example we define an ad-hoc
-  * `IsStaticT` subtype of CALL which is "statically dispatched call", and an extension method staticCallee that safely goes to the callee.
-  * This extension method is only defined on our ad-hoc subtype.
+  * `IsStaticEMT` subtype of CALL which is "statically dispatched call", and an extension method staticCallee that safely goes to the
+  * callee. This extension method is only defined on our ad-hoc subtype.
   */
 class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
@@ -37,7 +37,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.isStatic.map(_.staticCallee)
 
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
-      val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
+      val _: Iterator[Call & StaticType[IsStaticEMT]] = iter.isStatic
 
       // edge accessors
       iter.next._blockViaArgumentOut
@@ -57,7 +57,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.isStatic
 
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
-      val _: Iterator[CallBase & StaticType[IsStaticT]] = iter.isStatic
+      val _: Iterator[CallBase & StaticType[IsStaticEMT]] = iter.isStatic
     }
     assertDoesNotCompile("iter.isStatic.staticCallee")
     assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
@@ -73,7 +73,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.isStatic
 
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
-      val _: Iterator[NewCall & StaticType[IsStaticT]] = iter.isStatic
+      val _: Iterator[NewCall & StaticType[IsStaticEMT]] = iter.isStatic
     }
     assertDoesNotCompile("iter.isStatic.staticCallee")
     assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
@@ -147,24 +147,29 @@ class CompileTests extends AnyWordSpec with Matchers {
 }
 
 object CompileTests {
-  trait IsStaticT
+
+  /** Marker trait to indicate that a given `Call` node is static. Demonstrates the usage of ad-hoc defined erased marker traits (EMT) - the
+    * original schema does not have `IsStatic` as a property. EMTs exists only at compile time in order to improve type safety. Hence, it's
+    * safe to cast a given node instance to this marker type (see example below).
+    */
+  trait IsStaticEMT
 
   implicit class IsStaticExt[NodeType <: CallBase](val node: NodeType) extends AnyVal {
     // n.b. this should really be `def isStatic: Boolean` - the reason it's not is simply that we wanted to have compile-time test for
     // complex cases and didn't really think this through...
-    def isStatic: Option[NodeType with StaticType[IsStaticT]] =
-      if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType with StaticType[IsStaticT]]) else None
+    def isStatic: Option[NodeType with StaticType[IsStaticEMT]] =
+      if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType with StaticType[IsStaticEMT]]) else None
   }
 
   implicit class IsStaticTravExt[NodeType <: CallBase](val trav: Iterator[NodeType]) extends AnyVal {
-    def isStatic: Iterator[NodeType with StaticType[IsStaticT]] = trav.flatMap { _.isStatic }
+    def isStatic: Iterator[NodeType with StaticType[IsStaticEMT]] = trav.flatMap { _.isStatic }
   }
 
-  implicit class StaticCallExt[NodeType <: Call with StaticType[IsStaticT]](val node: NodeType) extends AnyVal {
+  implicit class StaticCallExt[NodeType <: Call with StaticType[IsStaticEMT]](val node: NodeType) extends AnyVal {
     def staticCallee: Method = node._callOut.head.asInstanceOf[Method]
   }
 
-  implicit class StaticCallTravExt[NodeType <: Call with StaticType[IsStaticT]](val trav: Iterator[NodeType]) extends AnyVal {
+  implicit class StaticCallTravExt[NodeType <: Call with StaticType[IsStaticEMT]](val trav: Iterator[NodeType]) extends AnyVal {
     def staticCallee: Iterator[Method] = trav.map { _.staticCallee }
   }
 
