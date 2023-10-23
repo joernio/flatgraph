@@ -37,8 +37,9 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.isStatic.orderGt(3).staticCallee
       iter.next.isStatic.map(_.staticCallee)
 
+      val isStaticIter = iter.isStatic
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
-      val _: Iterator[Call & StaticType[IsStaticT]] = iter.isStatic
+      val _: Call & StaticType[IsStaticT] = isStaticIter.next()
 
       // edge accessors
       // TODO inherit lang import from top level Lang?
@@ -59,8 +60,9 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.isStatic
       iter.next.isStatic
 
+      val isStaticIter = iter.isStatic
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
-      val _: Iterator[CallBase & StaticType[IsStaticT]] = iter.isStatic
+      val _: CallBase & StaticType[IsStaticT] = isStaticIter.next()
     }
     assertDoesNotCompile("iter.isStatic.staticCallee")
     assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
@@ -75,8 +77,9 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.isStatic
       iter.next.isStatic
 
+      val isStaticIter = iter.isStatic
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
-      val _: Iterator[NewCall & StaticType[IsStaticT]] = iter.isStatic
+      val _: NewCall & StaticType[IsStaticT] = isStaticIter.next()
     }
     assertDoesNotCompile("iter.isStatic.staticCallee")
     assertDoesNotCompile("iter.next.isStatic.map(_.staticCallee)")
