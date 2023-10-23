@@ -743,6 +743,20 @@ class DomainClassesGenerator(schema: Schema) {
     os.write(outputDir0 / s"$domainShortName.scala", domainMain)
     // domain object and starters: end
 
+    os.write(
+      outputDir0 / "Language.scala",
+      s"""package $basePackage
+         |
+         |/** combining all implicits into one trait that can be mixed in further downstream */
+         |trait Language
+         |  extends accessors.ConcreteStoredConversions
+         |  with traversals.ConcreteStoredConversions
+         |  with neighboraccessors.Conversions
+         |
+         |object Language extends Language
+         |""".stripMargin
+    )
+
     writeConstants(outputDir0, schema)
     // end `run`
   }
