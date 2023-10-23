@@ -1800,6 +1800,19 @@ N.b. there are many debates about whether to check generated code into repositor
 In this specific case, it is essential to be able to talk about the generated code,
 and track its changes over time.
 
-# What JDK does OverflowDBv2 support?
+# FAQ
+
+## What JDK does OverflowDBv2 support?
 The build targets JDK8, so that's the minimum version. The build itself requires JDK11+. 
 However in any case it is highly encouraged to use a modern JVM, such as JDK20. 
+
+## What does EMT stand for?
+EMT is a naming convention that stands for "erased marker trait". 
+The domain classes generator generates one for each property in the schema and users can define additional marker traits. 
+
+[CompileTests.scala][benchmarks/src/test/scala/io/joern/odb2/benchmark/CompileTests.scala] demonstrates how users can add these marker traits ad-hoc - in this case to add a `IsStaticEMT` marker to a `Call` node, to indicate that the given `Call` is static. Note that the original schema does not have that attribute, so this is to demonstrate the extensibility and type safety of the domain classes.
+
+The marker traits exist only at compile time in order to improve type safety. Hence, it's safe to cast a given node instance to this marker type, since it's erased at runtime.
+
+(n.b. these marker traits do not define any members or functions, otherwise their usage would result in a ClasscastException at runtime)
+

@@ -344,7 +344,7 @@ class Odb2Generated {
   def orderSumUnchecked(blackhole: Blackhole): Int = {
     import v2.accessors.Lang.*
     var sumOrder = 0
-    for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode with v2.nodes.StaticType[v2.nodes.AstNodeT]]]) {
+    for (node <- nodeStart.iterator.asInstanceOf[Iterator[v2.nodes.StoredNode with v2.nodes.StaticType[v2.nodes.AstNodeEMT]]]) {
       // we use an unchecked cast to claim that our node is an AST-node.
       // the difference is type-erased so that should be a no-op.
       // on the other hand, we won't get classCast exceptions on mistakes, only silent type confusion bugs.
