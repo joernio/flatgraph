@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.v2.nodes
+package io.shiftleft.codepropertygraph.generated.nodes
 import io.joern.odb2
 
 trait AstNodeT extends AnyRef with HasCodeT with HasColumnNumberT with HasLineNumberT with HasOrderT

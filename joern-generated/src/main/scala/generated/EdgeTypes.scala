@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.v2.edges
+package io.shiftleft.codepropertygraph.generated.edges
 import io.joern.odb2
 
 class AliasOf(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)

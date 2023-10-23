@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.v2;
+package io.shiftleft.codepropertygraph.generated;
 
 import java.util.HashSet;
 import java.util.Set;

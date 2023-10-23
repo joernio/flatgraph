@@ -1,6 +1,6 @@
-package io.shiftleft.codepropertygraph.generated.v2.accessors
+package io.shiftleft.codepropertygraph.generated.accessors
 import io.joern.odb2
-import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.nodes
 import scala.collection.immutable.IndexedSeq
 
 object Lang extends ConcreteStoredConversions

@@ -1,11 +1,11 @@
-package io.shiftleft.codepropertygraph.generated.v2.traversals
+package io.shiftleft.codepropertygraph.generated.traversals
 import io.joern.odb2
-import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.nodes
 
 object Lang extends ConcreteStoredConversions
 
 object Accessors {
-  import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
+  import io.shiftleft.codepropertygraph.generated.accessors.Lang.*
   import odb2.misc.Misc
 
   /* accessors for concrete stored nodes start */

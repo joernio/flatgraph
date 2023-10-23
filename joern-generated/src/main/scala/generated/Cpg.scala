@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.v2
+package io.shiftleft.codepropertygraph.generated
 import io.joern.odb2
 
 object Cpg {

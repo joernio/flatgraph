@@ -1,7 +1,7 @@
-package io.shiftleft.codepropertygraph.generated.v2.neighboraccessors
+package io.shiftleft.codepropertygraph.generated.neighboraccessors
 import io.joern.odb2
 import io.joern.odb2.Traversal.*
-import io.shiftleft.codepropertygraph.generated.v2.nodes
+import io.shiftleft.codepropertygraph.generated.nodes
 
 object Lang extends Conversions
 

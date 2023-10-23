@@ -33,7 +33,7 @@ class DomainClassesGenerator(schema: Schema) {
     os.remove.all(outputDir0)
     os.makeDir.all(outputDir0)
 
-    val basePackage = schema.basePackage + ".v2"
+    val basePackage = schema.basePackage
 
     val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
@@ -772,7 +772,7 @@ class DomainClassesGenerator(schema: Schema) {
       val file = outputDir / s"$className.java"
       os.write(
         file,
-        s"""package ${schema.basePackage}.v2;
+        s"""package ${schema.basePackage};
            |
            |import java.util.HashSet;
            |import java.util.Set;
@@ -846,7 +846,7 @@ class DomainClassesGenerator(schema: Schema) {
       .mkString("\n")
 
     s"""
-       |package ${schema.basePackage}.v2.nodes
+       |package ${schema.basePackage}.nodes
        |
        |extension (iterator: Iterator[StoredNode]) {
        |  $neighborSteps

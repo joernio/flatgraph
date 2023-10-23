@@ -1,4 +1,4 @@
-package io.shiftleft.codepropertygraph.generated.v2.nodes
+package io.shiftleft.codepropertygraph.generated.nodes
 
 extension (iterator: Iterator[StoredNode]) {
 
