@@ -2,8 +2,8 @@ package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
-trait AnnotationT extends AnyRef with ExpressionT with HasFullNameT with HasNameT
-trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[AnnotationT] {
+trait AnnotationEMT extends AnyRef with ExpressionEMT with HasFullNameEMT with HasNameEMT
+trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[AnnotationEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -23,8 +23,8 @@ class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0.toShort, seq_4762)
     with AnnotationBase
     with Expression
-    with StaticType[AnnotationT] {}
-object NewAnnotation             { def apply(): NewAnnotation = new NewAnnotation }
+    with StaticType[AnnotationEMT] {}
+object NewAnnotation               { def apply(): NewAnnotation = new NewAnnotation }
 class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
   type RelatedStored = Annotation
   override def label: String                         = "ANNOTATION"
@@ -59,8 +59,8 @@ class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
   }
 }
 
-trait AnnotationLiteralT extends AnyRef with ExpressionT with HasNameT
-trait AnnotationLiteralBase extends AbstractNode with ExpressionBase with StaticType[AnnotationLiteralT] {
+trait AnnotationLiteralEMT extends AnyRef with ExpressionEMT with HasNameEMT
+trait AnnotationLiteralBase extends AbstractNode with ExpressionBase with StaticType[AnnotationLiteralEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -79,8 +79,8 @@ class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1.toShort, seq_4762)
     with AnnotationLiteralBase
     with Expression
-    with StaticType[AnnotationLiteralT] {}
-object NewAnnotationLiteral             { def apply(): NewAnnotationLiteral = new NewAnnotationLiteral }
+    with StaticType[AnnotationLiteralEMT] {}
+object NewAnnotationLiteral               { def apply(): NewAnnotationLiteral = new NewAnnotationLiteral }
 class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase {
   type RelatedStored = AnnotationLiteral
   override def label: String                         = "ANNOTATION_LITERAL"
@@ -112,8 +112,8 @@ class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase
   }
 }
 
-trait AnnotationParameterT extends AnyRef with AstNodeT
-trait AnnotationParameterBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterT] {
+trait AnnotationParameterEMT extends AnyRef with AstNodeEMT
+trait AnnotationParameterBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -129,8 +129,8 @@ class AnnotationParameter(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 2.toShort, seq_4762)
     with AnnotationParameterBase
     with AstNode
-    with StaticType[AnnotationParameterT] {}
-object NewAnnotationParameter             { def apply(): NewAnnotationParameter = new NewAnnotationParameter }
+    with StaticType[AnnotationParameterEMT] {}
+object NewAnnotationParameter               { def apply(): NewAnnotationParameter = new NewAnnotationParameter }
 class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameterBase {
   type RelatedStored = AnnotationParameter
   override def label: String                      = "ANNOTATION_PARAMETER"
@@ -152,8 +152,8 @@ class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameter
   }
 }
 
-trait AnnotationParameterAssignT extends AnyRef with AstNodeT
-trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterAssignT] {
+trait AnnotationParameterAssignEMT extends AnyRef with AstNodeEMT
+trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterAssignEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -169,8 +169,8 @@ class AnnotationParameterAssign(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 3.toShort, seq_4762)
     with AnnotationParameterAssignBase
     with AstNode
-    with StaticType[AnnotationParameterAssignT] {}
-object NewAnnotationParameterAssign             { def apply(): NewAnnotationParameterAssign = new NewAnnotationParameterAssign }
+    with StaticType[AnnotationParameterAssignEMT] {}
+object NewAnnotationParameterAssign               { def apply(): NewAnnotationParameterAssign = new NewAnnotationParameterAssign }
 class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationParameterAssignBase {
   type RelatedStored = AnnotationParameterAssign
   override def label: String                      = "ANNOTATION_PARAMETER_ASSIGN"
@@ -192,8 +192,8 @@ class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationPar
   }
 }
 
-trait ArrayInitializerT extends AnyRef with ExpressionT
-trait ArrayInitializerBase extends AbstractNode with ExpressionBase with StaticType[ArrayInitializerT] {
+trait ArrayInitializerEMT extends AnyRef with ExpressionEMT
+trait ArrayInitializerBase extends AbstractNode with ExpressionBase with StaticType[ArrayInitializerEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -211,8 +211,8 @@ class ArrayInitializer(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 4.toShort, seq_4762)
     with ArrayInitializerBase
     with Expression
-    with StaticType[ArrayInitializerT] {}
-object NewArrayInitializer             { def apply(): NewArrayInitializer = new NewArrayInitializer }
+    with StaticType[ArrayInitializerEMT] {}
+object NewArrayInitializer               { def apply(): NewArrayInitializer = new NewArrayInitializer }
 class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
   type RelatedStored = ArrayInitializer
   override def label: String                         = "ARRAY_INITIALIZER"
@@ -241,8 +241,8 @@ class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
   }
 }
 
-trait BindingT extends AnyRef with HasMethodFullNameT with HasNameT with HasSignatureT
-trait BindingBase extends AbstractNode with StaticType[BindingT] {
+trait BindingEMT extends AnyRef with HasMethodFullNameEMT with HasNameEMT with HasSignatureEMT
+trait BindingBase extends AbstractNode with StaticType[BindingEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -256,8 +256,8 @@ trait BindingBase extends AbstractNode with StaticType[BindingT] {
 class Binding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 5.toShort, seq_4762)
     with BindingBase
-    with StaticType[BindingT] {}
-object NewBinding             { def apply(): NewBinding = new NewBinding }
+    with StaticType[BindingEMT] {}
+object NewBinding               { def apply(): NewBinding = new NewBinding }
 class NewBinding extends NewNode(5.toShort) with BindingBase {
   type RelatedStored = Binding
   override def label: String                   = "BINDING"
@@ -274,8 +274,8 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
   }
 }
 
-trait BlockT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
-trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockT] {
+trait BlockEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
+trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -297,8 +297,8 @@ class Block(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 6.toShort, seq_4762)
     with BlockBase
     with Expression
-    with StaticType[BlockT] {}
-object NewBlock             { def apply(): NewBlock = new NewBlock }
+    with StaticType[BlockEMT] {}
+object NewBlock               { def apply(): NewBlock = new NewBlock }
 class NewBlock extends NewNode(6.toShort) with BlockBase {
   type RelatedStored = Block
   override def label: String                                          = "BLOCK"
@@ -336,16 +336,16 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
   }
 }
 
-trait CallT
+trait CallEMT
     extends AnyRef
-    with CallReprT
-    with ExpressionT
-    with HasDispatchTypeT
-    with HasDynamicTypeHintFullNameT
-    with HasMethodFullNameT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with StaticType[CallT] {
+    with CallReprEMT
+    with ExpressionEMT
+    with HasDispatchTypeEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasMethodFullNameEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with StaticType[CallEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -372,8 +372,8 @@ class Call(graph_4762: odb2.Graph, seq_4762: Int)
     with CallBase
     with CallRepr
     with Expression
-    with StaticType[CallT] {}
-object NewCall             { def apply(): NewCall = new NewCall }
+    with StaticType[CallEMT] {}
+object NewCall               { def apply(): NewCall = new NewCall }
 class NewCall extends NewNode(7.toShort) with CallBase {
   type RelatedStored = Call
   override def label: String                                          = "CALL"
@@ -423,8 +423,8 @@ class NewCall extends NewNode(7.toShort) with CallBase {
   }
 }
 
-trait ClosureBindingT extends AnyRef with HasClosureBindingIdT with HasClosureOriginalNameT with HasEvaluationStrategyT
-trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingT] {
+trait ClosureBindingEMT extends AnyRef with HasClosureBindingIdEMT with HasClosureOriginalNameEMT with HasEvaluationStrategyEMT
+trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -438,8 +438,8 @@ trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingT] {
 class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 8.toShort, seq_4762)
     with ClosureBindingBase
-    with StaticType[ClosureBindingT] {}
-object NewClosureBinding             { def apply(): NewClosureBinding = new NewClosureBinding }
+    with StaticType[ClosureBindingEMT] {}
+object NewClosureBinding               { def apply(): NewClosureBinding = new NewClosureBinding }
 class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
   type RelatedStored = ClosureBinding
   override def label: String                                = "CLOSURE_BINDING"
@@ -458,8 +458,8 @@ class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
   }
 }
 
-trait CommentT extends AnyRef with AstNodeT with HasFilenameT
-trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentT] {
+trait CommentEMT extends AnyRef with AstNodeEMT with HasFilenameEMT
+trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -476,8 +476,8 @@ class Comment(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 9.toShort, seq_4762)
     with CommentBase
     with AstNode
-    with StaticType[CommentT] {}
-object NewComment             { def apply(): NewComment = new NewComment }
+    with StaticType[CommentEMT] {}
+object NewComment               { def apply(): NewComment = new NewComment }
 class NewComment extends NewNode(9.toShort) with CommentBase {
   type RelatedStored = Comment
   override def label: String                      = "COMMENT"
@@ -502,8 +502,8 @@ class NewComment extends NewNode(9.toShort) with CommentBase {
   }
 }
 
-trait ConfigFileT extends AnyRef with HasContentT with HasNameT
-trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileT] {
+trait ConfigFileEMT extends AnyRef with HasContentEMT with HasNameEMT
+trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -516,8 +516,8 @@ trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileT] {
 class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 10.toShort, seq_4762)
     with ConfigFileBase
-    with StaticType[ConfigFileT] {}
-object NewConfigFile             { def apply(): NewConfigFile = new NewConfigFile }
+    with StaticType[ConfigFileEMT] {}
+object NewConfigFile               { def apply(): NewConfigFile = new NewConfigFile }
 class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   type RelatedStored = ConfigFile
   override def label: String            = "CONFIG_FILE"
@@ -531,8 +531,8 @@ class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   }
 }
 
-trait ControlStructureT extends AnyRef with ExpressionT with HasControlStructureTypeT with HasParserTypeNameT
-trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticType[ControlStructureT] {
+trait ControlStructureEMT extends AnyRef with ExpressionEMT with HasControlStructureTypeEMT with HasParserTypeNameEMT
+trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticType[ControlStructureEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -552,8 +552,8 @@ class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 11.toShort, seq_4762)
     with ControlStructureBase
     with Expression
-    with StaticType[ControlStructureT] {}
-object NewControlStructure             { def apply(): NewControlStructure = new NewControlStructure }
+    with StaticType[ControlStructureEMT] {}
+object NewControlStructure               { def apply(): NewControlStructure = new NewControlStructure }
 class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase {
   type RelatedStored = ControlStructure
   override def label: String                         = "CONTROL_STRUCTURE"
@@ -588,8 +588,8 @@ class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase 
   }
 }
 
-trait DependencyT extends AnyRef with HasDependencyGroupIdT with HasNameT with HasVersionT
-trait DependencyBase extends AbstractNode with StaticType[DependencyT] {
+trait DependencyEMT extends AnyRef with HasDependencyGroupIdEMT with HasNameEMT with HasVersionEMT
+trait DependencyBase extends AbstractNode with StaticType[DependencyEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -603,8 +603,8 @@ trait DependencyBase extends AbstractNode with StaticType[DependencyT] {
 class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 12.toShort, seq_4762)
     with DependencyBase
-    with StaticType[DependencyT] {}
-object NewDependency             { def apply(): NewDependency = new NewDependency }
+    with StaticType[DependencyEMT] {}
+object NewDependency               { def apply(): NewDependency = new NewDependency }
 class NewDependency extends NewNode(12.toShort) with DependencyBase {
   type RelatedStored = Dependency
   override def label: String                              = "DEPENDENCY"
@@ -622,8 +622,8 @@ class NewDependency extends NewNode(12.toShort) with DependencyBase {
   }
 }
 
-trait FieldIdentifierT extends AnyRef with ExpressionT with HasCanonicalNameT
-trait FieldIdentifierBase extends AbstractNode with ExpressionBase with StaticType[FieldIdentifierT] {
+trait FieldIdentifierEMT extends AnyRef with ExpressionEMT with HasCanonicalNameEMT
+trait FieldIdentifierBase extends AbstractNode with ExpressionBase with StaticType[FieldIdentifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -642,8 +642,8 @@ class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 13.toShort, seq_4762)
     with FieldIdentifierBase
     with Expression
-    with StaticType[FieldIdentifierT] {}
-object NewFieldIdentifier             { def apply(): NewFieldIdentifier = new NewFieldIdentifier }
+    with StaticType[FieldIdentifierEMT] {}
+object NewFieldIdentifier               { def apply(): NewFieldIdentifier = new NewFieldIdentifier }
 class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
   type RelatedStored = FieldIdentifier
   override def label: String                         = "FIELD_IDENTIFIER"
@@ -675,8 +675,8 @@ class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
   }
 }
 
-trait FileT extends AnyRef with AstNodeT with HasHashT with HasNameT
-trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileT] {
+trait FileEMT extends AnyRef with AstNodeEMT with HasHashEMT with HasNameEMT
+trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -694,8 +694,8 @@ class File(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 14.toShort, seq_4762)
     with FileBase
     with AstNode
-    with StaticType[FileT] {}
-object NewFile             { def apply(): NewFile = new NewFile }
+    with StaticType[FileEMT] {}
+object NewFile               { def apply(): NewFile = new NewFile }
 class NewFile extends NewNode(14.toShort) with FileBase {
   type RelatedStored = File
   override def label: String                      = "FILE"
@@ -724,8 +724,8 @@ class NewFile extends NewNode(14.toShort) with FileBase {
   }
 }
 
-trait FindingT extends AnyRef
-trait FindingBase extends AbstractNode with StaticType[FindingT] {
+trait FindingEMT extends AnyRef
+trait FindingBase extends AbstractNode with StaticType[FindingEMT] {
   def evidence: IndexedSeq[AbstractNode]
   def keyValuePairs: IndexedSeq[KeyValuePairBase]
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -739,7 +739,7 @@ trait FindingBase extends AbstractNode with StaticType[FindingT] {
 class Finding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 15.toShort, seq_4762)
     with FindingBase
-    with StaticType[FindingT] {
+    with StaticType[FindingEMT] {
   def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 53, seq)
   def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 54, seq)
 }
@@ -757,14 +757,14 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
   }
 }
 
-trait IdentifierT
+trait IdentifierEMT
     extends AnyRef
-    with ExpressionT
-    with HasDynamicTypeHintFullNameT
-    with HasNameT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait IdentifierBase extends AbstractNode with ExpressionBase with StaticType[IdentifierT] {
+    with ExpressionEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasNameEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait IdentifierBase extends AbstractNode with ExpressionBase with StaticType[IdentifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -787,8 +787,8 @@ class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 16.toShort, seq_4762)
     with IdentifierBase
     with Expression
-    with StaticType[IdentifierT] {}
-object NewIdentifier             { def apply(): NewIdentifier = new NewIdentifier }
+    with StaticType[IdentifierEMT] {}
+object NewIdentifier               { def apply(): NewIdentifier = new NewIdentifier }
 class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
   type RelatedStored = Identifier
   override def label: String                                          = "IDENTIFIER"
@@ -829,15 +829,15 @@ class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
   }
 }
 
-trait ImportT
+trait ImportEMT
     extends AnyRef
-    with AstNodeT
-    with HasExplicitAsT
-    with HasImportedAsT
-    with HasImportedEntityT
-    with HasIsExplicitT
-    with HasIsWildcardT
-trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportT] {
+    with AstNodeEMT
+    with HasExplicitAsEMT
+    with HasImportedAsEMT
+    with HasImportedEntityEMT
+    with HasIsExplicitEMT
+    with HasIsWildcardEMT
+trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -858,8 +858,8 @@ class Import(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 17.toShort, seq_4762)
     with ImportBase
     with AstNode
-    with StaticType[ImportT] {}
-object NewImport             { def apply(): NewImport = new NewImport }
+    with StaticType[ImportEMT] {}
+object NewImport               { def apply(): NewImport = new NewImport }
 class NewImport extends NewNode(17.toShort) with ImportBase {
   type RelatedStored = Import
   override def label: String                           = "IMPORT"
@@ -901,8 +901,8 @@ class NewImport extends NewNode(17.toShort) with ImportBase {
   }
 }
 
-trait JumpLabelT extends AnyRef with AstNodeT with HasNameT with HasParserTypeNameT
-trait JumpLabelBase extends AbstractNode with AstNodeBase with StaticType[JumpLabelT] {
+trait JumpLabelEMT extends AnyRef with AstNodeEMT with HasNameEMT with HasParserTypeNameEMT
+trait JumpLabelBase extends AbstractNode with AstNodeBase with StaticType[JumpLabelEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -920,8 +920,8 @@ class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 18.toShort, seq_4762)
     with JumpLabelBase
     with AstNode
-    with StaticType[JumpLabelT] {}
-object NewJumpLabel             { def apply(): NewJumpLabel = new NewJumpLabel }
+    with StaticType[JumpLabelEMT] {}
+object NewJumpLabel               { def apply(): NewJumpLabel = new NewJumpLabel }
 class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
   type RelatedStored = JumpLabel
   override def label: String                      = "JUMP_LABEL"
@@ -949,8 +949,8 @@ class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
   }
 }
 
-trait JumpTargetT extends AnyRef with CfgNodeT with HasArgumentIndexT with HasNameT with HasParserTypeNameT
-trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpTargetT] {
+trait JumpTargetEMT extends AnyRef with CfgNodeEMT with HasArgumentIndexEMT with HasNameEMT with HasParserTypeNameEMT
+trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpTargetEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -969,8 +969,8 @@ class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 19.toShort, seq_4762)
     with JumpTargetBase
     with CfgNode
-    with StaticType[JumpTargetT] {}
-object NewJumpTarget             { def apply(): NewJumpTarget = new NewJumpTarget }
+    with StaticType[JumpTargetEMT] {}
+object NewJumpTarget               { def apply(): NewJumpTarget = new NewJumpTarget }
 class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
   type RelatedStored = JumpTarget
   override def label: String                      = "JUMP_TARGET"
@@ -1001,8 +1001,8 @@ class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
   }
 }
 
-trait KeyValuePairT extends AnyRef with HasKeyT with HasValueT
-trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairT] {
+trait KeyValuePairEMT extends AnyRef with HasKeyEMT with HasValueEMT
+trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1015,8 +1015,8 @@ trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairT] {
 class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 20.toShort, seq_4762)
     with KeyValuePairBase
-    with StaticType[KeyValuePairT] {}
-object NewKeyValuePair             { def apply(): NewKeyValuePair = new NewKeyValuePair }
+    with StaticType[KeyValuePairEMT] {}
+object NewKeyValuePair               { def apply(): NewKeyValuePair = new NewKeyValuePair }
 class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   type RelatedStored = KeyValuePair
   override def label: String          = "KEY_VALUE_PAIR"
@@ -1030,8 +1030,8 @@ class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   }
 }
 
-trait LiteralT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
-trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[LiteralT] {
+trait LiteralEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
+trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[LiteralEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1053,8 +1053,8 @@ class Literal(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 21.toShort, seq_4762)
     with LiteralBase
     with Expression
-    with StaticType[LiteralT] {}
-object NewLiteral             { def apply(): NewLiteral = new NewLiteral }
+    with StaticType[LiteralEMT] {}
+object NewLiteral               { def apply(): NewLiteral = new NewLiteral }
 class NewLiteral extends NewNode(21.toShort) with LiteralBase {
   type RelatedStored = Literal
   override def label: String                                          = "LITERAL"
@@ -1092,15 +1092,15 @@ class NewLiteral extends NewNode(21.toShort) with LiteralBase {
   }
 }
 
-trait LocalT
+trait LocalEMT
     extends AnyRef
-    with AstNodeT
-    with DeclarationT
-    with HasClosureBindingIdT
-    with HasDynamicTypeHintFullNameT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[LocalT] {
+    with AstNodeEMT
+    with DeclarationEMT
+    with HasClosureBindingIdEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[LocalEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1123,8 +1123,8 @@ class Local(graph_4762: odb2.Graph, seq_4762: Int)
     with LocalBase
     with AstNode
     with Declaration
-    with StaticType[LocalT] {}
-object NewLocal             { def apply(): NewLocal = new NewLocal }
+    with StaticType[LocalEMT] {}
+object NewLocal               { def apply(): NewLocal = new NewLocal }
 class NewLocal extends NewNode(22.toShort) with LocalBase {
   type RelatedStored = Local
   override def label: String                                          = "LOCAL"
@@ -1162,18 +1162,18 @@ class NewLocal extends NewNode(22.toShort) with LocalBase {
   }
 }
 
-trait LocationT
+trait LocationEMT
     extends AnyRef
-    with HasClassNameT
-    with HasClassShortNameT
-    with HasFilenameT
-    with HasLineNumberT
-    with HasMethodFullNameT
-    with HasMethodShortNameT
-    with HasNodeLabelT
-    with HasPackageNameT
-    with HasSymbolT
-trait LocationBase extends AbstractNode with StaticType[LocationT] {
+    with HasClassNameEMT
+    with HasClassShortNameEMT
+    with HasFilenameEMT
+    with HasLineNumberEMT
+    with HasMethodFullNameEMT
+    with HasMethodShortNameEMT
+    with HasNodeLabelEMT
+    with HasPackageNameEMT
+    with HasSymbolEMT
+trait LocationBase extends AbstractNode with StaticType[LocationEMT] {
   def node: Option[AbstractNode]
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1194,7 +1194,7 @@ trait LocationBase extends AbstractNode with StaticType[LocationT] {
 class Location(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 23.toShort, seq_4762)
     with LocationBase
-    with StaticType[LocationT] {
+    with StaticType[LocationEMT] {
   def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 53, seq)
 }
 object NewLocation { def apply(): NewLocation = new NewLocation }
@@ -1237,8 +1237,14 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
   }
 }
 
-trait MemberT extends AnyRef with AstNodeT with DeclarationT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
-trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[MemberT] {
+trait MemberEMT
+    extends AnyRef
+    with AstNodeEMT
+    with DeclarationEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[MemberEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1260,8 +1266,8 @@ class Member(graph_4762: odb2.Graph, seq_4762: Int)
     with MemberBase
     with AstNode
     with Declaration
-    with StaticType[MemberT] {}
-object NewMember             { def apply(): NewMember = new NewMember }
+    with StaticType[MemberEMT] {}
+object NewMember               { def apply(): NewMember = new NewMember }
 class NewMember extends NewNode(24.toShort) with MemberBase {
   type RelatedStored = Member
   override def label: String                                          = "MEMBER"
@@ -1295,8 +1301,8 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
   }
 }
 
-trait MetaDataT extends AnyRef with HasHashT with HasLanguageT with HasOverlaysT with HasRootT with HasVersionT
-trait MetaDataBase extends AbstractNode with StaticType[MetaDataT] {
+trait MetaDataEMT extends AnyRef with HasHashEMT with HasLanguageEMT with HasOverlaysEMT with HasRootEMT with HasVersionEMT
+trait MetaDataBase extends AbstractNode with StaticType[MetaDataEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1312,8 +1318,8 @@ trait MetaDataBase extends AbstractNode with StaticType[MetaDataT] {
 class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 25.toShort, seq_4762)
     with MetaDataBase
-    with StaticType[MetaDataT] {}
-object NewMetaData             { def apply(): NewMetaData = new NewMetaData }
+    with StaticType[MetaDataEMT] {}
+object NewMetaData               { def apply(): NewMetaData = new NewMetaData }
 class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   type RelatedStored = MetaData
   override def label: String                           = "META_DATA"
@@ -1337,20 +1343,20 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   }
 }
 
-trait MethodT
+trait MethodEMT
     extends AnyRef
-    with CfgNodeT
-    with DeclarationT
-    with HasAstParentFullNameT
-    with HasAstParentTypeT
-    with HasColumnNumberEndT
-    with HasFilenameT
-    with HasFullNameT
-    with HasHashT
-    with HasIsExternalT
-    with HasLineNumberEndT
-    with HasSignatureT
-trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodT] {
+    with CfgNodeEMT
+    with DeclarationEMT
+    with HasAstParentFullNameEMT
+    with HasAstParentTypeEMT
+    with HasColumnNumberEndEMT
+    with HasFilenameEMT
+    with HasFullNameEMT
+    with HasHashEMT
+    with HasIsExternalEMT
+    with HasLineNumberEndEMT
+    with HasSignatureEMT
+trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1377,8 +1383,8 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodBase
     with CfgNode
     with Declaration
-    with StaticType[MethodT] {}
-object NewMethod             { def apply(): NewMethod = new NewMethod }
+    with StaticType[MethodEMT] {}
+object NewMethod               { def apply(): NewMethod = new NewMethod }
 class NewMethod extends NewNode(26.toShort) with MethodBase {
   type RelatedStored = Method
   override def label: String                         = "METHOD"
@@ -1433,17 +1439,17 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
   }
 }
 
-trait MethodParameterInT
+trait MethodParameterInEMT
     extends AnyRef
-    with CfgNodeT
-    with DeclarationT
-    with HasDynamicTypeHintFullNameT
-    with HasEvaluationStrategyT
-    with HasIndexT
-    with HasIsVariadicT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait MethodParameterInBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterInT] {
+    with CfgNodeEMT
+    with DeclarationEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasEvaluationStrategyEMT
+    with HasIndexEMT
+    with HasIsVariadicEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait MethodParameterInBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterInEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1468,8 +1474,8 @@ class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodParameterInBase
     with CfgNode
     with Declaration
-    with StaticType[MethodParameterInT] {}
-object NewMethodParameterIn             { def apply(): NewMethodParameterIn = new NewMethodParameterIn }
+    with StaticType[MethodParameterInEMT] {}
+object NewMethodParameterIn               { def apply(): NewMethodParameterIn = new NewMethodParameterIn }
 class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBase {
   type RelatedStored = MethodParameterIn
   override def label: String                                          = "METHOD_PARAMETER_IN"
@@ -1512,15 +1518,15 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
   }
 }
 
-trait MethodParameterOutT
+trait MethodParameterOutEMT
     extends AnyRef
-    with CfgNodeT
-    with DeclarationT
-    with HasEvaluationStrategyT
-    with HasIndexT
-    with HasIsVariadicT
-    with HasTypeFullNameT
-trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterOutT] {
+    with CfgNodeEMT
+    with DeclarationEMT
+    with HasEvaluationStrategyEMT
+    with HasIndexEMT
+    with HasIsVariadicEMT
+    with HasTypeFullNameEMT
+trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterOutEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1542,8 +1548,8 @@ class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodParameterOutBase
     with CfgNode
     with Declaration
-    with StaticType[MethodParameterOutT] {}
-object NewMethodParameterOut             { def apply(): NewMethodParameterOut = new NewMethodParameterOut }
+    with StaticType[MethodParameterOutEMT] {}
+object NewMethodParameterOut               { def apply(): NewMethodParameterOut = new NewMethodParameterOut }
 class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutBase {
   type RelatedStored = MethodParameterOut
   override def label: String                       = "METHOD_PARAMETER_OUT"
@@ -1580,14 +1586,14 @@ class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutB
   }
 }
 
-trait MethodRefT
+trait MethodRefEMT
     extends AnyRef
-    with ExpressionT
-    with HasDynamicTypeHintFullNameT
-    with HasMethodFullNameT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[MethodRefT] {
+    with ExpressionEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasMethodFullNameEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[MethodRefEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1610,8 +1616,8 @@ class MethodRef(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 29.toShort, seq_4762)
     with MethodRefBase
     with Expression
-    with StaticType[MethodRefT] {}
-object NewMethodRef             { def apply(): NewMethodRef = new NewMethodRef }
+    with StaticType[MethodRefEMT] {}
+object NewMethodRef               { def apply(): NewMethodRef = new NewMethodRef }
 class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
   type RelatedStored = MethodRef
   override def label: String                                          = "METHOD_REF"
@@ -1652,14 +1658,14 @@ class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
   }
 }
 
-trait MethodReturnT
+trait MethodReturnEMT
     extends AnyRef
-    with CfgNodeT
-    with HasDynamicTypeHintFullNameT
-    with HasEvaluationStrategyT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[MethodReturnT] {
+    with CfgNodeEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasEvaluationStrategyEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[MethodReturnEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1680,8 +1686,8 @@ class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 30.toShort, seq_4762)
     with MethodReturnBase
     with CfgNode
-    with StaticType[MethodReturnT] {}
-object NewMethodReturn             { def apply(): NewMethodReturn = new NewMethodReturn }
+    with StaticType[MethodReturnEMT] {}
+object NewMethodReturn               { def apply(): NewMethodReturn = new NewMethodReturn }
 class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
   type RelatedStored = MethodReturn
   override def label: String                                          = "METHOD_RETURN"
@@ -1715,8 +1721,8 @@ class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
   }
 }
 
-trait ModifierT extends AnyRef with AstNodeT with HasModifierTypeT
-trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[ModifierT] {
+trait ModifierEMT extends AnyRef with AstNodeEMT with HasModifierTypeEMT
+trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[ModifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1733,8 +1739,8 @@ class Modifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 31.toShort, seq_4762)
     with ModifierBase
     with AstNode
-    with StaticType[ModifierT] {}
-object NewModifier             { def apply(): NewModifier = new NewModifier }
+    with StaticType[ModifierEMT] {}
+object NewModifier               { def apply(): NewModifier = new NewModifier }
 class NewModifier extends NewNode(31.toShort) with ModifierBase {
   type RelatedStored = Modifier
   override def label: String                      = "MODIFIER"
@@ -1759,8 +1765,8 @@ class NewModifier extends NewNode(31.toShort) with ModifierBase {
   }
 }
 
-trait NamespaceT extends AnyRef with AstNodeT with HasNameT
-trait NamespaceBase extends AbstractNode with AstNodeBase with StaticType[NamespaceT] {
+trait NamespaceEMT extends AnyRef with AstNodeEMT with HasNameEMT
+trait NamespaceBase extends AbstractNode with AstNodeBase with StaticType[NamespaceEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1777,8 +1783,8 @@ class Namespace(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 32.toShort, seq_4762)
     with NamespaceBase
     with AstNode
-    with StaticType[NamespaceT] {}
-object NewNamespace             { def apply(): NewNamespace = new NewNamespace }
+    with StaticType[NamespaceEMT] {}
+object NewNamespace               { def apply(): NewNamespace = new NewNamespace }
 class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
   type RelatedStored = Namespace
   override def label: String                      = "NAMESPACE"
@@ -1803,8 +1809,8 @@ class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
   }
 }
 
-trait NamespaceBlockT extends AnyRef with AstNodeT with HasFilenameT with HasFullNameT with HasNameT
-trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[NamespaceBlockT] {
+trait NamespaceBlockEMT extends AnyRef with AstNodeEMT with HasFilenameEMT with HasFullNameEMT with HasNameEMT
+trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[NamespaceBlockEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1823,8 +1829,8 @@ class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 33.toShort, seq_4762)
     with NamespaceBlockBase
     with AstNode
-    with StaticType[NamespaceBlockT] {}
-object NewNamespaceBlock             { def apply(): NewNamespaceBlock = new NewNamespaceBlock }
+    with StaticType[NamespaceBlockEMT] {}
+object NewNamespaceBlock               { def apply(): NewNamespaceBlock = new NewNamespaceBlock }
 class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
   type RelatedStored = NamespaceBlock
   override def label: String                      = "NAMESPACE_BLOCK"
@@ -1855,8 +1861,8 @@ class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
   }
 }
 
-trait ReturnT extends AnyRef with ExpressionT
-trait ReturnBase extends AbstractNode with ExpressionBase with StaticType[ReturnT] {
+trait ReturnEMT extends AnyRef with ExpressionEMT
+trait ReturnBase extends AbstractNode with ExpressionBase with StaticType[ReturnEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1874,8 +1880,8 @@ class Return(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 34.toShort, seq_4762)
     with ReturnBase
     with Expression
-    with StaticType[ReturnT] {}
-object NewReturn             { def apply(): NewReturn = new NewReturn }
+    with StaticType[ReturnEMT] {}
+object NewReturn               { def apply(): NewReturn = new NewReturn }
 class NewReturn extends NewNode(34.toShort) with ReturnBase {
   type RelatedStored = Return
   override def label: String                         = "RETURN"
@@ -1904,8 +1910,8 @@ class NewReturn extends NewNode(34.toShort) with ReturnBase {
   }
 }
 
-trait TagT extends AnyRef with HasNameT with HasValueT
-trait TagBase extends AbstractNode with StaticType[TagT] {
+trait TagEMT extends AnyRef with HasNameEMT with HasValueEMT
+trait TagBase extends AbstractNode with StaticType[TagEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1915,8 +1921,11 @@ trait TagBase extends AbstractNode with StaticType[TagT] {
     res
   }
 }
-class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with TagBase with StaticType[TagT] {}
-object NewTag { def apply(): NewTag = new NewTag }
+class Tag(graph_4762: odb2.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 35.toShort, seq_4762)
+    with TagBase
+    with StaticType[TagEMT] {}
+object NewTag               { def apply(): NewTag = new NewTag }
 class NewTag extends NewNode(35.toShort) with TagBase {
   type RelatedStored = Tag
   override def label: String          = "TAG"
@@ -1930,8 +1939,8 @@ class NewTag extends NewNode(35.toShort) with TagBase {
   }
 }
 
-trait TagNodePairT extends AnyRef
-trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairT] {
+trait TagNodePairEMT extends AnyRef
+trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairEMT] {
   def node: AbstractNode
   def tag: TagBase
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -1945,7 +1954,7 @@ trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairT] {
 class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 36.toShort, seq_4762)
     with TagNodePairBase
-    with StaticType[TagNodePairT] {
+    with StaticType[TagNodePairEMT] {
   def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 53, seq, null: StoredNode)
   def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 54, seq, null: Tag)
 }
@@ -1963,8 +1972,8 @@ class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
   }
 }
 
-trait TemplateDomT extends AnyRef with ExpressionT with HasNameT
-trait TemplateDomBase extends AbstractNode with ExpressionBase with StaticType[TemplateDomT] {
+trait TemplateDomEMT extends AnyRef with ExpressionEMT with HasNameEMT
+trait TemplateDomBase extends AbstractNode with ExpressionBase with StaticType[TemplateDomEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -1983,8 +1992,8 @@ class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 37.toShort, seq_4762)
     with TemplateDomBase
     with Expression
-    with StaticType[TemplateDomT] {}
-object NewTemplateDom             { def apply(): NewTemplateDom = new NewTemplateDom }
+    with StaticType[TemplateDomEMT] {}
+object NewTemplateDom               { def apply(): NewTemplateDom = new NewTemplateDom }
 class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
   type RelatedStored = TemplateDom
   override def label: String                         = "TEMPLATE_DOM"
@@ -2016,8 +2025,8 @@ class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
   }
 }
 
-trait TypeT extends AnyRef with HasFullNameT with HasNameT with HasTypeDeclFullNameT
-trait TypeBase extends AbstractNode with StaticType[TypeT] {
+trait TypeEMT extends AnyRef with HasFullNameEMT with HasNameEMT with HasTypeDeclFullNameEMT
+trait TypeBase extends AbstractNode with StaticType[TypeEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -2031,8 +2040,8 @@ trait TypeBase extends AbstractNode with StaticType[TypeT] {
 class Type(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 38.toShort, seq_4762)
     with TypeBase
-    with StaticType[TypeT] {}
-object NewType             { def apply(): NewType = new NewType }
+    with StaticType[TypeEMT] {}
+object NewType               { def apply(): NewType = new NewType }
 class NewType extends NewNode(38.toShort) with TypeBase {
   type RelatedStored = Type
   override def label: String                     = "TYPE"
@@ -2049,8 +2058,8 @@ class NewType extends NewNode(38.toShort) with TypeBase {
   }
 }
 
-trait TypeArgumentT extends AnyRef with AstNodeT
-trait TypeArgumentBase extends AbstractNode with AstNodeBase with StaticType[TypeArgumentT] {
+trait TypeArgumentEMT extends AnyRef with AstNodeEMT
+trait TypeArgumentBase extends AbstractNode with AstNodeBase with StaticType[TypeArgumentEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -2066,8 +2075,8 @@ class TypeArgument(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 39.toShort, seq_4762)
     with TypeArgumentBase
     with AstNode
-    with StaticType[TypeArgumentT] {}
-object NewTypeArgument             { def apply(): NewTypeArgument = new NewTypeArgument }
+    with StaticType[TypeArgumentEMT] {}
+object NewTypeArgument               { def apply(): NewTypeArgument = new NewTypeArgument }
 class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
   type RelatedStored = TypeArgument
   override def label: String                      = "TYPE_ARGUMENT"
@@ -2089,18 +2098,18 @@ class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
   }
 }
 
-trait TypeDeclT
+trait TypeDeclEMT
     extends AnyRef
-    with AstNodeT
-    with HasAliasTypeFullNameT
-    with HasAstParentFullNameT
-    with HasAstParentTypeT
-    with HasFilenameT
-    with HasFullNameT
-    with HasInheritsFromTypeFullNameT
-    with HasIsExternalT
-    with HasNameT
-trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclT] {
+    with AstNodeEMT
+    with HasAliasTypeFullNameEMT
+    with HasAstParentFullNameEMT
+    with HasAstParentTypeEMT
+    with HasFilenameEMT
+    with HasFullNameEMT
+    with HasInheritsFromTypeFullNameEMT
+    with HasIsExternalEMT
+    with HasNameEMT
+trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -2125,8 +2134,8 @@ class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 40.toShort, seq_4762)
     with TypeDeclBase
     with AstNode
-    with StaticType[TypeDeclT] {}
-object NewTypeDecl             { def apply(): NewTypeDecl = new NewTypeDecl }
+    with StaticType[TypeDeclEMT] {}
+object NewTypeDecl               { def apply(): NewTypeDecl = new NewTypeDecl }
 class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
   type RelatedStored = TypeDecl
   override def label: String                              = "TYPE_DECL"
@@ -2175,8 +2184,8 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
   }
 }
 
-trait TypeParameterT extends AnyRef with AstNodeT with HasNameT
-trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[TypeParameterT] {
+trait TypeParameterEMT extends AnyRef with AstNodeEMT with HasNameEMT
+trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[TypeParameterEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -2193,8 +2202,8 @@ class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 41.toShort, seq_4762)
     with TypeParameterBase
     with AstNode
-    with StaticType[TypeParameterT] {}
-object NewTypeParameter             { def apply(): NewTypeParameter = new NewTypeParameter }
+    with StaticType[TypeParameterEMT] {}
+object NewTypeParameter               { def apply(): NewTypeParameter = new NewTypeParameter }
 class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
   type RelatedStored = TypeParameter
   override def label: String                      = "TYPE_PARAMETER"
@@ -2219,8 +2228,8 @@ class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
   }
 }
 
-trait TypeRefT extends AnyRef with ExpressionT with HasDynamicTypeHintFullNameT with HasPossibleTypesT with HasTypeFullNameT
-trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeRefT] {
+trait TypeRefEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
+trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeRefEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -2242,8 +2251,8 @@ class TypeRef(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 42.toShort, seq_4762)
     with TypeRefBase
     with Expression
-    with StaticType[TypeRefT] {}
-object NewTypeRef             { def apply(): NewTypeRef = new NewTypeRef }
+    with StaticType[TypeRefEMT] {}
+object NewTypeRef               { def apply(): NewTypeRef = new NewTypeRef }
 class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
   type RelatedStored = TypeRef
   override def label: String                                          = "TYPE_REF"
@@ -2281,15 +2290,15 @@ class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
   }
 }
 
-trait UnknownT
+trait UnknownEMT
     extends AnyRef
-    with ExpressionT
-    with HasContainedRefT
-    with HasDynamicTypeHintFullNameT
-    with HasParserTypeNameT
-    with HasPossibleTypesT
-    with HasTypeFullNameT
-trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[UnknownT] {
+    with ExpressionEMT
+    with HasContainedRefEMT
+    with HasDynamicTypeHintFullNameEMT
+    with HasParserTypeNameEMT
+    with HasPossibleTypesEMT
+    with HasTypeFullNameEMT
+trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[UnknownEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
@@ -2313,8 +2322,8 @@ class Unknown(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 43.toShort, seq_4762)
     with UnknownBase
     with Expression
-    with StaticType[UnknownT] {}
-object NewUnknown             { def apply(): NewUnknown = new NewUnknown }
+    with StaticType[UnknownEMT] {}
+object NewUnknown               { def apply(): NewUnknown = new NewUnknown }
 class NewUnknown extends NewNode(43.toShort) with UnknownBase {
   type RelatedStored = Unknown
   override def label: String                                          = "UNKNOWN"

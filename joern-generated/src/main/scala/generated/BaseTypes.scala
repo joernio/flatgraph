@@ -1,16 +1,16 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
 
-trait AstNodeT extends AnyRef with HasCodeT with HasColumnNumberT with HasLineNumberT with HasOrderT
+trait AstNodeEMT extends AnyRef with HasCodeEMT with HasColumnNumberEMT with HasLineNumberEMT with HasOrderEMT
 
-trait AstNodeBase extends AbstractNode with StaticType[AstNodeT]
+trait AstNodeBase extends AbstractNode with StaticType[AstNodeEMT]
 // new properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
 // inherited properties:
 // inherited interfaces:
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ANNOTATION_PARAMETER, ANNOTATION_PARAMETER_ASSIGN, ARRAY_INITIALIZER, BLOCK, CALL, COMMENT, CONTROL_STRUCTURE, FIELD_IDENTIFIER, FILE, IDENTIFIER, IMPORT, JUMP_LABEL, JUMP_TARGET, LITERAL, LOCAL, MEMBER, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT, METHOD_REF, METHOD_RETURN, MODIFIER, NAMESPACE, NAMESPACE_BLOCK, RETURN, TEMPLATE_DOM, TYPE_ARGUMENT, TYPE_DECL, TYPE_PARAMETER, TYPE_REF, UNKNOWN
-trait AstNode extends StoredNode with AstNodeBase with StaticType[AstNodeT]
+trait AstNode extends StoredNode with AstNodeBase with StaticType[AstNodeEMT]
 
-trait AstNodeNew extends NewNode with AstNodeBase with StaticType[AstNodeT] {
+trait AstNodeNew extends NewNode with AstNodeBase with StaticType[AstNodeEMT] {
   type RelatedStored <: AstNode
   def code: String
   def code_=(value: String): Unit
@@ -28,16 +28,16 @@ trait AstNodeNew extends NewNode with AstNodeBase with StaticType[AstNodeT] {
   def order(value: Int): this.type
 }
 
-trait CallReprT extends AnyRef with CfgNodeT with HasNameT with HasSignatureT
+trait CallReprEMT extends AnyRef with CfgNodeEMT with HasNameEMT with HasSignatureEMT
 
-trait CallReprBase extends AbstractNode with CfgNodeBase with StaticType[CallReprT]
+trait CallReprBase extends AbstractNode with CfgNodeBase with StaticType[CallReprEMT]
 // new properties: NAME, SIGNATURE
 // inherited properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
 // inherited interfaces: AST_NODE
 // implementing nodes: CALL
-trait CallRepr extends StoredNode with CallReprBase with CfgNode with StaticType[CallReprT]
+trait CallRepr extends StoredNode with CallReprBase with CfgNode with StaticType[CallReprEMT]
 
-trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew with StaticType[CallReprT] {
+trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew with StaticType[CallReprEMT] {
   type RelatedStored <: CallRepr
   def name: String
   def name_=(value: String): Unit
@@ -47,46 +47,46 @@ trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew with StaticT
   def signature(value: String): this.type
 }
 
-trait CfgNodeT extends AnyRef with AstNodeT
+trait CfgNodeEMT extends AnyRef with AstNodeEMT
 
-trait CfgNodeBase extends AbstractNode with AstNodeBase with StaticType[CfgNodeT]
+trait CfgNodeBase extends AbstractNode with AstNodeBase with StaticType[CfgNodeEMT]
 // new properties:
 // inherited properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
 // inherited interfaces:
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, JUMP_TARGET, LITERAL, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT, METHOD_REF, METHOD_RETURN, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
-trait CfgNode extends StoredNode with CfgNodeBase with AstNode with StaticType[CfgNodeT]
+trait CfgNode extends StoredNode with CfgNodeBase with AstNode with StaticType[CfgNodeEMT]
 
-trait CfgNodeNew extends NewNode with CfgNodeBase with AstNodeNew with StaticType[CfgNodeT] {
+trait CfgNodeNew extends NewNode with CfgNodeBase with AstNodeNew with StaticType[CfgNodeEMT] {
   type RelatedStored <: CfgNode
 
 }
 
-trait DeclarationT extends AnyRef with HasNameT
+trait DeclarationEMT extends AnyRef with HasNameEMT
 
-trait DeclarationBase extends AbstractNode with StaticType[DeclarationT]
+trait DeclarationBase extends AbstractNode with StaticType[DeclarationEMT]
 // new properties: NAME
 // inherited properties:
 // inherited interfaces:
 // implementing nodes: LOCAL, MEMBER, METHOD, METHOD_PARAMETER_IN, METHOD_PARAMETER_OUT
-trait Declaration extends StoredNode with DeclarationBase with StaticType[DeclarationT]
+trait Declaration extends StoredNode with DeclarationBase with StaticType[DeclarationEMT]
 
-trait DeclarationNew extends NewNode with DeclarationBase with StaticType[DeclarationT] {
+trait DeclarationNew extends NewNode with DeclarationBase with StaticType[DeclarationEMT] {
   type RelatedStored <: Declaration
   def name: String
   def name_=(value: String): Unit
   def name(value: String): this.type
 }
 
-trait ExpressionT extends AnyRef with CfgNodeT with HasArgumentIndexT with HasArgumentNameT
+trait ExpressionEMT extends AnyRef with CfgNodeEMT with HasArgumentIndexEMT with HasArgumentNameEMT
 
-trait ExpressionBase extends AbstractNode with CfgNodeBase with StaticType[ExpressionT]
+trait ExpressionBase extends AbstractNode with CfgNodeBase with StaticType[ExpressionEMT]
 // new properties: ARGUMENT_INDEX, ARGUMENT_NAME
 // inherited properties: CODE, COLUMN_NUMBER, LINE_NUMBER, ORDER
 // inherited interfaces: AST_NODE
 // implementing nodes: ANNOTATION, ANNOTATION_LITERAL, ARRAY_INITIALIZER, BLOCK, CALL, CONTROL_STRUCTURE, FIELD_IDENTIFIER, IDENTIFIER, LITERAL, METHOD_REF, RETURN, TEMPLATE_DOM, TYPE_REF, UNKNOWN
-trait Expression extends StoredNode with ExpressionBase with CfgNode with StaticType[ExpressionT]
+trait Expression extends StoredNode with ExpressionBase with CfgNode with StaticType[ExpressionEMT]
 
-trait ExpressionNew extends NewNode with ExpressionBase with AstNodeNew with CfgNodeNew with StaticType[ExpressionT] {
+trait ExpressionNew extends NewNode with ExpressionBase with AstNodeNew with CfgNodeNew with StaticType[ExpressionEMT] {
   type RelatedStored <: Expression
   def argumentIndex: Int
   def argumentIndex_=(value: Int): Unit
@@ -97,56 +97,267 @@ trait ExpressionNew extends NewNode with ExpressionBase with AstNodeNew with Cfg
   def argumentName(value: String): this.type
 }
 
-trait HasAliasTypeFullNameT
-trait HasArgumentIndexT
-trait HasArgumentNameT
-trait HasAstParentFullNameT
-trait HasAstParentTypeT
-trait HasCanonicalNameT
-trait HasClassNameT
-trait HasClassShortNameT
-trait HasClosureBindingIdT
-trait HasClosureOriginalNameT
-trait HasCodeT
-trait HasColumnNumberT
-trait HasColumnNumberEndT
-trait HasContainedRefT
-trait HasContentT
-trait HasControlStructureTypeT
-trait HasDependencyGroupIdT
-trait HasDispatchTypeT
-trait HasDynamicTypeHintFullNameT
-trait HasEvaluationStrategyT
-trait HasExplicitAsT
-trait HasFilenameT
-trait HasFullNameT
-trait HasHashT
-trait HasImportedAsT
-trait HasImportedEntityT
-trait HasIndexT
-trait HasInheritsFromTypeFullNameT
-trait HasIsExplicitT
-trait HasIsExternalT
-trait HasIsVariadicT
-trait HasIsWildcardT
-trait HasKeyT
-trait HasLanguageT
-trait HasLineNumberT
-trait HasLineNumberEndT
-trait HasMethodFullNameT
-trait HasMethodShortNameT
-trait HasModifierTypeT
-trait HasNameT
-trait HasNodeLabelT
-trait HasOrderT
-trait HasOverlaysT
-trait HasPackageNameT
-trait HasParserTypeNameT
-trait HasPossibleTypesT
-trait HasRootT
-trait HasSignatureT
-trait HasSymbolT
-trait HasTypeDeclFullNameT
-trait HasTypeFullNameT
-trait HasValueT
-trait HasVersionT
+/** Node types with this marker trait are guaranteed to have the ALIAS_TYPE_FULL_NAME property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasAliasTypeFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the ARGUMENT_INDEX property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasArgumentIndexEMT
+
+/** Node types with this marker trait are guaranteed to have the ARGUMENT_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasArgumentNameEMT
+
+/** Node types with this marker trait are guaranteed to have the AST_PARENT_FULL_NAME property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasAstParentFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the AST_PARENT_TYPE property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasAstParentTypeEMT
+
+/** Node types with this marker trait are guaranteed to have the CANONICAL_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasCanonicalNameEMT
+
+/** Node types with this marker trait are guaranteed to have the CLASS_NAME property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasClassNameEMT
+
+/** Node types with this marker trait are guaranteed to have the CLASS_SHORT_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasClassShortNameEMT
+
+/** Node types with this marker trait are guaranteed to have the CLOSURE_BINDING_ID property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasClosureBindingIdEMT
+
+/** Node types with this marker trait are guaranteed to have the CLOSURE_ORIGINAL_NAME property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasClosureOriginalNameEMT
+
+/** Node types with this marker trait are guaranteed to have the CODE property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasCodeEMT
+
+/** Node types with this marker trait are guaranteed to have the COLUMN_NUMBER property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasColumnNumberEMT
+
+/** Node types with this marker trait are guaranteed to have the COLUMN_NUMBER_END property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasColumnNumberEndEMT
+
+/** Node types with this marker trait are guaranteed to have the CONTAINED_REF property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasContainedRefEMT
+
+/** Node types with this marker trait are guaranteed to have the CONTENT property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasContentEMT
+
+/** Node types with this marker trait are guaranteed to have the CONTROL_STRUCTURE_TYPE property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasControlStructureTypeEMT
+
+/** Node types with this marker trait are guaranteed to have the DEPENDENCY_GROUP_ID property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasDependencyGroupIdEMT
+
+/** Node types with this marker trait are guaranteed to have the DISPATCH_TYPE property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasDispatchTypeEMT
+
+/** Node types with this marker trait are guaranteed to have the DYNAMIC_TYPE_HINT_FULL_NAME property. EMT stands for: "erased marker
+  * trait", it exists only at compile time in order to improve type safety.
+  */
+trait HasDynamicTypeHintFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the EVALUATION_STRATEGY property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasEvaluationStrategyEMT
+
+/** Node types with this marker trait are guaranteed to have the EXPLICIT_AS property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasExplicitAsEMT
+
+/** Node types with this marker trait are guaranteed to have the FILENAME property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasFilenameEMT
+
+/** Node types with this marker trait are guaranteed to have the FULL_NAME property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the HASH property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasHashEMT
+
+/** Node types with this marker trait are guaranteed to have the IMPORTED_AS property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasImportedAsEMT
+
+/** Node types with this marker trait are guaranteed to have the IMPORTED_ENTITY property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasImportedEntityEMT
+
+/** Node types with this marker trait are guaranteed to have the INDEX property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasIndexEMT
+
+/** Node types with this marker trait are guaranteed to have the INHERITS_FROM_TYPE_FULL_NAME property. EMT stands for: "erased marker
+  * trait", it exists only at compile time in order to improve type safety.
+  */
+trait HasInheritsFromTypeFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the IS_EXPLICIT property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasIsExplicitEMT
+
+/** Node types with this marker trait are guaranteed to have the IS_EXTERNAL property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasIsExternalEMT
+
+/** Node types with this marker trait are guaranteed to have the IS_VARIADIC property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasIsVariadicEMT
+
+/** Node types with this marker trait are guaranteed to have the IS_WILDCARD property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasIsWildcardEMT
+
+/** Node types with this marker trait are guaranteed to have the KEY property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasKeyEMT
+
+/** Node types with this marker trait are guaranteed to have the LANGUAGE property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasLanguageEMT
+
+/** Node types with this marker trait are guaranteed to have the LINE_NUMBER property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasLineNumberEMT
+
+/** Node types with this marker trait are guaranteed to have the LINE_NUMBER_END property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasLineNumberEndEMT
+
+/** Node types with this marker trait are guaranteed to have the METHOD_FULL_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasMethodFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the METHOD_SHORT_NAME property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasMethodShortNameEMT
+
+/** Node types with this marker trait are guaranteed to have the MODIFIER_TYPE property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasModifierTypeEMT
+
+/** Node types with this marker trait are guaranteed to have the NAME property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasNameEMT
+
+/** Node types with this marker trait are guaranteed to have the NODE_LABEL property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasNodeLabelEMT
+
+/** Node types with this marker trait are guaranteed to have the ORDER property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasOrderEMT
+
+/** Node types with this marker trait are guaranteed to have the OVERLAYS property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasOverlaysEMT
+
+/** Node types with this marker trait are guaranteed to have the PACKAGE_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasPackageNameEMT
+
+/** Node types with this marker trait are guaranteed to have the PARSER_TYPE_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasParserTypeNameEMT
+
+/** Node types with this marker trait are guaranteed to have the POSSIBLE_TYPES property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasPossibleTypesEMT
+
+/** Node types with this marker trait are guaranteed to have the ROOT property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasRootEMT
+
+/** Node types with this marker trait are guaranteed to have the SIGNATURE property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasSignatureEMT
+
+/** Node types with this marker trait are guaranteed to have the SYMBOL property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasSymbolEMT
+
+/** Node types with this marker trait are guaranteed to have the TYPE_DECL_FULL_NAME property. EMT stands for: "erased marker trait", it
+  * exists only at compile time in order to improve type safety.
+  */
+trait HasTypeDeclFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the TYPE_FULL_NAME property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasTypeFullNameEMT
+
+/** Node types with this marker trait are guaranteed to have the VALUE property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasValueEMT
+
+/** Node types with this marker trait are guaranteed to have the VERSION property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasVersionEMT
