@@ -1812,7 +1812,8 @@ The domain classes generator generates one for each property in the schema and u
 
 [CompileTests.scala][benchmarks/src/test/scala/io/joern/odb2/benchmark/CompileTests.scala] demonstrates how users can add these marker traits ad-hoc - in this case to add a `IsStaticEMT` marker to a `Call` node, to indicate that the given `Call` is static. Note that the original schema does not have that attribute, so this is to demonstrate the extensibility and type safety of the domain classes.
 
-The marker traits exist only at compile time in order to improve type safety. Hence, it's safe to cast a given node instance to this marker type, since it's erased at runtime.
+The marker traits help to improve type safety, e.g. to permit specific implicits/extensions on them (see CompileTests
+linked above). They exist only at compile time. Hence, it's safe to cast a given node instance to this marker type, since it's erased at runtime.
 
 (n.b. these marker traits do not define any members or functions, otherwise their usage would result in a ClasscastException at runtime)
 
