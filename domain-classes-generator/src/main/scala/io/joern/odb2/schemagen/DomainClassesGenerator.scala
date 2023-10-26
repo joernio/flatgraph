@@ -5,7 +5,6 @@ import overflowdb.codegen.CodeGen.ConstantContext
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
-import overflowdb.codegen.Helpers.typeFor
 import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
@@ -28,12 +27,18 @@ class DomainClassesGenerator(schema: Schema) {
   }
 
   def run(outputDir: Path): Unit = {
-    val outputDir0 = os.Path(outputDir.toAbsolutePath)
-    // start with a clean slate
-    os.remove.all(outputDir0)
-    os.makeDir.all(outputDir0)
-
     val basePackage = schema.basePackage + ".v2"
+
+    val outputDir0 = {
+      val outputDirRoot = os.Path(outputDir.toAbsolutePath)
+
+      // start with a clean slate
+      os.remove.all(outputDirRoot)
+
+      val outputDirForBasePackage = outputDirRoot / os.RelPath(basePackage.replace('.', '/'))
+      os.makeDir.all(outputDirForBasePackage)
+      outputDirForBasePackage
+    }
 
     val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
@@ -692,6 +697,7 @@ class DomainClassesGenerator(schema: Schema) {
       }
 
       s"""package $basePackage.neighboraccessors
+         |
          |import io.joern.odb2
          |import io.joern.odb2.Traversal.*
          |import $basePackage.nodes
@@ -711,6 +717,7 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     }
     os.write(outputDir0 / "NeighborAccessors.scala", neighborAccessors)
+
     // Accessors and traversals: end
 
     // domain object and starters: start

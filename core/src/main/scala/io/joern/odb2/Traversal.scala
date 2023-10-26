@@ -347,11 +347,9 @@ trait Traversal {
       */
     // @Doc(info = "repeat the given traversal")
     // TODO bring back repeat step
-//    def repeat[B >: A](
-//                        repeatTraversal: Iterator[A] => Iterator[B]
-//                      )(implicit
-//                        behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _
-//                      ): Iterator[B] = {
+    def repeat[B >: A](repeatTraversal: Iterator[A] => Iterator[B])
+    // (implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _)
+      : Iterator[B] = {
 //      val behaviour = behaviourBuilder(new RepeatBehaviour.Builder[B]).build
 //      val _repeatTraversal =
 //        repeatTraversal
@@ -365,7 +363,8 @@ trait Traversal {
 //        case _ => iterator.flatMap(RepeatStep(_repeatTraversal, behaviour))
 //
 //      }
-//    }
+      ???
+    }
   }
 
 }

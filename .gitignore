@@ -6,7 +6,7 @@
 /domain-classes-generator-codescience/target/
 /odb-convert/target/
 /joern-generated/target/
-/codescience-generated/src/main/scala/generated
+/codescience-generated/src/main/scala
 /codescience-generated/target/
 /benchmarks/target/
 /core/target/
