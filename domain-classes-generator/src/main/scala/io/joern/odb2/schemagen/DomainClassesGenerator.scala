@@ -603,7 +603,10 @@ class DomainClassesGenerator(schema: Schema) {
 
     val neighborAccessors = {
       val conversions = Seq.newBuilder[String]
-      val neighborAccessors: Seq[String] = {
+
+      val neighborAccessorsRootDir = outputDir0 / "neighboraccessors"
+      os.makeDir(neighborAccessorsRootDir)
+      val neighborAccessors = {
         case class StepContext(
           edge: EdgeType,
           neighbor: AbstractNodeType,
@@ -689,34 +692,42 @@ class DomainClassesGenerator(schema: Schema) {
             }
           }
 
-          s"""
-            |$forSingleNode
-            |$forTraversal
-            |""".stripMargin
+          if (forSingleNode.trim.size + forTraversal.trim.size > 0) {
+            os.write(
+              neighborAccessorsRootDir / s"${nodeType.className}.scala",
+              s"""
+              |package $basePackage.neighboraccessors
+              |
+              |import io.joern.odb2.Traversal.*
+              |import $basePackage.nodes
+              |import $basePackage.Language.*
+              |
+              |$forSingleNode
+              |$forTraversal
+              |""".stripMargin
+            )
+          }
         }
       }
 
-      s"""package $basePackage.neighboraccessors
-         |
-         |import io.joern.odb2
-         |import io.joern.odb2.Traversal.*
-         |import $basePackage.nodes
-         |
-         |object Lang extends Conversions
-         |
-         |trait Conversions {
-         |  import Accessors.*
-         |
-         |  ${conversions.result().mkString("\n\n")}
-         |}
-         |
-         |object Accessors {
-         |  import Lang.*
-         |  ${neighborAccessors.mkString("\n\n")}
-         |}
-         |""".stripMargin
+      os.write(
+        neighborAccessorsRootDir / "package.scala",
+        s"""package $basePackage
+           |
+           |import io.joern.odb2
+           |import io.joern.odb2.Traversal.*
+           |import $basePackage.nodes
+           |
+           |package object neighboraccessors {
+           |  object Lang extends Conversions
+           |
+           |  trait Conversions {
+           |    ${conversions.result().mkString("\n\n")}
+           |  }
+           |}
+           |""".stripMargin
+      )
     }
-    os.write(outputDir0 / "NeighborAccessors.scala", neighborAccessors)
 
     // Accessors and traversals: end
 
