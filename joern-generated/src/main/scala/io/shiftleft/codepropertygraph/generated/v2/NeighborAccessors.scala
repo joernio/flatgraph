@@ -1,4 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.neighboraccessors
+
 import io.joern.odb2
 import io.joern.odb2.Traversal.*
 import io.shiftleft.codepropertygraph.generated.v2.nodes
