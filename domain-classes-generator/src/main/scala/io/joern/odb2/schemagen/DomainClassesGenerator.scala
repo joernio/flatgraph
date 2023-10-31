@@ -826,7 +826,7 @@ class DomainClassesGenerator(schema: Schema) {
           s"""
              |package $basePackage.neighboraccessors
              |
-             |import io.joern.odb2.Traversal.*
+             |import io.joern.odb2.traversal.Language.*
              |import $basePackage.nodes
              |import $basePackage.Language.*
              |
@@ -842,7 +842,7 @@ class DomainClassesGenerator(schema: Schema) {
       s"""package $basePackage
          |
          |import io.joern.odb2
-         |import io.joern.odb2.Traversal.*
+         |import io.joern.odb2.traversal.Language.*
          |import $basePackage.nodes
          |
          |package object neighboraccessors {

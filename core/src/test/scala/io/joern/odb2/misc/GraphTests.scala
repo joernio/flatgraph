@@ -3,7 +3,7 @@ package io.joern.odb2
 import io.joern.odb2.TestSchema.testSerialization
 import io.joern.odb2.misc.DebugDump
 import io.joern.odb2.storage.{Deserialization, Serialization}
-import io.joern.odb2.Traversal.*
+import io.joern.odb2.traversal.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
