@@ -63,11 +63,33 @@ object Accessors {
   def getNeighborsIn(node: GNode, edgeKind: Int): IndexedSeq[GNode] =
     getNeighborsIn(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
 
+  /** follow _all_ OUT edges to their adjacent nodes */
+  def getNeighborsOut(node: GNode): IndexedSeq[GNode] =
+    getNeighborsOut(node.graph, node.nodeKind, node.seq)
+
+  /** follow _all_ IN edges to their adjacent nodes */
+  def getNeighborsIn(node: GNode): IndexedSeq[GNode] =
+    getNeighborsIn(node.graph, node.nodeKind, node.seq)
+
   def getNeighborsOut(graph: Graph, nodeKind: Int, seq: Int, edgeKind: Int): IndexedSeq[GNode] =
     getNeighbors(graph, graph.schema.neighborOffsetArrayIndex(nodeKind, Outgoing, edgeKind), seq)
 
-  def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int, edgeKind: Short): IndexedSeq[GNode] =
+  def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int, edgeKind: Int): IndexedSeq[GNode] =
     getNeighbors(g, g.schema.neighborOffsetArrayIndex(nodeKind, Incoming, edgeKind), seq)
+
+  /** follow _all_ OUT edges to their adjacent nodes */
+  def getNeighborsOut(g: Graph, nodeKind: Short, seq: Int): IndexedSeq[GNode] = {
+    Range(0, g.schema.getNumberOfEdgeKinds).flatMap { edgeKind =>
+      getNeighborsOut(g, nodeKind, seq, edgeKind.toShort)
+    }
+  }
+
+  /** follow _all_ IN edges to their adjacent nodes */
+  def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int): IndexedSeq[GNode] = {
+    Range(0, g.schema.getNumberOfEdgeKinds).flatMap { edgeKind =>
+      getNeighborsIn(g, nodeKind, seq, edgeKind.toShort)
+    }
+  }
 
   private def getNeighbors(g: Graph, pos: Int, seq: Int): IndexedSeq[GNode] = {
     val qty = g.neighbors(pos).asInstanceOf[Array[Int]]
