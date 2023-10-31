@@ -367,7 +367,6 @@ trait Traversal {
     }
   }
 
-
   extension (iterator: Iterator[GNode]) {
 
     /** follow _all_ OUT edges to their adjacent nodes */
