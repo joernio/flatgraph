@@ -487,7 +487,7 @@ class DomainClassesGenerator(schema: Schema) {
           generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
+        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
       )
     }
 
