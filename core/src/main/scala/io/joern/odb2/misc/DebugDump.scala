@@ -85,11 +85,9 @@ object DebugDump {
         for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
           val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
           val edgesIn   = Accessors.getEdgesIn(n, edgeKind)
-          assert(Accessors.getNeighborsIn(n, edgeKind) == (edgesIn.map {
-            _.src
-          }))
+          assert(Accessors.getNeighborsIn(n, edgeKind).to(Seq) == edgesIn.map(_.src).to(Seq))
           if (edgesIn.nonEmpty) {
-            sb.append(s"   ${printNode(n)}   [${edgeLabel}] <- " + edgesIn.map { e => printNode(e.src, e.property) }.mkString(", ") + "\n")
+            sb.append(s"   ${printNode(n)}   [$edgeLabel] <- " + edgesIn.map { e => printNode(e.src, e.property) }.mkString(", ") + "\n")
           }
         }
       }

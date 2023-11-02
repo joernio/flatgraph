@@ -219,7 +219,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     }
 
     def signature(g: Graph): String = {
-      def sig(nodes: IndexedSeq[GNode]): String = if (nodes(0).seq < nodes(1).seq) "+" else "-"
+//      def sig(nodes: IndexedSeq[GNode]): String = if (nodes(0).seq < nodes(1).seq) "+" else "-"
+      def sig(nodes: Iterator[GNode]): String = if (nodes.next().seq < nodes.next().seq) "+" else "-"
 
       sig(Accessors.getNeighborsOut(g.nodesArray(0)(0), 0)) + sig(Accessors.getNeighborsIn(g.nodesArray(0)(1), 0)) + sig(
         Accessors.getNeighborsIn(g.nodesArray(0)(2), 0)
