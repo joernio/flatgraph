@@ -3,6 +3,7 @@ package io.joern.odb2
 import io.joern.odb2.TestSchema.testSerialization
 import io.joern.odb2.misc.DebugDump
 import io.joern.odb2.storage.{Deserialization, Serialization}
+import io.joern.odb2.Traversal.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
@@ -137,6 +138,13 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V1_1   [1] -> V0_0
         |Node kind 2. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
         |""".stripMargin
+
+    // test a simple out and in traversal from V0_0
+    val V0_0_GNode = g.nodes(0).next()
+    Accessors.getNeighborsOut(V0_0_GNode).size shouldBe 1
+    Accessors.getNeighborsIn(V0_0_GNode).size shouldBe 2
+    Iterator.single(V0_0_GNode).out.size shouldBe 1
+    Iterator.single(V0_0_GNode).in.size shouldBe 2
   }
 
   val schema = TestSchema.make(1, 1)
@@ -211,7 +219,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     }
 
     def signature(g: Graph): String = {
-      def sig(nodes: IndexedSeq[GNode]): String = if (nodes(0).seq < nodes(1).seq) "+" else "-"
+//      def sig(nodes: IndexedSeq[GNode]): String = if (nodes(0).seq < nodes(1).seq) "+" else "-"
+      def sig(nodes: Iterator[GNode]): String = if (nodes.next().seq < nodes.next().seq) "+" else "-"
 
       sig(Accessors.getNeighborsOut(g.nodesArray(0)(0), 0)) + sig(Accessors.getNeighborsIn(g.nodesArray(0)(1), 0)) + sig(
         Accessors.getNeighborsIn(g.nodesArray(0)(2), 0)
@@ -314,6 +323,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DebugDump.debugDump(g) shouldBe expectation
     testSerialization(g)
   }
+
   "permit a different edge deletion" in {
     var g = mkGraph()
     DebugDump.debugDump(g) shouldBe
@@ -351,6 +361,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     )
     DebugDump.debugDump(g) shouldBe expectation
   }
+
   "permit multiple edge deletion" in {
     var g = mkGraph()
     DebugDump.debugDump(g) shouldBe

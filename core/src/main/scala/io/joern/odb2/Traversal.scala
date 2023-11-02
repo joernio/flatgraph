@@ -367,4 +367,13 @@ trait Traversal {
     }
   }
 
+  extension (iterator: Iterator[GNode]) {
+
+    /** follow _all_ OUT edges to their adjacent nodes */
+    def out: Iterator[GNode] = iterator.flatMap(Accessors.getNeighborsOut)
+
+    /** follow _all_ IN edges to their adjacent nodes */
+    def in: Iterator[GNode] = iterator.flatMap(Accessors.getNeighborsIn)
+  }
+
 }

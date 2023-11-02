@@ -57,25 +57,52 @@ object Accessors {
     override def length: Int = end - start
   }
 
-  def getNeighborsOut(node: GNode, edgeKind: Int): IndexedSeq[GNode] =
+  def getNeighborsOut(node: GNode, edgeKind: Int): Iterator[GNode] =
     getNeighborsOut(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
 
-  def getNeighborsIn(node: GNode, edgeKind: Int): IndexedSeq[GNode] =
+  def getNeighborsIn(node: GNode, edgeKind: Int): Iterator[GNode] =
     getNeighborsIn(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
 
-  def getNeighborsOut(graph: Graph, nodeKind: Int, seq: Int, edgeKind: Int): IndexedSeq[GNode] =
+  /** follow _all_ OUT edges to their adjacent nodes */
+  def getNeighborsOut(node: GNode): Iterator[GNode] =
+    getNeighborsOut(node.graph, node.nodeKind, node.seq)
+
+  /** follow _all_ IN edges to their adjacent nodes */
+  def getNeighborsIn(node: GNode): Iterator[GNode] =
+    getNeighborsIn(node.graph, node.nodeKind, node.seq)
+
+  def getNeighborsOut(graph: Graph, nodeKind: Int, seq: Int, edgeKind: Int): Iterator[GNode] =
     getNeighbors(graph, graph.schema.neighborOffsetArrayIndex(nodeKind, Outgoing, edgeKind), seq)
 
-  def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int, edgeKind: Short): IndexedSeq[GNode] =
+  def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int, edgeKind: Int): Iterator[GNode] =
     getNeighbors(g, g.schema.neighborOffsetArrayIndex(nodeKind, Incoming, edgeKind), seq)
 
-  private def getNeighbors(g: Graph, pos: Int, seq: Int): IndexedSeq[GNode] = {
+  /** follow _all_ OUT edges to their adjacent nodes */
+  def getNeighborsOut(g: Graph, nodeKind: Short, seq: Int): Iterator[GNode] = {
+    Range(0, g.schema.getNumberOfEdgeKinds).iterator.flatMap { edgeKind =>
+      getNeighborsOut(g, nodeKind, seq, edgeKind.toShort)
+    }
+  }
+
+  /** follow _all_ IN edges to their adjacent nodes */
+  def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int): Iterator[GNode] = {
+    Range(0, g.schema.getNumberOfEdgeKinds).iterator.flatMap { edgeKind =>
+      getNeighborsIn(g, nodeKind, seq, edgeKind.toShort)
+    }
+  }
+
+  /* Implementation note / TODO later: this (along with all `getNeighbors*`) could return `IndexedSeq
+   * rather than `Iterator`. For the sake of compat and an easier migration we are going with `Iterator` for now.
+   * Once odb1 is out, we can re-introduce IndexedSeq as a cool new feature.
+   * https://github.com/ShiftLeftSecurity/overflowdbv2/pull/89#discussion_r1377682980
+   */
+  private def getNeighbors(g: Graph, pos: Int, seq: Int): Iterator[GNode] = {
     val qty = g.neighbors(pos).asInstanceOf[Array[Int]]
-    if (qty == null) return ISeq.empty
+    if (qty == null) return Iterator.empty // ISeq.empty
     if (seq + 1 < qty.length) {
       val vals = g.neighbors(pos + 1).asInstanceOf[Array[GNode]]
-      new ISeq(vals, qty(seq), qty(seq + 1))
-    } else ISeq.empty
+      new ISeq(vals, qty(seq), qty(seq + 1)).iterator
+    } else Iterator.empty // ISeq.empty
   }
 
   def getNodeProperty(node: GNode, propertyKind: Int): IndexedSeq[Any] =
