@@ -9,7 +9,7 @@ object Language extends Language
 
 trait Language {
 
-  given Conversion[IterableOnce[?], Iterator[?]] =
+  given [A]: Conversion[IterableOnce[A], Iterator[A]] =
     iterable => iterable.iterator
 
   extension [A](iterator: Iterator[A]) {
