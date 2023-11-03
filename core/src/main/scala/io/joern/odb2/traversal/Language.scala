@@ -1,15 +1,19 @@
-package io.joern.odb2
+package io.joern.odb2.traversal
 
+import io.joern.odb2.{Accessors, GNode}
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
-object Traversal extends Traversal
+object Language extends Language
 
-trait Traversal {
+trait Language {
 
-  given Conversion[IterableOnce[?], Iterator[?]] =
-    iterable => iterable.iterator
+  // given [A]: Conversion[IterableOnce[A], Iterator[A]] =
+  // iterable => iterable.iterator
+
+  implicit def iterableOnceToIterator[A](iterableOnce: IterableOnce[A]): Iterator[A] =
+    iterableOnce.iterator
 
   extension [A](iterator: Iterator[A]) {
 
@@ -347,9 +351,9 @@ trait Traversal {
       */
     // @Doc(info = "repeat the given traversal")
     // TODO bring back repeat step
-    def repeat[B >: A](repeatTraversal: Iterator[A] => Iterator[B])
-    // (implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _)
-      : Iterator[B] = {
+    def repeat[B >: A](
+      repeatTraversal: Iterator[A] => Iterator[B]
+    )(implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _): Iterator[B] = {
 //      val behaviour = behaviourBuilder(new RepeatBehaviour.Builder[B]).build
 //      val _repeatTraversal =
 //        repeatTraversal

@@ -487,7 +487,7 @@ class DomainClassesGenerator(schema: Schema) {
           generatePropertyTraversals(p, idByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
+        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
       )
     }
 
@@ -631,7 +631,7 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
-         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.AbstractNode]]
+         |  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
          |
          |${concreteStarters.mkString("\n")}
          |
@@ -649,7 +649,9 @@ class DomainClassesGenerator(schema: Schema) {
          |trait Language
          |  extends accessors.ConcreteStoredConversions
          |  with traversals.ConcreteStoredConversions
-         |  with neighboraccessors.Conversions
+         |  with neighboraccessors.Conversions {
+         |    implicit def cpgToGeneratedNodeStarters(cpg: Cpg): CpgNodeStarters = CpgNodeStarters(cpg)
+         |  }
          |
          |object Language extends Language
          |""".stripMargin
@@ -826,7 +828,7 @@ class DomainClassesGenerator(schema: Schema) {
           s"""
              |package $basePackage.neighboraccessors
              |
-             |import io.joern.odb2.Traversal.*
+             |import io.joern.odb2.traversal.Language.*
              |import $basePackage.nodes
              |import $basePackage.Language.*
              |
@@ -842,7 +844,7 @@ class DomainClassesGenerator(schema: Schema) {
       s"""package $basePackage
          |
          |import io.joern.odb2
-         |import io.joern.odb2.Traversal.*
+         |import io.joern.odb2.traversal.Language.*
          |import $basePackage.nodes
          |
          |package object neighboraccessors {
