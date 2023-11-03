@@ -711,7 +711,7 @@ class DomainClassesGenerator(schema: Schema) {
       schema.properties.filter(propertyKindByProperty.contains).map { property =>
         ConstantContext(
           property.name,
-          s"""public static final int ${property.name} = "${propertyKindByProperty(property)}";""",
+          s"""public static final int ${property.name} = ${propertyKindByProperty(property)};""",
           property.comment
         )
       }
