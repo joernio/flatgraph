@@ -631,7 +631,7 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
-         |  def all: Iterator[nodes.AbstractNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.AbstractNode]]
+         |  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
          |
          |${concreteStarters.mkString("\n")}
          |
