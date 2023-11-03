@@ -17,9 +17,6 @@ class CompileTests extends AnyWordSpec with Matchers {
   import CompileTests.*
 
   "starter steps" in {
-    // this would normally be defined in semanticcpg.language... maybe this can be an generated implicit conversion in the future
-    given Conversion[Cpg, CpgNodeStarters] = CpgNodeStarters.apply(_)
-
     lazy val compiles = {
       val cpg: Cpg = ???
       cpg.all
