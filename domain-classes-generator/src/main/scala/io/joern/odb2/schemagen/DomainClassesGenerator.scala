@@ -649,7 +649,9 @@ class DomainClassesGenerator(schema: Schema) {
          |trait Language
          |  extends accessors.ConcreteStoredConversions
          |  with traversals.ConcreteStoredConversions
-         |  with neighboraccessors.Conversions
+         |  with neighboraccessors.Conversions {
+         |    implicit def cpgToGeneratedNodeStarters(cpg: Cpg): CpgNodeStarters = CpgNodeStarters(cpg)
+         |  }
          |
          |object Language extends Language
          |""".stripMargin
