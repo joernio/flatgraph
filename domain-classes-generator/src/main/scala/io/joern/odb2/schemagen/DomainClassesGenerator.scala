@@ -663,7 +663,7 @@ class DomainClassesGenerator(schema: Schema) {
 
   private def writeConstants(outputDir: os.Path, schema: Schema, propertyKindByProperty: Map[Property[?], Int]): Seq[os.Path] = {
     val results = Seq.newBuilder[os.Path]
-    def writeConstants(className: String, constants: Seq[ConstantContext]) = {
+    def writeConstants(className: String, constants: Seq[ConstantContext], generateCombinedConstantsSet: Boolean = true) = {
       val constantsSource = constants
         .map { constant =>
           val documentation = constant.documentation.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
@@ -678,11 +678,12 @@ class DomainClassesGenerator(schema: Schema) {
           s"add(${constant.name});"
         }
         .mkString("\n")
-      val allConstantsSet =
+      val allConstantsSetMaybe = if (generateCombinedConstantsSet) {
         s"""public static Set<$allConstantsSetType> ALL = new HashSet<$allConstantsSetType>() {{
            |$allConstantsBody
            |}};
            |""".stripMargin
+      } else ""
       val file = outputDir / s"$className.java"
       os.write(
         file,
@@ -694,7 +695,7 @@ class DomainClassesGenerator(schema: Schema) {
            |public class $className {
            |
            |$constantsSource
-           |$allConstantsSet
+           |$allConstantsSetMaybe
            |}""".stripMargin
       )
       results.addOne(file)
@@ -714,7 +715,8 @@ class DomainClassesGenerator(schema: Schema) {
           s"""public static final int ${property.name} = ${propertyKindByProperty(property)};""",
           property.comment
         )
-      }
+      },
+      generateCombinedConstantsSet = false
     )
     writeConstants(
       "NodeTypes",
