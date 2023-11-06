@@ -213,8 +213,9 @@ class DomainClassesGenerator(schema: Schema) {
       )
     os.write(outputDir0 / "BaseTypes.scala", basetypefile)
 
-    val edgeTypesSource = edgeTypes.iterator.zipWithIndex
-      .map { case (edgeType, idx) =>
+    val edgeKindByEdgeType = edgeTypes.iterator.zipWithIndex.toMap
+    val edgeTypesSource = edgeTypes.iterator
+      .map { edgeType =>
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
@@ -235,7 +236,9 @@ class DomainClassesGenerator(schema: Schema) {
         // format: on
 
         s"""class ${edgeType.className}(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-           |    extends odb2.Edge(src_4762, dst_4762, $idx.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
+           |    extends odb2.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(
+            edgeType
+          )}.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
       }
       .mkString(
         s"""package $basePackage.edges
@@ -657,11 +660,16 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
-    writeConstants(outputDir0, schema, propertyKindByProperty)
+    writeConstants(outputDir0, schema, propertyKindByProperty, edgeKindByEdgeType)
     // end `run`
   }
 
-  private def writeConstants(outputDir: os.Path, schema: Schema, propertyKindByProperty: Map[Property[?], Int]): Seq[os.Path] = {
+  private def writeConstants(
+    outputDir: os.Path,
+    schema: Schema,
+    propertyKindByProperty: Map[Property[?], Int],
+    edgeKindByEdgeType: Map[EdgeType, Int]
+  ): Seq[os.Path] = {
     val results = Seq.newBuilder[os.Path]
     def writeConstants(className: String, constants: Seq[ConstantContext], generateCombinedConstantsSet: Boolean = true) = {
       val constantsSource = constants
@@ -715,6 +723,13 @@ class DomainClassesGenerator(schema: Schema) {
           s"""public static final int ${property.name} = ${propertyKindByProperty(property)};""",
           property.comment
         )
+      },
+      generateCombinedConstantsSet = false
+    )
+    writeConstants(
+      "EdgeKinds",
+      schema.edgeTypes.map { edgeType =>
+        ConstantContext(edgeType.name, s"""public static final int ${edgeType.name} = ${edgeKindByEdgeType(edgeType)};""", edgeType.comment)
       },
       generateCombinedConstantsSet = false
     )
