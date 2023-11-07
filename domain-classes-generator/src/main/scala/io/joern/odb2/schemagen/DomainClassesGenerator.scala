@@ -720,7 +720,11 @@ class DomainClassesGenerator(schema: Schema) {
       schema.properties.filter(propertyKindByProperty.contains).map { property =>
         ConstantContext(
           property.name,
-          s"""public static final int ${property.name} = ${propertyKindByProperty(property)};""",
+          s"""
+             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+             | * projects have the ability to run with newly generated domain classes
+             | * see https://stackoverflow.com/a/3524336/452762 */
+             |public static final int ${property.name} = Integer.valueOf(${propertyKindByProperty(property)}).intValue();""".stripMargin,
           property.comment
         )
       },
@@ -729,7 +733,15 @@ class DomainClassesGenerator(schema: Schema) {
     writeConstants(
       "EdgeKinds",
       schema.edgeTypes.map { edgeType =>
-        ConstantContext(edgeType.name, s"""public static final int ${edgeType.name} = ${edgeKindByEdgeType(edgeType)};""", edgeType.comment)
+        ConstantContext(
+          edgeType.name,
+          s"""
+             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+             | * projects have the ability to run with newly generated domain classes
+             | * see https://stackoverflow.com/a/3524336/452762 */
+             |public static final int ${edgeType.name} = ${edgeKindByEdgeType(edgeType)};""".stripMargin,
+          edgeType.comment
+        )
       },
       generateCombinedConstantsSet = false
     )
