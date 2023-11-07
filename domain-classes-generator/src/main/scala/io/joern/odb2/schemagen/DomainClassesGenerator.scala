@@ -67,9 +67,9 @@ class DomainClassesGenerator(schema: Schema) {
       }
     }
 
-    val idByProperty = relevantProperties.zipWithIndex.toMap
-    val edgeTypes    = schema.edgeTypes.sortBy(_.name).toArray
-    val edgeIdByType = edgeTypes.zipWithIndex.toMap
+    val propertyKindByProperty = relevantProperties.zipWithIndex.toMap
+    val edgeTypes              = schema.edgeTypes.sortBy(_.name).toArray
+    val edgeIdByType           = edgeTypes.zipWithIndex.toMap
 
     val newPropertiesByNodeType: Map[AbstractNodeType, Set[Property[?]]] =
       schema.allNodeTypes.map { nodeType =>
@@ -213,8 +213,9 @@ class DomainClassesGenerator(schema: Schema) {
       )
     os.write(outputDir0 / "BaseTypes.scala", basetypefile)
 
-    val edgeTypesSource = edgeTypes.iterator.zipWithIndex
-      .map { case (edgeType, idx) =>
+    val edgeKindByEdgeType = edgeTypes.iterator.zipWithIndex.toMap
+    val edgeTypesSource = edgeTypes.iterator
+      .map { edgeType =>
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
@@ -235,7 +236,9 @@ class DomainClassesGenerator(schema: Schema) {
         // format: on
 
         s"""class ${edgeType.className}(src_4762: odb2.GNode, dst_4762: odb2.GNode, subSeq_4862: Int, property_4862: Any)
-           |    extends odb2.Edge(src_4762, dst_4762, $idx.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
+           |    extends odb2.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(
+            edgeType
+          )}.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
       }
       .mkString(
         s"""package $basePackage.edges
@@ -282,7 +285,7 @@ class DomainClassesGenerator(schema: Schema) {
               propDictItems.append(
                 s"""val tmp${p.className} = this.$pname; if(tmp${p.className}.nonEmpty) res.put("${p.name}", tmp${p.className})"""
               )
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.$pname)""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
             case Cardinality.ZeroOrOne =>
               newNodeProps.append(s"var $pname: Option[$ptyp] = None")
               newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
@@ -290,13 +293,13 @@ class DomainClassesGenerator(schema: Schema) {
                 s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.$pname = Option(value); this }"
               )
               propDictItems.append(s"""this.$pname.foreach{p => res.put("${p.name}", p )}""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${idByProperty(p)}, this.$pname)""")
+              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
 
             case one: Cardinality.One[?] =>
               newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
               newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
               propDictItems.append(s"""res.put("${p.name}", this.$pname )""")
-              flattenItems.append(s"""interface.insertProperty(this, ${idByProperty(p)}, Iterator(this.$pname))""")
+              flattenItems.append(s"""interface.insertProperty(this, ${propertyKindByProperty(p)}, Iterator(this.$pname))""")
           }
         }
 
@@ -305,7 +308,7 @@ class DomainClassesGenerator(schema: Schema) {
           val ptyp  = classNameToBase(c.nodeType.className)
           val styp  = c.nodeType.className
           val index = relevantProperties.size + containedIndexByName(c.localName)
-          val pid   = idByProperty.size + containedIndexByName(pname)
+          val pid   = propertyKindByProperty.size + containedIndexByName(pname)
           c.cardinality match {
             case Cardinality.List =>
               newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
@@ -471,11 +474,11 @@ class DomainClassesGenerator(schema: Schema) {
         s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
-              s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
+              s"odb2.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq)"
             case Cardinality.List =>
-              s"odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${idByProperty(p)}, node.seq)"
+              s"odb2.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq)"
             case one: Cardinality.One[?] =>
-              s"odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, ${idByProperty(p)}, node.seq(), ${unpackDefault(p.valueType, one.default)})"
+              s"odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq(), ${unpackDefault(p.valueType, one.default)})"
           }}
            |}""".stripMargin
       )
@@ -484,7 +487,7 @@ class DomainClassesGenerator(schema: Schema) {
       )
       accessorsForConcreteNodeTraversals.addOne(
         s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
-          generatePropertyTraversals(p, idByProperty(p)) + "}"
+          generatePropertyTraversals(p, propertyKindByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
         s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: Iterator[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal)""".stripMargin
@@ -521,7 +524,7 @@ class DomainClassesGenerator(schema: Schema) {
         )
         val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
-          elems.addOne(generatePropertyTraversals(p, idByProperty(p)))
+          elems.addOne(generatePropertyTraversals(p, propertyKindByProperty(p)))
         }
         accessorsForBaseNodeTraversals.addOne(
           elems.mkString(
@@ -657,13 +660,18 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
-    writeConstants(outputDir0, schema)
+    writeConstants(outputDir0, schema, propertyKindByProperty, edgeKindByEdgeType)
     // end `run`
   }
 
-  private def writeConstants(outputDir: os.Path, schema: Schema): Seq[os.Path] = {
+  private def writeConstants(
+    outputDir: os.Path,
+    schema: Schema,
+    propertyKindByProperty: Map[Property[?], Int],
+    edgeKindByEdgeType: Map[EdgeType, Int]
+  ): Seq[os.Path] = {
     val results = Seq.newBuilder[os.Path]
-    def writeConstantsFile(className: String, constants: Seq[ConstantContext]) = {
+    def writeConstants(className: String, constants: Seq[ConstantContext], generateCombinedConstantsSet: Boolean = true) = {
       val constantsSource = constants
         .map { constant =>
           val documentation = constant.documentation.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
@@ -678,11 +686,12 @@ class DomainClassesGenerator(schema: Schema) {
           s"add(${constant.name});"
         }
         .mkString("\n")
-      val allConstantsSet =
+      val allConstantsSetMaybe = if (generateCombinedConstantsSet) {
         s"""public static Set<$allConstantsSetType> ALL = new HashSet<$allConstantsSetType>() {{
            |$allConstantsBody
            |}};
            |""".stripMargin
+      } else ""
       val file = outputDir / s"$className.java"
       os.write(
         file,
@@ -694,32 +703,62 @@ class DomainClassesGenerator(schema: Schema) {
            |public class $className {
            |
            |$constantsSource
-           |$allConstantsSet
+           |$allConstantsSetMaybe
            |}""".stripMargin
       )
       results.addOne(file)
     }
 
-    writeConstantsFile(
+    writeConstants(
       "PropertyNames",
       schema.properties.map { property =>
         ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
       }
     )
-    writeConstantsFile(
+    writeConstants(
+      "PropertyKinds",
+      schema.properties.filter(propertyKindByProperty.contains).map { property =>
+        ConstantContext(
+          property.name,
+          s"""
+             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+             | * projects have the ability to run with newly generated domain classes
+             | * see https://stackoverflow.com/a/3524336/452762 */
+             |public static final int ${property.name} = Integer.valueOf(${propertyKindByProperty(property)}).intValue();""".stripMargin,
+          property.comment
+        )
+      },
+      generateCombinedConstantsSet = false
+    )
+    writeConstants(
+      "EdgeKinds",
+      schema.edgeTypes.map { edgeType =>
+        ConstantContext(
+          edgeType.name,
+          s"""
+             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+             | * projects have the ability to run with newly generated domain classes
+             | * see https://stackoverflow.com/a/3524336/452762 */
+             |public static final int ${edgeType.name} = ${edgeKindByEdgeType(edgeType)};""".stripMargin,
+          edgeType.comment
+        )
+      },
+      generateCombinedConstantsSet = false
+    )
+    writeConstants(
       "NodeTypes",
       schema.nodeTypes.map { nodeType =>
         ConstantContext(nodeType.name, s"""public static final String ${nodeType.name} = "${nodeType.name}";""", nodeType.comment)
       }
     )
-    writeConstantsFile(
+    writeConstants(
       "EdgeTypes",
       schema.edgeTypes.map { edgeType =>
         ConstantContext(edgeType.name, s"""public static final String ${edgeType.name} = "${edgeType.name}";""", edgeType.comment)
       }
     )
     schema.constantsByCategory.foreach { case (category, constants) =>
-      writeConstantsFile(
+      writeConstants(
         category,
         constants.map { constant =>
           ConstantContext(constant.name, s"""public static final String ${constant.name} = "${constant.value}";""", constant.comment)
