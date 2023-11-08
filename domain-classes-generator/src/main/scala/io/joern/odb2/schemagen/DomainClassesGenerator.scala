@@ -633,7 +633,7 @@ class DomainClassesGenerator(schema: Schema) {
          |assert(graph.schema == GraphSchema)
          |}
          |
-         |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) extends AnyVal {
+         |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) {
          |  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
          |
          |${concreteStarters.mkString("\n")}
