@@ -321,7 +321,7 @@ class Odb2Generated {
       var p = node
       while (p != null) {
         sumDepth += 1
-        p = p._astIn.headOption.orNull
+        p = p._astIn.nextOption.orNull
       }
     }
     if (blackhole != null) blackhole.consume(sumDepth)
