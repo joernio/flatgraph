@@ -98,8 +98,8 @@ class DomainClassesGenerator(schema: Schema) {
     // format: off
     val edgeAccess = edgeTypes.map { et =>
       s"""
-       |final def _${Helpers.camelCase(et.name)}Out: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
-       |final def _${Helpers.camelCase(et.name)}In: IndexedSeq[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[IndexedSeq[StoredNode]]
+       |final def _${Helpers.camelCase(et.name)}Out: Iterator[StoredNode] = odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |final def _${Helpers.camelCase(et.name)}In: Iterator[StoredNode] = odb2.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
        |""".stripMargin
     }.mkString("\n")
     // format: on
