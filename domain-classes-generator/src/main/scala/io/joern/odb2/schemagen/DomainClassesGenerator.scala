@@ -652,7 +652,9 @@ class DomainClassesGenerator(schema: Schema) {
          |trait Language
          |  extends accessors.ConcreteStoredConversions
          |  with traversals.ConcreteStoredConversions
-         |  with neighboraccessors.Conversions {
+         |  with neighboraccessors.Conversions
+         |  with io.joern.odb2.traversal.Language
+         |  with io.joern.odb2.Implicits {
          |    implicit def cpgToGeneratedNodeStarters(cpg: Cpg): CpgNodeStarters = CpgNodeStarters(cpg)
          |  }
          |
@@ -867,7 +869,6 @@ class DomainClassesGenerator(schema: Schema) {
           s"""
              |package $basePackage.neighboraccessors
              |
-             |import io.joern.odb2.traversal.Language.*
              |import $basePackage.nodes
              |import $basePackage.Language.*
              |
