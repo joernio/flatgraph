@@ -354,20 +354,18 @@ trait Language extends GNodeTraversal{
     def repeat[B >: A](
       repeatTraversal: Iterator[A] => Iterator[B]
     )(implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _): Iterator[B] = {
-//      val behaviour = behaviourBuilder(new RepeatBehaviour.Builder[B]).build
-//      val _repeatTraversal =
-//        repeatTraversal
-//          .asInstanceOf[Iterator[B] => Iterator[B]] // this cast usually :tm: safe, because `B` is a supertype of `A`
-//      iterator match {
+      val behaviour = behaviourBuilder(new RepeatBehaviour.Builder[B]).build
+      val _repeatTraversal =
+        repeatTraversal
+          .asInstanceOf[Iterator[B] => Iterator[B]] // this cast usually :tm: safe, because `B` is a supertype of `A`
+      iterator match {
 //        case tracked: PathAwareTraversal[A] =>
 //          val step = PathAwareRepeatStep(_repeatTraversal, behaviour)
 //          new PathAwareTraversal(tracked.wrapped.flatMap { case (a, p) =>
 //            step.apply(a).wrapped.map { case (aa, pp) => (aa, p ++ pp) }
 //          })
-//        case _ => iterator.flatMap(RepeatStep(_repeatTraversal, behaviour))
-//
-//      }
-      ???
+        case _ => iterator.flatMap(RepeatStep(_repeatTraversal, behaviour))
+      }
     }
   }
 
