@@ -8,13 +8,11 @@ object RepeatStep {
   /** @see
     *   [[Language.repeat]] for a detailed overview
     *
-    * Implementation note: using recursion results in nicer code, but uses the JVM stack, which only has enough space
-    * for ~10k steps. So instead, this uses a programmatic Stack which is semantically identical. The
-    * RepeatTraversalTests cover this case.
+    * Implementation note: using recursion results in nicer code, but uses the JVM stack, which only has enough space for ~10k steps. So
+    * instead, this uses a programmatic Stack which is semantically identical. The RepeatTraversalTests cover this case.
     */
-  def apply[A](repeatTraversal: Iterator[A] => Iterator[A], behaviour: RepeatBehaviour[A]): A => Iterator[A] = {
-    (element: A) =>
-      new RepeatStepIterator[A](element, elem => repeatTraversal(Iterator.single(elem)), behaviour)
+  def apply[A](repeatTraversal: Iterator[A] => Iterator[A], behaviour: RepeatBehaviour[A]): A => Iterator[A] = { (element: A) =>
+    new RepeatStepIterator[A](element, elem => repeatTraversal(Iterator.single(elem)), behaviour)
   }
 
   /** stores work still to do. depending on the underlying collection type, the behaviour of the repeat step changes */
@@ -27,29 +25,28 @@ object RepeatStep {
 
   /** stack based worklist for [[RepeatBehaviour.SearchAlgorithm.DepthFirst]] */
   class LifoWorklist[A] extends Worklist[A] {
-    private val stack = mutable.Stack.empty[A]
+    private val stack             = mutable.Stack.empty[A]
     override def addItem(item: A) = stack.push(item)
-    override def nonEmpty = stack.nonEmpty
-    override def head = stack.top
-    override def removeHead() = stack.pop()
+    override def nonEmpty         = stack.nonEmpty
+    override def head             = stack.top
+    override def removeHead()     = stack.pop()
   }
 
   /** queue based worklist for [[RepeatBehaviour.SearchAlgorithm.BreadthFirst]] */
   class FifoWorklist[A] extends Worklist[A] {
-    private val queue = mutable.Queue.empty[A]
+    private val queue             = mutable.Queue.empty[A]
     override def addItem(item: A) = queue.enqueue(item)
-    override def nonEmpty = queue.nonEmpty
-    override def head = queue.head
-    override def removeHead() = queue.dequeue()
+    override def nonEmpty         = queue.nonEmpty
+    override def head             = queue.head
+    override def removeHead()     = queue.dequeue()
   }
 
   case class WorklistItem[A](traversal: Iterator[A], depth: Int)
 }
 
-class RepeatStepIterator[A](element: A, repeatTraversal: A => Iterator[A], behaviour: RepeatBehaviour[A])
-    extends Iterator[A] {
+class RepeatStepIterator[A](element: A, repeatTraversal: A => Iterator[A], behaviour: RepeatBehaviour[A]) extends Iterator[A] {
   import RepeatStep._
-  val visited = mutable.Set.empty[A] // only used if dedup enabled
+  val visited                    = mutable.Set.empty[A] // only used if dedup enabled
   val emitSack: mutable.Queue[A] = mutable.Queue.empty
   val worklist: Worklist[WorklistItem[A]] = behaviour.searchAlgorithm match {
     case SearchAlgorithm.DepthFirst   => new LifoWorklist()
