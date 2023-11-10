@@ -16,37 +16,37 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     centerTrav.repeat(_.out)(_.maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
   }
 
-   "repeat given traversal up to depth 2" should {
-     "return only the final elements" in {
-       val expectedResults = Set(l2, r2)
-       centerTrav.repeat(_.out)(_.maxDepth(2)).toSetMutable shouldBe expectedResults
-       centerTrav.repeat(_.out)(_.maxDepth(2).breadthFirstSearch).toSetMutable shouldBe expectedResults
-     }
+  "repeat given traversal up to depth 2" should {
+    "return only the final elements" in {
+      val expectedResults = Set(l2, r2)
+      centerTrav.repeat(_.out)(_.maxDepth(2)).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(2).breadthFirstSearch).toSetMutable shouldBe expectedResults
+    }
 
-     "return only the final elements - if any" in {
-       val expectedResults = Set(r4) // there is no L4
-       centerTrav.repeat(_.out)(_.maxDepth(4)).toSetMutable shouldBe expectedResults
-       centerTrav.repeat(_.out)(_.maxDepth(4).breadthFirstSearch).toSetMutable shouldBe expectedResults
-     }
+    "return only the final elements - if any" in {
+      val expectedResults = Set(r4) // there is no L4
+      centerTrav.repeat(_.out)(_.maxDepth(4)).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(4).breadthFirstSearch).toSetMutable shouldBe expectedResults
+    }
 
-     "return everything along the way also, if used in combination with emit" in {
-       val expectedResults = Set(center, l1, l2, r1, r2)
-       centerTrav.repeat(_.out)(_.maxDepth(2).emit).toSetMutable shouldBe expectedResults
-       centerTrav.repeat(_.out)(_.maxDepth(2).emit.breadthFirstSearch).toSetMutable shouldBe expectedResults
-     }
-   }
+    "return everything along the way also, if used in combination with emit" in {
+      val expectedResults = Set(center, l1, l2, r1, r2)
+      centerTrav.repeat(_.out)(_.maxDepth(2).emit).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(2).emit.breadthFirstSearch).toSetMutable shouldBe expectedResults
+    }
+  }
 
-   "emit everything along the way if so configured" in {
-     val expectedResults = Set(l3, l2, l1, center, r1, r2, r3, r4, r5)
-     centerTrav.repeat(_.out)(_.emit).toSetMutable shouldBe expectedResults
-     centerTrav.repeat(_.out)(_.emit.breadthFirstSearch).toSetMutable shouldBe expectedResults
-   }
+  "emit everything along the way if so configured" in {
+    val expectedResults = Set(l3, l2, l1, center, r1, r2, r3, r4, r5)
+    centerTrav.repeat(_.out)(_.emit).toSetMutable shouldBe expectedResults
+    centerTrav.repeat(_.out)(_.emit.breadthFirstSearch).toSetMutable shouldBe expectedResults
+  }
 
-   "emit everything but the first element (starting point)" in {
-     val expectedResults = Set(l3, l2, l1, r1, r2, r3, r4, r5)
-     centerTrav.repeat(_.out)(_.emitAllButFirst).toSetMutable shouldBe expectedResults
-     centerTrav.repeat(_.out)(_.emitAllButFirst.breadthFirstSearch).toSetMutable shouldBe expectedResults
-   }
+  "emit everything but the first element (starting point)" in {
+    val expectedResults = Set(l3, l2, l1, r1, r2, r3, r4, r5)
+    centerTrav.repeat(_.out)(_.emitAllButFirst).toSetMutable shouldBe expectedResults
+    centerTrav.repeat(_.out)(_.emitAllButFirst.breadthFirstSearch).toSetMutable shouldBe expectedResults
+  }
 
   // TODO continue here
 //   "emit nodes that meet given condition" in {
