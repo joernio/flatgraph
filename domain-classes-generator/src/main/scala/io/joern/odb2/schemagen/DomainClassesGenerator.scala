@@ -43,8 +43,8 @@ class DomainClassesGenerator(schema: Schema) {
     val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
 
-    val nodeTypes  = schema.nodeTypes.sortBy(_.name).toArray
-    val kindByNode = nodeTypes.zipWithIndex.toMap
+    val nodeTypes          = schema.nodeTypes.sortBy(_.name).toArray
+    val nodeKindByNodeType = nodeTypes.zipWithIndex.toMap
 
     val containedIndexByName  = mutable.HashMap.empty[String, Int]
     val forbiddenSlotsByIndex = mutable.ArrayBuffer.empty[mutable.HashSet[NodeType]]
@@ -347,7 +347,7 @@ class DomainClassesGenerator(schema: Schema) {
 
         val newNode =
           s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
-             |class New${nodeType.className} extends NewNode(${kindByNode(nodeType)}.toShort) with ${nodeType.className}Base {
+             |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
              |type RelatedStored = ${nodeType.className}
              |override def label: String = "${nodeType.name}"
              |${newNodeProps.sorted.mkString("\n")}
@@ -391,7 +391,7 @@ class DomainClassesGenerator(schema: Schema) {
          |import $basePackage.edges
          |
          |object GraphSchema extends odb2.Schema {
-         |  val nodeLabels = Array(${kindByNode.iterator.toList
+         |  val nodeLabels = Array(${nodeKindByNodeType.iterator.toList
           .sortBy { case (_, kind) => kind }
           .map { case (nodeType, _) => s"\"${nodeType.name}\"" }
           .mkString(", ")})
@@ -440,7 +440,7 @@ class DomainClassesGenerator(schema: Schema) {
           .map { case (node, contained) =>
             s"    else if(propertyKind == ${relevantProperties.length + containedIndexByName(
                 contained.localName
-              )} && nodeKind == ${kindByNode(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
+              )} && nodeKind == ${nodeKindByNodeType(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
           }
           .toList
           .sorted
@@ -662,16 +662,11 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
-    writeConstants(outputDir0, schema, propertyKindByProperty, edgeKindByEdgeType)
+    writeConstants(outputDir0, schema, KindContexts(nodeKindByNodeType, edgeKindByEdgeType, propertyKindByProperty))
     // end `run`
   }
 
-  private def writeConstants(
-    outputDir: os.Path,
-    schema: Schema,
-    propertyKindByProperty: Map[Property[?], Int],
-    edgeKindByEdgeType: Map[EdgeType, Int]
-  ): Seq[os.Path] = {
+  private def writeConstants(outputDir: os.Path, schema: Schema, kindContexts: KindContexts): Seq[os.Path] = {
     val results = Seq.newBuilder[os.Path]
     def writeConstants(className: String, constants: Seq[ConstantContext], generateCombinedConstantsSet: Boolean = true) = {
       val constantsSource = constants
@@ -719,15 +714,32 @@ class DomainClassesGenerator(schema: Schema) {
     )
     writeConstants(
       "PropertyKinds",
-      schema.properties.filter(propertyKindByProperty.contains).map { property =>
+      schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
         ConstantContext(
           property.name,
           s"""
              |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
              | * projects have the ability to run with newly generated domain classes
              | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${property.name} = Integer.valueOf(${propertyKindByProperty(property)}).intValue();""".stripMargin,
+             |public static final int ${property.name} = Integer.valueOf(${kindContexts.propertyKindByProperty(
+              property
+            )}).intValue();""".stripMargin,
           property.comment
+        )
+      },
+      generateCombinedConstantsSet = false
+    )
+    writeConstants(
+      "NodeKinds",
+      schema.nodeTypes.map { nodeType =>
+        ConstantContext(
+          nodeType.name,
+          s"""
+             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+             | * projects have the ability to run with newly generated domain classes
+             | * see https://stackoverflow.com/a/3524336/452762 */
+             |public static final int ${nodeType.name} = ${kindContexts.nodeKindByNodeType(nodeType)};""".stripMargin,
+          nodeType.comment
         )
       },
       generateCombinedConstantsSet = false
@@ -741,7 +753,7 @@ class DomainClassesGenerator(schema: Schema) {
              |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
              | * projects have the ability to run with newly generated domain classes
              | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${edgeType.name} = ${edgeKindByEdgeType(edgeType)};""".stripMargin,
+             |public static final int ${edgeType.name} = ${kindContexts.edgeKindByEdgeType(edgeType)};""".stripMargin,
           edgeType.comment
         )
       },
@@ -1019,6 +1031,12 @@ class DomainClassesGenerator(schema: Schema) {
   }
 
   private case class PropertyContexts(properties: Array[Property[?]], containedNodesByName: Map[String, mutable.HashSet[NodeType]])
+
+  private case class KindContexts(
+    nodeKindByNodeType: Map[NodeType, Int],
+    edgeKindByEdgeType: Map[EdgeType, Int],
+    propertyKindByProperty: Map[Property[?], Int]
+  )
 
   private def relevantPropertyContexts(schema: Schema): PropertyContexts = {
     val relevantPropertiesSet = mutable.HashSet.empty[Property[?]]
