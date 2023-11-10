@@ -7,7 +7,7 @@ import scala.reflect.ClassTag
 
 object Language extends Language
 
-trait Language extends GNodeTraversal{
+trait Language extends GNodeTraversal {
 
   // given [A]: Conversion[IterableOnce[A], Iterator[A]] =
   // iterable => iterable.iterator
