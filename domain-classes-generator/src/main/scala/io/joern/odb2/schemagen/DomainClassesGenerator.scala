@@ -5,18 +5,7 @@ import overflowdb.codegen.CodeGen.ConstantContext
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{
-  AbstractNodeType,
-  AdjacentNode,
-  Direction,
-  EdgeType,
-  MarkerTrait,
-  NodeBaseType,
-  NodeType,
-  ProductElement,
-  Property,
-  Schema
-}
+import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
@@ -261,118 +250,115 @@ class DomainClassesGenerator(schema: Schema) {
       )
     os.write(outputDir0 / "EdgeTypes.scala", edgeTypesSource)
 
-    val concreteNodes = nodeTypes.iterator.zipWithIndex
-      .map { case (nodeType, kind) =>
-        val newExtendz    = newExtendzMap(nodeType)
-        val newProperties = newPropsAtNodeList(nodeType)
-        val staticTyp =
-          (s"""trait ${nodeType.className}EMT extends AnyRef""" +: newExtendz.map { b => s"${b.className}EMT" } ++: newProperties.map { p =>
-            s"Has${p.className}EMT"
-          }).mkString(" with ")
+    val nodesRootDir = outputDir0 / "nodes"
+    os.makeDir(nodesRootDir)
+    nodeTypes.iterator.zipWithIndex.foreach { case (nodeType, kind) =>
+      val newExtendz    = newExtendzMap(nodeType)
+      val newProperties = newPropsAtNodeList(nodeType)
+      val staticTyp =
+        (s"""trait ${nodeType.className}EMT extends AnyRef""" +: newExtendz.map { b => s"${b.className}EMT" } ++: newProperties.map { p =>
+          s"Has${p.className}EMT"
+        }).mkString(" with ")
 
-        val base = (s"""trait ${nodeType.className}Base extends AbstractNode""" +: newExtendz
-          .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
+      val base = (s"""trait ${nodeType.className}Base extends AbstractNode""" +: newExtendz
+        .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
 
-        val stored =
-          (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
-            .map { base => base.className } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
-        // val base = (s"""class ${nodeType.className}""")
-        val newNodeProps    = mutable.ArrayBuffer.empty[String]
-        val newNodeFluent   = mutable.ArrayBuffer.empty[String]
-        val storedNodeProps = mutable.ArrayBuffer.empty[String]
-        val baseNodeProps   = mutable.ArrayBuffer.empty[String]
-        val propDictItems   = mutable.ArrayBuffer.empty[String]
-        val flattenItems    = mutable.ArrayBuffer.empty[String]
-        val productElements = mutable.ArrayBuffer.empty[String]
+      val stored =
+        (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
+          .map { base => base.className } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
+      // val base = (s"""class ${nodeType.className}""")
+      val newNodeProps    = mutable.ArrayBuffer.empty[String]
+      val newNodeFluent   = mutable.ArrayBuffer.empty[String]
+      val storedNodeProps = mutable.ArrayBuffer.empty[String]
+      val baseNodeProps   = mutable.ArrayBuffer.empty[String]
+      val propDictItems   = mutable.ArrayBuffer.empty[String]
+      val flattenItems    = mutable.ArrayBuffer.empty[String]
+      val productElements = mutable.ArrayBuffer.empty[String]
 
-        for (p <- nodeType.properties) {
-          val pname = Helpers.camelCase(p.name)
-          productElements.addOne(pname)
-          val ptyp = unpackTypeUnboxed(p.valueType, false, false)
-          p.cardinality match {
-            case Cardinality.List =>
-              newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
-              newNodeFluent.append(
-                s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.$pname = value.iterator.to(ArraySeq); this }"
-              )
-              propDictItems.append(
-                s"""val tmp${p.className} = this.$pname; if(tmp${p.className}.nonEmpty) res.put("${p.name}", tmp${p.className})"""
-              )
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
-            case Cardinality.ZeroOrOne =>
-              newNodeProps.append(s"var $pname: Option[$ptyp] = None")
-              newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
-              newNodeFluent.append(
-                s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.$pname = Option(value); this }"
-              )
-              propDictItems.append(s"""this.$pname.foreach{p => res.put("${p.name}", p )}""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
+      for (p <- nodeType.properties) {
+        val pname = Helpers.camelCase(p.name)
+        productElements.addOne(pname)
+        val ptyp = unpackTypeUnboxed(p.valueType, false, false)
+        p.cardinality match {
+          case Cardinality.List =>
+            newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
+            newNodeFluent.append(s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.$pname = value.iterator.to(ArraySeq); this }")
+            propDictItems.append(
+              s"""val tmp${p.className} = this.$pname; if(tmp${p.className}.nonEmpty) res.put("${p.name}", tmp${p.className})"""
+            )
+            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
+          case Cardinality.ZeroOrOne =>
+            newNodeProps.append(s"var $pname: Option[$ptyp] = None")
+            newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
+            newNodeFluent.append(
+              s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.$pname = Option(value); this }"
+            )
+            propDictItems.append(s"""this.$pname.foreach{p => res.put("${p.name}", p )}""")
+            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
 
-            case one: Cardinality.One[?] =>
-              newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
-              newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
-              propDictItems.append(s"""res.put("${p.name}", this.$pname )""")
-              flattenItems.append(s"""interface.insertProperty(this, ${propertyKindByProperty(p)}, Iterator(this.$pname))""")
-          }
+          case one: Cardinality.One[?] =>
+            newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
+            newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
+            propDictItems.append(s"""res.put("${p.name}", this.$pname )""")
+            flattenItems.append(s"""interface.insertProperty(this, ${propertyKindByProperty(p)}, Iterator(this.$pname))""")
         }
+      }
 
-        for (c <- nodeType.containedNodes) {
-          val pname = c.localName
-          productElements.addOne(pname)
-          val ptyp  = classNameToBase(c.nodeType.className)
-          val styp  = c.nodeType.className
-          val index = relevantProperties.size + containedIndexByName(c.localName)
-          val pid   = propertyKindByProperty.size + containedIndexByName(pname)
-          c.cardinality match {
-            case Cardinality.List =>
-              newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
-              newNodeFluent.append(
-                s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.$pname = value.iterator.to(ArraySeq); this }"
-              )
-              baseNodeProps.append(s"def $pname: IndexedSeq[$ptyp]")
-              storedNodeProps.append(
-                s"def $pname: IndexedSeq[${styp}] = odb2.Accessors.getNodePropertyMulti[$styp](graph, nodeKind, $index, seq)"
-              )
-              propDictItems.append(s"""val tmp$pname = this.$pname; if(tmp$pname.nonEmpty) res.put("$pname", tmp$pname)""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
+      for (c <- nodeType.containedNodes) {
+        val pname = c.localName
+        productElements.addOne(pname)
+        val ptyp  = classNameToBase(c.nodeType.className)
+        val styp  = c.nodeType.className
+        val index = relevantProperties.size + containedIndexByName(c.localName)
+        val pid   = propertyKindByProperty.size + containedIndexByName(pname)
+        c.cardinality match {
+          case Cardinality.List =>
+            newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
+            newNodeFluent.append(s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.$pname = value.iterator.to(ArraySeq); this }")
+            baseNodeProps.append(s"def $pname: IndexedSeq[$ptyp]")
+            storedNodeProps.append(
+              s"def $pname: IndexedSeq[${styp}] = odb2.Accessors.getNodePropertyMulti[$styp](graph, nodeKind, $index, seq)"
+            )
+            propDictItems.append(s"""val tmp$pname = this.$pname; if(tmp$pname.nonEmpty) res.put("$pname", tmp$pname)""")
+            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
 
-            case Cardinality.ZeroOrOne =>
-              newNodeProps.append(s"var $pname: Option[$ptyp] = None")
-              newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
-              newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = Option(value); this }")
-              baseNodeProps.append(s"def $pname: Option[$ptyp]")
-              storedNodeProps.append(
-                s"def $pname: Option[${styp}] = odb2.Accessors.getNodePropertyOption[$styp](graph, nodeKind, $index, seq)"
-              )
-              propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
-              flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
+          case Cardinality.ZeroOrOne =>
+            newNodeProps.append(s"var $pname: Option[$ptyp] = None")
+            newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
+            newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = Option(value); this }")
+            baseNodeProps.append(s"def $pname: Option[$ptyp]")
+            storedNodeProps.append(
+              s"def $pname: Option[${styp}] = odb2.Accessors.getNodePropertyOption[$styp](graph, nodeKind, $index, seq)"
+            )
+            propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
+            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
 
-            case _: Cardinality.One[?] =>
-              newNodeProps.append(s"var $pname: $ptyp = null")
-              newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
-              baseNodeProps.append(s"def $pname: $ptyp")
-              storedNodeProps.append(
-                s"def $pname: ${styp} = odb2.Accessors.getNodePropertySingle(graph, nodeKind, $index, seq, null: ${styp})"
-              )
-              propDictItems.append(s"""res.put("$pname", this.$pname )""")
-              flattenItems.append(s"""interface.insertProperty(this, $pid, Iterator(this.$pname))""")
-          }
+          case _: Cardinality.One[?] =>
+            newNodeProps.append(s"var $pname: $ptyp = null")
+            newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
+            baseNodeProps.append(s"def $pname: $ptyp")
+            storedNodeProps.append(
+              s"def $pname: ${styp} = odb2.Accessors.getNodePropertySingle(graph, nodeKind, $index, seq, null: ${styp})"
+            )
+            propDictItems.append(s"""res.put("$pname", this.$pname )""")
+            flattenItems.append(s"""interface.insertProperty(this, $pid, Iterator(this.$pname))""")
         }
+      }
 
-        val productElementNames = productElements.zipWithIndex
-          .map { case (name, index) =>
-            s"""case $index => "$name""""
-          }
-          .mkString("\n")
+      val productElementNames = productElements.zipWithIndex
+        .map { case (name, index) =>
+          s"""case $index => "$name""""
+        }
+        .mkString("\n")
 
-        val productElementAccessors = productElements.zipWithIndex
-          .map { case (name, index) =>
-            s"case $index => this.$name"
-          }
-          .mkString("\n")
+      val productElementAccessors = productElements.zipWithIndex
+        .map { case (name, index) =>
+          s"case $index => this.$name"
+        }
+        .mkString("\n")
 
-        val newNode =
-          s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
+      val newNode =
+        s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
              |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
              |type RelatedStored = ${nodeType.className}
              |override def label: String = "${nodeType.name}"
@@ -397,52 +383,51 @@ class DomainClassesGenerator(schema: Schema) {
              |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[New${nodeType.className}]
              |}""".stripMargin
 
-        s"""$staticTyp
-           |$base {
-           |${baseNodeProps.mkString("\n")}
-           |${propDictItems.mkString(
-            s"""override def propertiesMap: java.util.Map[String, Any] = {
-               | import $basePackage.accessors.Lang.*
-               | val res = new java.util.HashMap[String, Any]()
-               |""".stripMargin,
-            "\n",
-            "\n res\n}"
-          )}
-           |}
-           |$stored {
-           |  ${storedNodeProps.mkString("\n")}
-           |
-           |  override def productElementName(n: Int): String =
-           |    n match {
-           |      $productElementNames
-           |      case _ => ""
-           |    }
-           |
-           |  override def productElement(n: Int): Any =
-           |    n match {
-           |      $productElementAccessors
-           |      case _ => null
-           |    }
-           |
-           |  override def productPrefix = "${nodeType.className}"
-           |  override def productArity = ${productElements.size}
-           |
-           |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
-           |}
-           |$newNode
-           |""".stripMargin
-      }
-      .mkString(
-        s"""package $basePackage.nodes
-           |import io.joern.odb2
-           |import io.shiftleft.codepropertygraph.generated.v2.Language.*
-           |import scala.collection.immutable.{IndexedSeq, ArraySeq}
-           |
+      val propDictItemsSource = propDictItems.mkString(
+        s"""override def propertiesMap: java.util.Map[String, Any] = {
+           | import $basePackage.accessors.Lang.*
+           | val res = new java.util.HashMap[String, Any]()
            |""".stripMargin,
-        "\n\n",
-        ""
+        "\n",
+        "\n res\n}"
       )
-    os.write(outputDir0 / "NodeTypes.scala", concreteNodes)
+      val nodeSource = {
+        s"""package $basePackage.nodes
+             |
+             |import io.joern.odb2
+             |import io.shiftleft.codepropertygraph.generated.v2.Language.*
+             |import scala.collection.immutable.{IndexedSeq, ArraySeq}
+             |
+             |$staticTyp
+             |$base {
+             |  ${baseNodeProps.mkString("\n")}
+             |  $propDictItemsSource
+             |}
+             |$stored {
+             |  ${storedNodeProps.mkString("\n")}
+             |
+             |  override def productElementName(n: Int): String =
+             |    n match {
+             |      $productElementNames
+             |      case _ => ""
+             |    }
+             |
+             |  override def productElement(n: Int): Any =
+             |    n match {
+             |      $productElementAccessors
+             |      case _ => null
+             |    }
+             |
+             |  override def productPrefix = "${nodeType.className}"
+             |  override def productArity = ${productElements.size}
+             |
+             |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
+             |}
+             |$newNode
+             |""".stripMargin
+      }
+      os.write(nodesRootDir / s"${nodeType.className}.scala", nodeSource)
+    }
 
     val schemaFile =
       s"""package $basePackage
