@@ -5,7 +5,18 @@ import overflowdb.codegen.CodeGen.ConstantContext
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
-import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import overflowdb.schema.{
+  AbstractNodeType,
+  AdjacentNode,
+  Direction,
+  EdgeType,
+  MarkerTrait,
+  NodeBaseType,
+  NodeType,
+  ProductElement,
+  Property,
+  Schema
+}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
@@ -122,7 +133,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  def propertiesMap: java.util.Map[String, Any]
          |}
          |
-         |abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int) extends odb2.GNode(graph_4762, kind_4762, seq_4762) with AbstractNode {
+         |abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int) extends odb2.GNode(graph_4762, kind_4762, seq_4762) with AbstractNode with Product {
          |$edgeAccess
          |}
          |
@@ -272,10 +283,12 @@ class DomainClassesGenerator(schema: Schema) {
         val baseNodeProps   = mutable.ArrayBuffer.empty[String]
         val propDictItems   = mutable.ArrayBuffer.empty[String]
         val flattenItems    = mutable.ArrayBuffer.empty[String]
+        val productElements = mutable.ArrayBuffer.empty[String]
 
         for (p <- nodeType.properties) {
           val pname = Helpers.camelCase(p.name)
-          val ptyp  = unpackTypeUnboxed(p.valueType, false, false)
+          productElements.addOne(pname)
+          val ptyp = unpackTypeUnboxed(p.valueType, false, false)
           p.cardinality match {
             case Cardinality.List =>
               newNodeProps.append(s"var $pname: IndexedSeq[$ptyp] = ArraySeq.empty")
@@ -305,6 +318,7 @@ class DomainClassesGenerator(schema: Schema) {
 
         for (c <- nodeType.containedNodes) {
           val pname = c.localName
+          productElements.addOne(pname)
           val ptyp  = classNameToBase(c.nodeType.className)
           val styp  = c.nodeType.className
           val index = relevantProperties.size + containedIndexByName(c.localName)
@@ -345,6 +359,18 @@ class DomainClassesGenerator(schema: Schema) {
           }
         }
 
+        val productElementNames = productElements.zipWithIndex
+          .map { case (name, index) =>
+            s"""case $index => "$name""""
+          }
+          .mkString("\n")
+
+        val productElementAccessors = productElements.zipWithIndex
+          .map { case (name, index) =>
+            s"case $index => this.$name"
+          }
+          .mkString("\n")
+
         val newNode =
           s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
              |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
@@ -368,7 +394,24 @@ class DomainClassesGenerator(schema: Schema) {
           )}
            |}
            |$stored {
-           |${storedNodeProps.mkString("\n")}
+           |  ${storedNodeProps.mkString("\n")}
+           |
+           |  override def productElementName(n: Int): String =
+           |    n match {
+           |      $productElementNames
+           |      case _ => ""
+           |    }
+           |
+           |  override def productElement(n: Int): Any =
+           |    n match {
+           |      $productElementAccessors
+           |      case _ => null
+           |    }
+           |
+           |  override def productPrefix = "${nodeType.className}"
+           |  override def productArity = ${productElements.size}
+           |
+           |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
            |}
            |$newNode
            |""".stripMargin
@@ -376,6 +419,7 @@ class DomainClassesGenerator(schema: Schema) {
       .mkString(
         s"""package $basePackage.nodes
            |import io.joern.odb2
+           |import io.shiftleft.codepropertygraph.generated.v2.Language.*
            |import scala.collection.immutable.{IndexedSeq, ArraySeq}
            |
            |""".stripMargin,
