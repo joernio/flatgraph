@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TypeParameterEMT extends AnyRef with AstNodeEMT with HasNameEMT
+
 trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[TypeParameterEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -18,6 +19,18 @@ trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[Ty
     res
   }
 }
+
+object TypeParameter {
+  val Label = "TYPE_PARAMETER"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 41.toShort, seq_4762)
     with TypeParameterBase
@@ -49,6 +62,7 @@ class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeParameter]
 }
+
 object NewTypeParameter { def apply(): NewTypeParameter = new NewTypeParameter }
 class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
   type RelatedStored = TypeParameter

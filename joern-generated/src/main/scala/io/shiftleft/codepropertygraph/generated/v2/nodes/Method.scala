@@ -17,6 +17,7 @@ trait MethodEMT
     with HasIsExternalEMT
     with HasLineNumberEndEMT
     with HasSignatureEMT
+
 trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -39,6 +40,27 @@ trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with
     res
   }
 }
+
+object Method {
+  val Label = "METHOD"
+  object PropertyKinds {
+    val AstParentFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_FULL_NAME
+    val AstParentType     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_TYPE
+    val Code              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val ColumnNumberEnd   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER_END
+    val Filename          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
+    val FullName          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val Hash              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.HASH
+    val IsExternal        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_EXTERNAL
+    val LineNumber        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val LineNumberEnd     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER_END
+    val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val Signature         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
+  }
+}
+
 class Method(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 26.toShort, seq_4762)
     with MethodBase
@@ -89,6 +111,7 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Method]
 }
+
 object NewMethod { def apply(): NewMethod = new NewMethod }
 class NewMethod extends NewNode(26.toShort) with MethodBase {
   type RelatedStored = Method

@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait FindingEMT extends AnyRef
+
 trait FindingBase extends AbstractNode with StaticType[FindingEMT] {
   def evidence: IndexedSeq[AbstractNode]
   def keyValuePairs: IndexedSeq[KeyValuePairBase]
@@ -16,6 +17,12 @@ trait FindingBase extends AbstractNode with StaticType[FindingEMT] {
     res
   }
 }
+
+object Finding {
+  val Label = "FINDING"
+  object PropertyKinds {}
+}
+
 class Finding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 15.toShort, seq_4762)
     with FindingBase
@@ -42,6 +49,7 @@ class Finding(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Finding]
 }
+
 object NewFinding { def apply(): NewFinding = new NewFinding }
 class NewFinding extends NewNode(15.toShort) with FindingBase {
   type RelatedStored = Finding

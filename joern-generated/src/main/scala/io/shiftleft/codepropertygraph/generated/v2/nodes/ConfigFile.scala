@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ConfigFileEMT extends AnyRef with HasContentEMT with HasNameEMT
+
 trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -15,6 +16,15 @@ trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileEMT] {
     res
   }
 }
+
+object ConfigFile {
+  val Label = "CONFIG_FILE"
+  object PropertyKinds {
+    val Content = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CONTENT
+    val Name    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+  }
+}
+
 class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 10.toShort, seq_4762)
     with ConfigFileBase
@@ -39,6 +49,7 @@ class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ConfigFile]
 }
+
 object NewConfigFile { def apply(): NewConfigFile = new NewConfigFile }
 class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   type RelatedStored = ConfigFile

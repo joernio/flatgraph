@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait JumpLabelEMT extends AnyRef with AstNodeEMT with HasNameEMT with HasParserTypeNameEMT
+
 trait JumpLabelBase extends AbstractNode with AstNodeBase with StaticType[JumpLabelEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -19,6 +20,19 @@ trait JumpLabelBase extends AbstractNode with AstNodeBase with StaticType[JumpLa
     res
   }
 }
+
+object JumpLabel {
+  val Label = "JUMP_LABEL"
+  object PropertyKinds {
+    val Code           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val ParserTypeName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PARSER_TYPE_NAME
+  }
+}
+
 class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 18.toShort, seq_4762)
     with JumpLabelBase
@@ -52,6 +66,7 @@ class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[JumpLabel]
 }
+
 object NewJumpLabel { def apply(): NewJumpLabel = new NewJumpLabel }
 class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
   type RelatedStored = JumpLabel

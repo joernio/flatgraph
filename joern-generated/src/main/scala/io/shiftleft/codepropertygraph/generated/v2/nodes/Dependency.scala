@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait DependencyEMT extends AnyRef with HasDependencyGroupIdEMT with HasNameEMT with HasVersionEMT
+
 trait DependencyBase extends AbstractNode with StaticType[DependencyEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -16,6 +17,16 @@ trait DependencyBase extends AbstractNode with StaticType[DependencyEMT] {
     res
   }
 }
+
+object Dependency {
+  val Label = "DEPENDENCY"
+  object PropertyKinds {
+    val DependencyGroupId = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DEPENDENCY_GROUP_ID
+    val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Version           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VERSION
+  }
+}
+
 class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 12.toShort, seq_4762)
     with DependencyBase
@@ -42,6 +53,7 @@ class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Dependency]
 }
+
 object NewDependency { def apply(): NewDependency = new NewDependency }
 class NewDependency extends NewNode(12.toShort) with DependencyBase {
   type RelatedStored = Dependency

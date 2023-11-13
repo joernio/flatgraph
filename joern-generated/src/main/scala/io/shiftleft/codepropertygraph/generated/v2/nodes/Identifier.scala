@@ -11,6 +11,7 @@ trait IdentifierEMT
     with HasNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait IdentifierBase extends AbstractNode with ExpressionBase with StaticType[IdentifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -30,6 +31,23 @@ trait IdentifierBase extends AbstractNode with ExpressionBase with StaticType[Id
     res
   }
 }
+
+object Identifier {
+  val Label = "IDENTIFIER"
+  object PropertyKinds {
+    val ArgumentIndex           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val ArgumentName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
+    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DYNAMIC_TYPE_HINT_FULL_NAME
+    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
+    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  }
+}
+
 class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 16.toShort, seq_4762)
     with IdentifierBase
@@ -71,6 +89,7 @@ class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Identifier]
 }
+
 object NewIdentifier { def apply(): NewIdentifier = new NewIdentifier }
 class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
   type RelatedStored = Identifier

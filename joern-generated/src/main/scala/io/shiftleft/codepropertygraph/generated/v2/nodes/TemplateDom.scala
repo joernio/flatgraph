@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TemplateDomEMT extends AnyRef with ExpressionEMT with HasNameEMT
+
 trait TemplateDomBase extends AbstractNode with ExpressionBase with StaticType[TemplateDomEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -20,6 +21,20 @@ trait TemplateDomBase extends AbstractNode with ExpressionBase with StaticType[T
     res
   }
 }
+
+object TemplateDom {
+  val Label = "TEMPLATE_DOM"
+  object PropertyKinds {
+    val ArgumentIndex = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val ArgumentName  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
+    val Code          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 37.toShort, seq_4762)
     with TemplateDomBase
@@ -55,6 +70,7 @@ class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TemplateDom]
 }
+
 object NewTemplateDom { def apply(): NewTemplateDom = new NewTemplateDom }
 class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
   type RelatedStored = TemplateDom

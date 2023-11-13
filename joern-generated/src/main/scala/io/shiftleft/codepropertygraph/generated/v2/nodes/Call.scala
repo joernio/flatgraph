@@ -13,6 +13,7 @@ trait CallEMT
     with HasMethodFullNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with StaticType[CallEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -35,6 +36,26 @@ trait CallBase extends AbstractNode with CallReprBase with ExpressionBase with S
     res
   }
 }
+
+object Call {
+  val Label = "CALL"
+  object PropertyKinds {
+    val ArgumentIndex           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val ArgumentName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
+    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val DispatchType            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DISPATCH_TYPE
+    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DYNAMIC_TYPE_HINT_FULL_NAME
+    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val MethodFullName          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.METHOD_FULL_NAME
+    val Name                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
+    val Signature               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
+    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  }
+}
+
 class Call(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 7.toShort, seq_4762)
     with CallBase
@@ -83,6 +104,7 @@ class Call(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Call]
 }
+
 object NewCall { def apply(): NewCall = new NewCall }
 class NewCall extends NewNode(7.toShort) with CallBase {
   type RelatedStored = Call

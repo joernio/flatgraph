@@ -15,6 +15,7 @@ trait TypeDeclEMT
     with HasInheritsFromTypeFullNameEMT
     with HasIsExternalEMT
     with HasNameEMT
+
 trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -36,6 +37,25 @@ trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDec
     res
   }
 }
+
+object TypeDecl {
+  val Label = "TYPE_DECL"
+  object PropertyKinds {
+    val AliasTypeFullName        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ALIAS_TYPE_FULL_NAME
+    val AstParentFullName        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_FULL_NAME
+    val AstParentType            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_TYPE
+    val Code                     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val Filename                 = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
+    val FullName                 = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val InheritsFromTypeFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.INHERITS_FROM_TYPE_FULL_NAME
+    val IsExternal               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_EXTERNAL
+    val LineNumber               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name                     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 40.toShort, seq_4762)
     with TypeDeclBase
@@ -81,6 +101,7 @@ class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeDecl]
 }
+
 object NewTypeDecl { def apply(): NewTypeDecl = new NewTypeDecl }
 class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
   type RelatedStored = TypeDecl

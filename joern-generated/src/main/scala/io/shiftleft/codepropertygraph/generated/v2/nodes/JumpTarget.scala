@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait JumpTargetEMT extends AnyRef with CfgNodeEMT with HasArgumentIndexEMT with HasNameEMT with HasParserTypeNameEMT
+
 trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpTargetEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -20,6 +21,20 @@ trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpT
     res
   }
 }
+
+object JumpTarget {
+  val Label = "JUMP_TARGET"
+  object PropertyKinds {
+    val ArgumentIndex  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val Code           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val ParserTypeName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PARSER_TYPE_NAME
+  }
+}
+
 class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 19.toShort, seq_4762)
     with JumpTargetBase
@@ -55,6 +70,7 @@ class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[JumpTarget]
 }
+
 object NewJumpTarget { def apply(): NewJumpTarget = new NewJumpTarget }
 class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
   type RelatedStored = JumpTarget

@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait AnnotationEMT extends AnyRef with ExpressionEMT with HasFullNameEMT with HasNameEMT
+
 trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[AnnotationEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -21,6 +22,21 @@ trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[An
     res
   }
 }
+
+object Annotation {
+  val Label = "ANNOTATION"
+  object PropertyKinds {
+    val ArgumentIndex = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val ArgumentName  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
+    val Code          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val FullName      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val LineNumber    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0.toShort, seq_4762)
     with AnnotationBase
@@ -58,6 +74,7 @@ class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Annotation]
 }
+
 object NewAnnotation { def apply(): NewAnnotation = new NewAnnotation }
 class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
   type RelatedStored = Annotation

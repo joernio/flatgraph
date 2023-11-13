@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TypeEMT extends AnyRef with HasFullNameEMT with HasNameEMT with HasTypeDeclFullNameEMT
+
 trait TypeBase extends AbstractNode with StaticType[TypeEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -16,6 +17,16 @@ trait TypeBase extends AbstractNode with StaticType[TypeEMT] {
     res
   }
 }
+
+object Type {
+  val Label = "TYPE"
+  object PropertyKinds {
+    val FullName         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val Name             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val TypeDeclFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_DECL_FULL_NAME
+  }
+}
+
 class Type(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 38.toShort, seq_4762)
     with TypeBase
@@ -42,6 +53,7 @@ class Type(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Type]
 }
+
 object NewType { def apply(): NewType = new NewType }
 class NewType extends NewNode(38.toShort) with TypeBase {
   type RelatedStored = Type

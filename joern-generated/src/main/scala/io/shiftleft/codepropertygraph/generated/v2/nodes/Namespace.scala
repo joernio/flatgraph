@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait NamespaceEMT extends AnyRef with AstNodeEMT with HasNameEMT
+
 trait NamespaceBase extends AbstractNode with AstNodeBase with StaticType[NamespaceEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -18,6 +19,18 @@ trait NamespaceBase extends AbstractNode with AstNodeBase with StaticType[Namesp
     res
   }
 }
+
+object Namespace {
+  val Label = "NAMESPACE"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class Namespace(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 32.toShort, seq_4762)
     with NamespaceBase
@@ -49,6 +62,7 @@ class Namespace(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Namespace]
 }
+
 object NewNamespace { def apply(): NewNamespace = new NewNamespace }
 class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
   type RelatedStored = Namespace

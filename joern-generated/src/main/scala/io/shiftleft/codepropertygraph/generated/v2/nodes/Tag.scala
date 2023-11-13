@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TagEMT extends AnyRef with HasNameEMT with HasValueEMT
+
 trait TagBase extends AbstractNode with StaticType[TagEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -15,6 +16,15 @@ trait TagBase extends AbstractNode with StaticType[TagEMT] {
     res
   }
 }
+
+object Tag {
+  val Label = "TAG"
+  object PropertyKinds {
+    val Name  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
+  }
+}
+
 class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with TagBase with StaticType[TagEMT] {
 
   override def productElementName(n: Int): String =
@@ -36,6 +46,7 @@ class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Tag]
 }
+
 object NewTag { def apply(): NewTag = new NewTag }
 class NewTag extends NewNode(35.toShort) with TagBase {
   type RelatedStored = Tag

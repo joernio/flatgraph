@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait CommentEMT extends AnyRef with AstNodeEMT with HasFilenameEMT
+
 trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -18,6 +19,18 @@ trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentE
     res
   }
 }
+
+object Comment {
+  val Label = "COMMENT"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val Filename     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class Comment(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 9.toShort, seq_4762)
     with CommentBase
@@ -49,6 +62,7 @@ class Comment(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Comment]
 }
+
 object NewComment { def apply(): NewComment = new NewComment }
 class NewComment extends NewNode(9.toShort) with CommentBase {
   type RelatedStored = Comment

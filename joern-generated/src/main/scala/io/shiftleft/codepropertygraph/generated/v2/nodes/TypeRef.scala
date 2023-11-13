@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TypeRefEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
+
 trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeRefEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -23,6 +24,22 @@ trait TypeRefBase extends AbstractNode with ExpressionBase with StaticType[TypeR
     res
   }
 }
+
+object TypeRef {
+  val Label = "TYPE_REF"
+  object PropertyKinds {
+    val ArgumentIndex           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val ArgumentName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
+    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DYNAMIC_TYPE_HINT_FULL_NAME
+    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
+    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  }
+}
+
 class TypeRef(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 42.toShort, seq_4762)
     with TypeRefBase
@@ -62,6 +79,7 @@ class TypeRef(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeRef]
 }
+
 object NewTypeRef { def apply(): NewTypeRef = new NewTypeRef }
 class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
   type RelatedStored = TypeRef

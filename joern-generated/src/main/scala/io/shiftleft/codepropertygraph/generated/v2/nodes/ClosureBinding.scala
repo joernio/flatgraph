@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ClosureBindingEMT extends AnyRef with HasClosureBindingIdEMT with HasClosureOriginalNameEMT with HasEvaluationStrategyEMT
+
 trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -16,6 +17,16 @@ trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingEMT]
     res
   }
 }
+
+object ClosureBinding {
+  val Label = "CLOSURE_BINDING"
+  object PropertyKinds {
+    val ClosureBindingId    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLOSURE_BINDING_ID
+    val ClosureOriginalName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLOSURE_ORIGINAL_NAME
+    val EvaluationStrategy  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EVALUATION_STRATEGY
+  }
+}
+
 class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 8.toShort, seq_4762)
     with ClosureBindingBase
@@ -42,6 +53,7 @@ class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ClosureBinding]
 }
+
 object NewClosureBinding { def apply(): NewClosureBinding = new NewClosureBinding }
 class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
   type RelatedStored = ClosureBinding

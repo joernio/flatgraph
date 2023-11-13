@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait MetaDataEMT extends AnyRef with HasHashEMT with HasLanguageEMT with HasOverlaysEMT with HasRootEMT with HasVersionEMT
+
 trait MetaDataBase extends AbstractNode with StaticType[MetaDataEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -18,6 +19,18 @@ trait MetaDataBase extends AbstractNode with StaticType[MetaDataEMT] {
     res
   }
 }
+
+object MetaData {
+  val Label = "META_DATA"
+  object PropertyKinds {
+    val Hash     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.HASH
+    val Language = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LANGUAGE
+    val Overlays = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.OVERLAYS
+    val Root     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ROOT
+    val Version  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VERSION
+  }
+}
+
 class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 25.toShort, seq_4762)
     with MetaDataBase
@@ -48,6 +61,7 @@ class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MetaData]
 }
+
 object NewMetaData { def apply(): NewMetaData = new NewMetaData }
 class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   type RelatedStored = MetaData

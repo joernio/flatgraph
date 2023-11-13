@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait FileEMT extends AnyRef with AstNodeEMT with HasHashEMT with HasNameEMT
+
 trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -19,6 +20,19 @@ trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileEMT] {
     res
   }
 }
+
+object File {
+  val Label = "FILE"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val Hash         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.HASH
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
+}
+
 class File(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 14.toShort, seq_4762)
     with FileBase
@@ -52,6 +66,7 @@ class File(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[File]
 }
+
 object NewFile { def apply(): NewFile = new NewFile }
 class NewFile extends NewNode(14.toShort) with FileBase {
   type RelatedStored = File

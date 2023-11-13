@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait KeyValuePairEMT extends AnyRef with HasKeyEMT with HasValueEMT
+
 trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -15,6 +16,15 @@ trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairEMT] {
     res
   }
 }
+
+object KeyValuePair {
+  val Label = "KEY_VALUE_PAIR"
+  object PropertyKinds {
+    val Key   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.KEY
+    val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
+  }
+}
+
 class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 20.toShort, seq_4762)
     with KeyValuePairBase
@@ -39,6 +49,7 @@ class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[KeyValuePair]
 }
+
 object NewKeyValuePair { def apply(): NewKeyValuePair = new NewKeyValuePair }
 class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   type RelatedStored = KeyValuePair
