@@ -255,18 +255,22 @@ class DomainClassesGenerator(schema: Schema) {
     nodeTypes.iterator.zipWithIndex.foreach { case (nodeType, kind) =>
       val newExtendz    = newExtendzMap(nodeType)
       val newProperties = newPropsAtNodeList(nodeType)
-      val staticTyp =
-        (s"""trait ${nodeType.className}EMT extends AnyRef""" +: newExtendz.map { b => s"${b.className}EMT" } ++: newProperties.map { p =>
-          s"Has${p.className}EMT"
-        }).mkString(" with ")
 
-      val base = (s"""trait ${nodeType.className}Base extends AbstractNode""" +: newExtendz
-        .map { base => base.className + "Base" } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
+      val erasedMarkerType = {
+        val mixins = newExtendz.map(b => s"${b.className}EMT") ++ newProperties.map(p => s"Has${p.className}EMT")
+        s"""trait ${nodeType.className}EMT extends AnyRef""" +: mixins
+      }.mkString(" with ")
 
-      val stored =
-        (s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, ${kind}.toShort , seq_4762)""" :: s"${nodeType.className}Base" +: newExtendz
-          .map { base => base.className } ++: List(s"StaticType[${nodeType.className}EMT]")).mkString(" with ")
-      // val base = (s"""class ${nodeType.className}""")
+      val baseTrait = {
+        val mixins = newExtendz.map(base => base.className + "Base") :+ s"StaticType[${nodeType.className}EMT]"
+        s"""trait ${nodeType.className}Base extends AbstractNode""" +: mixins
+      }.mkString(" with ")
+
+      val storedNode = {
+        val mixins = s"${nodeType.className}Base" +: newExtendz.map(_.className) :+ s"StaticType[${nodeType.className}EMT]"
+        s"""class ${nodeType.className}(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, $kind.toShort , seq_4762)""" +: mixins
+      }.mkString(" with ")
+
       val newNodeProps    = mutable.ArrayBuffer.empty[String]
       val newNodeFluent   = mutable.ArrayBuffer.empty[String]
       val storedNodeProps = mutable.ArrayBuffer.empty[String]
@@ -398,12 +402,12 @@ class DomainClassesGenerator(schema: Schema) {
              |import io.shiftleft.codepropertygraph.generated.v2.Language.*
              |import scala.collection.immutable.{IndexedSeq, ArraySeq}
              |
-             |$staticTyp
-             |$base {
+             |$erasedMarkerType
+             |$baseTrait {
              |  ${baseNodeProps.mkString("\n")}
              |  $propDictItemsSource
              |}
-             |$stored {
+             |$storedNode {
              |  ${storedNodeProps.mkString("\n")}
              |
              |  override def productElementName(n: Int): String =
