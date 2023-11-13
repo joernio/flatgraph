@@ -11,6 +11,7 @@ trait MemberEMT
     with HasDynamicTypeHintFullNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[MemberEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -28,6 +29,11 @@ trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with
     res
   }
 }
+
+object Member {
+  val Label = "MEMBER"
+}
+
 class Member(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 24.toShort, seq_4762)
     with MemberBase
@@ -66,6 +72,7 @@ class Member(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Member]
 }
+
 object NewMember { def apply(): NewMember = new NewMember }
 class NewMember extends NewNode(24.toShort) with MemberBase {
   type RelatedStored = Member

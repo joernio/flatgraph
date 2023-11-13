@@ -11,6 +11,7 @@ trait MethodReturnEMT
     with HasEvaluationStrategyEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[MethodReturnEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -28,6 +29,11 @@ trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[Met
     res
   }
 }
+
+object MethodReturn {
+  val Label = "METHOD_RETURN"
+}
+
 class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 30.toShort, seq_4762)
     with MethodReturnBase
@@ -65,6 +71,7 @@ class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodReturn]
 }
+
 object NewMethodReturn { def apply(): NewMethodReturn = new NewMethodReturn }
 class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
   type RelatedStored = MethodReturn

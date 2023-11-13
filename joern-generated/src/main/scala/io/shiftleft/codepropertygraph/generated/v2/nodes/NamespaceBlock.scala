@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait NamespaceBlockEMT extends AnyRef with AstNodeEMT with HasFilenameEMT with HasFullNameEMT with HasNameEMT
+
 trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[NamespaceBlockEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -20,6 +21,11 @@ trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[N
     res
   }
 }
+
+object NamespaceBlock {
+  val Label = "NAMESPACE_BLOCK"
+}
+
 class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 33.toShort, seq_4762)
     with NamespaceBlockBase
@@ -55,6 +61,7 @@ class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NamespaceBlock]
 }
+
 object NewNamespaceBlock { def apply(): NewNamespaceBlock = new NewNamespaceBlock }
 class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
   type RelatedStored = NamespaceBlock

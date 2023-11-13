@@ -15,6 +15,7 @@ trait LocationEMT
     with HasNodeLabelEMT
     with HasPackageNameEMT
     with HasSymbolEMT
+
 trait LocationBase extends AbstractNode with StaticType[LocationEMT] {
   def node: Option[AbstractNode]
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -33,6 +34,11 @@ trait LocationBase extends AbstractNode with StaticType[LocationEMT] {
     res
   }
 }
+
+object Location {
+  val Label = "LOCATION"
+}
+
 class Location(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 23.toShort, seq_4762)
     with LocationBase
@@ -74,6 +80,7 @@ class Location(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Location]
 }
+
 object NewLocation { def apply(): NewLocation = new NewLocation }
 class NewLocation extends NewNode(23.toShort) with LocationBase {
   type RelatedStored = Location

@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait BlockEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
+
 trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -23,6 +24,11 @@ trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockEM
     res
   }
 }
+
+object Block {
+  val Label = "BLOCK"
+}
+
 class Block(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 6.toShort, seq_4762)
     with BlockBase
@@ -62,6 +68,7 @@ class Block(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Block]
 }
+
 object NewBlock { def apply(): NewBlock = new NewBlock }
 class NewBlock extends NewNode(6.toShort) with BlockBase {
   type RelatedStored = Block

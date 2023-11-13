@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TypeArgumentEMT extends AnyRef with AstNodeEMT
+
 trait TypeArgumentBase extends AbstractNode with AstNodeBase with StaticType[TypeArgumentEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -17,6 +18,11 @@ trait TypeArgumentBase extends AbstractNode with AstNodeBase with StaticType[Typ
     res
   }
 }
+
+object TypeArgument {
+  val Label = "TYPE_ARGUMENT"
+}
+
 class TypeArgument(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 39.toShort, seq_4762)
     with TypeArgumentBase
@@ -46,6 +52,7 @@ class TypeArgument(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeArgument]
 }
+
 object NewTypeArgument { def apply(): NewTypeArgument = new NewTypeArgument }
 class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
   type RelatedStored = TypeArgument

@@ -15,6 +15,7 @@ trait TypeDeclEMT
     with HasInheritsFromTypeFullNameEMT
     with HasIsExternalEMT
     with HasNameEMT
+
 trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -36,6 +37,11 @@ trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDec
     res
   }
 }
+
+object TypeDecl {
+  val Label = "TYPE_DECL"
+}
+
 class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 40.toShort, seq_4762)
     with TypeDeclBase
@@ -81,6 +87,7 @@ class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeDecl]
 }
+
 object NewTypeDecl { def apply(): NewTypeDecl = new NewTypeDecl }
 class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
   type RelatedStored = TypeDecl

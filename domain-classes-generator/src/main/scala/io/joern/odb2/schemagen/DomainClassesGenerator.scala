@@ -403,10 +403,16 @@ class DomainClassesGenerator(schema: Schema) {
              |import scala.collection.immutable.{IndexedSeq, ArraySeq}
              |
              |$erasedMarkerType
+             |
              |$baseTrait {
              |  ${baseNodeProps.mkString("\n")}
              |  $propDictItemsSource
              |}
+             |
+             |object ${nodeType.className} {
+             |  val Label = "${nodeType.name}"
+             |}
+             |
              |$storedNode {
              |  ${storedNodeProps.mkString("\n")}
              |
@@ -427,6 +433,7 @@ class DomainClassesGenerator(schema: Schema) {
              |
              |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
              |}
+             |
              |$newNode
              |""".stripMargin
       }

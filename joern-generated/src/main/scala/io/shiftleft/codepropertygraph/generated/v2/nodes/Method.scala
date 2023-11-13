@@ -17,6 +17,7 @@ trait MethodEMT
     with HasIsExternalEMT
     with HasLineNumberEndEMT
     with HasSignatureEMT
+
 trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -39,6 +40,11 @@ trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with
     res
   }
 }
+
+object Method {
+  val Label = "METHOD"
+}
+
 class Method(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 26.toShort, seq_4762)
     with MethodBase
@@ -89,6 +95,7 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Method]
 }
+
 object NewMethod { def apply(): NewMethod = new NewMethod }
 class NewMethod extends NewNode(26.toShort) with MethodBase {
   type RelatedStored = Method

@@ -11,6 +11,7 @@ trait MethodRefEMT
     with HasMethodFullNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[MethodRefEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -30,6 +31,11 @@ trait MethodRefBase extends AbstractNode with ExpressionBase with StaticType[Met
     res
   }
 }
+
+object MethodRef {
+  val Label = "METHOD_REF"
+}
+
 class MethodRef(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 29.toShort, seq_4762)
     with MethodRefBase
@@ -71,6 +77,7 @@ class MethodRef(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodRef]
 }
+
 object NewMethodRef { def apply(): NewMethodRef = new NewMethodRef }
 class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
   type RelatedStored = MethodRef

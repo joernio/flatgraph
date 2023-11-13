@@ -12,6 +12,7 @@ trait ImportEMT
     with HasImportedEntityEMT
     with HasIsExplicitEMT
     with HasIsWildcardEMT
+
 trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -29,6 +30,11 @@ trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportEMT
     res
   }
 }
+
+object Import {
+  val Label = "IMPORT"
+}
+
 class Import(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 17.toShort, seq_4762)
     with ImportBase
@@ -68,6 +74,7 @@ class Import(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Import]
 }
+
 object NewImport { def apply(): NewImport = new NewImport }
 class NewImport extends NewNode(17.toShort) with ImportBase {
   type RelatedStored = Import

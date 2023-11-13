@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait BindingEMT extends AnyRef with HasMethodFullNameEMT with HasNameEMT with HasSignatureEMT
+
 trait BindingBase extends AbstractNode with StaticType[BindingEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -16,6 +17,11 @@ trait BindingBase extends AbstractNode with StaticType[BindingEMT] {
     res
   }
 }
+
+object Binding {
+  val Label = "BINDING"
+}
+
 class Binding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 5.toShort, seq_4762)
     with BindingBase
@@ -42,6 +48,7 @@ class Binding(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Binding]
 }
+
 object NewBinding { def apply(): NewBinding = new NewBinding }
 class NewBinding extends NewNode(5.toShort) with BindingBase {
   type RelatedStored = Binding

@@ -12,6 +12,7 @@ trait MethodParameterOutEMT
     with HasIndexEMT
     with HasIsVariadicEMT
     with HasTypeFullNameEMT
+
 trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterOutEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -29,6 +30,11 @@ trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with Declarat
     res
   }
 }
+
+object MethodParameterOut {
+  val Label = "METHOD_PARAMETER_OUT"
+}
+
 class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 28.toShort, seq_4762)
     with MethodParameterOutBase
@@ -69,6 +75,7 @@ class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodParameterOut]
 }
+
 object NewMethodParameterOut { def apply(): NewMethodParameterOut = new NewMethodParameterOut }
 class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutBase {
   type RelatedStored = MethodParameterOut

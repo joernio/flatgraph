@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait AnnotationLiteralEMT extends AnyRef with ExpressionEMT with HasNameEMT
+
 trait AnnotationLiteralBase extends AbstractNode with ExpressionBase with StaticType[AnnotationLiteralEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -20,6 +21,11 @@ trait AnnotationLiteralBase extends AbstractNode with ExpressionBase with Static
     res
   }
 }
+
+object AnnotationLiteral {
+  val Label = "ANNOTATION_LITERAL"
+}
+
 class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1.toShort, seq_4762)
     with AnnotationLiteralBase
@@ -55,6 +61,7 @@ class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[AnnotationLiteral]
 }
+
 object NewAnnotationLiteral { def apply(): NewAnnotationLiteral = new NewAnnotationLiteral }
 class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase {
   type RelatedStored = AnnotationLiteral

@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait LiteralEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
+
 trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[LiteralEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -23,6 +24,11 @@ trait LiteralBase extends AbstractNode with ExpressionBase with StaticType[Liter
     res
   }
 }
+
+object Literal {
+  val Label = "LITERAL"
+}
+
 class Literal(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 21.toShort, seq_4762)
     with LiteralBase
@@ -62,6 +68,7 @@ class Literal(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Literal]
 }
+
 object NewLiteral { def apply(): NewLiteral = new NewLiteral }
 class NewLiteral extends NewNode(21.toShort) with LiteralBase {
   type RelatedStored = Literal

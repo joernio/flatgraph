@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ModifierEMT extends AnyRef with AstNodeEMT with HasModifierTypeEMT
+
 trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[ModifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -18,6 +19,11 @@ trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[Modifie
     res
   }
 }
+
+object Modifier {
+  val Label = "MODIFIER"
+}
+
 class Modifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 31.toShort, seq_4762)
     with ModifierBase
@@ -49,6 +55,7 @@ class Modifier(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Modifier]
 }
+
 object NewModifier { def apply(): NewModifier = new NewModifier }
 class NewModifier extends NewNode(31.toShort) with ModifierBase {
   type RelatedStored = Modifier

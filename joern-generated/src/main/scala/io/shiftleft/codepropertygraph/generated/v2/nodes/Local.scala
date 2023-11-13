@@ -12,6 +12,7 @@ trait LocalEMT
     with HasDynamicTypeHintFullNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with StaticType[LocalEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -30,6 +31,11 @@ trait LocalBase extends AbstractNode with AstNodeBase with DeclarationBase with 
     res
   }
 }
+
+object Local {
+  val Label = "LOCAL"
+}
+
 class Local(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 22.toShort, seq_4762)
     with LocalBase
@@ -70,6 +76,7 @@ class Local(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Local]
 }
+
 object NewLocal { def apply(): NewLocal = new NewLocal }
 class NewLocal extends NewNode(22.toShort) with LocalBase {
   type RelatedStored = Local

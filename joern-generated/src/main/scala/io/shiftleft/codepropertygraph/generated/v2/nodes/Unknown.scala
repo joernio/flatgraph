@@ -12,6 +12,7 @@ trait UnknownEMT
     with HasParserTypeNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[UnknownEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -32,6 +33,11 @@ trait UnknownBase extends AbstractNode with ExpressionBase with StaticType[Unkno
     res
   }
 }
+
+object Unknown {
+  val Label = "UNKNOWN"
+}
+
 class Unknown(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 43.toShort, seq_4762)
     with UnknownBase
@@ -75,6 +81,7 @@ class Unknown(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Unknown]
 }
+
 object NewUnknown { def apply(): NewUnknown = new NewUnknown }
 class NewUnknown extends NewNode(43.toShort) with UnknownBase {
   type RelatedStored = Unknown

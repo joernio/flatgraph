@@ -14,6 +14,7 @@ trait MethodParameterInEMT
     with HasIsVariadicEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait MethodParameterInBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodParameterInEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -34,6 +35,11 @@ trait MethodParameterInBase extends AbstractNode with CfgNodeBase with Declarati
     res
   }
 }
+
+object MethodParameterIn {
+  val Label = "METHOD_PARAMETER_IN"
+}
+
 class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 27.toShort, seq_4762)
     with MethodParameterInBase
@@ -78,6 +84,7 @@ class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodParameterIn]
 }
+
 object NewMethodParameterIn { def apply(): NewMethodParameterIn = new NewMethodParameterIn }
 class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBase {
   type RelatedStored = MethodParameterIn

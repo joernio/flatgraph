@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ArrayInitializerEMT extends AnyRef with ExpressionEMT
+
 trait ArrayInitializerBase extends AbstractNode with ExpressionBase with StaticType[ArrayInitializerEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -19,6 +20,11 @@ trait ArrayInitializerBase extends AbstractNode with ExpressionBase with StaticT
     res
   }
 }
+
+object ArrayInitializer {
+  val Label = "ARRAY_INITIALIZER"
+}
+
 class ArrayInitializer(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 4.toShort, seq_4762)
     with ArrayInitializerBase
@@ -52,6 +58,7 @@ class ArrayInitializer(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ArrayInitializer]
 }
+
 object NewArrayInitializer { def apply(): NewArrayInitializer = new NewArrayInitializer }
 class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
   type RelatedStored = ArrayInitializer

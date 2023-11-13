@@ -11,6 +11,7 @@ trait IdentifierEMT
     with HasNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
+
 trait IdentifierBase extends AbstractNode with ExpressionBase with StaticType[IdentifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -30,6 +31,11 @@ trait IdentifierBase extends AbstractNode with ExpressionBase with StaticType[Id
     res
   }
 }
+
+object Identifier {
+  val Label = "IDENTIFIER"
+}
+
 class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 16.toShort, seq_4762)
     with IdentifierBase
@@ -71,6 +77,7 @@ class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Identifier]
 }
+
 object NewIdentifier { def apply(): NewIdentifier = new NewIdentifier }
 class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
   type RelatedStored = Identifier

@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait TagNodePairEMT extends AnyRef
+
 trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairEMT] {
   def node: AbstractNode
   def tag: TagBase
@@ -16,6 +17,11 @@ trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairEMT] {
     res
   }
 }
+
+object TagNodePair {
+  val Label = "TAG_NODE_PAIR"
+}
+
 class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 36.toShort, seq_4762)
     with TagNodePairBase
@@ -42,6 +48,7 @@ class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TagNodePair]
 }
+
 object NewTagNodePair { def apply(): NewTagNodePair = new NewTagNodePair }
 class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
   type RelatedStored = TagNodePair

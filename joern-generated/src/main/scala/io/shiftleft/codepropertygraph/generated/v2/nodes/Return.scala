@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ReturnEMT extends AnyRef with ExpressionEMT
+
 trait ReturnBase extends AbstractNode with ExpressionBase with StaticType[ReturnEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -19,6 +20,11 @@ trait ReturnBase extends AbstractNode with ExpressionBase with StaticType[Return
     res
   }
 }
+
+object Return {
+  val Label = "RETURN"
+}
+
 class Return(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 34.toShort, seq_4762)
     with ReturnBase
@@ -52,6 +58,7 @@ class Return(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Return]
 }
+
 object NewReturn { def apply(): NewReturn = new NewReturn }
 class NewReturn extends NewNode(34.toShort) with ReturnBase {
   type RelatedStored = Return

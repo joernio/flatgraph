@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait AnnotationParameterAssignEMT extends AnyRef with AstNodeEMT
+
 trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with StaticType[AnnotationParameterAssignEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -17,6 +18,11 @@ trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with S
     res
   }
 }
+
+object AnnotationParameterAssign {
+  val Label = "ANNOTATION_PARAMETER_ASSIGN"
+}
+
 class AnnotationParameterAssign(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 3.toShort, seq_4762)
     with AnnotationParameterAssignBase
@@ -46,6 +52,7 @@ class AnnotationParameterAssign(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[AnnotationParameterAssign]
 }
+
 object NewAnnotationParameterAssign { def apply(): NewAnnotationParameterAssign = new NewAnnotationParameterAssign }
 class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationParameterAssignBase {
   type RelatedStored = AnnotationParameterAssign

@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait FieldIdentifierEMT extends AnyRef with ExpressionEMT with HasCanonicalNameEMT
+
 trait FieldIdentifierBase extends AbstractNode with ExpressionBase with StaticType[FieldIdentifierEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -20,6 +21,11 @@ trait FieldIdentifierBase extends AbstractNode with ExpressionBase with StaticTy
     res
   }
 }
+
+object FieldIdentifier {
+  val Label = "FIELD_IDENTIFIER"
+}
+
 class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 13.toShort, seq_4762)
     with FieldIdentifierBase
@@ -55,6 +61,7 @@ class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[FieldIdentifier]
 }
+
 object NewFieldIdentifier { def apply(): NewFieldIdentifier = new NewFieldIdentifier }
 class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
   type RelatedStored = FieldIdentifier

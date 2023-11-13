@@ -5,6 +5,7 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ControlStructureEMT extends AnyRef with ExpressionEMT with HasControlStructureTypeEMT with HasParserTypeNameEMT
+
 trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticType[ControlStructureEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
@@ -21,6 +22,11 @@ trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticT
     res
   }
 }
+
+object ControlStructure {
+  val Label = "CONTROL_STRUCTURE"
+}
+
 class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 11.toShort, seq_4762)
     with ControlStructureBase
@@ -58,6 +64,7 @@ class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ControlStructure]
 }
+
 object NewControlStructure { def apply(): NewControlStructure = new NewControlStructure }
 class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase {
   type RelatedStored = ControlStructure
