@@ -20,6 +20,11 @@ trait TypeBase extends AbstractNode with StaticType[TypeEMT] {
 
 object Type {
   val Label = "TYPE"
+  object PropertyKinds {
+    val FullName         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val Name             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val TypeDeclFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_DECL_FULL_NAME
+  }
 }
 
 class Type(graph_4762: odb2.Graph, seq_4762: Int)

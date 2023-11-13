@@ -19,6 +19,10 @@ trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairEMT] {
 
 object KeyValuePair {
   val Label = "KEY_VALUE_PAIR"
+  object PropertyKinds {
+    val Key   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.KEY
+    val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
+  }
 }
 
 class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)

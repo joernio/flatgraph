@@ -33,6 +33,17 @@ trait MethodParameterOutBase extends AbstractNode with CfgNodeBase with Declarat
 
 object MethodParameterOut {
   val Label = "METHOD_PARAMETER_OUT"
+  object PropertyKinds {
+    val Code               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber       = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val EvaluationStrategy = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EVALUATION_STRATEGY
+    val Index              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.INDEX
+    val IsVariadic         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_VARIADIC
+    val LineNumber         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val TypeFullName       = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  }
 }
 
 class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)

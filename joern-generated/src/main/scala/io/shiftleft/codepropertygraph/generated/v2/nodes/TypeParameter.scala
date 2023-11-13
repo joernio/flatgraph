@@ -22,6 +22,13 @@ trait TypeParameterBase extends AbstractNode with AstNodeBase with StaticType[Ty
 
 object TypeParameter {
   val Label = "TYPE_PARAMETER"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)

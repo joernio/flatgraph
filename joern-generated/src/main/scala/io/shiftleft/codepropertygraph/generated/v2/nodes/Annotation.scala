@@ -25,6 +25,16 @@ trait AnnotationBase extends AbstractNode with ExpressionBase with StaticType[An
 
 object Annotation {
   val Label = "ANNOTATION"
+  object PropertyKinds {
+    val ArgumentIndex = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
+    val ArgumentName  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
+    val Code          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val FullName      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val LineNumber    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class Annotation(graph_4762: odb2.Graph, seq_4762: Int)

@@ -38,6 +38,19 @@ trait MethodParameterInBase extends AbstractNode with CfgNodeBase with Declarati
 
 object MethodParameterIn {
   val Label = "METHOD_PARAMETER_IN"
+  object PropertyKinds {
+    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DYNAMIC_TYPE_HINT_FULL_NAME
+    val EvaluationStrategy      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EVALUATION_STRATEGY
+    val Index                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.INDEX
+    val IsVariadic              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_VARIADIC
+    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
+    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  }
 }
 
 class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)

@@ -33,6 +33,17 @@ trait ImportBase extends AbstractNode with AstNodeBase with StaticType[ImportEMT
 
 object Import {
   val Label = "IMPORT"
+  object PropertyKinds {
+    val Code           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val ExplicitAs     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EXPLICIT_AS
+    val ImportedAs     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IMPORTED_AS
+    val ImportedEntity = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IMPORTED_ENTITY
+    val IsExplicit     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_EXPLICIT
+    val IsWildcard     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_WILDCARD
+    val LineNumber     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Order          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class Import(graph_4762: odb2.Graph, seq_4762: Int)

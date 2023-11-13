@@ -19,6 +19,10 @@ trait TagBase extends AbstractNode with StaticType[TagEMT] {
 
 object Tag {
   val Label = "TAG"
+  object PropertyKinds {
+    val Name  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
+  }
 }
 
 class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with TagBase with StaticType[TagEMT] {

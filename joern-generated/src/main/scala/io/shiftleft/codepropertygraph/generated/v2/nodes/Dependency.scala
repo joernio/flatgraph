@@ -20,6 +20,11 @@ trait DependencyBase extends AbstractNode with StaticType[DependencyEMT] {
 
 object Dependency {
   val Label = "DEPENDENCY"
+  object PropertyKinds {
+    val DependencyGroupId = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DEPENDENCY_GROUP_ID
+    val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Version           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VERSION
+  }
 }
 
 class Dependency(graph_4762: odb2.Graph, seq_4762: Int)

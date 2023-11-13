@@ -20,6 +20,7 @@ trait FindingBase extends AbstractNode with StaticType[FindingEMT] {
 
 object Finding {
   val Label = "FINDING"
+  object PropertyKinds {}
 }
 
 class Finding(graph_4762: odb2.Graph, seq_4762: Int)

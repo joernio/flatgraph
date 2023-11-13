@@ -20,6 +20,11 @@ trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingEMT]
 
 object ClosureBinding {
   val Label = "CLOSURE_BINDING"
+  object PropertyKinds {
+    val ClosureBindingId    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLOSURE_BINDING_ID
+    val ClosureOriginalName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLOSURE_ORIGINAL_NAME
+    val EvaluationStrategy  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EVALUATION_STRATEGY
+  }
 }
 
 class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)

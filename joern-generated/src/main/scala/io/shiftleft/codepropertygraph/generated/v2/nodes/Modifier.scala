@@ -22,6 +22,13 @@ trait ModifierBase extends AbstractNode with AstNodeBase with StaticType[Modifie
 
 object Modifier {
   val Label = "MODIFIER"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val ModifierType = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.MODIFIER_TYPE
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class Modifier(graph_4762: odb2.Graph, seq_4762: Int)

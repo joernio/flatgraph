@@ -21,6 +21,12 @@ trait AnnotationParameterBase extends AbstractNode with AstNodeBase with StaticT
 
 object AnnotationParameter {
   val Label = "ANNOTATION_PARAMETER"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class AnnotationParameter(graph_4762: odb2.Graph, seq_4762: Int)

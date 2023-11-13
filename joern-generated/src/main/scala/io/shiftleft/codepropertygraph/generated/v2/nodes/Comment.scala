@@ -22,6 +22,13 @@ trait CommentBase extends AbstractNode with AstNodeBase with StaticType[CommentE
 
 object Comment {
   val Label = "COMMENT"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val Filename     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class Comment(graph_4762: odb2.Graph, seq_4762: Int)

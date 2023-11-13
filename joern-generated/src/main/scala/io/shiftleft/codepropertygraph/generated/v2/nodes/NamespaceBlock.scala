@@ -24,6 +24,15 @@ trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[N
 
 object NamespaceBlock {
   val Label = "NAMESPACE_BLOCK"
+  object PropertyKinds {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
+    val Filename     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
+    val FullName     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
+    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  }
 }
 
 class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)

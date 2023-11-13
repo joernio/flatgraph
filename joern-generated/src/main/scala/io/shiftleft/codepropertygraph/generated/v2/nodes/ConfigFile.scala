@@ -19,6 +19,10 @@ trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileEMT] {
 
 object ConfigFile {
   val Label = "CONFIG_FILE"
+  object PropertyKinds {
+    val Content = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CONTENT
+    val Name    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
+  }
 }
 
 class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)

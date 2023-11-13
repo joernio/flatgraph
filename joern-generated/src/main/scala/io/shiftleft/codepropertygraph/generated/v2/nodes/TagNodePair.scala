@@ -20,6 +20,7 @@ trait TagNodePairBase extends AbstractNode with StaticType[TagNodePairEMT] {
 
 object TagNodePair {
   val Label = "TAG_NODE_PAIR"
+  object PropertyKinds {}
 }
 
 class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)

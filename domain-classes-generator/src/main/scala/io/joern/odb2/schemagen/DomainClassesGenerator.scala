@@ -361,6 +361,14 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
 
+      val propertyKinds = nodeType.properties
+        .map(_.name)
+        .map { name =>
+          val camelCase = Helpers.camelCaseCaps(name)
+          s"""val $camelCase = $basePackage.PropertyKinds.$name"""
+        }
+        .mkString("\n")
+
       val newNode =
         s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
              |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
@@ -411,6 +419,9 @@ class DomainClassesGenerator(schema: Schema) {
              |
              |object ${nodeType.className} {
              |  val Label = "${nodeType.name}"
+             |  object PropertyKinds {
+             |    $propertyKinds
+             |  }
              |}
              |
              |$storedNode {

@@ -22,6 +22,13 @@ trait MetaDataBase extends AbstractNode with StaticType[MetaDataEMT] {
 
 object MetaData {
   val Label = "META_DATA"
+  object PropertyKinds {
+    val Hash     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.HASH
+    val Language = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LANGUAGE
+    val Overlays = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.OVERLAYS
+    val Root     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ROOT
+    val Version  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VERSION
+  }
 }
 
 class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
