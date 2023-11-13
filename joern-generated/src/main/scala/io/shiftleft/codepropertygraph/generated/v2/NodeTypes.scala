@@ -90,6 +90,36 @@ class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "fullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.fullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotation"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotation]
 }
 
 trait AnnotationLiteralEMT extends AnyRef with ExpressionEMT with HasNameEMT
@@ -173,6 +203,34 @@ class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotationLiteral"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotationLiteral]
 }
 
 trait AnnotationParameterEMT extends AnyRef with AstNodeEMT
@@ -237,6 +295,28 @@ class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameter
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotationParameter"
+  override def productArity                 = 4
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotationParameter]
 }
 
 trait AnnotationParameterAssignEMT extends AnyRef with AstNodeEMT
@@ -301,6 +381,28 @@ class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationPar
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotationParameterAssign"
+  override def productArity                 = 4
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotationParameterAssign]
 }
 
 trait ArrayInitializerEMT extends AnyRef with ExpressionEMT
@@ -378,6 +480,32 @@ class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewArrayInitializer"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewArrayInitializer]
 }
 
 trait BindingEMT extends AnyRef with HasMethodFullNameEMT with HasNameEMT with HasSignatureEMT
@@ -433,6 +561,26 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "methodFullName"
+      case 1 => "name"
+      case 2 => "signature"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.methodFullName
+      case 1 => this.name
+      case 2 => this.signature
+      case _ => null
+    }
+
+  override def productPrefix                = "NewBinding"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewBinding]
 }
 
 trait BlockEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
@@ -529,6 +677,38 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewBlock"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewBlock]
 }
 
 trait CallEMT
@@ -658,6 +838,46 @@ class NewCall extends NewNode(7.toShort) with CallBase {
     interface.insertProperty(this, 47, Iterator(this.signature))
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "argumentIndex"
+      case 1  => "argumentName"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "dispatchType"
+      case 5  => "dynamicTypeHintFullName"
+      case 6  => "lineNumber"
+      case 7  => "methodFullName"
+      case 8  => "name"
+      case 9  => "order"
+      case 10 => "possibleTypes"
+      case 11 => "signature"
+      case 12 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.argumentIndex
+      case 1  => this.argumentName
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.dispatchType
+      case 5  => this.dynamicTypeHintFullName
+      case 6  => this.lineNumber
+      case 7  => this.methodFullName
+      case 8  => this.name
+      case 9  => this.order
+      case 10 => this.possibleTypes
+      case 11 => this.signature
+      case 12 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix                = "NewCall"
+  override def productArity                 = 13
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewCall]
 }
 
 trait ClosureBindingEMT extends AnyRef with HasClosureBindingIdEMT with HasClosureOriginalNameEMT with HasEvaluationStrategyEMT
@@ -715,6 +935,26 @@ class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
     if (closureOriginalName.nonEmpty) interface.insertProperty(this, 9, this.closureOriginalName)
     interface.insertProperty(this, 19, Iterator(this.evaluationStrategy))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "closureBindingId"
+      case 1 => "closureOriginalName"
+      case 2 => "evaluationStrategy"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.closureBindingId
+      case 1 => this.closureOriginalName
+      case 2 => this.evaluationStrategy
+      case _ => null
+    }
+
+  override def productPrefix                = "NewClosureBinding"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewClosureBinding]
 }
 
 trait CommentEMT extends AnyRef with AstNodeEMT with HasFilenameEMT
@@ -785,6 +1025,30 @@ class NewComment extends NewNode(9.toShort) with CommentBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "filename"
+      case 3 => "lineNumber"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.filename
+      case 3 => this.lineNumber
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewComment"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewComment]
 }
 
 trait ConfigFileEMT extends AnyRef with HasContentEMT with HasNameEMT
@@ -834,6 +1098,24 @@ class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
     interface.insertProperty(this, 14, Iterator(this.content))
     interface.insertProperty(this, 39, Iterator(this.name))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "content"
+      case 1 => "name"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.content
+      case 1 => this.name
+      case _ => null
+    }
+
+  override def productPrefix                = "NewConfigFile"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewConfigFile]
 }
 
 trait ControlStructureEMT extends AnyRef with ExpressionEMT with HasControlStructureTypeEMT with HasParserTypeNameEMT
@@ -923,6 +1205,36 @@ class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase 
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "controlStructureType"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.controlStructureType
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewControlStructure"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewControlStructure]
 }
 
 trait DependencyEMT extends AnyRef with HasDependencyGroupIdEMT with HasNameEMT with HasVersionEMT
@@ -979,6 +1291,26 @@ class NewDependency extends NewNode(12.toShort) with DependencyBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 52, Iterator(this.version))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "dependencyGroupId"
+      case 1 => "name"
+      case 2 => "version"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.dependencyGroupId
+      case 1 => this.name
+      case 2 => this.version
+      case _ => null
+    }
+
+  override def productPrefix                = "NewDependency"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewDependency]
 }
 
 trait FieldIdentifierEMT extends AnyRef with ExpressionEMT with HasCanonicalNameEMT
@@ -1062,6 +1394,34 @@ class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "canonicalName"
+      case 3 => "code"
+      case 4 => "columnNumber"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.canonicalName
+      case 3 => this.code
+      case 4 => this.columnNumber
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewFieldIdentifier"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFieldIdentifier]
 }
 
 trait FileEMT extends AnyRef with AstNodeEMT with HasHashEMT with HasNameEMT
@@ -1139,6 +1499,32 @@ class NewFile extends NewNode(14.toShort) with FileBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "hash"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.hash
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewFile"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFile]
 }
 
 trait FindingEMT extends AnyRef
@@ -1191,6 +1577,24 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
     if (evidence.nonEmpty) interface.insertProperty(this, 53, this.evidence)
     if (keyValuePairs.nonEmpty) interface.insertProperty(this, 54, this.keyValuePairs)
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "evidence"
+      case 1 => "keyValuePairs"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.evidence
+      case 1 => this.keyValuePairs
+      case _ => null
+    }
+
+  override def productPrefix                = "NewFinding"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFinding]
 }
 
 trait IdentifierEMT
@@ -1299,6 +1703,40 @@ class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewIdentifier"
+  override def productArity                 = 10
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewIdentifier]
 }
 
 trait ImportEMT
@@ -1405,6 +1843,38 @@ class NewImport extends NewNode(17.toShort) with ImportBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "explicitAs"
+      case 3 => "importedAs"
+      case 4 => "importedEntity"
+      case 5 => "isExplicit"
+      case 6 => "isWildcard"
+      case 7 => "lineNumber"
+      case 8 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.explicitAs
+      case 3 => this.importedAs
+      case 4 => this.importedEntity
+      case 5 => this.isExplicit
+      case 6 => this.isWildcard
+      case 7 => this.lineNumber
+      case 8 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewImport"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewImport]
 }
 
 trait JumpLabelEMT extends AnyRef with AstNodeEMT with HasNameEMT with HasParserTypeNameEMT
@@ -1481,6 +1951,32 @@ class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case 5 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case 5 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewJumpLabel"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewJumpLabel]
 }
 
 trait JumpTargetEMT extends AnyRef with CfgNodeEMT with HasArgumentIndexEMT with HasNameEMT with HasParserTypeNameEMT
@@ -1563,6 +2059,34 @@ class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "code"
+      case 2 => "columnNumber"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case 6 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.code
+      case 2 => this.columnNumber
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case 6 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewJumpTarget"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewJumpTarget]
 }
 
 trait KeyValuePairEMT extends AnyRef with HasKeyEMT with HasValueEMT
@@ -1612,6 +2136,24 @@ class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
     interface.insertProperty(this, 32, Iterator(this.key))
     interface.insertProperty(this, 51, Iterator(this.value))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "key"
+      case 1 => "value"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.key
+      case 1 => this.value
+      case _ => null
+    }
+
+  override def productPrefix                = "NewKeyValuePair"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewKeyValuePair]
 }
 
 trait LiteralEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
@@ -1708,6 +2250,38 @@ class NewLiteral extends NewNode(21.toShort) with LiteralBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewLiteral"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewLiteral]
 }
 
 trait LocalEMT
@@ -1812,6 +2386,38 @@ class NewLocal extends NewNode(22.toShort) with LocalBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "closureBindingId"
+      case 1 => "code"
+      case 2 => "columnNumber"
+      case 3 => "dynamicTypeHintFullName"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.closureBindingId
+      case 1 => this.code
+      case 2 => this.columnNumber
+      case 3 => this.dynamicTypeHintFullName
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewLocal"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewLocal]
 }
 
 trait LocationEMT
@@ -1922,6 +2528,40 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
     interface.insertProperty(this, 48, Iterator(this.symbol))
     if (node.nonEmpty) interface.insertProperty(this, 53, this.node)
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "className"
+      case 1 => "classShortName"
+      case 2 => "filename"
+      case 3 => "lineNumber"
+      case 4 => "methodFullName"
+      case 5 => "methodShortName"
+      case 6 => "nodeLabel"
+      case 7 => "packageName"
+      case 8 => "symbol"
+      case 9 => "node"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.className
+      case 1 => this.classShortName
+      case 2 => this.filename
+      case 3 => this.lineNumber
+      case 4 => this.methodFullName
+      case 5 => this.methodShortName
+      case 6 => this.nodeLabel
+      case 7 => this.packageName
+      case 8 => this.symbol
+      case 9 => this.node
+      case _ => null
+    }
+
+  override def productPrefix                = "NewLocation"
+  override def productArity                 = 10
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewLocation]
 }
 
 trait MemberEMT
@@ -2018,6 +2658,36 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "dynamicTypeHintFullName"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case 6 => "possibleTypes"
+      case 7 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.dynamicTypeHintFullName
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case 6 => this.possibleTypes
+      case 7 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMember"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMember]
 }
 
 trait MetaDataEMT extends AnyRef with HasHashEMT with HasLanguageEMT with HasOverlaysEMT with HasRootEMT with HasVersionEMT
@@ -2086,6 +2756,30 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
     interface.insertProperty(this, 46, Iterator(this.root))
     interface.insertProperty(this, 52, Iterator(this.version))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "hash"
+      case 1 => "language"
+      case 2 => "overlays"
+      case 3 => "root"
+      case 4 => "version"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.hash
+      case 1 => this.language
+      case 2 => this.overlays
+      case 3 => this.root
+      case 4 => this.version
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMetaData"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMetaData]
 }
 
 trait MethodEMT
@@ -2226,6 +2920,48 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "astParentFullName"
+      case 1  => "astParentType"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "columnNumberEnd"
+      case 5  => "filename"
+      case 6  => "fullName"
+      case 7  => "hash"
+      case 8  => "isExternal"
+      case 9  => "lineNumber"
+      case 10 => "lineNumberEnd"
+      case 11 => "name"
+      case 12 => "order"
+      case 13 => "signature"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.astParentFullName
+      case 1  => this.astParentType
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.columnNumberEnd
+      case 5  => this.filename
+      case 6  => this.fullName
+      case 7  => this.hash
+      case 8  => this.isExternal
+      case 9  => this.lineNumber
+      case 10 => this.lineNumberEnd
+      case 11 => this.name
+      case 12 => this.order
+      case 13 => this.signature
+      case _  => null
+    }
+
+  override def productPrefix                = "NewMethod"
+  override def productArity                 = 14
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethod]
 }
 
 trait MethodParameterInEMT
@@ -2343,6 +3079,42 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "code"
+      case 1  => "columnNumber"
+      case 2  => "dynamicTypeHintFullName"
+      case 3  => "evaluationStrategy"
+      case 4  => "index"
+      case 5  => "isVariadic"
+      case 6  => "lineNumber"
+      case 7  => "name"
+      case 8  => "order"
+      case 9  => "possibleTypes"
+      case 10 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.code
+      case 1  => this.columnNumber
+      case 2  => this.dynamicTypeHintFullName
+      case 3  => this.evaluationStrategy
+      case 4  => this.index
+      case 5  => this.isVariadic
+      case 6  => this.lineNumber
+      case 7  => this.name
+      case 8  => this.order
+      case 9  => this.possibleTypes
+      case 10 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix                = "NewMethodParameterIn"
+  override def productArity                 = 11
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodParameterIn]
 }
 
 trait MethodParameterOutEMT
@@ -2445,6 +3217,38 @@ class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutB
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "evaluationStrategy"
+      case 3 => "index"
+      case 4 => "isVariadic"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.evaluationStrategy
+      case 3 => this.index
+      case 4 => this.isVariadic
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMethodParameterOut"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodParameterOut]
 }
 
 trait MethodRefEMT
@@ -2553,6 +3357,40 @@ class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "methodFullName"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.methodFullName
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMethodRef"
+  override def productArity                 = 10
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodRef]
 }
 
 trait MethodReturnEMT
@@ -2648,6 +3486,36 @@ class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "dynamicTypeHintFullName"
+      case 3 => "evaluationStrategy"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case 6 => "possibleTypes"
+      case 7 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.dynamicTypeHintFullName
+      case 3 => this.evaluationStrategy
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case 6 => this.possibleTypes
+      case 7 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMethodReturn"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodReturn]
 }
 
 trait ModifierEMT extends AnyRef with AstNodeEMT with HasModifierTypeEMT
@@ -2718,6 +3586,30 @@ class NewModifier extends NewNode(31.toShort) with ModifierBase {
     interface.insertProperty(this, 38, Iterator(this.modifierType))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "modifierType"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.modifierType
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewModifier"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewModifier]
 }
 
 trait NamespaceEMT extends AnyRef with AstNodeEMT with HasNameEMT
@@ -2788,6 +3680,30 @@ class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewNamespace"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNamespace]
 }
 
 trait NamespaceBlockEMT extends AnyRef with AstNodeEMT with HasFilenameEMT with HasFullNameEMT with HasNameEMT
@@ -2870,6 +3786,34 @@ class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "filename"
+      case 3 => "fullName"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.filename
+      case 3 => this.fullName
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewNamespaceBlock"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNamespaceBlock]
 }
 
 trait ReturnEMT extends AnyRef with ExpressionEMT
@@ -2947,6 +3891,32 @@ class NewReturn extends NewNode(34.toShort) with ReturnBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewReturn"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewReturn]
 }
 
 trait TagEMT extends AnyRef with HasNameEMT with HasValueEMT
@@ -2993,6 +3963,24 @@ class NewTag extends NewNode(35.toShort) with TagBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 51, Iterator(this.value))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "name"
+      case 1 => "value"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.name
+      case 1 => this.value
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTag"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTag]
 }
 
 trait TagNodePairEMT extends AnyRef
@@ -3045,6 +4033,24 @@ class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
     interface.insertProperty(this, 53, Iterator(this.node))
     interface.insertProperty(this, 54, Iterator(this.tag))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "node"
+      case 1 => "tag"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.node
+      case 1 => this.tag
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTagNodePair"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTagNodePair]
 }
 
 trait TemplateDomEMT extends AnyRef with ExpressionEMT with HasNameEMT
@@ -3128,6 +4134,34 @@ class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTemplateDom"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTemplateDom]
 }
 
 trait TypeEMT extends AnyRef with HasFullNameEMT with HasNameEMT with HasTypeDeclFullNameEMT
@@ -3183,6 +4217,26 @@ class NewType extends NewNode(38.toShort) with TypeBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 49, Iterator(this.typeDeclFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "fullName"
+      case 1 => "name"
+      case 2 => "typeDeclFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.fullName
+      case 1 => this.name
+      case 2 => this.typeDeclFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewType"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewType]
 }
 
 trait TypeArgumentEMT extends AnyRef with AstNodeEMT
@@ -3247,6 +4301,28 @@ class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTypeArgument"
+  override def productArity                 = 4
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeArgument]
 }
 
 trait TypeDeclEMT
@@ -3373,6 +4449,44 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "aliasTypeFullName"
+      case 1  => "astParentFullName"
+      case 2  => "astParentType"
+      case 3  => "code"
+      case 4  => "columnNumber"
+      case 5  => "filename"
+      case 6  => "fullName"
+      case 7  => "inheritsFromTypeFullName"
+      case 8  => "isExternal"
+      case 9  => "lineNumber"
+      case 10 => "name"
+      case 11 => "order"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.aliasTypeFullName
+      case 1  => this.astParentFullName
+      case 2  => this.astParentType
+      case 3  => this.code
+      case 4  => this.columnNumber
+      case 5  => this.filename
+      case 6  => this.fullName
+      case 7  => this.inheritsFromTypeFullName
+      case 8  => this.isExternal
+      case 9  => this.lineNumber
+      case 10 => this.name
+      case 11 => this.order
+      case _  => null
+    }
+
+  override def productPrefix                = "NewTypeDecl"
+  override def productArity                 = 12
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeDecl]
 }
 
 trait TypeParameterEMT extends AnyRef with AstNodeEMT with HasNameEMT
@@ -3443,6 +4557,30 @@ class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTypeParameter"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeParameter]
 }
 
 trait TypeRefEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
@@ -3539,6 +4677,38 @@ class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTypeRef"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeRef]
 }
 
 trait UnknownEMT
@@ -3654,4 +4824,40 @@ class NewUnknown extends NewNode(43.toShort) with UnknownBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "argumentIndex"
+      case 1  => "argumentName"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "containedRef"
+      case 5  => "dynamicTypeHintFullName"
+      case 6  => "lineNumber"
+      case 7  => "order"
+      case 8  => "parserTypeName"
+      case 9  => "possibleTypes"
+      case 10 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.argumentIndex
+      case 1  => this.argumentName
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.containedRef
+      case 5  => this.dynamicTypeHintFullName
+      case 6  => this.lineNumber
+      case 7  => this.order
+      case 8  => this.parserTypeName
+      case 9  => this.possibleTypes
+      case 10 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix                = "NewUnknown"
+  override def productArity                 = 11
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewUnknown]
 }

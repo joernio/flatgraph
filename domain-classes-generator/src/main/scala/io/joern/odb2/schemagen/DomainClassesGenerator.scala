@@ -128,12 +128,12 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |trait StaticType[+T]
          |
-         |trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] {
+         |trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] with Product {
          |  def label: String
          |  def propertiesMap: java.util.Map[String, Any]
          |}
          |
-         |abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int) extends odb2.GNode(graph_4762, kind_4762, seq_4762) with AbstractNode with Product {
+         |abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int) extends odb2.GNode(graph_4762, kind_4762, seq_4762) with AbstractNode {
          |$edgeAccess
          |}
          |
@@ -379,6 +379,22 @@ class DomainClassesGenerator(schema: Schema) {
              |${newNodeProps.sorted.mkString("\n")}
              |${newNodeFluent.sorted.mkString("\n")}
              |${flattenItems.mkString("override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {\n", "\n", "\n}")}
+             |
+             |  override def productElementName(n: Int): String =
+             |    n match {
+             |      $productElementNames
+             |      case _ => ""
+             |    }
+             |
+             |  override def productElement(n: Int): Any =
+             |    n match {
+             |      $productElementAccessors
+             |      case _ => null
+             |    }
+             |
+             |  override def productPrefix = "New${nodeType.className}"
+             |  override def productArity = ${productElements.size}
+             |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[New${nodeType.className}]
              |}""".stripMargin
 
         s"""$staticTyp

@@ -3,15 +3,14 @@ import io.joern.odb2
 
 trait StaticType[+T]
 
-trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] {
+trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] with Product {
   def label: String
   def propertiesMap: java.util.Map[String, Any]
 }
 
 abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: Int)
     extends odb2.GNode(graph_4762, kind_4762, seq_4762)
-    with AbstractNode
-    with Product {
+    with AbstractNode {
 
   final def _aliasOfOut: Iterator[StoredNode] =
     odb2.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 0).asInstanceOf[Iterator[StoredNode]]
