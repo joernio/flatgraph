@@ -1,5 +1,6 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.joern.odb2
+import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait AnnotationEMT extends AnyRef with ExpressionEMT with HasFullNameEMT with HasNameEMT
@@ -23,8 +24,40 @@ class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0.toShort, seq_4762)
     with AnnotationBase
     with Expression
-    with StaticType[AnnotationEMT] {}
-object NewAnnotation               { def apply(): NewAnnotation = new NewAnnotation }
+    with StaticType[AnnotationEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "fullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.fullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "Annotation"
+  override def productArity  = 8
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Annotation]
+}
+object NewAnnotation { def apply(): NewAnnotation = new NewAnnotation }
 class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
   type RelatedStored = Annotation
   override def label: String                         = "ANNOTATION"
@@ -57,6 +90,36 @@ class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "fullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.fullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotation"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotation]
 }
 
 trait AnnotationLiteralEMT extends AnyRef with ExpressionEMT with HasNameEMT
@@ -79,8 +142,38 @@ class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1.toShort, seq_4762)
     with AnnotationLiteralBase
     with Expression
-    with StaticType[AnnotationLiteralEMT] {}
-object NewAnnotationLiteral               { def apply(): NewAnnotationLiteral = new NewAnnotationLiteral }
+    with StaticType[AnnotationLiteralEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "AnnotationLiteral"
+  override def productArity  = 7
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[AnnotationLiteral]
+}
+object NewAnnotationLiteral { def apply(): NewAnnotationLiteral = new NewAnnotationLiteral }
 class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase {
   type RelatedStored = AnnotationLiteral
   override def label: String                         = "ANNOTATION_LITERAL"
@@ -110,6 +203,34 @@ class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotationLiteral"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotationLiteral]
 }
 
 trait AnnotationParameterEMT extends AnyRef with AstNodeEMT
@@ -129,8 +250,32 @@ class AnnotationParameter(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 2.toShort, seq_4762)
     with AnnotationParameterBase
     with AstNode
-    with StaticType[AnnotationParameterEMT] {}
-object NewAnnotationParameter               { def apply(): NewAnnotationParameter = new NewAnnotationParameter }
+    with StaticType[AnnotationParameterEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "AnnotationParameter"
+  override def productArity  = 4
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[AnnotationParameter]
+}
+object NewAnnotationParameter { def apply(): NewAnnotationParameter = new NewAnnotationParameter }
 class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameterBase {
   type RelatedStored = AnnotationParameter
   override def label: String                      = "ANNOTATION_PARAMETER"
@@ -150,6 +295,28 @@ class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameter
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotationParameter"
+  override def productArity                 = 4
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotationParameter]
 }
 
 trait AnnotationParameterAssignEMT extends AnyRef with AstNodeEMT
@@ -169,8 +336,32 @@ class AnnotationParameterAssign(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 3.toShort, seq_4762)
     with AnnotationParameterAssignBase
     with AstNode
-    with StaticType[AnnotationParameterAssignEMT] {}
-object NewAnnotationParameterAssign               { def apply(): NewAnnotationParameterAssign = new NewAnnotationParameterAssign }
+    with StaticType[AnnotationParameterAssignEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "AnnotationParameterAssign"
+  override def productArity  = 4
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[AnnotationParameterAssign]
+}
+object NewAnnotationParameterAssign { def apply(): NewAnnotationParameterAssign = new NewAnnotationParameterAssign }
 class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationParameterAssignBase {
   type RelatedStored = AnnotationParameterAssign
   override def label: String                      = "ANNOTATION_PARAMETER_ASSIGN"
@@ -190,6 +381,28 @@ class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationPar
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewAnnotationParameterAssign"
+  override def productArity                 = 4
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewAnnotationParameterAssign]
 }
 
 trait ArrayInitializerEMT extends AnyRef with ExpressionEMT
@@ -211,8 +424,36 @@ class ArrayInitializer(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 4.toShort, seq_4762)
     with ArrayInitializerBase
     with Expression
-    with StaticType[ArrayInitializerEMT] {}
-object NewArrayInitializer               { def apply(): NewArrayInitializer = new NewArrayInitializer }
+    with StaticType[ArrayInitializerEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "ArrayInitializer"
+  override def productArity  = 6
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ArrayInitializer]
+}
+object NewArrayInitializer { def apply(): NewArrayInitializer = new NewArrayInitializer }
 class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
   type RelatedStored = ArrayInitializer
   override def label: String                         = "ARRAY_INITIALIZER"
@@ -239,6 +480,32 @@ class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewArrayInitializer"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewArrayInitializer]
 }
 
 trait BindingEMT extends AnyRef with HasMethodFullNameEMT with HasNameEMT with HasSignatureEMT
@@ -256,8 +523,30 @@ trait BindingBase extends AbstractNode with StaticType[BindingEMT] {
 class Binding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 5.toShort, seq_4762)
     with BindingBase
-    with StaticType[BindingEMT] {}
-object NewBinding               { def apply(): NewBinding = new NewBinding }
+    with StaticType[BindingEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "methodFullName"
+      case 1 => "name"
+      case 2 => "signature"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.methodFullName
+      case 1 => this.name
+      case 2 => this.signature
+      case _ => null
+    }
+
+  override def productPrefix = "Binding"
+  override def productArity  = 3
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Binding]
+}
+object NewBinding { def apply(): NewBinding = new NewBinding }
 class NewBinding extends NewNode(5.toShort) with BindingBase {
   type RelatedStored = Binding
   override def label: String                   = "BINDING"
@@ -272,6 +561,26 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "methodFullName"
+      case 1 => "name"
+      case 2 => "signature"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.methodFullName
+      case 1 => this.name
+      case 2 => this.signature
+      case _ => null
+    }
+
+  override def productPrefix                = "NewBinding"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewBinding]
 }
 
 trait BlockEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
@@ -297,8 +606,42 @@ class Block(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 6.toShort, seq_4762)
     with BlockBase
     with Expression
-    with StaticType[BlockEMT] {}
-object NewBlock               { def apply(): NewBlock = new NewBlock }
+    with StaticType[BlockEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "Block"
+  override def productArity  = 9
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Block]
+}
+object NewBlock { def apply(): NewBlock = new NewBlock }
 class NewBlock extends NewNode(6.toShort) with BlockBase {
   type RelatedStored = Block
   override def label: String                                          = "BLOCK"
@@ -334,6 +677,38 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewBlock"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewBlock]
 }
 
 trait CallEMT
@@ -372,8 +747,50 @@ class Call(graph_4762: odb2.Graph, seq_4762: Int)
     with CallBase
     with CallRepr
     with Expression
-    with StaticType[CallEMT] {}
-object NewCall               { def apply(): NewCall = new NewCall }
+    with StaticType[CallEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "argumentIndex"
+      case 1  => "argumentName"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "dispatchType"
+      case 5  => "dynamicTypeHintFullName"
+      case 6  => "lineNumber"
+      case 7  => "methodFullName"
+      case 8  => "name"
+      case 9  => "order"
+      case 10 => "possibleTypes"
+      case 11 => "signature"
+      case 12 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.argumentIndex
+      case 1  => this.argumentName
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.dispatchType
+      case 5  => this.dynamicTypeHintFullName
+      case 6  => this.lineNumber
+      case 7  => this.methodFullName
+      case 8  => this.name
+      case 9  => this.order
+      case 10 => this.possibleTypes
+      case 11 => this.signature
+      case 12 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix = "Call"
+  override def productArity  = 13
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Call]
+}
+object NewCall { def apply(): NewCall = new NewCall }
 class NewCall extends NewNode(7.toShort) with CallBase {
   type RelatedStored = Call
   override def label: String                                          = "CALL"
@@ -421,6 +838,46 @@ class NewCall extends NewNode(7.toShort) with CallBase {
     interface.insertProperty(this, 47, Iterator(this.signature))
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "argumentIndex"
+      case 1  => "argumentName"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "dispatchType"
+      case 5  => "dynamicTypeHintFullName"
+      case 6  => "lineNumber"
+      case 7  => "methodFullName"
+      case 8  => "name"
+      case 9  => "order"
+      case 10 => "possibleTypes"
+      case 11 => "signature"
+      case 12 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.argumentIndex
+      case 1  => this.argumentName
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.dispatchType
+      case 5  => this.dynamicTypeHintFullName
+      case 6  => this.lineNumber
+      case 7  => this.methodFullName
+      case 8  => this.name
+      case 9  => this.order
+      case 10 => this.possibleTypes
+      case 11 => this.signature
+      case 12 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix                = "NewCall"
+  override def productArity                 = 13
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewCall]
 }
 
 trait ClosureBindingEMT extends AnyRef with HasClosureBindingIdEMT with HasClosureOriginalNameEMT with HasEvaluationStrategyEMT
@@ -438,8 +895,30 @@ trait ClosureBindingBase extends AbstractNode with StaticType[ClosureBindingEMT]
 class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 8.toShort, seq_4762)
     with ClosureBindingBase
-    with StaticType[ClosureBindingEMT] {}
-object NewClosureBinding               { def apply(): NewClosureBinding = new NewClosureBinding }
+    with StaticType[ClosureBindingEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "closureBindingId"
+      case 1 => "closureOriginalName"
+      case 2 => "evaluationStrategy"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.closureBindingId
+      case 1 => this.closureOriginalName
+      case 2 => this.evaluationStrategy
+      case _ => null
+    }
+
+  override def productPrefix = "ClosureBinding"
+  override def productArity  = 3
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ClosureBinding]
+}
+object NewClosureBinding { def apply(): NewClosureBinding = new NewClosureBinding }
 class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
   type RelatedStored = ClosureBinding
   override def label: String                                = "CLOSURE_BINDING"
@@ -456,6 +935,26 @@ class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
     if (closureOriginalName.nonEmpty) interface.insertProperty(this, 9, this.closureOriginalName)
     interface.insertProperty(this, 19, Iterator(this.evaluationStrategy))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "closureBindingId"
+      case 1 => "closureOriginalName"
+      case 2 => "evaluationStrategy"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.closureBindingId
+      case 1 => this.closureOriginalName
+      case 2 => this.evaluationStrategy
+      case _ => null
+    }
+
+  override def productPrefix                = "NewClosureBinding"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewClosureBinding]
 }
 
 trait CommentEMT extends AnyRef with AstNodeEMT with HasFilenameEMT
@@ -476,8 +975,34 @@ class Comment(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 9.toShort, seq_4762)
     with CommentBase
     with AstNode
-    with StaticType[CommentEMT] {}
-object NewComment               { def apply(): NewComment = new NewComment }
+    with StaticType[CommentEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "filename"
+      case 3 => "lineNumber"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.filename
+      case 3 => this.lineNumber
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "Comment"
+  override def productArity  = 5
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Comment]
+}
+object NewComment { def apply(): NewComment = new NewComment }
 class NewComment extends NewNode(9.toShort) with CommentBase {
   type RelatedStored = Comment
   override def label: String                      = "COMMENT"
@@ -500,6 +1025,30 @@ class NewComment extends NewNode(9.toShort) with CommentBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "filename"
+      case 3 => "lineNumber"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.filename
+      case 3 => this.lineNumber
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewComment"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewComment]
 }
 
 trait ConfigFileEMT extends AnyRef with HasContentEMT with HasNameEMT
@@ -516,8 +1065,28 @@ trait ConfigFileBase extends AbstractNode with StaticType[ConfigFileEMT] {
 class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 10.toShort, seq_4762)
     with ConfigFileBase
-    with StaticType[ConfigFileEMT] {}
-object NewConfigFile               { def apply(): NewConfigFile = new NewConfigFile }
+    with StaticType[ConfigFileEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "content"
+      case 1 => "name"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.content
+      case 1 => this.name
+      case _ => null
+    }
+
+  override def productPrefix = "ConfigFile"
+  override def productArity  = 2
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ConfigFile]
+}
+object NewConfigFile { def apply(): NewConfigFile = new NewConfigFile }
 class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   type RelatedStored = ConfigFile
   override def label: String            = "CONFIG_FILE"
@@ -529,6 +1098,24 @@ class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
     interface.insertProperty(this, 14, Iterator(this.content))
     interface.insertProperty(this, 39, Iterator(this.name))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "content"
+      case 1 => "name"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.content
+      case 1 => this.name
+      case _ => null
+    }
+
+  override def productPrefix                = "NewConfigFile"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewConfigFile]
 }
 
 trait ControlStructureEMT extends AnyRef with ExpressionEMT with HasControlStructureTypeEMT with HasParserTypeNameEMT
@@ -552,8 +1139,40 @@ class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 11.toShort, seq_4762)
     with ControlStructureBase
     with Expression
-    with StaticType[ControlStructureEMT] {}
-object NewControlStructure               { def apply(): NewControlStructure = new NewControlStructure }
+    with StaticType[ControlStructureEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "controlStructureType"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.controlStructureType
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix = "ControlStructure"
+  override def productArity  = 8
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ControlStructure]
+}
+object NewControlStructure { def apply(): NewControlStructure = new NewControlStructure }
 class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase {
   type RelatedStored = ControlStructure
   override def label: String                         = "CONTROL_STRUCTURE"
@@ -586,6 +1205,36 @@ class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase 
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "controlStructureType"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.controlStructureType
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewControlStructure"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewControlStructure]
 }
 
 trait DependencyEMT extends AnyRef with HasDependencyGroupIdEMT with HasNameEMT with HasVersionEMT
@@ -603,8 +1252,30 @@ trait DependencyBase extends AbstractNode with StaticType[DependencyEMT] {
 class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 12.toShort, seq_4762)
     with DependencyBase
-    with StaticType[DependencyEMT] {}
-object NewDependency               { def apply(): NewDependency = new NewDependency }
+    with StaticType[DependencyEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "dependencyGroupId"
+      case 1 => "name"
+      case 2 => "version"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.dependencyGroupId
+      case 1 => this.name
+      case 2 => this.version
+      case _ => null
+    }
+
+  override def productPrefix = "Dependency"
+  override def productArity  = 3
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Dependency]
+}
+object NewDependency { def apply(): NewDependency = new NewDependency }
 class NewDependency extends NewNode(12.toShort) with DependencyBase {
   type RelatedStored = Dependency
   override def label: String                              = "DEPENDENCY"
@@ -620,6 +1291,26 @@ class NewDependency extends NewNode(12.toShort) with DependencyBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 52, Iterator(this.version))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "dependencyGroupId"
+      case 1 => "name"
+      case 2 => "version"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.dependencyGroupId
+      case 1 => this.name
+      case 2 => this.version
+      case _ => null
+    }
+
+  override def productPrefix                = "NewDependency"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewDependency]
 }
 
 trait FieldIdentifierEMT extends AnyRef with ExpressionEMT with HasCanonicalNameEMT
@@ -642,8 +1333,38 @@ class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 13.toShort, seq_4762)
     with FieldIdentifierBase
     with Expression
-    with StaticType[FieldIdentifierEMT] {}
-object NewFieldIdentifier               { def apply(): NewFieldIdentifier = new NewFieldIdentifier }
+    with StaticType[FieldIdentifierEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "canonicalName"
+      case 3 => "code"
+      case 4 => "columnNumber"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.canonicalName
+      case 3 => this.code
+      case 4 => this.columnNumber
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "FieldIdentifier"
+  override def productArity  = 7
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[FieldIdentifier]
+}
+object NewFieldIdentifier { def apply(): NewFieldIdentifier = new NewFieldIdentifier }
 class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
   type RelatedStored = FieldIdentifier
   override def label: String                         = "FIELD_IDENTIFIER"
@@ -673,6 +1394,34 @@ class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "canonicalName"
+      case 3 => "code"
+      case 4 => "columnNumber"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.canonicalName
+      case 3 => this.code
+      case 4 => this.columnNumber
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewFieldIdentifier"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFieldIdentifier]
 }
 
 trait FileEMT extends AnyRef with AstNodeEMT with HasHashEMT with HasNameEMT
@@ -694,8 +1443,36 @@ class File(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 14.toShort, seq_4762)
     with FileBase
     with AstNode
-    with StaticType[FileEMT] {}
-object NewFile               { def apply(): NewFile = new NewFile }
+    with StaticType[FileEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "hash"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.hash
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "File"
+  override def productArity  = 6
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[File]
+}
+object NewFile { def apply(): NewFile = new NewFile }
 class NewFile extends NewNode(14.toShort) with FileBase {
   type RelatedStored = File
   override def label: String                      = "FILE"
@@ -722,6 +1499,32 @@ class NewFile extends NewNode(14.toShort) with FileBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "hash"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.hash
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewFile"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFile]
 }
 
 trait FindingEMT extends AnyRef
@@ -742,6 +1545,25 @@ class Finding(graph_4762: odb2.Graph, seq_4762: Int)
     with StaticType[FindingEMT] {
   def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 53, seq)
   def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 54, seq)
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "evidence"
+      case 1 => "keyValuePairs"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.evidence
+      case 1 => this.keyValuePairs
+      case _ => null
+    }
+
+  override def productPrefix = "Finding"
+  override def productArity  = 2
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Finding]
 }
 object NewFinding { def apply(): NewFinding = new NewFinding }
 class NewFinding extends NewNode(15.toShort) with FindingBase {
@@ -755,6 +1577,24 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
     if (evidence.nonEmpty) interface.insertProperty(this, 53, this.evidence)
     if (keyValuePairs.nonEmpty) interface.insertProperty(this, 54, this.keyValuePairs)
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "evidence"
+      case 1 => "keyValuePairs"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.evidence
+      case 1 => this.keyValuePairs
+      case _ => null
+    }
+
+  override def productPrefix                = "NewFinding"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFinding]
 }
 
 trait IdentifierEMT
@@ -787,8 +1627,44 @@ class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 16.toShort, seq_4762)
     with IdentifierBase
     with Expression
-    with StaticType[IdentifierEMT] {}
-object NewIdentifier               { def apply(): NewIdentifier = new NewIdentifier }
+    with StaticType[IdentifierEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "Identifier"
+  override def productArity  = 10
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Identifier]
+}
+object NewIdentifier { def apply(): NewIdentifier = new NewIdentifier }
 class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
   type RelatedStored = Identifier
   override def label: String                                          = "IDENTIFIER"
@@ -827,6 +1703,40 @@ class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewIdentifier"
+  override def productArity                 = 10
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewIdentifier]
 }
 
 trait ImportEMT
@@ -858,8 +1768,42 @@ class Import(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 17.toShort, seq_4762)
     with ImportBase
     with AstNode
-    with StaticType[ImportEMT] {}
-object NewImport               { def apply(): NewImport = new NewImport }
+    with StaticType[ImportEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "explicitAs"
+      case 3 => "importedAs"
+      case 4 => "importedEntity"
+      case 5 => "isExplicit"
+      case 6 => "isWildcard"
+      case 7 => "lineNumber"
+      case 8 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.explicitAs
+      case 3 => this.importedAs
+      case 4 => this.importedEntity
+      case 5 => this.isExplicit
+      case 6 => this.isWildcard
+      case 7 => this.lineNumber
+      case 8 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "Import"
+  override def productArity  = 9
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Import]
+}
+object NewImport { def apply(): NewImport = new NewImport }
 class NewImport extends NewNode(17.toShort) with ImportBase {
   type RelatedStored = Import
   override def label: String                           = "IMPORT"
@@ -899,6 +1843,38 @@ class NewImport extends NewNode(17.toShort) with ImportBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "explicitAs"
+      case 3 => "importedAs"
+      case 4 => "importedEntity"
+      case 5 => "isExplicit"
+      case 6 => "isWildcard"
+      case 7 => "lineNumber"
+      case 8 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.explicitAs
+      case 3 => this.importedAs
+      case 4 => this.importedEntity
+      case 5 => this.isExplicit
+      case 6 => this.isWildcard
+      case 7 => this.lineNumber
+      case 8 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewImport"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewImport]
 }
 
 trait JumpLabelEMT extends AnyRef with AstNodeEMT with HasNameEMT with HasParserTypeNameEMT
@@ -920,8 +1896,36 @@ class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 18.toShort, seq_4762)
     with JumpLabelBase
     with AstNode
-    with StaticType[JumpLabelEMT] {}
-object NewJumpLabel               { def apply(): NewJumpLabel = new NewJumpLabel }
+    with StaticType[JumpLabelEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case 5 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case 5 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix = "JumpLabel"
+  override def productArity  = 6
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[JumpLabel]
+}
+object NewJumpLabel { def apply(): NewJumpLabel = new NewJumpLabel }
 class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
   type RelatedStored = JumpLabel
   override def label: String                      = "JUMP_LABEL"
@@ -947,6 +1951,32 @@ class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case 5 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case 5 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewJumpLabel"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewJumpLabel]
 }
 
 trait JumpTargetEMT extends AnyRef with CfgNodeEMT with HasArgumentIndexEMT with HasNameEMT with HasParserTypeNameEMT
@@ -969,8 +1999,38 @@ class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 19.toShort, seq_4762)
     with JumpTargetBase
     with CfgNode
-    with StaticType[JumpTargetEMT] {}
-object NewJumpTarget               { def apply(): NewJumpTarget = new NewJumpTarget }
+    with StaticType[JumpTargetEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "code"
+      case 2 => "columnNumber"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case 6 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.code
+      case 2 => this.columnNumber
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case 6 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix = "JumpTarget"
+  override def productArity  = 7
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[JumpTarget]
+}
+object NewJumpTarget { def apply(): NewJumpTarget = new NewJumpTarget }
 class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
   type RelatedStored = JumpTarget
   override def label: String                      = "JUMP_TARGET"
@@ -999,6 +2059,34 @@ class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "code"
+      case 2 => "columnNumber"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case 6 => "parserTypeName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.code
+      case 2 => this.columnNumber
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case 6 => this.parserTypeName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewJumpTarget"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewJumpTarget]
 }
 
 trait KeyValuePairEMT extends AnyRef with HasKeyEMT with HasValueEMT
@@ -1015,8 +2103,28 @@ trait KeyValuePairBase extends AbstractNode with StaticType[KeyValuePairEMT] {
 class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 20.toShort, seq_4762)
     with KeyValuePairBase
-    with StaticType[KeyValuePairEMT] {}
-object NewKeyValuePair               { def apply(): NewKeyValuePair = new NewKeyValuePair }
+    with StaticType[KeyValuePairEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "key"
+      case 1 => "value"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.key
+      case 1 => this.value
+      case _ => null
+    }
+
+  override def productPrefix = "KeyValuePair"
+  override def productArity  = 2
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[KeyValuePair]
+}
+object NewKeyValuePair { def apply(): NewKeyValuePair = new NewKeyValuePair }
 class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   type RelatedStored = KeyValuePair
   override def label: String          = "KEY_VALUE_PAIR"
@@ -1028,6 +2136,24 @@ class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
     interface.insertProperty(this, 32, Iterator(this.key))
     interface.insertProperty(this, 51, Iterator(this.value))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "key"
+      case 1 => "value"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.key
+      case 1 => this.value
+      case _ => null
+    }
+
+  override def productPrefix                = "NewKeyValuePair"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewKeyValuePair]
 }
 
 trait LiteralEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
@@ -1053,8 +2179,42 @@ class Literal(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 21.toShort, seq_4762)
     with LiteralBase
     with Expression
-    with StaticType[LiteralEMT] {}
-object NewLiteral               { def apply(): NewLiteral = new NewLiteral }
+    with StaticType[LiteralEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "Literal"
+  override def productArity  = 9
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Literal]
+}
+object NewLiteral { def apply(): NewLiteral = new NewLiteral }
 class NewLiteral extends NewNode(21.toShort) with LiteralBase {
   type RelatedStored = Literal
   override def label: String                                          = "LITERAL"
@@ -1090,6 +2250,38 @@ class NewLiteral extends NewNode(21.toShort) with LiteralBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewLiteral"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewLiteral]
 }
 
 trait LocalEMT
@@ -1123,8 +2315,42 @@ class Local(graph_4762: odb2.Graph, seq_4762: Int)
     with LocalBase
     with AstNode
     with Declaration
-    with StaticType[LocalEMT] {}
-object NewLocal               { def apply(): NewLocal = new NewLocal }
+    with StaticType[LocalEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "closureBindingId"
+      case 1 => "code"
+      case 2 => "columnNumber"
+      case 3 => "dynamicTypeHintFullName"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.closureBindingId
+      case 1 => this.code
+      case 2 => this.columnNumber
+      case 3 => this.dynamicTypeHintFullName
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "Local"
+  override def productArity  = 9
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Local]
+}
+object NewLocal { def apply(): NewLocal = new NewLocal }
 class NewLocal extends NewNode(22.toShort) with LocalBase {
   type RelatedStored = Local
   override def label: String                                          = "LOCAL"
@@ -1160,6 +2386,38 @@ class NewLocal extends NewNode(22.toShort) with LocalBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "closureBindingId"
+      case 1 => "code"
+      case 2 => "columnNumber"
+      case 3 => "dynamicTypeHintFullName"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.closureBindingId
+      case 1 => this.code
+      case 2 => this.columnNumber
+      case 3 => this.dynamicTypeHintFullName
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewLocal"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewLocal]
 }
 
 trait LocationEMT
@@ -1196,6 +2454,41 @@ class Location(graph_4762: odb2.Graph, seq_4762: Int)
     with LocationBase
     with StaticType[LocationEMT] {
   def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 53, seq)
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "className"
+      case 1 => "classShortName"
+      case 2 => "filename"
+      case 3 => "lineNumber"
+      case 4 => "methodFullName"
+      case 5 => "methodShortName"
+      case 6 => "nodeLabel"
+      case 7 => "packageName"
+      case 8 => "symbol"
+      case 9 => "node"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.className
+      case 1 => this.classShortName
+      case 2 => this.filename
+      case 3 => this.lineNumber
+      case 4 => this.methodFullName
+      case 5 => this.methodShortName
+      case 6 => this.nodeLabel
+      case 7 => this.packageName
+      case 8 => this.symbol
+      case 9 => this.node
+      case _ => null
+    }
+
+  override def productPrefix = "Location"
+  override def productArity  = 10
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Location]
 }
 object NewLocation { def apply(): NewLocation = new NewLocation }
 class NewLocation extends NewNode(23.toShort) with LocationBase {
@@ -1235,6 +2528,40 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
     interface.insertProperty(this, 48, Iterator(this.symbol))
     if (node.nonEmpty) interface.insertProperty(this, 53, this.node)
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "className"
+      case 1 => "classShortName"
+      case 2 => "filename"
+      case 3 => "lineNumber"
+      case 4 => "methodFullName"
+      case 5 => "methodShortName"
+      case 6 => "nodeLabel"
+      case 7 => "packageName"
+      case 8 => "symbol"
+      case 9 => "node"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.className
+      case 1 => this.classShortName
+      case 2 => this.filename
+      case 3 => this.lineNumber
+      case 4 => this.methodFullName
+      case 5 => this.methodShortName
+      case 6 => this.nodeLabel
+      case 7 => this.packageName
+      case 8 => this.symbol
+      case 9 => this.node
+      case _ => null
+    }
+
+  override def productPrefix                = "NewLocation"
+  override def productArity                 = 10
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewLocation]
 }
 
 trait MemberEMT
@@ -1266,8 +2593,40 @@ class Member(graph_4762: odb2.Graph, seq_4762: Int)
     with MemberBase
     with AstNode
     with Declaration
-    with StaticType[MemberEMT] {}
-object NewMember               { def apply(): NewMember = new NewMember }
+    with StaticType[MemberEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "dynamicTypeHintFullName"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case 6 => "possibleTypes"
+      case 7 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.dynamicTypeHintFullName
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case 6 => this.possibleTypes
+      case 7 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "Member"
+  override def productArity  = 8
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Member]
+}
+object NewMember { def apply(): NewMember = new NewMember }
 class NewMember extends NewNode(24.toShort) with MemberBase {
   type RelatedStored = Member
   override def label: String                                          = "MEMBER"
@@ -1299,6 +2658,36 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "dynamicTypeHintFullName"
+      case 3 => "lineNumber"
+      case 4 => "name"
+      case 5 => "order"
+      case 6 => "possibleTypes"
+      case 7 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.dynamicTypeHintFullName
+      case 3 => this.lineNumber
+      case 4 => this.name
+      case 5 => this.order
+      case 6 => this.possibleTypes
+      case 7 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMember"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMember]
 }
 
 trait MetaDataEMT extends AnyRef with HasHashEMT with HasLanguageEMT with HasOverlaysEMT with HasRootEMT with HasVersionEMT
@@ -1318,8 +2707,34 @@ trait MetaDataBase extends AbstractNode with StaticType[MetaDataEMT] {
 class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 25.toShort, seq_4762)
     with MetaDataBase
-    with StaticType[MetaDataEMT] {}
-object NewMetaData               { def apply(): NewMetaData = new NewMetaData }
+    with StaticType[MetaDataEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "hash"
+      case 1 => "language"
+      case 2 => "overlays"
+      case 3 => "root"
+      case 4 => "version"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.hash
+      case 1 => this.language
+      case 2 => this.overlays
+      case 3 => this.root
+      case 4 => this.version
+      case _ => null
+    }
+
+  override def productPrefix = "MetaData"
+  override def productArity  = 5
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MetaData]
+}
+object NewMetaData { def apply(): NewMetaData = new NewMetaData }
 class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   type RelatedStored = MetaData
   override def label: String                           = "META_DATA"
@@ -1341,6 +2756,30 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
     interface.insertProperty(this, 46, Iterator(this.root))
     interface.insertProperty(this, 52, Iterator(this.version))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "hash"
+      case 1 => "language"
+      case 2 => "overlays"
+      case 3 => "root"
+      case 4 => "version"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.hash
+      case 1 => this.language
+      case 2 => this.overlays
+      case 3 => this.root
+      case 4 => this.version
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMetaData"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMetaData]
 }
 
 trait MethodEMT
@@ -1383,8 +2822,52 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodBase
     with CfgNode
     with Declaration
-    with StaticType[MethodEMT] {}
-object NewMethod               { def apply(): NewMethod = new NewMethod }
+    with StaticType[MethodEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "astParentFullName"
+      case 1  => "astParentType"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "columnNumberEnd"
+      case 5  => "filename"
+      case 6  => "fullName"
+      case 7  => "hash"
+      case 8  => "isExternal"
+      case 9  => "lineNumber"
+      case 10 => "lineNumberEnd"
+      case 11 => "name"
+      case 12 => "order"
+      case 13 => "signature"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.astParentFullName
+      case 1  => this.astParentType
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.columnNumberEnd
+      case 5  => this.filename
+      case 6  => this.fullName
+      case 7  => this.hash
+      case 8  => this.isExternal
+      case 9  => this.lineNumber
+      case 10 => this.lineNumberEnd
+      case 11 => this.name
+      case 12 => this.order
+      case 13 => this.signature
+      case _  => null
+    }
+
+  override def productPrefix = "Method"
+  override def productArity  = 14
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Method]
+}
+object NewMethod { def apply(): NewMethod = new NewMethod }
 class NewMethod extends NewNode(26.toShort) with MethodBase {
   type RelatedStored = Method
   override def label: String                         = "METHOD"
@@ -1437,6 +2920,48 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "astParentFullName"
+      case 1  => "astParentType"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "columnNumberEnd"
+      case 5  => "filename"
+      case 6  => "fullName"
+      case 7  => "hash"
+      case 8  => "isExternal"
+      case 9  => "lineNumber"
+      case 10 => "lineNumberEnd"
+      case 11 => "name"
+      case 12 => "order"
+      case 13 => "signature"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.astParentFullName
+      case 1  => this.astParentType
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.columnNumberEnd
+      case 5  => this.filename
+      case 6  => this.fullName
+      case 7  => this.hash
+      case 8  => this.isExternal
+      case 9  => this.lineNumber
+      case 10 => this.lineNumberEnd
+      case 11 => this.name
+      case 12 => this.order
+      case 13 => this.signature
+      case _  => null
+    }
+
+  override def productPrefix                = "NewMethod"
+  override def productArity                 = 14
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethod]
 }
 
 trait MethodParameterInEMT
@@ -1474,8 +2999,46 @@ class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodParameterInBase
     with CfgNode
     with Declaration
-    with StaticType[MethodParameterInEMT] {}
-object NewMethodParameterIn               { def apply(): NewMethodParameterIn = new NewMethodParameterIn }
+    with StaticType[MethodParameterInEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "code"
+      case 1  => "columnNumber"
+      case 2  => "dynamicTypeHintFullName"
+      case 3  => "evaluationStrategy"
+      case 4  => "index"
+      case 5  => "isVariadic"
+      case 6  => "lineNumber"
+      case 7  => "name"
+      case 8  => "order"
+      case 9  => "possibleTypes"
+      case 10 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.code
+      case 1  => this.columnNumber
+      case 2  => this.dynamicTypeHintFullName
+      case 3  => this.evaluationStrategy
+      case 4  => this.index
+      case 5  => this.isVariadic
+      case 6  => this.lineNumber
+      case 7  => this.name
+      case 8  => this.order
+      case 9  => this.possibleTypes
+      case 10 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix = "MethodParameterIn"
+  override def productArity  = 11
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodParameterIn]
+}
+object NewMethodParameterIn { def apply(): NewMethodParameterIn = new NewMethodParameterIn }
 class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBase {
   type RelatedStored = MethodParameterIn
   override def label: String                                          = "METHOD_PARAMETER_IN"
@@ -1516,6 +3079,42 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "code"
+      case 1  => "columnNumber"
+      case 2  => "dynamicTypeHintFullName"
+      case 3  => "evaluationStrategy"
+      case 4  => "index"
+      case 5  => "isVariadic"
+      case 6  => "lineNumber"
+      case 7  => "name"
+      case 8  => "order"
+      case 9  => "possibleTypes"
+      case 10 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.code
+      case 1  => this.columnNumber
+      case 2  => this.dynamicTypeHintFullName
+      case 3  => this.evaluationStrategy
+      case 4  => this.index
+      case 5  => this.isVariadic
+      case 6  => this.lineNumber
+      case 7  => this.name
+      case 8  => this.order
+      case 9  => this.possibleTypes
+      case 10 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix                = "NewMethodParameterIn"
+  override def productArity                 = 11
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodParameterIn]
 }
 
 trait MethodParameterOutEMT
@@ -1548,8 +3147,42 @@ class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
     with MethodParameterOutBase
     with CfgNode
     with Declaration
-    with StaticType[MethodParameterOutEMT] {}
-object NewMethodParameterOut               { def apply(): NewMethodParameterOut = new NewMethodParameterOut }
+    with StaticType[MethodParameterOutEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "evaluationStrategy"
+      case 3 => "index"
+      case 4 => "isVariadic"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.evaluationStrategy
+      case 3 => this.index
+      case 4 => this.isVariadic
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "MethodParameterOut"
+  override def productArity  = 9
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodParameterOut]
+}
+object NewMethodParameterOut { def apply(): NewMethodParameterOut = new NewMethodParameterOut }
 class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutBase {
   type RelatedStored = MethodParameterOut
   override def label: String                       = "METHOD_PARAMETER_OUT"
@@ -1584,6 +3217,38 @@ class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutB
     interface.insertProperty(this, 41, Iterator(this.order))
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "evaluationStrategy"
+      case 3 => "index"
+      case 4 => "isVariadic"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.evaluationStrategy
+      case 3 => this.index
+      case 4 => this.isVariadic
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMethodParameterOut"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodParameterOut]
 }
 
 trait MethodRefEMT
@@ -1616,8 +3281,44 @@ class MethodRef(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 29.toShort, seq_4762)
     with MethodRefBase
     with Expression
-    with StaticType[MethodRefEMT] {}
-object NewMethodRef               { def apply(): NewMethodRef = new NewMethodRef }
+    with StaticType[MethodRefEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "methodFullName"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.methodFullName
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "MethodRef"
+  override def productArity  = 10
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodRef]
+}
+object NewMethodRef { def apply(): NewMethodRef = new NewMethodRef }
 class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
   type RelatedStored = MethodRef
   override def label: String                                          = "METHOD_REF"
@@ -1656,6 +3357,40 @@ class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "methodFullName"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.methodFullName
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMethodRef"
+  override def productArity                 = 10
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodRef]
 }
 
 trait MethodReturnEMT
@@ -1686,8 +3421,40 @@ class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 30.toShort, seq_4762)
     with MethodReturnBase
     with CfgNode
-    with StaticType[MethodReturnEMT] {}
-object NewMethodReturn               { def apply(): NewMethodReturn = new NewMethodReturn }
+    with StaticType[MethodReturnEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "dynamicTypeHintFullName"
+      case 3 => "evaluationStrategy"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case 6 => "possibleTypes"
+      case 7 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.dynamicTypeHintFullName
+      case 3 => this.evaluationStrategy
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case 6 => this.possibleTypes
+      case 7 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "MethodReturn"
+  override def productArity  = 8
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodReturn]
+}
+object NewMethodReturn { def apply(): NewMethodReturn = new NewMethodReturn }
 class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
   type RelatedStored = MethodReturn
   override def label: String                                          = "METHOD_RETURN"
@@ -1719,6 +3486,36 @@ class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "dynamicTypeHintFullName"
+      case 3 => "evaluationStrategy"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case 6 => "possibleTypes"
+      case 7 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.dynamicTypeHintFullName
+      case 3 => this.evaluationStrategy
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case 6 => this.possibleTypes
+      case 7 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewMethodReturn"
+  override def productArity                 = 8
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodReturn]
 }
 
 trait ModifierEMT extends AnyRef with AstNodeEMT with HasModifierTypeEMT
@@ -1739,8 +3536,34 @@ class Modifier(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 31.toShort, seq_4762)
     with ModifierBase
     with AstNode
-    with StaticType[ModifierEMT] {}
-object NewModifier               { def apply(): NewModifier = new NewModifier }
+    with StaticType[ModifierEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "modifierType"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.modifierType
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "Modifier"
+  override def productArity  = 5
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Modifier]
+}
+object NewModifier { def apply(): NewModifier = new NewModifier }
 class NewModifier extends NewNode(31.toShort) with ModifierBase {
   type RelatedStored = Modifier
   override def label: String                      = "MODIFIER"
@@ -1763,6 +3586,30 @@ class NewModifier extends NewNode(31.toShort) with ModifierBase {
     interface.insertProperty(this, 38, Iterator(this.modifierType))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "modifierType"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.modifierType
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewModifier"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewModifier]
 }
 
 trait NamespaceEMT extends AnyRef with AstNodeEMT with HasNameEMT
@@ -1783,8 +3630,34 @@ class Namespace(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 32.toShort, seq_4762)
     with NamespaceBase
     with AstNode
-    with StaticType[NamespaceEMT] {}
-object NewNamespace               { def apply(): NewNamespace = new NewNamespace }
+    with StaticType[NamespaceEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "Namespace"
+  override def productArity  = 5
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Namespace]
+}
+object NewNamespace { def apply(): NewNamespace = new NewNamespace }
 class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
   type RelatedStored = Namespace
   override def label: String                      = "NAMESPACE"
@@ -1807,6 +3680,30 @@ class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewNamespace"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNamespace]
 }
 
 trait NamespaceBlockEMT extends AnyRef with AstNodeEMT with HasFilenameEMT with HasFullNameEMT with HasNameEMT
@@ -1829,8 +3726,38 @@ class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 33.toShort, seq_4762)
     with NamespaceBlockBase
     with AstNode
-    with StaticType[NamespaceBlockEMT] {}
-object NewNamespaceBlock               { def apply(): NewNamespaceBlock = new NewNamespaceBlock }
+    with StaticType[NamespaceBlockEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "filename"
+      case 3 => "fullName"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.filename
+      case 3 => this.fullName
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "NamespaceBlock"
+  override def productArity  = 7
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NamespaceBlock]
+}
+object NewNamespaceBlock { def apply(): NewNamespaceBlock = new NewNamespaceBlock }
 class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
   type RelatedStored = NamespaceBlock
   override def label: String                      = "NAMESPACE_BLOCK"
@@ -1859,6 +3786,34 @@ class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "filename"
+      case 3 => "fullName"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.filename
+      case 3 => this.fullName
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewNamespaceBlock"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNamespaceBlock]
 }
 
 trait ReturnEMT extends AnyRef with ExpressionEMT
@@ -1880,8 +3835,36 @@ class Return(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 34.toShort, seq_4762)
     with ReturnBase
     with Expression
-    with StaticType[ReturnEMT] {}
-object NewReturn               { def apply(): NewReturn = new NewReturn }
+    with StaticType[ReturnEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "Return"
+  override def productArity  = 6
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Return]
+}
+object NewReturn { def apply(): NewReturn = new NewReturn }
 class NewReturn extends NewNode(34.toShort) with ReturnBase {
   type RelatedStored = Return
   override def label: String                         = "RETURN"
@@ -1908,6 +3891,32 @@ class NewReturn extends NewNode(34.toShort) with ReturnBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewReturn"
+  override def productArity                 = 6
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewReturn]
 }
 
 trait TagEMT extends AnyRef with HasNameEMT with HasValueEMT
@@ -1921,11 +3930,28 @@ trait TagBase extends AbstractNode with StaticType[TagEMT] {
     res
   }
 }
-class Tag(graph_4762: odb2.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 35.toShort, seq_4762)
-    with TagBase
-    with StaticType[TagEMT] {}
-object NewTag               { def apply(): NewTag = new NewTag }
+class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with TagBase with StaticType[TagEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "name"
+      case 1 => "value"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.name
+      case 1 => this.value
+      case _ => null
+    }
+
+  override def productPrefix = "Tag"
+  override def productArity  = 2
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Tag]
+}
+object NewTag { def apply(): NewTag = new NewTag }
 class NewTag extends NewNode(35.toShort) with TagBase {
   type RelatedStored = Tag
   override def label: String          = "TAG"
@@ -1937,6 +3963,24 @@ class NewTag extends NewNode(35.toShort) with TagBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 51, Iterator(this.value))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "name"
+      case 1 => "value"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.name
+      case 1 => this.value
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTag"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTag]
 }
 
 trait TagNodePairEMT extends AnyRef
@@ -1957,6 +4001,25 @@ class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
     with StaticType[TagNodePairEMT] {
   def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 53, seq, null: StoredNode)
   def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 54, seq, null: Tag)
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "node"
+      case 1 => "tag"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.node
+      case 1 => this.tag
+      case _ => null
+    }
+
+  override def productPrefix = "TagNodePair"
+  override def productArity  = 2
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TagNodePair]
 }
 object NewTagNodePair { def apply(): NewTagNodePair = new NewTagNodePair }
 class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
@@ -1970,6 +4033,24 @@ class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
     interface.insertProperty(this, 53, Iterator(this.node))
     interface.insertProperty(this, 54, Iterator(this.tag))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "node"
+      case 1 => "tag"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.node
+      case 1 => this.tag
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTagNodePair"
+  override def productArity                 = 2
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTagNodePair]
 }
 
 trait TemplateDomEMT extends AnyRef with ExpressionEMT with HasNameEMT
@@ -1992,8 +4073,38 @@ class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 37.toShort, seq_4762)
     with TemplateDomBase
     with Expression
-    with StaticType[TemplateDomEMT] {}
-object NewTemplateDom               { def apply(): NewTemplateDom = new NewTemplateDom }
+    with StaticType[TemplateDomEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "TemplateDom"
+  override def productArity  = 7
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TemplateDom]
+}
+object NewTemplateDom { def apply(): NewTemplateDom = new NewTemplateDom }
 class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
   type RelatedStored = TemplateDom
   override def label: String                         = "TEMPLATE_DOM"
@@ -2023,6 +4134,34 @@ class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTemplateDom"
+  override def productArity                 = 7
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTemplateDom]
 }
 
 trait TypeEMT extends AnyRef with HasFullNameEMT with HasNameEMT with HasTypeDeclFullNameEMT
@@ -2040,8 +4179,30 @@ trait TypeBase extends AbstractNode with StaticType[TypeEMT] {
 class Type(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 38.toShort, seq_4762)
     with TypeBase
-    with StaticType[TypeEMT] {}
-object NewType               { def apply(): NewType = new NewType }
+    with StaticType[TypeEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "fullName"
+      case 1 => "name"
+      case 2 => "typeDeclFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.fullName
+      case 1 => this.name
+      case 2 => this.typeDeclFullName
+      case _ => null
+    }
+
+  override def productPrefix = "Type"
+  override def productArity  = 3
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Type]
+}
+object NewType { def apply(): NewType = new NewType }
 class NewType extends NewNode(38.toShort) with TypeBase {
   type RelatedStored = Type
   override def label: String                     = "TYPE"
@@ -2056,6 +4217,26 @@ class NewType extends NewNode(38.toShort) with TypeBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 49, Iterator(this.typeDeclFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "fullName"
+      case 1 => "name"
+      case 2 => "typeDeclFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.fullName
+      case 1 => this.name
+      case 2 => this.typeDeclFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewType"
+  override def productArity                 = 3
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewType]
 }
 
 trait TypeArgumentEMT extends AnyRef with AstNodeEMT
@@ -2075,8 +4256,32 @@ class TypeArgument(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 39.toShort, seq_4762)
     with TypeArgumentBase
     with AstNode
-    with StaticType[TypeArgumentEMT] {}
-object NewTypeArgument               { def apply(): NewTypeArgument = new NewTypeArgument }
+    with StaticType[TypeArgumentEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "TypeArgument"
+  override def productArity  = 4
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeArgument]
+}
+object NewTypeArgument { def apply(): NewTypeArgument = new NewTypeArgument }
 class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
   type RelatedStored = TypeArgument
   override def label: String                      = "TYPE_ARGUMENT"
@@ -2096,6 +4301,28 @@ class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTypeArgument"
+  override def productArity                 = 4
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeArgument]
 }
 
 trait TypeDeclEMT
@@ -2134,8 +4361,48 @@ class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 40.toShort, seq_4762)
     with TypeDeclBase
     with AstNode
-    with StaticType[TypeDeclEMT] {}
-object NewTypeDecl               { def apply(): NewTypeDecl = new NewTypeDecl }
+    with StaticType[TypeDeclEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "aliasTypeFullName"
+      case 1  => "astParentFullName"
+      case 2  => "astParentType"
+      case 3  => "code"
+      case 4  => "columnNumber"
+      case 5  => "filename"
+      case 6  => "fullName"
+      case 7  => "inheritsFromTypeFullName"
+      case 8  => "isExternal"
+      case 9  => "lineNumber"
+      case 10 => "name"
+      case 11 => "order"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.aliasTypeFullName
+      case 1  => this.astParentFullName
+      case 2  => this.astParentType
+      case 3  => this.code
+      case 4  => this.columnNumber
+      case 5  => this.filename
+      case 6  => this.fullName
+      case 7  => this.inheritsFromTypeFullName
+      case 8  => this.isExternal
+      case 9  => this.lineNumber
+      case 10 => this.name
+      case 11 => this.order
+      case _  => null
+    }
+
+  override def productPrefix = "TypeDecl"
+  override def productArity  = 12
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeDecl]
+}
+object NewTypeDecl { def apply(): NewTypeDecl = new NewTypeDecl }
 class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
   type RelatedStored = TypeDecl
   override def label: String                              = "TYPE_DECL"
@@ -2182,6 +4449,44 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "aliasTypeFullName"
+      case 1  => "astParentFullName"
+      case 2  => "astParentType"
+      case 3  => "code"
+      case 4  => "columnNumber"
+      case 5  => "filename"
+      case 6  => "fullName"
+      case 7  => "inheritsFromTypeFullName"
+      case 8  => "isExternal"
+      case 9  => "lineNumber"
+      case 10 => "name"
+      case 11 => "order"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.aliasTypeFullName
+      case 1  => this.astParentFullName
+      case 2  => this.astParentType
+      case 3  => this.code
+      case 4  => this.columnNumber
+      case 5  => this.filename
+      case 6  => this.fullName
+      case 7  => this.inheritsFromTypeFullName
+      case 8  => this.isExternal
+      case 9  => this.lineNumber
+      case 10 => this.name
+      case 11 => this.order
+      case _  => null
+    }
+
+  override def productPrefix                = "NewTypeDecl"
+  override def productArity                 = 12
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeDecl]
 }
 
 trait TypeParameterEMT extends AnyRef with AstNodeEMT with HasNameEMT
@@ -2202,8 +4507,34 @@ class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 41.toShort, seq_4762)
     with TypeParameterBase
     with AstNode
-    with StaticType[TypeParameterEMT] {}
-object NewTypeParameter               { def apply(): NewTypeParameter = new NewTypeParameter }
+    with StaticType[TypeParameterEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix = "TypeParameter"
+  override def productArity  = 5
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeParameter]
+}
+object NewTypeParameter { def apply(): NewTypeParameter = new NewTypeParameter }
 class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
   type RelatedStored = TypeParameter
   override def label: String                      = "TYPE_PARAMETER"
@@ -2226,6 +4557,30 @@ class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 41, Iterator(this.order))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "code"
+      case 1 => "columnNumber"
+      case 2 => "lineNumber"
+      case 3 => "name"
+      case 4 => "order"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.code
+      case 1 => this.columnNumber
+      case 2 => this.lineNumber
+      case 3 => this.name
+      case 4 => this.order
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTypeParameter"
+  override def productArity                 = 5
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeParameter]
 }
 
 trait TypeRefEMT extends AnyRef with ExpressionEMT with HasDynamicTypeHintFullNameEMT with HasPossibleTypesEMT with HasTypeFullNameEMT
@@ -2251,8 +4606,42 @@ class TypeRef(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 42.toShort, seq_4762)
     with TypeRefBase
     with Expression
-    with StaticType[TypeRefEMT] {}
-object NewTypeRef               { def apply(): NewTypeRef = new NewTypeRef }
+    with StaticType[TypeRefEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix = "TypeRef"
+  override def productArity  = 9
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeRef]
+}
+object NewTypeRef { def apply(): NewTypeRef = new NewTypeRef }
 class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
   type RelatedStored = TypeRef
   override def label: String                                          = "TYPE_REF"
@@ -2288,6 +4677,38 @@ class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "argumentIndex"
+      case 1 => "argumentName"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "order"
+      case 7 => "possibleTypes"
+      case 8 => "typeFullName"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.argumentIndex
+      case 1 => this.argumentName
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.order
+      case 7 => this.possibleTypes
+      case 8 => this.typeFullName
+      case _ => null
+    }
+
+  override def productPrefix                = "NewTypeRef"
+  override def productArity                 = 9
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeRef]
 }
 
 trait UnknownEMT
@@ -2322,8 +4743,46 @@ class Unknown(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 43.toShort, seq_4762)
     with UnknownBase
     with Expression
-    with StaticType[UnknownEMT] {}
-object NewUnknown               { def apply(): NewUnknown = new NewUnknown }
+    with StaticType[UnknownEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "argumentIndex"
+      case 1  => "argumentName"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "containedRef"
+      case 5  => "dynamicTypeHintFullName"
+      case 6  => "lineNumber"
+      case 7  => "order"
+      case 8  => "parserTypeName"
+      case 9  => "possibleTypes"
+      case 10 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.argumentIndex
+      case 1  => this.argumentName
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.containedRef
+      case 5  => this.dynamicTypeHintFullName
+      case 6  => this.lineNumber
+      case 7  => this.order
+      case 8  => this.parserTypeName
+      case 9  => this.possibleTypes
+      case 10 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix = "Unknown"
+  override def productArity  = 11
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Unknown]
+}
+object NewUnknown { def apply(): NewUnknown = new NewUnknown }
 class NewUnknown extends NewNode(43.toShort) with UnknownBase {
   type RelatedStored = Unknown
   override def label: String                                          = "UNKNOWN"
@@ -2365,4 +4824,40 @@ class NewUnknown extends NewNode(43.toShort) with UnknownBase {
     if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0  => "argumentIndex"
+      case 1  => "argumentName"
+      case 2  => "code"
+      case 3  => "columnNumber"
+      case 4  => "containedRef"
+      case 5  => "dynamicTypeHintFullName"
+      case 6  => "lineNumber"
+      case 7  => "order"
+      case 8  => "parserTypeName"
+      case 9  => "possibleTypes"
+      case 10 => "typeFullName"
+      case _  => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0  => this.argumentIndex
+      case 1  => this.argumentName
+      case 2  => this.code
+      case 3  => this.columnNumber
+      case 4  => this.containedRef
+      case 5  => this.dynamicTypeHintFullName
+      case 6  => this.lineNumber
+      case 7  => this.order
+      case 8  => this.parserTypeName
+      case 9  => this.possibleTypes
+      case 10 => this.typeFullName
+      case _  => null
+    }
+
+  override def productPrefix                = "NewUnknown"
+  override def productArity                 = 11
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewUnknown]
 }

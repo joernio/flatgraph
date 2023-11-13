@@ -3,7 +3,7 @@ import io.joern.odb2
 
 trait StaticType[+T]
 
-trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] {
+trait AbstractNode extends odb2.DNodeOrNode with StaticType[AnyRef] with Product {
   def label: String
   def propertiesMap: java.util.Map[String, Any]
 }
