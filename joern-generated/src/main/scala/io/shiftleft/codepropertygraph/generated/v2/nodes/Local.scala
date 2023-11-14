@@ -45,6 +45,12 @@ object Local {
     val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
     val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
   }
+  object PropertyDefaults {
+    val Code         = "<empty>"
+    val Name         = "<empty>"
+    val Order        = -1: Int
+    val TypeFullName = "<empty>"
+  }
 }
 
 class Local(graph_4762: odb2.Graph, seq_4762: Int)

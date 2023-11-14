@@ -23,6 +23,10 @@ object KeyValuePair {
     val Key   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.KEY
     val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
   }
+  object PropertyDefaults {
+    val Key   = "<empty>"
+    val Value = ""
+  }
 }
 
 class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)

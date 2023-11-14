@@ -25,6 +25,10 @@ object Dependency {
     val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val Version           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VERSION
   }
+  object PropertyDefaults {
+    val Name    = "<empty>"
+    val Version = "<empty>"
+  }
 }
 
 class Dependency(graph_4762: odb2.Graph, seq_4762: Int)

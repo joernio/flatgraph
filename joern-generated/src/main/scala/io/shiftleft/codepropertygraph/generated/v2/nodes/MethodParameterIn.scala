@@ -51,6 +51,15 @@ object MethodParameterIn {
     val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
     val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
   }
+  object PropertyDefaults {
+    val Code               = "<empty>"
+    val EvaluationStrategy = "<empty>"
+    val Index              = -1: Int
+    val IsVariadic         = false
+    val Name               = "<empty>"
+    val Order              = -1: Int
+    val TypeFullName       = "<empty>"
+  }
 }
 
 class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)

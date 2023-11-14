@@ -29,6 +29,11 @@ object MetaData {
     val Root     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ROOT
     val Version  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VERSION
   }
+  object PropertyDefaults {
+    val Language = "<empty>"
+    val Root     = "<empty>"
+    val Version  = "<empty>"
+  }
 }
 
 class MetaData(graph_4762: odb2.Graph, seq_4762: Int)

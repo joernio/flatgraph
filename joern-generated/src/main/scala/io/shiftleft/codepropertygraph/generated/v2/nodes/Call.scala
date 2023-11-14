@@ -54,6 +54,16 @@ object Call {
     val Signature               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
     val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
   }
+  object PropertyDefaults {
+    val ArgumentIndex  = -1: Int
+    val Code           = "<empty>"
+    val DispatchType   = "<empty>"
+    val MethodFullName = "<empty>"
+    val Name           = "<empty>"
+    val Order          = -1: Int
+    val Signature      = ""
+    val TypeFullName   = "<empty>"
+  }
 }
 
 class Call(graph_4762: odb2.Graph, seq_4762: Int)

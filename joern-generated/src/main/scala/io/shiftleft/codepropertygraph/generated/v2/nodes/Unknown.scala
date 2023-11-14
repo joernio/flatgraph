@@ -49,6 +49,14 @@ object Unknown {
     val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
     val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
   }
+  object PropertyDefaults {
+    val ArgumentIndex  = -1: Int
+    val Code           = "<empty>"
+    val ContainedRef   = "<empty>"
+    val Order          = -1: Int
+    val ParserTypeName = "<empty>"
+    val TypeFullName   = "<empty>"
+  }
 }
 
 class Unknown(graph_4762: odb2.Graph, seq_4762: Int)

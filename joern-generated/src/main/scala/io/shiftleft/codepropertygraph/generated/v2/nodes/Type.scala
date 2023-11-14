@@ -25,6 +25,11 @@ object Type {
     val Name             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val TypeDeclFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_DECL_FULL_NAME
   }
+  object PropertyDefaults {
+    val FullName         = "<empty>"
+    val Name             = "<empty>"
+    val TypeDeclFullName = "<empty>"
+  }
 }
 
 class Type(graph_4762: odb2.Graph, seq_4762: Int)

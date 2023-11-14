@@ -59,6 +59,17 @@ object Method {
     val Order             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
     val Signature         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
   }
+  object PropertyDefaults {
+    val AstParentFullName = "<empty>"
+    val AstParentType     = "<empty>"
+    val Code              = "<empty>"
+    val Filename          = "<empty>"
+    val FullName          = "<empty>"
+    val IsExternal        = false
+    val Name              = "<empty>"
+    val Order             = -1: Int
+    val Signature         = ""
+  }
 }
 
 class Method(graph_4762: odb2.Graph, seq_4762: Int)

@@ -27,6 +27,10 @@ object AnnotationParameter {
     val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
     val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
   }
+  object PropertyDefaults {
+    val Code  = "<empty>"
+    val Order = -1: Int
+  }
 }
 
 class AnnotationParameter(graph_4762: odb2.Graph, seq_4762: Int)

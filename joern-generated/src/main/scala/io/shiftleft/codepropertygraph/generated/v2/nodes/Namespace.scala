@@ -29,6 +29,11 @@ object Namespace {
     val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
   }
+  object PropertyDefaults {
+    val Code  = "<empty>"
+    val Name  = "<empty>"
+    val Order = -1: Int
+  }
 }
 
 class Namespace(graph_4762: odb2.Graph, seq_4762: Int)

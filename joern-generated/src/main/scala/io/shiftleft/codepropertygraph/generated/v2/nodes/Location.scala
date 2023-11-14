@@ -48,6 +48,16 @@ object Location {
     val PackageName     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PACKAGE_NAME
     val Symbol          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SYMBOL
   }
+  object PropertyDefaults {
+    val ClassName       = "<empty>"
+    val ClassShortName  = "<empty>"
+    val Filename        = "<empty>"
+    val MethodFullName  = "<empty>"
+    val MethodShortName = "<empty>"
+    val NodeLabel       = "<empty>"
+    val PackageName     = "<empty>"
+    val Symbol          = "<empty>"
+  }
 }
 
 class Location(graph_4762: odb2.Graph, seq_4762: Int)
