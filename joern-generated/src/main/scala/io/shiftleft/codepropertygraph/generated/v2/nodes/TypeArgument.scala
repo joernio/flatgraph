@@ -1327,7 +1327,7 @@ class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewTypeArgument
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

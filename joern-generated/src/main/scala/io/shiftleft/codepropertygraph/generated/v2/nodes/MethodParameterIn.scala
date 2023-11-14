@@ -1392,7 +1392,7 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewMethodParameterIn
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

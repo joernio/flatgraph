@@ -1327,7 +1327,7 @@ class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameter
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewAnnotationParameter
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

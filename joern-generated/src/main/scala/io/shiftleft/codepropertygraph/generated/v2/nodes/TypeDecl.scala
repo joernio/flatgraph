@@ -1403,7 +1403,7 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewTypeDecl
     newInstance.aliasTypeFullName = this.aliasTypeFullName
     newInstance.astParentFullName = this.astParentFullName

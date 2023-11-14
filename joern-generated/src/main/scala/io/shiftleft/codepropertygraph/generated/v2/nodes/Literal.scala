@@ -1366,7 +1366,7 @@ class NewLiteral extends NewNode(21.toShort) with LiteralBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewLiteral
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

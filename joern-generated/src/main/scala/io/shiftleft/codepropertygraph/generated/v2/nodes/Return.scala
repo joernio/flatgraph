@@ -1343,7 +1343,7 @@ class NewReturn extends NewNode(34.toShort) with ReturnBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewReturn
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

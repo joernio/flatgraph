@@ -1366,7 +1366,7 @@ class NewBlock extends NewNode(6.toShort) with BlockBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewBlock
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

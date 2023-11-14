@@ -141,5 +141,5 @@ abstract class NewNode(val nodeKind: Short) extends AbstractNode with odb2.DNode
   override def storedRef_=(stored: Option[odb2.GNode]): Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
   def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean
   def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean
-  def copy: this.type
+  def copy(): this.type
 }

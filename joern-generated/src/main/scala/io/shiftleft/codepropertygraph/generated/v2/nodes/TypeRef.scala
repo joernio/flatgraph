@@ -1366,7 +1366,7 @@ class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewTypeRef
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

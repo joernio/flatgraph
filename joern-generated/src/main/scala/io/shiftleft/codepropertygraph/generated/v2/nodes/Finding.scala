@@ -76,7 +76,7 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
     if (keyValuePairs.nonEmpty) interface.insertProperty(this, 54, this.keyValuePairs)
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewFinding
     newInstance.evidence = this.evidence
     newInstance.keyValuePairs = this.keyValuePairs

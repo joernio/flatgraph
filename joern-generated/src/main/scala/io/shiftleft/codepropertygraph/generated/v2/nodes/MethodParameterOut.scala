@@ -1375,7 +1375,7 @@ class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutB
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewMethodParameterOut
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

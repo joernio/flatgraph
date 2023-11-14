@@ -1335,7 +1335,7 @@ class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewTypeParameter
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

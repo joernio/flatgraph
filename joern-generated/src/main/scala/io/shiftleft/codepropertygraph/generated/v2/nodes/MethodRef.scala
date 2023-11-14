@@ -1380,7 +1380,7 @@ class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewMethodRef
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

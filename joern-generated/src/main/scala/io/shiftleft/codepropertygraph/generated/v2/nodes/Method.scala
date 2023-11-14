@@ -1420,7 +1420,7 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewMethod
     newInstance.astParentFullName = this.astParentFullName
     newInstance.astParentType = this.astParentType

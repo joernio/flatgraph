@@ -87,7 +87,7 @@ class NewDependency extends NewNode(12.toShort) with DependencyBase {
     interface.insertProperty(this, 52, Iterator(this.version))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewDependency
     newInstance.dependencyGroupId = this.dependencyGroupId
     newInstance.name = this.name

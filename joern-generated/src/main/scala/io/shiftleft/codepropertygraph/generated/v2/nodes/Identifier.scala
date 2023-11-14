@@ -1380,7 +1380,7 @@ class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewIdentifier
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

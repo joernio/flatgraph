@@ -87,7 +87,7 @@ class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
     interface.insertProperty(this, 19, Iterator(this.evaluationStrategy))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewClosureBinding
     newInstance.closureBindingId = this.closureBindingId
     newInstance.closureOriginalName = this.closureOriginalName

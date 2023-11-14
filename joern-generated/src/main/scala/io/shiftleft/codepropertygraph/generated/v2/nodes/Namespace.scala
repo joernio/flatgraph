@@ -1335,7 +1335,7 @@ class NewNamespace extends NewNode(32.toShort) with NamespaceBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewNamespace
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

@@ -1335,7 +1335,7 @@ class NewModifier extends NewNode(31.toShort) with ModifierBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewModifier
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

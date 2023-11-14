@@ -1374,7 +1374,7 @@ class NewLocal extends NewNode(22.toShort) with LocalBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewLocal
     newInstance.closureBindingId = this.closureBindingId
     newInstance.code = this.code

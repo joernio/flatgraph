@@ -1351,7 +1351,7 @@ class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewTemplateDom
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

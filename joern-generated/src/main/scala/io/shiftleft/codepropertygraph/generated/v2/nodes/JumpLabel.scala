@@ -1343,7 +1343,7 @@ class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewJumpLabel
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber

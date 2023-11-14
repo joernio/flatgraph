@@ -1407,7 +1407,7 @@ class NewCall extends NewNode(7.toShort) with CallBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewCall
     newInstance.argumentIndex = this.argumentIndex
     newInstance.argumentName = this.argumentName

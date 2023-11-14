@@ -102,7 +102,7 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
     interface.insertProperty(this, 52, Iterator(this.version))
   }
 
-  override def copy: this.type = {
+  override def copy(): this.type = {
     val newInstance = new NewMetaData
     newInstance.hash = this.hash
     newInstance.language = this.language
