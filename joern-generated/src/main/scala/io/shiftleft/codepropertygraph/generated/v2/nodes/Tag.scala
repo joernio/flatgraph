@@ -51,10 +51,46 @@ class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Tag]
 }
 
-object NewTag { def apply(): NewTag = new NewTag }
+object NewTag {
+  def apply(): NewTag                                = new NewTag
+  private val outNeighbors: Map[String, Set[String]] = Map("TAGGED_BY" -> Set("TAG"))
+  private val inNeighbors: Map[String, Set[String]] = Map(
+    "TAGGED_BY" -> Set(
+      "BLOCK",
+      "CALL",
+      "CONTROL_STRUCTURE",
+      "FIELD_IDENTIFIER",
+      "FILE",
+      "IDENTIFIER",
+      "IMPORT",
+      "JUMP_TARGET",
+      "LITERAL",
+      "LOCAL",
+      "MEMBER",
+      "METHOD",
+      "METHOD_PARAMETER_IN",
+      "METHOD_PARAMETER_OUT",
+      "METHOD_REF",
+      "METHOD_RETURN",
+      "RETURN",
+      "TAG",
+      "TEMPLATE_DOM",
+      "TYPE_REF",
+      "UNKNOWN"
+    )
+  )
+}
 class NewTag extends NewNode(35.toShort) with TagBase {
   type RelatedStored = Tag
-  override def label: String          = "TAG"
+  override def label: String = "TAG"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewTag.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewTag.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var name: String                    = "<empty>": String
   var value: String                   = "": String
   def name(value: String): this.type  = { this.name = value; this }
@@ -62,6 +98,13 @@ class NewTag extends NewNode(35.toShort) with TagBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 51, Iterator(this.value))
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewTag
+    newInstance.name = this.name
+    newInstance.value = this.value
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =

@@ -51,10 +51,22 @@ class Finding(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Finding]
 }
 
-object NewFinding { def apply(): NewFinding = new NewFinding }
+object NewFinding {
+  def apply(): NewFinding                            = new NewFinding
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewFinding extends NewNode(15.toShort) with FindingBase {
   type RelatedStored = Finding
-  override def label: String                                          = "FINDING"
+  override def label: String = "FINDING"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewFinding.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewFinding.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var evidence: IndexedSeq[AbstractNode]                              = ArraySeq.empty
   var keyValuePairs: IndexedSeq[KeyValuePairBase]                     = ArraySeq.empty
   def evidence(value: IterableOnce[AbstractNode]): this.type          = { this.evidence = value.iterator.to(ArraySeq); this }
@@ -62,6 +74,13 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     if (evidence.nonEmpty) interface.insertProperty(this, 53, this.evidence)
     if (keyValuePairs.nonEmpty) interface.insertProperty(this, 54, this.keyValuePairs)
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewFinding
+    newInstance.evidence = this.evidence
+    newInstance.keyValuePairs = this.keyValuePairs
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =

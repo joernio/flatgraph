@@ -127,10 +127,13 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |
          |abstract class NewNode(val nodeKind:Short) extends AbstractNode with odb2.DNode {
-         |type RelatedStored <: StoredNode
-         |private /* volatile? */ var _storedRef: RelatedStored = null.asInstanceOf[RelatedStored]
-         |override def storedRef:Option[RelatedStored] = Option(this._storedRef)
-         |override def storedRef_=(stored: Option[odb2.GNode]):Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
+         |  type RelatedStored <: StoredNode
+         |  private /* volatile? */ var _storedRef: RelatedStored = null.asInstanceOf[RelatedStored]
+         |  override def storedRef:Option[RelatedStored] = Option(this._storedRef)
+         |  override def storedRef_=(stored: Option[odb2.GNode]):Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
+         |  def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean
+         |  def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean
+         |  def copy(): this.type
          |}
          |""".stripMargin
 
@@ -388,31 +391,77 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
 
+      def neighborEdgeStr(es: Map[String, Set[String]]): String =
+        es.toSeq.sortBy(_._1).map { case (k, vs) => s"$k -> Set(${vs.toSeq.sorted.mkString(", ")})" }.mkString(", ")
+
+      val inEdges: Map[String, Set[String]] = {
+        val inEdges0 = nodeType.inEdges.map(x => (x.viaEdge.name.quote, x.neighbor.name.quote)).toSet
+        val baseTypeInEdges = nodeType.extendzRecursively
+          .flatMap(_.subtypes(allNodeTypes))
+          .flatMap(_.inEdges)
+          .flatMap(neighborMapping)
+          .toSet
+        edgeNeighborToMap(baseTypeInEdges ++ inEdges0)
+      }
+      val outEdges: Map[String, Set[String]] = {
+        val outEdges0 = nodeType.outEdges.map(x => (x.viaEdge.name.quote, x.neighbor.name.quote)).toSet
+        val baseTypeOutEdges = nodeType.extendzRecursively
+          .flatMap(_.subtypes(allNodeTypes))
+          .flatMap(_.outEdges)
+          .flatMap(neighborMapping)
+          .toSet
+        edgeNeighborToMap(baseTypeOutEdges ++ outEdges0)
+      }
+
+      val copyFieldsImpl = productElements
+        .map { memberName =>
+          s"newInstance.$memberName = this.$memberName"
+        }
+        .mkString("\n")
+
       val newNode =
-        s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
-             |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
-             |type RelatedStored = ${nodeType.className}
-             |override def label: String = "${nodeType.name}"
-             |${newNodeProps.sorted.mkString("\n")}
-             |${newNodeFluent.sorted.mkString("\n")}
-             |${flattenItems.mkString("override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {\n", "\n", "\n}")}
-             |
-             |  override def productElementName(n: Int): String =
-             |    n match {
-             |      $productElementNames
-             |      case _ => ""
-             |    }
-             |
-             |  override def productElement(n: Int): Any =
-             |    n match {
-             |      $productElementAccessors
-             |      case _ => null
-             |    }
-             |
-             |  override def productPrefix = "New${nodeType.className}"
-             |  override def productArity = ${productElements.size}
-             |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[New${nodeType.className}]
-             |}""".stripMargin
+        s"""object New${nodeType.className} {
+           |  def apply(): New${nodeType.className} = new New${nodeType.className}
+           |  private val outNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(outEdges)})
+           |  private val inNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(inEdges)})
+           |}
+           |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
+           |  type RelatedStored = ${nodeType.className}
+           |  override def label: String = "${nodeType.name}"
+           |
+           |  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+           |    New${nodeType.className}.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+           |  }
+           |  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+           |    New${nodeType.className}.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+           |  }
+           |
+           |  ${newNodeProps.sorted.mkString("\n")}
+           |  ${newNodeFluent.sorted.mkString("\n")}
+           |  ${flattenItems.mkString("override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {\n", "\n", "\n}")}
+           |
+           |  override def copy(): this.type = {
+           |    val newInstance = new New${nodeType.className}
+           |    $copyFieldsImpl
+           |    newInstance.asInstanceOf[this.type]
+           |  }
+           |
+           |  override def productElementName(n: Int): String =
+           |    n match {
+           |      $productElementNames
+           |      case _ => ""
+           |    }
+           |
+           |  override def productElement(n: Int): Any =
+           |    n match {
+           |      $productElementAccessors
+           |      case _ => null
+           |    }
+           |
+           |  override def productPrefix = "New${nodeType.className}"
+           |  override def productArity = ${productElements.size}
+           |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[New${nodeType.className}]
+           |}""".stripMargin
 
       val propDictItemsSource = propDictItems.mkString(
         s"""override def propertiesMap: java.util.Map[String, Any] = {
@@ -1153,6 +1202,26 @@ class DomainClassesGenerator(schema: Schema) {
     )
 
     PropertyContexts(relevantPropertiesSet.toArray.sortBy(_.name), containingByName.view.toMap)
+  }
+
+  lazy val allNodeTypes = schema.allNodeTypes.toSet
+
+  def flattenNeighbors(x: AbstractNodeType) =
+    x.extendzRecursively.flatMap(_.subtypes(schema.allNodeTypes.toSet))
+
+  def neighborMapping(x: AdjacentNode): Set[(String, String)] = {
+    val edge = x.viaEdge.name.quote
+    (x.neighbor +: flattenNeighbors(x.neighbor)).map(y => (edge, y.name.quote)).toSet
+  }
+
+  def edgeNeighborToMap(xs: Set[(String, String)]): Map[String, Set[String]] =
+    xs.groupBy(_._1).map { case (edge, edgeNeighbors) => edge -> edgeNeighbors.map(_._2) }
+
+  /** Useful string extensions to avoid Scala version incompatible interpolations.
+    */
+  extension (s: String) {
+    def quote: String = s""""$s""""
+
   }
 
 }

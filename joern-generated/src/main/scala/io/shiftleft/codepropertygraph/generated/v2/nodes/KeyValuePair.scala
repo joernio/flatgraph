@@ -54,10 +54,22 @@ class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[KeyValuePair]
 }
 
-object NewKeyValuePair { def apply(): NewKeyValuePair = new NewKeyValuePair }
+object NewKeyValuePair {
+  def apply(): NewKeyValuePair                       = new NewKeyValuePair
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   type RelatedStored = KeyValuePair
-  override def label: String          = "KEY_VALUE_PAIR"
+  override def label: String = "KEY_VALUE_PAIR"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewKeyValuePair.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewKeyValuePair.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var key: String                     = "<empty>": String
   var value: String                   = "": String
   def key(value: String): this.type   = { this.key = value; this }
@@ -65,6 +77,13 @@ class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 32, Iterator(this.key))
     interface.insertProperty(this, 51, Iterator(this.value))
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewKeyValuePair
+    newInstance.key = this.key
+    newInstance.value = this.value
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =

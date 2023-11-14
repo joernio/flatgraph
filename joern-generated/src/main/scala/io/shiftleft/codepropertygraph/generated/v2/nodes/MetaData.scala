@@ -67,10 +67,22 @@ class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MetaData]
 }
 
-object NewMetaData { def apply(): NewMetaData = new NewMetaData }
+object NewMetaData {
+  def apply(): NewMetaData                           = new NewMetaData
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   type RelatedStored = MetaData
-  override def label: String                           = "META_DATA"
+  override def label: String = "META_DATA"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewMetaData.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewMetaData.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var hash: Option[String]                             = None
   var language: String                                 = "<empty>": String
   var overlays: IndexedSeq[String]                     = ArraySeq.empty
@@ -88,6 +100,16 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
     if (overlays.nonEmpty) interface.insertProperty(this, 42, this.overlays)
     interface.insertProperty(this, 46, Iterator(this.root))
     interface.insertProperty(this, 52, Iterator(this.version))
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewMetaData
+    newInstance.hash = this.hash
+    newInstance.language = this.language
+    newInstance.overlays = this.overlays
+    newInstance.root = this.root
+    newInstance.version = this.version
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =

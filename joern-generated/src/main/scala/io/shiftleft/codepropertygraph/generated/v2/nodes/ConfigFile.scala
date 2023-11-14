@@ -54,10 +54,22 @@ class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ConfigFile]
 }
 
-object NewConfigFile { def apply(): NewConfigFile = new NewConfigFile }
+object NewConfigFile {
+  def apply(): NewConfigFile                         = new NewConfigFile
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   type RelatedStored = ConfigFile
-  override def label: String            = "CONFIG_FILE"
+  override def label: String = "CONFIG_FILE"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewConfigFile.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewConfigFile.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var content: String                   = "<empty>": String
   var name: String                      = "<empty>": String
   def content(value: String): this.type = { this.content = value; this }
@@ -65,6 +77,13 @@ class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 14, Iterator(this.content))
     interface.insertProperty(this, 39, Iterator(this.name))
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewConfigFile
+    newInstance.content = this.content
+    newInstance.name = this.name
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =

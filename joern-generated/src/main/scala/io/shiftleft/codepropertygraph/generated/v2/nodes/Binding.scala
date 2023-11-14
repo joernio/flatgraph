@@ -59,10 +59,22 @@ class Binding(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Binding]
 }
 
-object NewBinding { def apply(): NewBinding = new NewBinding }
+object NewBinding {
+  def apply(): NewBinding                            = new NewBinding
+  private val outNeighbors: Map[String, Set[String]] = Map("REF" -> Set("METHOD"))
+  private val inNeighbors: Map[String, Set[String]]  = Map("BINDS" -> Set("TYPE_DECL"))
+}
 class NewBinding extends NewNode(5.toShort) with BindingBase {
   type RelatedStored = Binding
-  override def label: String                   = "BINDING"
+  override def label: String = "BINDING"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewBinding.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewBinding.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var methodFullName: String                   = "<empty>": String
   var name: String                             = "<empty>": String
   var signature: String                        = "": String
@@ -73,6 +85,14 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
     interface.insertProperty(this, 36, Iterator(this.methodFullName))
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 47, Iterator(this.signature))
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewBinding
+    newInstance.methodFullName = this.methodFullName
+    newInstance.name = this.name
+    newInstance.signature = this.signature
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =

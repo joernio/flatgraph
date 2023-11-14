@@ -102,10 +102,22 @@ class Location(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Location]
 }
 
-object NewLocation { def apply(): NewLocation = new NewLocation }
+object NewLocation {
+  def apply(): NewLocation                           = new NewLocation
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewLocation extends NewNode(23.toShort) with LocationBase {
   type RelatedStored = Location
-  override def label: String                       = "LOCATION"
+  override def label: String = "LOCATION"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewLocation.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewLocation.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var className: String                            = "<empty>": String
   var classShortName: String                       = "<empty>": String
   var filename: String                             = "<empty>": String
@@ -139,6 +151,21 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
     interface.insertProperty(this, 43, Iterator(this.packageName))
     interface.insertProperty(this, 48, Iterator(this.symbol))
     if (node.nonEmpty) interface.insertProperty(this, 53, this.node)
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewLocation
+    newInstance.className = this.className
+    newInstance.classShortName = this.classShortName
+    newInstance.filename = this.filename
+    newInstance.lineNumber = this.lineNumber
+    newInstance.methodFullName = this.methodFullName
+    newInstance.methodShortName = this.methodShortName
+    newInstance.nodeLabel = this.nodeLabel
+    newInstance.packageName = this.packageName
+    newInstance.symbol = this.symbol
+    newInstance.node = this.node
+    newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =
