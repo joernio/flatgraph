@@ -155,6 +155,12 @@ class DomainClassesGenerator(schema: Schema) {
         val mixinsNew =
           List("NewNode", s"${baseType.className}Base") ++ baseType.extendz.map(_.className + "New") ++ baseType.markerTraits.map(_.name)
         val newProperties = newPropsAtNodeList(baseType)
+        val propertyDefaults = newProperties
+          .collect {
+            case p if p.hasDefault =>
+              s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
+          }
+          .mkString("\n")
         val mixinsEMT =
           (List("AnyRef") ++ newExtendz.map { p => s"${p.className}EMT" } ++ newProperties.map { p => s"Has${p.className}EMT" })
             .mkString(" with ")
@@ -196,6 +202,12 @@ class DomainClassesGenerator(schema: Schema) {
             .map(_.name)
             .mkString(", ")}
            |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}EMT]
+           |
+           |object ${baseType.className} {
+           |  object PropertyDefaults {
+           |    $propertyDefaults
+           |  }
+           |}
            |
            |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
            |  type RelatedStored <:  ${baseType.className}
