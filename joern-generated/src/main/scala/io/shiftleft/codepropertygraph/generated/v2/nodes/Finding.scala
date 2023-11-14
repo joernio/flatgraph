@@ -51,10 +51,22 @@ class Finding(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Finding]
 }
 
-object NewFinding { def apply(): NewFinding = new NewFinding }
+object NewFinding {
+  def apply(): NewFinding                            = new NewFinding
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewFinding extends NewNode(15.toShort) with FindingBase {
   type RelatedStored = Finding
-  override def label: String                                          = "FINDING"
+  override def label: String = "FINDING"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewFinding.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewFinding.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var evidence: IndexedSeq[AbstractNode]                              = ArraySeq.empty
   var keyValuePairs: IndexedSeq[KeyValuePairBase]                     = ArraySeq.empty
   def evidence(value: IterableOnce[AbstractNode]): this.type          = { this.evidence = value.iterator.to(ArraySeq); this }

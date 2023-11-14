@@ -59,10 +59,42 @@ class Type(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Type]
 }
 
-object NewType { def apply(): NewType = new NewType }
+object NewType {
+  def apply(): NewType                               = new NewType
+  private val outNeighbors: Map[String, Set[String]] = Map("AST" -> Set("TYPE_ARGUMENT"), "REF" -> Set("TYPE_DECL"))
+  private val inNeighbors: Map[String, Set[String]] = Map(
+    "ALIAS_OF" -> Set("TYPE_DECL"),
+    "EVAL_TYPE" -> Set(
+      "ARRAY_INITIALIZER",
+      "BLOCK",
+      "CALL",
+      "CONTROL_STRUCTURE",
+      "IDENTIFIER",
+      "LITERAL",
+      "LOCAL",
+      "MEMBER",
+      "METHOD_PARAMETER_IN",
+      "METHOD_PARAMETER_OUT",
+      "METHOD_REF",
+      "METHOD_RETURN",
+      "TYPE_REF",
+      "UNKNOWN"
+    ),
+    "INHERITS_FROM" -> Set("TYPE_DECL"),
+    "REF"           -> Set("TYPE_ARGUMENT")
+  )
+}
 class NewType extends NewNode(38.toShort) with TypeBase {
   type RelatedStored = Type
-  override def label: String                     = "TYPE"
+  override def label: String = "TYPE"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewType.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewType.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var fullName: String                           = "<empty>": String
   var name: String                               = "<empty>": String
   var typeDeclFullName: String                   = "<empty>": String

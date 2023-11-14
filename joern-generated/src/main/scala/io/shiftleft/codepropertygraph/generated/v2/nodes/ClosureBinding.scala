@@ -57,10 +57,22 @@ class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ClosureBinding]
 }
 
-object NewClosureBinding { def apply(): NewClosureBinding = new NewClosureBinding }
+object NewClosureBinding {
+  def apply(): NewClosureBinding                     = new NewClosureBinding
+  private val outNeighbors: Map[String, Set[String]] = Map("REF" -> Set("LOCAL", "METHOD_PARAMETER_IN"))
+  private val inNeighbors: Map[String, Set[String]]  = Map("CAPTURE" -> Set("METHOD_REF", "TYPE_REF"), "CAPTURED_BY" -> Set("LOCAL"))
+}
 class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
   type RelatedStored = ClosureBinding
-  override def label: String                                = "CLOSURE_BINDING"
+  override def label: String = "CLOSURE_BINDING"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewClosureBinding.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewClosureBinding.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var closureBindingId: Option[String]                      = None
   var closureOriginalName: Option[String]                   = None
   var evaluationStrategy: String                            = "<empty>": String

@@ -51,10 +51,22 @@ class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TagNodePair]
 }
 
-object NewTagNodePair { def apply(): NewTagNodePair = new NewTagNodePair }
+object NewTagNodePair {
+  def apply(): NewTagNodePair                        = new NewTagNodePair
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
   type RelatedStored = TagNodePair
-  override def label: String               = "TAG_NODE_PAIR"
+  override def label: String = "TAG_NODE_PAIR"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewTagNodePair.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewTagNodePair.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var node: AbstractNode                   = null
   var tag: TagBase                         = null
   def node(value: AbstractNode): this.type = { this.node = value; this }

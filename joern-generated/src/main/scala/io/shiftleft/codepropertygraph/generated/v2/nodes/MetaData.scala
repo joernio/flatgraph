@@ -67,10 +67,22 @@ class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MetaData]
 }
 
-object NewMetaData { def apply(): NewMetaData = new NewMetaData }
+object NewMetaData {
+  def apply(): NewMetaData                           = new NewMetaData
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
 class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   type RelatedStored = MetaData
-  override def label: String                           = "META_DATA"
+  override def label: String = "META_DATA"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewMetaData.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewMetaData.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var hash: Option[String]                             = None
   var language: String                                 = "<empty>": String
   var overlays: IndexedSeq[String]                     = ArraySeq.empty

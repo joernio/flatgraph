@@ -58,10 +58,22 @@ class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Dependency]
 }
 
-object NewDependency { def apply(): NewDependency = new NewDependency }
+object NewDependency {
+  def apply(): NewDependency                         = new NewDependency
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map("IMPORTS" -> Set("IMPORT"))
+}
 class NewDependency extends NewNode(12.toShort) with DependencyBase {
   type RelatedStored = Dependency
-  override def label: String                              = "DEPENDENCY"
+  override def label: String = "DEPENDENCY"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewDependency.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewDependency.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
   var dependencyGroupId: Option[String]                   = None
   var name: String                                        = "<empty>": String
   var version: String                                     = "<empty>": String
