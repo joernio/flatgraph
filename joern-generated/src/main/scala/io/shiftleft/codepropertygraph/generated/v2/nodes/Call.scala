@@ -1407,6 +1407,24 @@ class NewCall extends NewNode(7.toShort) with CallBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewCall
+    newInstance.argumentIndex = this.argumentIndex
+    newInstance.argumentName = this.argumentName
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.dispatchType = this.dispatchType
+    newInstance.dynamicTypeHintFullName = this.dynamicTypeHintFullName
+    newInstance.lineNumber = this.lineNumber
+    newInstance.methodFullName = this.methodFullName
+    newInstance.name = this.name
+    newInstance.order = this.order
+    newInstance.possibleTypes = this.possibleTypes
+    newInstance.signature = this.signature
+    newInstance.typeFullName = this.typeFullName
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0  => "argumentIndex"

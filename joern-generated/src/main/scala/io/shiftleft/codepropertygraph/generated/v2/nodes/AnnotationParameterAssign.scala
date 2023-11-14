@@ -1327,6 +1327,15 @@ class NewAnnotationParameterAssign extends NewNode(3.toShort) with AnnotationPar
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewAnnotationParameterAssign
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.lineNumber = this.lineNumber
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "code"

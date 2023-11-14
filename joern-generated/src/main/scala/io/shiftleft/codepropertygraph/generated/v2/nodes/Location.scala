@@ -153,6 +153,21 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
     if (node.nonEmpty) interface.insertProperty(this, 53, this.node)
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewLocation
+    newInstance.className = this.className
+    newInstance.classShortName = this.classShortName
+    newInstance.filename = this.filename
+    newInstance.lineNumber = this.lineNumber
+    newInstance.methodFullName = this.methodFullName
+    newInstance.methodShortName = this.methodShortName
+    newInstance.nodeLabel = this.nodeLabel
+    newInstance.packageName = this.packageName
+    newInstance.symbol = this.symbol
+    newInstance.node = this.node
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "className"

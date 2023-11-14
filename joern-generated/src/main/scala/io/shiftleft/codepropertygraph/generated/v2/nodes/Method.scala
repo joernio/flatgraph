@@ -1420,6 +1420,25 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewMethod
+    newInstance.astParentFullName = this.astParentFullName
+    newInstance.astParentType = this.astParentType
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.columnNumberEnd = this.columnNumberEnd
+    newInstance.filename = this.filename
+    newInstance.fullName = this.fullName
+    newInstance.hash = this.hash
+    newInstance.isExternal = this.isExternal
+    newInstance.lineNumber = this.lineNumber
+    newInstance.lineNumberEnd = this.lineNumberEnd
+    newInstance.name = this.name
+    newInstance.order = this.order
+    newInstance.signature = this.signature
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0  => "astParentFullName"

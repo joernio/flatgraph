@@ -133,6 +133,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def storedRef_=(stored: Option[odb2.GNode]):Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
          |  def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean
          |  def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean
+         |  def copy: this.type
          |}
          |""".stripMargin
 
@@ -412,6 +413,12 @@ class DomainClassesGenerator(schema: Schema) {
         edgeNeighborToMap(baseTypeOutEdges ++ outEdges0)
       }
 
+      val copyFieldsImpl = productElements
+        .map { memberName =>
+          s"newInstance.$memberName = this.$memberName"
+        }
+        .mkString("\n")
+
       val newNode =
         s"""object New${nodeType.className} {
            |  def apply(): New${nodeType.className} = new New${nodeType.className}
@@ -432,6 +439,12 @@ class DomainClassesGenerator(schema: Schema) {
            |  ${newNodeProps.sorted.mkString("\n")}
            |  ${newNodeFluent.sorted.mkString("\n")}
            |  ${flattenItems.mkString("override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {\n", "\n", "\n}")}
+           |
+           |  override def copy: this.type = {
+           |    val newInstance = new New${nodeType.className}
+           |    $copyFieldsImpl
+           |    newInstance.asInstanceOf[this.type]
+           |  }
            |
            |  override def productElementName(n: Int): String =
            |    n match {

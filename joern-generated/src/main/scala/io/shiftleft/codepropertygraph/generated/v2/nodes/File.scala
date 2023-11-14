@@ -1343,6 +1343,17 @@ class NewFile extends NewNode(14.toShort) with FileBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewFile
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.hash = this.hash
+    newInstance.lineNumber = this.lineNumber
+    newInstance.name = this.name
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "code"

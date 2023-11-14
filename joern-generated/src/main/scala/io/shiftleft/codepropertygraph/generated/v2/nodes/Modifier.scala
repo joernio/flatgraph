@@ -1335,6 +1335,16 @@ class NewModifier extends NewNode(31.toShort) with ModifierBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewModifier
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.lineNumber = this.lineNumber
+    newInstance.modifierType = this.modifierType
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "code"

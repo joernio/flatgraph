@@ -79,6 +79,13 @@ class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
     interface.insertProperty(this, 39, Iterator(this.name))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewConfigFile
+    newInstance.content = this.content
+    newInstance.name = this.name
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "content"

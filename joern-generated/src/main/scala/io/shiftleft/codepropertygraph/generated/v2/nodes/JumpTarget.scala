@@ -1351,6 +1351,18 @@ class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewJumpTarget
+    newInstance.argumentIndex = this.argumentIndex
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.lineNumber = this.lineNumber
+    newInstance.name = this.name
+    newInstance.order = this.order
+    newInstance.parserTypeName = this.parserTypeName
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "argumentIndex"

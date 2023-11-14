@@ -1343,6 +1343,17 @@ class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewArrayInitializer
+    newInstance.argumentIndex = this.argumentIndex
+    newInstance.argumentName = this.argumentName
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.lineNumber = this.lineNumber
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "argumentIndex"

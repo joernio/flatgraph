@@ -1365,6 +1365,19 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
     interface.insertProperty(this, 50, Iterator(this.typeFullName))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewMember
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.dynamicTypeHintFullName = this.dynamicTypeHintFullName
+    newInstance.lineNumber = this.lineNumber
+    newInstance.name = this.name
+    newInstance.order = this.order
+    newInstance.possibleTypes = this.possibleTypes
+    newInstance.typeFullName = this.typeFullName
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "code"

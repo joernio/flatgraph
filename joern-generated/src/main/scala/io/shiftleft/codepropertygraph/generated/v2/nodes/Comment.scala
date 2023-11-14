@@ -1335,6 +1335,16 @@ class NewComment extends NewNode(9.toShort) with CommentBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewComment
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.filename = this.filename
+    newInstance.lineNumber = this.lineNumber
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "code"

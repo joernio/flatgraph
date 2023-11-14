@@ -1403,6 +1403,23 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewTypeDecl
+    newInstance.aliasTypeFullName = this.aliasTypeFullName
+    newInstance.astParentFullName = this.astParentFullName
+    newInstance.astParentType = this.astParentType
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.filename = this.filename
+    newInstance.fullName = this.fullName
+    newInstance.inheritsFromTypeFullName = this.inheritsFromTypeFullName
+    newInstance.isExternal = this.isExternal
+    newInstance.lineNumber = this.lineNumber
+    newInstance.name = this.name
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0  => "aliasTypeFullName"

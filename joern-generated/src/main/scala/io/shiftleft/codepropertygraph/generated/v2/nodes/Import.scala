@@ -1374,6 +1374,20 @@ class NewImport extends NewNode(17.toShort) with ImportBase {
     interface.insertProperty(this, 41, Iterator(this.order))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewImport
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.explicitAs = this.explicitAs
+    newInstance.importedAs = this.importedAs
+    newInstance.importedEntity = this.importedEntity
+    newInstance.isExplicit = this.isExplicit
+    newInstance.isWildcard = this.isWildcard
+    newInstance.lineNumber = this.lineNumber
+    newInstance.order = this.order
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "code"

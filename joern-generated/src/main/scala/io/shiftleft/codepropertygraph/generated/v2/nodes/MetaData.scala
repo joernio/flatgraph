@@ -102,6 +102,16 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
     interface.insertProperty(this, 52, Iterator(this.version))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewMetaData
+    newInstance.hash = this.hash
+    newInstance.language = this.language
+    newInstance.overlays = this.overlays
+    newInstance.root = this.root
+    newInstance.version = this.version
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "hash"

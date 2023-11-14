@@ -87,6 +87,14 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
     interface.insertProperty(this, 47, Iterator(this.signature))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewBinding
+    newInstance.methodFullName = this.methodFullName
+    newInstance.name = this.name
+    newInstance.signature = this.signature
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "methodFullName"

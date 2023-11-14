@@ -1359,6 +1359,19 @@ class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase 
     interface.insertProperty(this, 44, Iterator(this.parserTypeName))
   }
 
+  override def copy: this.type = {
+    val newInstance = new NewControlStructure
+    newInstance.argumentIndex = this.argumentIndex
+    newInstance.argumentName = this.argumentName
+    newInstance.code = this.code
+    newInstance.columnNumber = this.columnNumber
+    newInstance.controlStructureType = this.controlStructureType
+    newInstance.lineNumber = this.lineNumber
+    newInstance.order = this.order
+    newInstance.parserTypeName = this.parserTypeName
+    newInstance.asInstanceOf[this.type]
+  }
+
   override def productElementName(n: Int): String =
     n match {
       case 0 => "argumentIndex"
