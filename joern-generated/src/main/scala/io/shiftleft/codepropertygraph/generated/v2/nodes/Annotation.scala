@@ -35,6 +35,13 @@ object Annotation {
     val Name          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val Order         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
   }
+  object PropertyDefaults {
+    val ArgumentIndex = -1: Int
+    val Code          = "<empty>"
+    val FullName      = "<empty>"
+    val Name          = "<empty>"
+    val Order         = -1: Int
+  }
 }
 
 class Annotation(graph_4762: odb2.Graph, seq_4762: Int)

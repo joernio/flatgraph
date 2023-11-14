@@ -23,6 +23,10 @@ object ConfigFile {
     val Content = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CONTENT
     val Name    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
   }
+  object PropertyDefaults {
+    val Content = "<empty>"
+    val Name    = "<empty>"
+  }
 }
 
 class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)

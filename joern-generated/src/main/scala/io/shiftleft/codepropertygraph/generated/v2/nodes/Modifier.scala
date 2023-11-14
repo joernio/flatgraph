@@ -29,6 +29,11 @@ object Modifier {
     val ModifierType = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.MODIFIER_TYPE
     val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
   }
+  object PropertyDefaults {
+    val Code         = "<empty>"
+    val ModifierType = "<empty>"
+    val Order        = -1: Int
+  }
 }
 
 class Modifier(graph_4762: odb2.Graph, seq_4762: Int)

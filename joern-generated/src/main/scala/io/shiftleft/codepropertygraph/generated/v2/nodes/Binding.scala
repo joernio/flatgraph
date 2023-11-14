@@ -25,6 +25,11 @@ object Binding {
     val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val Signature      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
   }
+  object PropertyDefaults {
+    val MethodFullName = "<empty>"
+    val Name           = "<empty>"
+    val Signature      = ""
+  }
 }
 
 class Binding(graph_4762: odb2.Graph, seq_4762: Int)

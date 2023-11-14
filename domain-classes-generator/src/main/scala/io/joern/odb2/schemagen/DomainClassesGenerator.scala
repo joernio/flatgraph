@@ -369,6 +369,13 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
 
+      val propertyDefaults = nodeType.properties
+        .collect {
+          case p if p.hasDefault =>
+            s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
+        }
+        .mkString("\n")
+
       val newNode =
         s"""object New${nodeType.className}{def apply(): New${nodeType.className} = new New${nodeType.className}}
              |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
@@ -421,6 +428,9 @@ class DomainClassesGenerator(schema: Schema) {
              |  val Label = "${nodeType.name}"
              |  object PropertyKinds {
              |    $propertyKinds
+             |  }
+             |  object PropertyDefaults {
+             |    $propertyDefaults
              |  }
              |}
              |

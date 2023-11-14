@@ -25,6 +25,9 @@ object ClosureBinding {
     val ClosureOriginalName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLOSURE_ORIGINAL_NAME
     val EvaluationStrategy  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EVALUATION_STRATEGY
   }
+  object PropertyDefaults {
+    val EvaluationStrategy = "<empty>"
+  }
 }
 
 class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)

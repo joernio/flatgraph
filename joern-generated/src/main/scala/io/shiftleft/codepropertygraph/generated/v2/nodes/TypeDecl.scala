@@ -54,6 +54,16 @@ object TypeDecl {
     val Name                     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val Order                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
   }
+  object PropertyDefaults {
+    val AstParentFullName = "<empty>"
+    val AstParentType     = "<empty>"
+    val Code              = "<empty>"
+    val Filename          = "<empty>"
+    val FullName          = "<empty>"
+    val IsExternal        = false
+    val Name              = "<empty>"
+    val Order             = -1: Int
+  }
 }
 
 class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)

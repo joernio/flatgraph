@@ -23,6 +23,10 @@ object Tag {
     val Name  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
     val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
   }
+  object PropertyDefaults {
+    val Name  = "<empty>"
+    val Value = ""
+  }
 }
 
 class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with TagBase with StaticType[TagEMT] {

@@ -31,6 +31,12 @@ object JumpLabel {
     val Order          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
     val ParserTypeName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PARSER_TYPE_NAME
   }
+  object PropertyDefaults {
+    val Code           = "<empty>"
+    val Name           = "<empty>"
+    val Order          = -1: Int
+    val ParserTypeName = "<empty>"
+  }
 }
 
 class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
