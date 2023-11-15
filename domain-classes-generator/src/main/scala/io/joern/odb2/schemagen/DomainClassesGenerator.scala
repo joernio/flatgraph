@@ -376,11 +376,11 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
 
-      val propertyKinds = nodeType.properties
+      val propertyNames = nodeType.properties
         .map(_.name)
         .map { name =>
           val camelCase = Helpers.camelCaseCaps(name)
-          s"""val $camelCase = $basePackage.PropertyKinds.$name"""
+          s"""val $camelCase = $basePackage.PropertyNames.$name"""
         }
         .mkString("\n")
 
@@ -487,8 +487,8 @@ class DomainClassesGenerator(schema: Schema) {
              |
              |object ${nodeType.className} {
              |  val Label = "${nodeType.name}"
-             |  object PropertyKinds {
-             |    $propertyKinds
+             |  object PropertyNames {
+             |    $propertyNames
              |  }
              |  object PropertyDefaults {
              |    $propertyDefaults
