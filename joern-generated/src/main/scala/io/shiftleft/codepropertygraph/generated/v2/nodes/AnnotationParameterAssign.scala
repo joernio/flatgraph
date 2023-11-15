@@ -21,11 +21,11 @@ trait AnnotationParameterAssignBase extends AbstractNode with AstNodeBase with S
 
 object AnnotationParameterAssign {
   val Label = "ANNOTATION_PARAMETER_ASSIGN"
-  object PropertyKinds {
-    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  object PropertyNames {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
   }
   object PropertyDefaults {
     val Code  = "<empty>"

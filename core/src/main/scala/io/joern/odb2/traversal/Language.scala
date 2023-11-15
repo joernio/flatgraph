@@ -395,12 +395,12 @@ trait Language extends GNodeTraversal {
       Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
     def propertyOption[@specialized T](name: String)(implicit evidence: ClassTag[T]): Option[T] = {
-      val propertyKind = node.graph.schema.getPropertyIdByLabel(name)
+      val propertyKind = node.graph.schema.getPropertyKindByName(name)
       Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKind, node.seq())
     }
 
     private def edgeKind(edgeLabel: String): Int =
-      node.graph.schema.getEdgeIdByLabel(edgeLabel)
+      node.graph.schema.getEdgeKindByLabel(edgeLabel)
   }
 
   extension (iterator: Iterator[GNode]) {

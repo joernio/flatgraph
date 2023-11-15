@@ -40,19 +40,19 @@ trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDec
 
 object TypeDecl {
   val Label = "TYPE_DECL"
-  object PropertyKinds {
-    val AliasTypeFullName        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ALIAS_TYPE_FULL_NAME
-    val AstParentFullName        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_FULL_NAME
-    val AstParentType            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_TYPE
-    val Code                     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val Filename                 = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
-    val FullName                 = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
-    val InheritsFromTypeFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.INHERITS_FROM_TYPE_FULL_NAME
-    val IsExternal               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_EXTERNAL
-    val LineNumber               = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Name                     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val Order                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  object PropertyNames {
+    val AliasTypeFullName        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ALIAS_TYPE_FULL_NAME
+    val AstParentFullName        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.AST_PARENT_FULL_NAME
+    val AstParentType            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.AST_PARENT_TYPE
+    val Code                     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber             = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val Filename                 = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FILENAME
+    val FullName                 = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FULL_NAME
+    val InheritsFromTypeFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.INHERITS_FROM_TYPE_FULL_NAME
+    val IsExternal               = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.IS_EXTERNAL
+    val LineNumber               = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Name                     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Order                    = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
   }
   object PropertyDefaults {
     val AstParentFullName = "<empty>"

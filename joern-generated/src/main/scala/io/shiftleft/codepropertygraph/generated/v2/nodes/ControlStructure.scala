@@ -25,15 +25,15 @@ trait ControlStructureBase extends AbstractNode with ExpressionBase with StaticT
 
 object ControlStructure {
   val Label = "CONTROL_STRUCTURE"
-  object PropertyKinds {
-    val ArgumentIndex        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
-    val ArgumentName         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
-    val Code                 = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val ControlStructureType = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CONTROL_STRUCTURE_TYPE
-    val LineNumber           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Order                = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
-    val ParserTypeName       = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PARSER_TYPE_NAME
+  object PropertyNames {
+    val ArgumentIndex        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ARGUMENT_INDEX
+    val ArgumentName         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ARGUMENT_NAME
+    val Code                 = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val ControlStructureType = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CONTROL_STRUCTURE_TYPE
+    val LineNumber           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Order                = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
+    val ParserTypeName       = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.PARSER_TYPE_NAME
   }
   object PropertyDefaults {
     val ArgumentIndex        = -1: Int

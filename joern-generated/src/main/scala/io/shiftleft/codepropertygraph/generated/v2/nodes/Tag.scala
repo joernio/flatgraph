@@ -19,9 +19,9 @@ trait TagBase extends AbstractNode with StaticType[TagEMT] {
 
 object Tag {
   val Label = "TAG"
-  object PropertyKinds {
-    val Name  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.VALUE
+  object PropertyNames {
+    val Name  = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Value = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.VALUE
   }
   object PropertyDefaults {
     val Name  = "<empty>"

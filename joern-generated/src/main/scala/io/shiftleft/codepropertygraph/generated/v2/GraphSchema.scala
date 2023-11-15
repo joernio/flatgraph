@@ -294,9 +294,9 @@ object GraphSchema extends odb2.Schema {
   override def getNumberOfNodeKinds: Int                          = 44
   override def getNumberOfEdgeKinds: Int                          = 24
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
-  override def getNodeIdByLabel(label: String): Int               = nodeKindByLabel.getOrElse(label, -1)
+  override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, -1)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-  override def getEdgeIdByLabel(label: String): Int               = edgeIdByLabel.getOrElse(label, -1)
+  override def getEdgeKindByLabel(label: String): Int             = edgeIdByLabel.getOrElse(label, -1)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
     if (propertyKind < 53) normalNodePropertyNames(propertyKind)
     else if (propertyKind == 53 && nodeKind == 15) "evidence"      /*on node FINDING*/
@@ -306,7 +306,7 @@ object GraphSchema extends odb2.Schema {
     else if (propertyKind == 54 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
     else null
 
-  override def getPropertyIdByLabel(label: String): Int                                 = nodePropertyByLabel.getOrElse(label, -1)
+  override def getPropertyKindByName(label: String): Int                                = nodePropertyByLabel.getOrElse(label, -1)
   override def getNumberOfProperties: Int                                               = 55
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =

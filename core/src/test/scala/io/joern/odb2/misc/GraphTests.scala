@@ -20,17 +20,17 @@ class GraphTests extends AnyWordSpec with Matchers {
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
         |""".stripMargin
     // with some edges
-    val diff0 = new DiffGraphBuilder
+    val diff0 = new DiffGraphBuilder(schema)
     val V0_0  = new GenericDNode(0)
     val V0_1  = new GenericDNode(0)
     val V0_2  = new GenericDNode(0)
     val V0_3  = new GenericDNode(0)
     diff0
-      .addEdge(V0_0, V0_1, 0)
-      .addEdge(V0_1, V0_2, 0)
-      .addEdge(V0_2, V0_3, 0)
-      .addEdge(V0_3, V0_0, 0)
-      .addEdge(V0_1, V0_0, 0)
+      ._addEdge(V0_0, V0_1, 0)
+      ._addEdge(V0_1, V0_2, 0)
+      ._addEdge(V0_2, V0_3, 0)
+      ._addEdge(V0_3, V0_0, 0)
+      ._addEdge(V0_1, V0_0, 0)
     DiffGraphApplier.applyDiff(g, diff0)
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
@@ -47,8 +47,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     g.neighbors(0).asInstanceOf[Array[Int]].length shouldBe 5
 
     // modify
-    val diff2 = new DiffGraphBuilder
-    diff2.addEdge(V0_2, V0_3, 0)
+    val diff2 = new DiffGraphBuilder(schema)
+    diff2._addEdge(V0_2, V0_3, 0)
     DiffGraphApplier.applyDiff(g, diff2)
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
@@ -65,7 +65,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // add a node. Don't resize edges array
     val V0_4 = new GenericDNode(0)
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_4))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_4))
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 5), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
@@ -81,7 +81,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g.neighbors(0).asInstanceOf[Array[Int]].length shouldBe 5
 
     // add an interior edge. Check that adding edges in the middle and at the end of undersized edge arrays works
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addEdge(V0_1, V0_4, 0))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._addEdge(V0_1, V0_4, 0))
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 5), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
@@ -117,14 +117,14 @@ class GraphTests extends AnyWordSpec with Matchers {
     val V1_1 = new GenericDNode(1)
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .addNode(V0_0)
         .addNode(V0_1)
         .addNode(V1_0)
         .addNode(V1_1)
-        .addEdge(V0_0, V0_0, 0)
-        .addEdge(V0_1, V1_0, 0)
-        .addEdge(V1_1, V0_0, 1)
+        ._addEdge(V0_0, V0_0, 0)
+        ._addEdge(V0_1, V1_0, 0)
+        ._addEdge(V1_1, V0_0, 1)
     )
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), (1: 2), (2: 0), total 4
@@ -157,18 +157,18 @@ class GraphTests extends AnyWordSpec with Matchers {
     val V0_3 = new GenericDNode(0)
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .addNode(V0_0)
         .addNode(V0_1)
         .addNode(V0_2)
         .addNode(V0_3)
-        .addEdge(V0_0, V0_2, 0)
-        .addEdge(V0_0, V0_1, 0)
-        .addEdge(V0_3, V0_1, 0)
-        .addEdge(V0_0, V0_3, 0)
-        .addEdge(V0_0, V0_2, 0)
-        .addEdge(V0_3, V0_2, 0)
-        .addEdge(V0_0, V0_1, 0)
+        ._addEdge(V0_0, V0_2, 0)
+        ._addEdge(V0_0, V0_1, 0)
+        ._addEdge(V0_3, V0_1, 0)
+        ._addEdge(V0_0, V0_3, 0)
+        ._addEdge(V0_0, V0_2, 0)
+        ._addEdge(V0_3, V0_2, 0)
+        ._addEdge(V0_0, V0_1, 0)
     )
     g
   }
@@ -181,7 +181,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val V0_3 = new GenericDNode(0)
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .addNode(V0_0)
         .addNode(V0_1)
         .addNode(V0_2)
@@ -202,17 +202,17 @@ class GraphTests extends AnyWordSpec with Matchers {
       val V0_1 = new GenericDNode(0)
       val V0_2 = new GenericDNode(0)
       val V0_3 = new GenericDNode(0)
-      val diff = (new DiffGraphBuilder)
+      val diff = new DiffGraphBuilder(schema)
         .addNode(V0_0)
         .addNode(V0_1)
         .addNode(V0_2)
         .addNode(V0_3)
 
       for (i <- perm) i match {
-        case 0 => diff.addEdge(V0_0, V0_1, 0)
-        case 1 => diff.addEdge(V0_0, V0_2, 0)
-        case 2 => diff.addEdge(V0_3, V0_2, 0)
-        case 3 => diff.addEdge(V0_3, V0_1, 0)
+        case 0 => diff._addEdge(V0_0, V0_1, 0)
+        case 1 => diff._addEdge(V0_0, V0_2, 0)
+        case 2 => diff._addEdge(V0_3, V0_2, 0)
+        case 3 => diff._addEdge(V0_3, V0_1, 0)
       }
       DiffGraphApplier.applyDiff(g, diff)
       g
@@ -297,7 +297,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |""".stripMargin
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(1))
     )
     DebugDump.debugDump(g) shouldBe expectation
@@ -306,7 +306,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g = mkGraph()
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(0))
     )
     DebugDump.debugDump(g) shouldBe expectation
@@ -316,7 +316,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g = mkGraph()
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(0))
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(1))
     )
@@ -348,7 +348,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(4))
     )
     DebugDump.debugDump(g) shouldBe expectation
@@ -356,7 +356,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g = mkGraph()
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(2))
     )
     DebugDump.debugDump(g) shouldBe expectation
@@ -386,7 +386,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(4))
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(2), 0).toList(1))
     )
@@ -407,7 +407,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeNode((g.nodesArray(0)(0)))
     )
     DebugDump.debugDump(g) shouldBe
@@ -421,7 +421,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g = mkGraph()
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeNode((g.nodesArray(0)(1)))
     )
     DebugDump.debugDump(g) shouldBe
@@ -438,7 +438,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g = mkGraph()
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeNode((g.nodesArray(0)(2)))
         .removeNode((g.nodesArray(0)(3)))
     )
@@ -459,16 +459,16 @@ class GraphTests extends AnyWordSpec with Matchers {
     val V0_1   = new GenericDNode(0)
     val V0_2   = new GenericDNode(0)
     val V0_3   = new GenericDNode(0)
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0).addNode(V0_1).addNode(V0_2).addNode(V0_3))
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addEdge(V0_0, V0_1, 0))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0).addNode(V0_1).addNode(V0_2).addNode(V0_3))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._addEdge(V0_0, V0_1, 0))
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
-        .addEdge(V0_0, V0_1, 0, "A")
-        .addEdge(V0_1, V0_2, 0, "B")
-        .addEdge(V0_2, V0_3, 0, "C")
-        .addEdge(V0_3, V0_0, 0, "D")
-        .addEdge(V0_1, V0_0, 0, "E")
+      new DiffGraphBuilder(schema)
+        ._addEdge(V0_0, V0_1, 0, "A")
+        ._addEdge(V0_1, V0_2, 0, "B")
+        ._addEdge(V0_2, V0_3, 0, "C")
+        ._addEdge(V0_3, V0_0, 0, "D")
+        ._addEdge(V0_1, V0_0, 0, "E")
     )
 
     DebugDump.debugDump(g) shouldBe
@@ -487,7 +487,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     testSerialization(g)
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(0), "X")
     )
     DebugDump.debugDump(g) shouldBe
@@ -505,7 +505,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(1), DefaultValue)
     )
     DebugDump.debugDump(g) shouldBe
@@ -523,7 +523,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(0))
     )
     DebugDump.debugDump(g) shouldBe
@@ -542,7 +542,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeNode(V0_2.storedRef.get)
     )
     DebugDump.debugDump(g) shouldBe
@@ -564,7 +564,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val g      = new Graph(schema)
 
     g.neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0).addNode(V0_1).addEdge(V0_0, V0_1, 0).addEdge(V0_0, V0_1, 0))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0).addNode(V0_1)._addEdge(V0_0, V0_1, 0)._addEdge(V0_0, V0_1, 0))
     g.neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
@@ -573,7 +573,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_1   [0] <- (-1) V0_0, (-1) V0_0
         |""".stripMargin
 
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), 5.toShort))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), 5.toShort))
     g.neighbors(2).getClass.getName shouldBe "[S"
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
@@ -582,7 +582,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_1   [0] <- (5) V0_0, (-1) V0_0
         |""".stripMargin
 
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addEdge(V0_1.storedRef.get, V0_1, 0, 2.toShort))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._addEdge(V0_1.storedRef.get, V0_1, 0, 2.toShort))
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
@@ -591,7 +591,10 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_1   [0] <- (5) V0_0, (-1) V0_0, (2) V0_1
         |""".stripMargin
 
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), DefaultValue))
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), DefaultValue)
+    )
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
@@ -611,7 +614,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val V0_2 = new GenericDNode(0)
     val V1_0 = new GenericDNode(1)
     val V1_1 = new GenericDNode(1)
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0).addNode(V0_1).addNode(V1_0).addNode(V1_1))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0).addNode(V0_1).addNode(V1_0).addNode(V1_1))
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), (1: 2), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
@@ -619,9 +622,9 @@ class GraphTests extends AnyWordSpec with Matchers {
         |""".stripMargin
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
-        .setNodeProperty(V0_0.storedRef.get, 1, V0_2 :: V0_0 :: Nil)
-        .setNodeProperty(V1_1.storedRef.get, 0, 0.toShort :: 1.toShort :: Nil)
+      new DiffGraphBuilder(schema)
+        ._setNodeProperty(V0_0.storedRef.get, 1, V0_2 :: V0_0 :: Nil)
+        ._setNodeProperty(V1_1.storedRef.get, 0, 0.toShort :: 1.toShort :: Nil)
     )
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
@@ -632,9 +635,9 @@ class GraphTests extends AnyWordSpec with Matchers {
         |""".stripMargin
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
-        .setNodeProperty(V0_2.storedRef.get, 1, V0_2)
-        .setNodeProperty(V1_0.storedRef.get, 0, 0.toShort)
+      new DiffGraphBuilder(schema)
+        ._setNodeProperty(V0_2.storedRef.get, 1, V0_2)
+        ._setNodeProperty(V1_0.storedRef.get, 0, 0.toShort)
     )
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
@@ -648,10 +651,10 @@ class GraphTests extends AnyWordSpec with Matchers {
     testSerialization(g)
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
+      new DiffGraphBuilder(schema)
         .removeNode(V0_2.storedRef.get)
-        .setNodeProperty(V1_0.storedRef.get, 0, null)
-        .setNodeProperty(V0_1.storedRef.get, 1, null :: Nil)
+        ._setNodeProperty(V1_0.storedRef.get, 0, null)
+        ._setNodeProperty(V0_1.storedRef.get, 1, null :: Nil)
     )
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
@@ -693,7 +696,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     V0_1.strings = "c" :: Nil
     val schema = TestSchema.make(2, 0, 2, nodePropertyPrototypes = Array(new Array[GNode](0), new Array[String](0)))
     val g      = new Graph(schema)
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(V0_0))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0))
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 0), total 3
       |Node kind 0. (eid, nEdgesOut, nEdgesIn):
@@ -712,13 +715,13 @@ class GraphTests extends AnyWordSpec with Matchers {
     val v1     = new GenericDNode(0)
     val v2     = new GenericDNode(0)
     val v3     = new GenericDNode(0)
-    DiffGraphApplier.applyDiff(g, (new DiffGraphBuilder).addNode(v0).addNode(v1).addNode(v2).addNode(v3))
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(v0).addNode(v1).addNode(v2).addNode(v3))
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
-        .setNodeProperty(v0.storedRef.get, 0, "p0")
-        .setNodeProperty(v1.storedRef.get, 0, "p1")
-        .setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
+      new DiffGraphBuilder(schema)
+        ._setNodeProperty(v0.storedRef.get, 0, "p0")
+        ._setNodeProperty(v1.storedRef.get, 0, "p1")
+        ._setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
     )
     DebugDump.debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
@@ -734,16 +737,16 @@ class GraphTests extends AnyWordSpec with Matchers {
     Accessors.getWithInverseIndex(g, 0, 0, "p3").toList shouldBe List(v3.storedRef.get)
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
-        .setNodeProperty(v0.storedRef.get, 0, "p0")
-        .setNodeProperty(v1.storedRef.get, 0, "p1")
-        .setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
+      new DiffGraphBuilder(schema)
+        ._setNodeProperty(v0.storedRef.get, 0, "p0")
+        ._setNodeProperty(v1.storedRef.get, 0, "p1")
+        ._setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
     )
     g.inverseIndices.get(0) shouldBe null
     DiffGraphApplier.applyDiff(
       g,
-      (new DiffGraphBuilder)
-        .setNodeProperty(v2.storedRef.get, 0, "p2")
+      new DiffGraphBuilder(schema)
+        ._setNodeProperty(v2.storedRef.get, 0, "p2")
     )
     g.inverseIndices.get(0) shouldBe null
 

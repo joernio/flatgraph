@@ -24,14 +24,14 @@ trait JumpTargetBase extends AbstractNode with CfgNodeBase with StaticType[JumpT
 
 object JumpTarget {
   val Label = "JUMP_TARGET"
-  object PropertyKinds {
-    val ArgumentIndex  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
-    val Code           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val LineNumber     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val Order          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
-    val ParserTypeName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PARSER_TYPE_NAME
+  object PropertyNames {
+    val ArgumentIndex  = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ARGUMENT_INDEX
+    val Code           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val LineNumber     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Order          = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
+    val ParserTypeName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.PARSER_TYPE_NAME
   }
   object PropertyDefaults {
     val ArgumentIndex  = -1: Int

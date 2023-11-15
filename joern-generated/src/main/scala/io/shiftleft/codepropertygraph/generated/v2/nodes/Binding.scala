@@ -20,10 +20,10 @@ trait BindingBase extends AbstractNode with StaticType[BindingEMT] {
 
 object Binding {
   val Label = "BINDING"
-  object PropertyKinds {
-    val MethodFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.METHOD_FULL_NAME
-    val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val Signature      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
+  object PropertyNames {
+    val MethodFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.METHOD_FULL_NAME
+    val Name           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Signature      = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.SIGNATURE
   }
   object PropertyDefaults {
     val MethodFullName = "<empty>"
