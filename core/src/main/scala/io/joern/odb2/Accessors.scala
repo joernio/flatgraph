@@ -126,9 +126,7 @@ object Accessors {
     vals(qty(seq))
   }
 
-  def getNodePropertyOption[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit
-    evidence: ClassTag[T]
-  ): Option[T] = {
+  def getNodePropertyOption[@specialized T: ClassTag](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int): Option[T] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val qty = graph.properties(pos).asInstanceOf[Array[Int]]
     if (qty == null || seq + 1 >= qty.length || qty(seq) == qty(seq + 1)) return None
@@ -137,9 +135,7 @@ object Accessors {
     Some(vals(qty(seq)))
   }
 
-  def getNodePropertyMulti[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int)(implicit
-    evidence: ClassTag[T]
-  ): ISeq[T] = {
+  def getNodePropertyMulti[@specialized T: ClassTag](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int): ISeq[T] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val qty = graph.properties(pos).asInstanceOf[Array[Int]]
     if (qty == null || seq + 1 >= qty.length) return ISeq.empty

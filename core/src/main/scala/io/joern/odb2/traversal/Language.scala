@@ -394,6 +394,11 @@ trait Language extends GNodeTraversal {
     def inE(edgeLabel: String): Iterator[Edge] =
       Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
+    def propertyOption[@specialized T: ClassTag](name: String): Option[T] = {
+      val propertyKind = node.graph.schema.getPropertyIdByLabel(name)
+      Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKind, node.seq())
+    }
+
     private def edgeKind(edgeLabel: String): Int =
       node.graph.schema.getEdgeIdByLabel(edgeLabel)
   }
@@ -417,6 +422,9 @@ trait Language extends GNodeTraversal {
 
     /** lookup the given IN edge(s) */
     def inE(edgeLabel: String): Iterator[Edge] = iterator.flatMap(_.inE(edgeLabel))
+
+    def property[@specialized T: ClassTag](name: String): Iterator[T] =
+      iterator.flatMap(_.propertyOption[T](name))
 
   }
 
