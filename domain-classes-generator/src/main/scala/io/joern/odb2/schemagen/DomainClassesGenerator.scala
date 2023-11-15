@@ -763,9 +763,11 @@ class DomainClassesGenerator(schema: Schema) {
     val domainMain =
       s"""package $basePackage
          |import io.joern.odb2
+         |import io.joern.odb2.DiffGraphBuilder
          |
          |object $domainShortName {
          |  def empty: $domainShortName = new $domainShortName(new odb2.Graph(GraphSchema))
+         |  def newDiffGraphBuilder: DiffGraphBuilder = new DiffGraphBuilder(GraphSchema)
          |}
          |class $domainShortName(val graph: odb2.Graph) {
          |assert(graph.schema == GraphSchema)

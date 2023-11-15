@@ -1,8 +1,10 @@
 package io.shiftleft.codepropertygraph.generated.v2
 import io.joern.odb2
+import io.joern.odb2.DiffGraphBuilder
 
 object Cpg {
-  def empty: Cpg = new Cpg(new odb2.Graph(GraphSchema))
+  def empty: Cpg                            = new Cpg(new odb2.Graph(GraphSchema))
+  def newDiffGraphBuilder: DiffGraphBuilder = new DiffGraphBuilder(GraphSchema)
 }
 class Cpg(val graph: odb2.Graph) {
   assert(graph.schema == GraphSchema)
