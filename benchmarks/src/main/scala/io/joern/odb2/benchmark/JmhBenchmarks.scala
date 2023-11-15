@@ -357,7 +357,7 @@ class Odb2Generated {
   @Benchmark
   def orderSumExplicit(blackhole: Blackhole): Int = {
     var sumOrder = 0
-    val prop     = nodeStart.head.graph.schema.getPropertyKindByLabel("ORDER")
+    val prop     = nodeStart.head.graph.schema.getPropertyKindByName("ORDER")
     for (node <- nodeStart) {
       sumOrder += odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, prop, node.seq(), -1)
     }

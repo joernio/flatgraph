@@ -18,7 +18,7 @@ abstract class Schema {
   def getEdgeKindByLabel(label: String): Int
 
   def getPropertyLabel(nodeKind: Int, propertyKind: Int): String
-  def getPropertyKindByLabel(label: String): Int
+  def getPropertyKindByName(label: String): Int
 
   def getNumberOfProperties: Int
 
@@ -73,7 +73,7 @@ class FreeSchema(
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String         = edgeLabels(edgeKind)
   override def getEdgeKindByLabel(label: String): Int                     = edgeMap.getOrElse(label, -1)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
-  override def getPropertyKindByLabel(label: String): Int                 = propMap.getOrElse(label, -1)
+  override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, -1)
   override def getNumberOfProperties: Int                                 = propertyLabels.length
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =

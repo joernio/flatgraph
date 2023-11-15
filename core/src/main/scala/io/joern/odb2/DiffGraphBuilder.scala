@@ -21,7 +21,7 @@ class DiffGraphBuilder(schema: Schema) {
   }
 
   def setNodeProperty(node: GNode, propertyName: String, property: Any): this.type = {
-    val propertyKind = schema.getPropertyKindByLabel(propertyName)
+    val propertyKind = schema.getPropertyKindByName(propertyName)
     this.buffer.append(new SetNodeProperty(node, propertyKind, property))
     this
   }
