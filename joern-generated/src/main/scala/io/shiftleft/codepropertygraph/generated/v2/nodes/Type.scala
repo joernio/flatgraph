@@ -20,10 +20,10 @@ trait TypeBase extends AbstractNode with StaticType[TypeEMT] {
 
 object Type {
   val Label = "TYPE"
-  object PropertyKinds {
-    val FullName         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
-    val Name             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val TypeDeclFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_DECL_FULL_NAME
+  object PropertyNames {
+    val FullName         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FULL_NAME
+    val Name             = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val TypeDeclFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.TYPE_DECL_FULL_NAME
   }
   object PropertyDefaults {
     val FullName         = "<empty>"

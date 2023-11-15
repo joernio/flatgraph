@@ -24,14 +24,14 @@ trait NamespaceBlockBase extends AbstractNode with AstNodeBase with StaticType[N
 
 object NamespaceBlock {
   val Label = "NAMESPACE_BLOCK"
-  object PropertyKinds {
-    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val Filename     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
-    val FullName     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
-    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
+  object PropertyNames {
+    val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val Filename     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FILENAME
+    val FullName     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FULL_NAME
+    val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
   }
   object PropertyDefaults {
     val Code     = "<empty>"

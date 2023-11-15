@@ -32,15 +32,15 @@ trait MethodReturnBase extends AbstractNode with CfgNodeBase with StaticType[Met
 
 object MethodReturn {
   val Label = "METHOD_RETURN"
-  object PropertyKinds {
-    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DYNAMIC_TYPE_HINT_FULL_NAME
-    val EvaluationStrategy      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.EVALUATION_STRATEGY
-    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
-    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
-    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  object PropertyNames {
+    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.DYNAMIC_TYPE_HINT_FULL_NAME
+    val EvaluationStrategy      = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.EVALUATION_STRATEGY
+    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
+    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.POSSIBLE_TYPES
+    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.TYPE_FULL_NAME
   }
   object PropertyDefaults {
     val Code               = "<empty>"

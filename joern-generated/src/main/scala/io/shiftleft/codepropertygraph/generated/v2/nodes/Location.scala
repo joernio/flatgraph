@@ -37,16 +37,16 @@ trait LocationBase extends AbstractNode with StaticType[LocationEMT] {
 
 object Location {
   val Label = "LOCATION"
-  object PropertyKinds {
-    val ClassName       = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLASS_NAME
-    val ClassShortName  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CLASS_SHORT_NAME
-    val Filename        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
-    val LineNumber      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val MethodFullName  = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.METHOD_FULL_NAME
-    val MethodShortName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.METHOD_SHORT_NAME
-    val NodeLabel       = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NODE_LABEL
-    val PackageName     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.PACKAGE_NAME
-    val Symbol          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SYMBOL
+  object PropertyNames {
+    val ClassName       = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CLASS_NAME
+    val ClassShortName  = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CLASS_SHORT_NAME
+    val Filename        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FILENAME
+    val LineNumber      = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val MethodFullName  = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.METHOD_FULL_NAME
+    val MethodShortName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.METHOD_SHORT_NAME
+    val NodeLabel       = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NODE_LABEL
+    val PackageName     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.PACKAGE_NAME
+    val Symbol          = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.SYMBOL
   }
   object PropertyDefaults {
     val ClassName       = "<empty>"

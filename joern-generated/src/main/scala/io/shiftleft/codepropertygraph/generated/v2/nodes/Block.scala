@@ -27,16 +27,16 @@ trait BlockBase extends AbstractNode with ExpressionBase with StaticType[BlockEM
 
 object Block {
   val Label = "BLOCK"
-  object PropertyKinds {
-    val ArgumentIndex           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_INDEX
-    val ArgumentName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ARGUMENT_NAME
-    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.DYNAMIC_TYPE_HINT_FULL_NAME
-    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
-    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.POSSIBLE_TYPES
-    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.TYPE_FULL_NAME
+  object PropertyNames {
+    val ArgumentIndex           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ARGUMENT_INDEX
+    val ArgumentName            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ARGUMENT_NAME
+    val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.DYNAMIC_TYPE_HINT_FULL_NAME
+    val LineNumber              = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val Order                   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
+    val PossibleTypes           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.POSSIBLE_TYPES
+    val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.TYPE_FULL_NAME
   }
   object PropertyDefaults {
     val ArgumentIndex = -1: Int

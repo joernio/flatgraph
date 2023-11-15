@@ -43,21 +43,21 @@ trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with
 
 object Method {
   val Label = "METHOD"
-  object PropertyKinds {
-    val AstParentFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_FULL_NAME
-    val AstParentType     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.AST_PARENT_TYPE
-    val Code              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.CODE
-    val ColumnNumber      = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER
-    val ColumnNumberEnd   = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.COLUMN_NUMBER_END
-    val Filename          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FILENAME
-    val FullName          = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.FULL_NAME
-    val Hash              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.HASH
-    val IsExternal        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.IS_EXTERNAL
-    val LineNumber        = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER
-    val LineNumberEnd     = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.LINE_NUMBER_END
-    val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.NAME
-    val Order             = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.ORDER
-    val Signature         = io.shiftleft.codepropertygraph.generated.v2.PropertyKinds.SIGNATURE
+  object PropertyNames {
+    val AstParentFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.AST_PARENT_FULL_NAME
+    val AstParentType     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.AST_PARENT_TYPE
+    val Code              = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
+    val ColumnNumber      = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val ColumnNumberEnd   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER_END
+    val Filename          = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FILENAME
+    val FullName          = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.FULL_NAME
+    val Hash              = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.HASH
+    val IsExternal        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.IS_EXTERNAL
+    val LineNumber        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
+    val LineNumberEnd     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER_END
+    val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Order             = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
+    val Signature         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.SIGNATURE
   }
   object PropertyDefaults {
     val AstParentFullName = "<empty>"
