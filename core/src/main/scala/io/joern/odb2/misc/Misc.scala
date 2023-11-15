@@ -7,7 +7,7 @@ object Misc {
 
   extension (i: Int) {
     def toShortSafely: Short = {
-      assert(Short.MinValue <= i && i <= Short.MaxValue, s"cannot downcast int with value=$i to short without overflow")
+      assert(0 <= i && i <= Short.MaxValue, s"cannot downcast int with value=$i to short without overflow")
       i.toShort
     }
   }
