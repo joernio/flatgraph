@@ -585,7 +585,7 @@ class DomainClassesGenerator(schema: Schema) {
           .mkString("\n")}
          |    else null
          |
-         | override def getPropertyKindByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
+         | override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
          | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)

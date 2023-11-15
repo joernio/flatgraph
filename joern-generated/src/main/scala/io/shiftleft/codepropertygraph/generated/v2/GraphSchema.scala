@@ -306,7 +306,7 @@ object GraphSchema extends odb2.Schema {
     else if (propertyKind == 54 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
     else null
 
-  override def getPropertyKindByLabel(label: String): Int                               = nodePropertyByLabel.getOrElse(label, -1)
+  override def getPropertyKindByName(label: String): Int                                = nodePropertyByLabel.getOrElse(label, -1)
   override def getNumberOfProperties: Int                                               = 55
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
