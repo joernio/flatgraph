@@ -1,6 +1,7 @@
 package io.joern.odb2.traversal
 
-import io.joern.odb2.{Accessors, GNode}
+import io.joern.odb2.{Accessors, Edge, GNode}
+
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
 import scala.reflect.ClassTag
@@ -369,6 +370,34 @@ trait Language extends GNodeTraversal {
     }
   }
 
+  extension (node: GNode) {
+
+    /** follow _all_ OUT edges to their adjacent nodes */
+    def out: Iterator[GNode] = Accessors.getNeighborsOut(node)
+
+    /** follow _all_ IN edges to their adjacent nodes */
+    def in: Iterator[GNode] = Accessors.getNeighborsIn(node)
+
+    /** follow the given OUT edge(s) to their adjacent nodes */
+    def out(edgeLabel: String): Iterator[GNode] =
+      Accessors.getNeighborsOut(node, edgeKind = edgeKind(edgeLabel))
+
+    /** follow the given IN edge(s) to their adjacent nodes */
+    def in(edgeLabel: String): Iterator[GNode] =
+      Accessors.getNeighborsIn(node, edgeKind = edgeKind(edgeLabel))
+
+    /** lookup the given OUT edge(s) */
+    def outE(edgeLabel: String): Iterator[Edge] =
+      Accessors.getEdgesOut(node, edgeKind = edgeKind(edgeLabel))
+
+    /** lookup the given IN edge(s) */
+    def inE(edgeLabel: String): Iterator[Edge] =
+      Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
+
+    private def edgeKind(edgeLabel: String): Int =
+      node.graph.schema.getEdgeIdByLabel(edgeLabel)
+  }
+
   extension (iterator: Iterator[GNode]) {
 
     /** follow _all_ OUT edges to their adjacent nodes */
@@ -376,6 +405,19 @@ trait Language extends GNodeTraversal {
 
     /** follow _all_ IN edges to their adjacent nodes */
     def in: Iterator[GNode] = iterator.flatMap(Accessors.getNeighborsIn)
+
+    /** follow the given OUT edge(s) to their adjacent nodes */
+    def out(edgeLabel: String): Iterator[GNode] = iterator.flatMap(_.out(edgeLabel))
+
+    /** follow the given IN edge(s) to their adjacent nodes */
+    def in(edgeLabel: String): Iterator[GNode] = iterator.flatMap(_.in(edgeLabel))
+
+    /** lookup the given OUT edge(s) */
+    def outE(edgeLabel: String): Iterator[Edge] = iterator.flatMap(_.outE(edgeLabel))
+
+    /** lookup the given IN edge(s) */
+    def inE(edgeLabel: String): Iterator[Edge] = iterator.flatMap(_.inE(edgeLabel))
+
   }
 
 }
