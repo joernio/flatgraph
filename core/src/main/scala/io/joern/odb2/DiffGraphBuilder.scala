@@ -2,7 +2,7 @@ package io.joern.odb2
 
 import scala.collection.mutable
 
-class DiffGraphBuilder {
+class DiffGraphBuilder(schema: Schema) {
   var buffer = mutable.ArrayDeque[RawUpdate]()
 
   def addNode(newNode: DNode): this.type = {
@@ -10,8 +10,8 @@ class DiffGraphBuilder {
     this
   }
 
-  def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind, property))
+  def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeLabel: String, property: Any = DefaultValue): this.type = {
+    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind(edgeLabel), property))
     this
   }
 
@@ -20,7 +20,8 @@ class DiffGraphBuilder {
     this
   }
 
-  def setNodeProperty(node: GNode, propertyKind: Int, property: Any): this.type = {
+  def setNodeProperty(node: GNode, propertyName: String, property: Any): this.type = {
+    val propertyKind = schema.getPropertyKindByLabel(propertyName)
     this.buffer.append(new SetNodeProperty(node, propertyKind, property))
     this
   }
@@ -34,13 +35,13 @@ class DiffGraphBuilder {
     this
   }
 
-  def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind, 1, property))
+  def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeLabel: String, property: Any = DefaultValue): this.type = {
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind(edgeLabel), 1, property))
     this
   }
 
-  def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind, 0, property))
+  def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeLabel: String, property: Any = DefaultValue): this.type = {
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind(edgeLabel), 0, property))
     this
   }
 
@@ -57,6 +58,9 @@ class DiffGraphBuilder {
       right.buffer = null
     }
   }
+
+  private def edgeKind(edgeLabel: String): Int =
+    schema.getEdgeKindByLabel(edgeLabel)
 }
 
 private[odb2] trait RawUpdate
