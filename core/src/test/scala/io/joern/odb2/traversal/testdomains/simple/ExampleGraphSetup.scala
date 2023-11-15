@@ -21,7 +21,7 @@ trait ExampleGraphSetup {
   val r4     = addNode()
   val r5     = addNode()
 
-  val diff = new DiffGraphBuilder
+  val diff = new DiffGraphBuilder(graph.schema)
   // TODO reimplement arrow synax from odb
   // TODO bring back properties as well
   // center --- Connection.Label --> l1
@@ -33,19 +33,19 @@ trait ExampleGraphSetup {
   // r3 --- (Connection.Label, Connection.Properties.Distance.of(13)) --> r4
   // r4 --- (Connection.Label, Connection.Properties.Distance.of(14)) --> r5
   diff
-    .addEdge(center, l1, 0)
-    .addEdge(l1, l2, 0)
-    .addEdge(l2, l3, 0)
-    .addEdge(center, r1, 0)
-    .addEdge(r1, r2, 0)
-    .addEdge(r2, r3, 0)
-    .addEdge(r3, r4, 0)
-    .addEdge(r4, r5, 0)
+    ._addEdge(center, l1, 0)
+    ._addEdge(l1, l2, 0)
+    ._addEdge(l2, l3, 0)
+    ._addEdge(center, r1, 0)
+    ._addEdge(r1, r2, 0)
+    ._addEdge(r2, r3, 0)
+    ._addEdge(r3, r4, 0)
+    ._addEdge(r4, r5, 0)
   DiffGraphApplier.applyDiff(graph, diff)
 
   def addNode(): GNode = {
     val newNode = new GenericDNode(0)
-    DiffGraphApplier.applyDiff(graph, DiffGraphBuilder().addNode(newNode))
+    DiffGraphApplier.applyDiff(graph, DiffGraphBuilder(graph.schema).addNode(newNode))
     newNode.storedRef.get // that reference is set by DiffGraphApplier
   }
 }

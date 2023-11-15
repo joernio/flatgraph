@@ -1,5 +1,6 @@
 package io.joern.odb2
 
+import DiffGraphBuilder.*
 import io.joern.odb2.Edge.Direction
 import io.joern.odb2.Edge.Direction.{Incoming, Outgoing}
 
