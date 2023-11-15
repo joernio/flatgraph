@@ -12,11 +12,15 @@ class DiffGraphBuilder(schema: Schema) {
     this
   }
 
+  /** n.b. one would expect a property name/value pair here, but since each edge has exactly one property we
+    * don't need the key here... see the readme.md for more context */
   def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeLabel: String, property: Any = DefaultValue): this.type = {
     val edgeKind = schema.getEdgeKindByLabel(edgeLabel).toShortSafely
     this._addEdge(src, dst, edgeKind, property)
   }
 
+  /** n.b. one would expect a property name/value pair here, but since each edge has exactly one property we
+    * don't need the key here... see the readme.md for more context */
   def _addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Short, property: Any = DefaultValue): this.type = {
     this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind, property))
     this
