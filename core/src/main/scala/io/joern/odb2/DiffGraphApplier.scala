@@ -633,9 +633,9 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
 }
 
 /* Internal representations of half-edges. These are always normalized to represent either src <- dst or src -> dst. */
-private[odb2] class AddEdgeProcessed(val src: GNode, val dst: GNode, val edgeKind: Short, val property: Any)
+private[odb2] class AddEdgeProcessed(val src: GNode, val dst: GNode, val edgeKind: Int, val property: Any)
 
-private[odb2] class EdgeRepr(val src: GNode, val dst: GNode, val edgeKind: Short, val subSeq: Int, val property: Any)
+private[odb2] class EdgeRepr(val src: GNode, val dst: GNode, val edgeKind: Int, val subSeq: Int, val property: Any)
 
 private[odb2] class SetPropertyDesc(val node: GNode, val start: Int, val end: Int) {
   def length: Int = end - start

@@ -11,7 +11,7 @@ class DiffGraphBuilder {
   }
 
   def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind.toShort, property))
+    this.buffer.append(new AddEdgeUnprocessed(src, dst, edgeKind, property))
     this
   }
 
@@ -35,12 +35,12 @@ class DiffGraphBuilder {
   }
 
   def unsafeAddHalfEdgeForward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 1, property))
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind, 1, property))
     this
   }
 
   def unsafeAddHalfEdgeBackward(src: DNodeOrNode, dst: DNodeOrNode, edgeKind: Int, property: Any = DefaultValue): this.type = {
-    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind.toShort, 0, property))
+    this.buffer.append(new AddUnsafeHalfEdge(src, dst, edgeKind, 0, property))
     this
   }
 
@@ -64,9 +64,9 @@ private[odb2] trait RawUpdate
 /*Todo: All the edge representations for updates have the property field. It makes sense to use subclasses with and
    without edge property, in order to save some memory. The resulting dynamic dispatch should be cheap -- at most bimorphic,
    which doesn't prevent inlining, and well-predicted since edge properties are so rarely used.*/
-private[odb2] class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val property: Any) extends RawUpdate
+private[odb2] class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Int, val property: Any) extends RawUpdate
 
-private[odb2] class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val inout: Byte, val property: Any)
+private[odb2] class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Int, val inout: Byte, val property: Any)
     extends RawUpdate
 
 private[odb2] class RemoveEdge(val edge: Edge)                         extends RawUpdate
