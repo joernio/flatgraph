@@ -564,9 +564,9 @@ class DomainClassesGenerator(schema: Schema) {
          | override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          | override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          | override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
-         | override def getNodeIdByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, -1)
+         | override def getNodeKindByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, -1)
          | override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-         | override def getEdgeIdByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, -1)
+         | override def getEdgeKindByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, -1)
          | override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
          |    if(propertyKind < ${relevantProperties.length}) normalNodePropertyNames(propertyKind)
          |${nodeTypes
@@ -585,7 +585,7 @@ class DomainClassesGenerator(schema: Schema) {
           .mkString("\n")}
          |    else null
          |
-         | override def getPropertyIdByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
+         | override def getPropertyKindByLabel(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
          | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
