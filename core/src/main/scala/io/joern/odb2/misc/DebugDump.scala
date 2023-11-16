@@ -48,7 +48,7 @@ object DebugDump {
       }
       sb.append("\n")
 
-      for (n <- g.nodes(nodeKind)) {
+      for (n <- g._nodes(nodeKind)) {
         val properties = mutable.ArrayBuffer.empty[String]
         for (propertyKind <- Range(0, g.schema.getNumberOfProperties)) {
           val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
