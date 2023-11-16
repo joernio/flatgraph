@@ -70,6 +70,15 @@ class File(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 6
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[File]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"  => File.PropertyDefaults.Code
+      case "NAME"  => File.PropertyDefaults.Name
+      case "ORDER" => File.PropertyDefaults.Order
+      case _       => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewFile {

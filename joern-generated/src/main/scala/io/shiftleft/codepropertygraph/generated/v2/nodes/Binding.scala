@@ -57,6 +57,15 @@ class Binding(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 3
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Binding]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "METHOD_FULL_NAME" => Binding.PropertyDefaults.MethodFullName
+      case "NAME"             => Binding.PropertyDefaults.Name
+      case "SIGNATURE"        => Binding.PropertyDefaults.Signature
+      case _                  => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewBinding {

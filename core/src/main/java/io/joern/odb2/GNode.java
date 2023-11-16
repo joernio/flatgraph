@@ -38,4 +38,9 @@ public class GNode implements DNodeOrNode {
     public String label() {
         return graph.schema().getNodeLabel(nodeKind);
     }
+
+    /** override this in specific node subclass to define a default value (DomainClassGenerator does so...) */
+    public Object propertyDefaultValue(String propertyKey) {
+        return null;
+    }
 }

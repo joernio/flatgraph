@@ -95,6 +95,17 @@ class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 10
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Identifier]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => Identifier.PropertyDefaults.ArgumentIndex
+      case "CODE"           => Identifier.PropertyDefaults.Code
+      case "NAME"           => Identifier.PropertyDefaults.Name
+      case "ORDER"          => Identifier.PropertyDefaults.Order
+      case "TYPE_FULL_NAME" => Identifier.PropertyDefaults.TypeFullName
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewIdentifier {

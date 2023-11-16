@@ -75,6 +75,16 @@ class AnnotationLiteral(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 7
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[AnnotationLiteral]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => AnnotationLiteral.PropertyDefaults.ArgumentIndex
+      case "CODE"           => AnnotationLiteral.PropertyDefaults.Code
+      case "NAME"           => AnnotationLiteral.PropertyDefaults.Name
+      case "ORDER"          => AnnotationLiteral.PropertyDefaults.Order
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewAnnotationLiteral {

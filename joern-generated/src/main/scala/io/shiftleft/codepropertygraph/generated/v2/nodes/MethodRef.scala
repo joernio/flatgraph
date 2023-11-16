@@ -95,6 +95,17 @@ class MethodRef(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 10
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodRef]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX"   => MethodRef.PropertyDefaults.ArgumentIndex
+      case "CODE"             => MethodRef.PropertyDefaults.Code
+      case "METHOD_FULL_NAME" => MethodRef.PropertyDefaults.MethodFullName
+      case "ORDER"            => MethodRef.PropertyDefaults.Order
+      case "TYPE_FULL_NAME"   => MethodRef.PropertyDefaults.TypeFullName
+      case _                  => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewMethodRef {

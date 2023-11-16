@@ -66,6 +66,15 @@ class Comment(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 5
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Comment]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"     => Comment.PropertyDefaults.Code
+      case "FILENAME" => Comment.PropertyDefaults.Filename
+      case "ORDER"    => Comment.PropertyDefaults.Order
+      case _          => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewComment {

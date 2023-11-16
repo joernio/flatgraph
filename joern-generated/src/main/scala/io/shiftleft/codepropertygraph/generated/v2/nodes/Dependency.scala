@@ -56,6 +56,14 @@ class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 3
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Dependency]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "NAME"    => Dependency.PropertyDefaults.Name
+      case "VERSION" => Dependency.PropertyDefaults.Version
+      case _         => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewDependency {

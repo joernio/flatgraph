@@ -84,6 +84,16 @@ class Block(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 9
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Block]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => Block.PropertyDefaults.ArgumentIndex
+      case "CODE"           => Block.PropertyDefaults.Code
+      case "ORDER"          => Block.PropertyDefaults.Order
+      case "TYPE_FULL_NAME" => Block.PropertyDefaults.TypeFullName
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewBlock {

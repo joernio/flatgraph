@@ -76,6 +76,17 @@ class JumpTarget(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 7
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[JumpTarget]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX"   => JumpTarget.PropertyDefaults.ArgumentIndex
+      case "CODE"             => JumpTarget.PropertyDefaults.Code
+      case "NAME"             => JumpTarget.PropertyDefaults.Name
+      case "ORDER"            => JumpTarget.PropertyDefaults.Order
+      case "PARSER_TYPE_NAME" => JumpTarget.PropertyDefaults.ParserTypeName
+      case _                  => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewJumpTarget {

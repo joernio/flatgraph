@@ -75,6 +75,16 @@ class TemplateDom(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 7
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TemplateDom]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => TemplateDom.PropertyDefaults.ArgumentIndex
+      case "CODE"           => TemplateDom.PropertyDefaults.Code
+      case "NAME"           => TemplateDom.PropertyDefaults.Name
+      case "ORDER"          => TemplateDom.PropertyDefaults.Order
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewTemplateDom {

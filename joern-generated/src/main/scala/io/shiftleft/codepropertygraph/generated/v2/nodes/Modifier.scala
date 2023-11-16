@@ -66,6 +66,15 @@ class Modifier(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 5
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Modifier]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"          => Modifier.PropertyDefaults.Code
+      case "MODIFIER_TYPE" => Modifier.PropertyDefaults.ModifierType
+      case "ORDER"         => Modifier.PropertyDefaults.Order
+      case _               => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewModifier {

@@ -113,6 +113,20 @@ class Call(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 13
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Call]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX"   => Call.PropertyDefaults.ArgumentIndex
+      case "CODE"             => Call.PropertyDefaults.Code
+      case "DISPATCH_TYPE"    => Call.PropertyDefaults.DispatchType
+      case "METHOD_FULL_NAME" => Call.PropertyDefaults.MethodFullName
+      case "NAME"             => Call.PropertyDefaults.Name
+      case "ORDER"            => Call.PropertyDefaults.Order
+      case "SIGNATURE"        => Call.PropertyDefaults.Signature
+      case "TYPE_FULL_NAME"   => Call.PropertyDefaults.TypeFullName
+      case _                  => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewCall {

@@ -55,6 +55,13 @@ class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 3
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ClosureBinding]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "EVALUATION_STRATEGY" => ClosureBinding.PropertyDefaults.EvaluationStrategy
+      case _                     => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewClosureBinding {

@@ -76,6 +76,17 @@ class NamespaceBlock(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 7
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NamespaceBlock]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"      => NamespaceBlock.PropertyDefaults.Code
+      case "FILENAME"  => NamespaceBlock.PropertyDefaults.Filename
+      case "FULL_NAME" => NamespaceBlock.PropertyDefaults.FullName
+      case "NAME"      => NamespaceBlock.PropertyDefaults.Name
+      case "ORDER"     => NamespaceBlock.PropertyDefaults.Order
+      case _           => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewNamespaceBlock {

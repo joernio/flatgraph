@@ -80,6 +80,17 @@ class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 8
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[ControlStructure]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX"         => ControlStructure.PropertyDefaults.ArgumentIndex
+      case "CODE"                   => ControlStructure.PropertyDefaults.Code
+      case "CONTROL_STRUCTURE_TYPE" => ControlStructure.PropertyDefaults.ControlStructureType
+      case "ORDER"                  => ControlStructure.PropertyDefaults.Order
+      case "PARSER_TYPE_NAME"       => ControlStructure.PropertyDefaults.ParserTypeName
+      case _                        => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewControlStructure {

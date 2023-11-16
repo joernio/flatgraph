@@ -84,6 +84,16 @@ class Literal(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 9
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Literal]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => Literal.PropertyDefaults.ArgumentIndex
+      case "CODE"           => Literal.PropertyDefaults.Code
+      case "ORDER"          => Literal.PropertyDefaults.Order
+      case "TYPE_FULL_NAME" => Literal.PropertyDefaults.TypeFullName
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewLiteral {

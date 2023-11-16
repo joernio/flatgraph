@@ -71,6 +71,16 @@ class JumpLabel(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 6
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[JumpLabel]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"             => JumpLabel.PropertyDefaults.Code
+      case "NAME"             => JumpLabel.PropertyDefaults.Name
+      case "ORDER"            => JumpLabel.PropertyDefaults.Order
+      case "PARSER_TYPE_NAME" => JumpLabel.PropertyDefaults.ParserTypeName
+      case _                  => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewJumpLabel {

@@ -66,6 +66,15 @@ class Namespace(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 5
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Namespace]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"  => Namespace.PropertyDefaults.Code
+      case "NAME"  => Namespace.PropertyDefaults.Name
+      case "ORDER" => Namespace.PropertyDefaults.Order
+      case _       => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewNamespace {

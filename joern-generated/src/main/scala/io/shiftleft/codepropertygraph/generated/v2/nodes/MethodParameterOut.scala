@@ -94,6 +94,19 @@ class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 9
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodParameterOut]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"                => MethodParameterOut.PropertyDefaults.Code
+      case "EVALUATION_STRATEGY" => MethodParameterOut.PropertyDefaults.EvaluationStrategy
+      case "INDEX"               => MethodParameterOut.PropertyDefaults.Index
+      case "IS_VARIADIC"         => MethodParameterOut.PropertyDefaults.IsVariadic
+      case "NAME"                => MethodParameterOut.PropertyDefaults.Name
+      case "ORDER"               => MethodParameterOut.PropertyDefaults.Order
+      case "TYPE_FULL_NAME"      => MethodParameterOut.PropertyDefaults.TypeFullName
+      case _                     => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewMethodParameterOut {

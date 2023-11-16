@@ -52,6 +52,14 @@ class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 2
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[KeyValuePair]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "KEY"   => KeyValuePair.PropertyDefaults.Key
+      case "VALUE" => KeyValuePair.PropertyDefaults.Value
+      case _       => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewKeyValuePair {

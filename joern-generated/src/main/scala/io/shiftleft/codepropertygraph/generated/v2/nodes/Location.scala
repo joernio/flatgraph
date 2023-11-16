@@ -100,6 +100,20 @@ class Location(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 10
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Location]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CLASS_NAME"        => Location.PropertyDefaults.ClassName
+      case "CLASS_SHORT_NAME"  => Location.PropertyDefaults.ClassShortName
+      case "FILENAME"          => Location.PropertyDefaults.Filename
+      case "METHOD_FULL_NAME"  => Location.PropertyDefaults.MethodFullName
+      case "METHOD_SHORT_NAME" => Location.PropertyDefaults.MethodShortName
+      case "NODE_LABEL"        => Location.PropertyDefaults.NodeLabel
+      case "PACKAGE_NAME"      => Location.PropertyDefaults.PackageName
+      case "SYMBOL"            => Location.PropertyDefaults.Symbol
+      case _                   => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewLocation {

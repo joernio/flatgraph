@@ -66,6 +66,15 @@ class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 5
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeParameter]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"  => TypeParameter.PropertyDefaults.Code
+      case "NAME"  => TypeParameter.PropertyDefaults.Name
+      case "ORDER" => TypeParameter.PropertyDefaults.Order
+      case _       => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewTypeParameter {

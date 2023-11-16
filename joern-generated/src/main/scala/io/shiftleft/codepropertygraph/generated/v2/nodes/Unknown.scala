@@ -101,6 +101,18 @@ class Unknown(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 11
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Unknown]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX"   => Unknown.PropertyDefaults.ArgumentIndex
+      case "CODE"             => Unknown.PropertyDefaults.Code
+      case "CONTAINED_REF"    => Unknown.PropertyDefaults.ContainedRef
+      case "ORDER"            => Unknown.PropertyDefaults.Order
+      case "PARSER_TYPE_NAME" => Unknown.PropertyDefaults.ParserTypeName
+      case "TYPE_FULL_NAME"   => Unknown.PropertyDefaults.TypeFullName
+      case _                  => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewUnknown {

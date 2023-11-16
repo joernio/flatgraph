@@ -84,6 +84,16 @@ class TypeRef(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 9
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeRef]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => TypeRef.PropertyDefaults.ArgumentIndex
+      case "CODE"           => TypeRef.PropertyDefaults.Code
+      case "ORDER"          => TypeRef.PropertyDefaults.Order
+      case "TYPE_FULL_NAME" => TypeRef.PropertyDefaults.TypeFullName
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewTypeRef {

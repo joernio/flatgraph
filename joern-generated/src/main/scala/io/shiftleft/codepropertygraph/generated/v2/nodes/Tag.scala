@@ -49,6 +49,14 @@ class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 
   override def productArity  = 2
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Tag]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "NAME"  => Tag.PropertyDefaults.Name
+      case "VALUE" => Tag.PropertyDefaults.Value
+      case _       => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewTag {

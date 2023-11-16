@@ -87,6 +87,16 @@ class Member(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 8
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Member]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"           => Member.PropertyDefaults.Code
+      case "NAME"           => Member.PropertyDefaults.Name
+      case "ORDER"          => Member.PropertyDefaults.Order
+      case "TYPE_FULL_NAME" => Member.PropertyDefaults.TypeFullName
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewMember {

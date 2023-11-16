@@ -5,6 +5,7 @@ import overflowdb.codegen.CodeGen.ConstantContext
 
 import java.nio.file.{Path, Paths}
 import overflowdb.codegen.Helpers
+import overflowdb.codegen.Helpers.propertyDefaultValueImpl
 import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
@@ -471,6 +472,9 @@ class DomainClassesGenerator(schema: Schema) {
         "\n",
         "\n res\n}"
       )
+
+      val propertyDefaultValuesSrc = propertyDefaultValueImpl(s"${nodeType.className}.PropertyDefaults", nodeType.properties)
+
       val nodeSource = {
         s"""package $basePackage.nodes
              |
@@ -514,6 +518,8 @@ class DomainClassesGenerator(schema: Schema) {
              |  override def productArity = ${productElements.size}
              |
              |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
+             |
+             |  $propertyDefaultValuesSrc
              |}
              |
              |$newNode

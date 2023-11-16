@@ -75,6 +75,16 @@ class FieldIdentifier(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 7
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[FieldIdentifier]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => FieldIdentifier.PropertyDefaults.ArgumentIndex
+      case "CANONICAL_NAME" => FieldIdentifier.PropertyDefaults.CanonicalName
+      case "CODE"           => FieldIdentifier.PropertyDefaults.Code
+      case "ORDER"          => FieldIdentifier.PropertyDefaults.Order
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewFieldIdentifier {

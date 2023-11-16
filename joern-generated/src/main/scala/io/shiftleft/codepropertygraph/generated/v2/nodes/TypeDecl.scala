@@ -110,6 +110,20 @@ class TypeDecl(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 12
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeDecl]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "AST_PARENT_FULL_NAME" => TypeDecl.PropertyDefaults.AstParentFullName
+      case "AST_PARENT_TYPE"      => TypeDecl.PropertyDefaults.AstParentType
+      case "CODE"                 => TypeDecl.PropertyDefaults.Code
+      case "FILENAME"             => TypeDecl.PropertyDefaults.Filename
+      case "FULL_NAME"            => TypeDecl.PropertyDefaults.FullName
+      case "IS_EXTERNAL"          => TypeDecl.PropertyDefaults.IsExternal
+      case "NAME"                 => TypeDecl.PropertyDefaults.Name
+      case "ORDER"                => TypeDecl.PropertyDefaults.Order
+      case _                      => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewTypeDecl {

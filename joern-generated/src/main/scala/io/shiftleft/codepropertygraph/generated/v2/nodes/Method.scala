@@ -121,6 +121,21 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 14
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Method]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "AST_PARENT_FULL_NAME" => Method.PropertyDefaults.AstParentFullName
+      case "AST_PARENT_TYPE"      => Method.PropertyDefaults.AstParentType
+      case "CODE"                 => Method.PropertyDefaults.Code
+      case "FILENAME"             => Method.PropertyDefaults.Filename
+      case "FULL_NAME"            => Method.PropertyDefaults.FullName
+      case "IS_EXTERNAL"          => Method.PropertyDefaults.IsExternal
+      case "NAME"                 => Method.PropertyDefaults.Name
+      case "ORDER"                => Method.PropertyDefaults.Order
+      case "SIGNATURE"            => Method.PropertyDefaults.Signature
+      case _                      => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewMethod {

@@ -86,6 +86,16 @@ class MethodReturn(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 8
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodReturn]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"                => MethodReturn.PropertyDefaults.Code
+      case "EVALUATION_STRATEGY" => MethodReturn.PropertyDefaults.EvaluationStrategy
+      case "ORDER"               => MethodReturn.PropertyDefaults.Order
+      case "TYPE_FULL_NAME"      => MethodReturn.PropertyDefaults.TypeFullName
+      case _                     => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewMethodReturn {

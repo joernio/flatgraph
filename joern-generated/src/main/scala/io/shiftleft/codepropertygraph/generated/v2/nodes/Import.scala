@@ -88,6 +88,14 @@ class Import(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 9
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Import]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"  => Import.PropertyDefaults.Code
+      case "ORDER" => Import.PropertyDefaults.Order
+      case _       => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewImport {

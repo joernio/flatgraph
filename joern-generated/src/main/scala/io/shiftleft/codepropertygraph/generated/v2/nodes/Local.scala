@@ -92,6 +92,16 @@ class Local(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 9
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Local]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "CODE"           => Local.PropertyDefaults.Code
+      case "NAME"           => Local.PropertyDefaults.Name
+      case "ORDER"          => Local.PropertyDefaults.Order
+      case "TYPE_FULL_NAME" => Local.PropertyDefaults.TypeFullName
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewLocal {

@@ -80,6 +80,17 @@ class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 8
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Annotation]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "ARGUMENT_INDEX" => Annotation.PropertyDefaults.ArgumentIndex
+      case "CODE"           => Annotation.PropertyDefaults.Code
+      case "FULL_NAME"      => Annotation.PropertyDefaults.FullName
+      case "NAME"           => Annotation.PropertyDefaults.Name
+      case "ORDER"          => Annotation.PropertyDefaults.Order
+      case _                => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewAnnotation {

@@ -57,6 +57,15 @@ class Type(graph_4762: odb2.Graph, seq_4762: Int)
   override def productArity  = 3
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Type]
+
+  override def propertyDefaultValue(propertyKey: String) =
+    propertyKey match {
+      case "FULL_NAME"           => Type.PropertyDefaults.FullName
+      case "NAME"                => Type.PropertyDefaults.Name
+      case "TYPE_DECL_FULL_NAME" => Type.PropertyDefaults.TypeDeclFullName
+      case _                     => super.propertyDefaultValue(propertyKey)
+    }
+
 }
 
 object NewType {
