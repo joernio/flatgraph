@@ -751,7 +751,7 @@ class DomainClassesGenerator(schema: Schema) {
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
       s"""def ${sanitizeReservedNames(
           Helpers.camelCase(typ.name)
-        )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph.nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
+        )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
     }.toList
     val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
       s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes

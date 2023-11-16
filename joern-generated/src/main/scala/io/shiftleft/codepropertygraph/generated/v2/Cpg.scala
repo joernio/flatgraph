@@ -13,9 +13,10 @@ class Cpg(val graph: odb2.Graph) {
 class CpgNodeStarters(val wrappedCpg: Cpg) {
   def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
 
-  def annotation: Iterator[nodes.Annotation]                   = wrappedCpg.graph._nodes(0).asInstanceOf[Iterator[nodes.Annotation]]
-  def annotationLiteral: Iterator[nodes.AnnotationLiteral]     = wrappedCpg.graph._nodes(1).asInstanceOf[Iterator[nodes.AnnotationLiteral]]
-  def annotationParameter: Iterator[nodes.AnnotationParameter] = wrappedCpg.graph._nodes(2).asInstanceOf[Iterator[nodes.AnnotationParameter]]
+  def annotation: Iterator[nodes.Annotation]               = wrappedCpg.graph._nodes(0).asInstanceOf[Iterator[nodes.Annotation]]
+  def annotationLiteral: Iterator[nodes.AnnotationLiteral] = wrappedCpg.graph._nodes(1).asInstanceOf[Iterator[nodes.AnnotationLiteral]]
+  def annotationParameter: Iterator[nodes.AnnotationParameter] =
+    wrappedCpg.graph._nodes(2).asInstanceOf[Iterator[nodes.AnnotationParameter]]
   def annotationParameterAssign: Iterator[nodes.AnnotationParameterAssign] =
     wrappedCpg.graph._nodes(3).asInstanceOf[Iterator[nodes.AnnotationParameterAssign]]
   def arrayInitializer: Iterator[nodes.ArrayInitializer]     = wrappedCpg.graph._nodes(4).asInstanceOf[Iterator[nodes.ArrayInitializer]]
