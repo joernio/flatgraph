@@ -36,6 +36,16 @@ class Graph(val schema: Schema) {
   def allNodes: Iterator[GNode] =
     nodesArray.iterator.flatMap(_.iterator)
 
+  /** Lookup nodes with a given property value (via index). N.b. currently only supported for String properties. Context: MultiDictIndex
+    * requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.
+    */
+  def nodesWithProperty(propertyName: String, value: String): Iterator[GNode] = {
+    val propertyKind = schema.getPropertyKindByName(propertyName)
+    Range(0, schema.getNumberOfNodeKinds).iterator.flatMap { nodeKind =>
+      Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
+    }
+  }
+
   private def makeNodesArray(): Array[Array[GNode]] = {
     val nodes = new Array[Array[GNode]](nodeKindCount)
     for (nodeKind <- Range(0, nodes.length))
