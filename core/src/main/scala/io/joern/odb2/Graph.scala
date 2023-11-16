@@ -22,10 +22,16 @@ class Graph(val schema: Schema) {
     nodeCountByKind(kind)
   }
 
-  def nodes(nodeKind: Int): InitNodeIterator[GNode] = {
+  def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
     if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
     else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
+
+  def nodes(label: String): InitNodeIterator[GNode] =
+    _nodes(schema.getNodeKindByLabel(label))
+
+  def nodes(labels: String*): Iterator[GNode] =
+    labels.iterator.flatMap(nodes)
 
   def allNodes: Iterator[GNode] =
     nodesArray.iterator.flatMap(_.iterator)

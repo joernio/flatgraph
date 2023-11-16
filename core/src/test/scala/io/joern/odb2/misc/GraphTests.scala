@@ -140,7 +140,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |""".stripMargin
 
     // test a simple out and in traversal from V0_0
-    val V0_0_GNode = g.nodes(0).next()
+    val V0_0_GNode = g._nodes(0).next()
     Accessors.getNeighborsOut(V0_0_GNode).size shouldBe 1
     Accessors.getNeighborsIn(V0_0_GNode).size shouldBe 2
     Iterator.single(V0_0_GNode).out.size shouldBe 1

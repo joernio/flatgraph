@@ -44,7 +44,7 @@ object Serialization {
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       val nodeLabel = g.schema.getNodeLabel(nodeKind)
       val deletions = g
-        .nodes(nodeKind)
+        ._nodes(nodeKind)
         .collect {
           case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
         }
