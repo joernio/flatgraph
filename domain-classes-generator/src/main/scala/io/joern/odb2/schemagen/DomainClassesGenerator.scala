@@ -1089,7 +1089,6 @@ class DomainClassesGenerator(schema: Schema) {
   }
 
   def generatePropertyTraversals(property: Property[?], propertyId: Int): String = {
-    // fixme: also generate negated filters
     val nameCamelCase = Helpers.camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
     val cardinality   = property.cardinality
@@ -1118,8 +1117,8 @@ class DomainClassesGenerator(schema: Schema) {
        |
        |$filterSteps
        |""".stripMargin
-
   }
+
   def unpackDefault(typ: ValueType[?], default: Default[?]): String = {
     import org.apache.commons.text.StringEscapeUtils.escapeJava
     typ match {
