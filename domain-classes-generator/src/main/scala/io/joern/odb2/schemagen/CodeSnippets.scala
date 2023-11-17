@@ -21,7 +21,7 @@ object CodeSnippets {
          |  * */
          |def $nameCamelCase(patterns: $baseType*): Iterator[NodeType] = {
          |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
-         |   traversal.filter{item => matchers.exists{_.reset(item.$nameCamelCase).matches}}
+         |  traversal.filter{item => matchers.exists{_.reset(item.$nameCamelCase).matches}}
          | }
          |/**
          |  * Traverse to nodes where $nameCamelCase matches `value` exactly.
@@ -42,7 +42,25 @@ object CodeSnippets {
          |  traversal.filter{item => valueSet.contains(item.$nameCamelCase)}
          |  }
          |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase does not match the regular expression `value`.
+         |  * */
+         |def ${nameCamelCase}Not(pattern: $baseType): Iterator[NodeType] = {
+         |  if(!Misc.isRegex(pattern)){
+         |    traversal.filter{node => node.$nameCamelCase != pattern}
+         |  } else {
+         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    traversal.filterNot{item => matcher.reset(item.$nameCamelCase).matches}
+         |  }
+         |}
          |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase does not match any of the regular expressions in `values`.
+         |  * */
+         |def ${nameCamelCase}Not(patterns: $baseType*): Iterator[NodeType] = {
+         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |  traversal.filter{item => matchers.find{_.reset(item.$nameCamelCase).matches}.isEmpty}
+         |}
          |""".stripMargin
     }
 
@@ -50,20 +68,21 @@ object CodeSnippets {
       s"""/**
          |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
          |  * */
-         |def $nameCamelCase(pattern: $baseType): Iterator[NodeType] =
+         |def $nameCamelCase(pattern: $baseType): Iterator[NodeType] = {
          |  if(!Misc.isRegex(pattern)){
          |    ${nameCamelCase}Exact(pattern)
          |  } else {
          |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
          |    traversal.filter{ item =>  val tmp = item.${nameCamelCase}; tmp.isDefined && matcher.reset(tmp.get).matches}
          |  }
+         |}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
          |  * */
          |def $nameCamelCase(patterns: $baseType*): Iterator[NodeType] = {
          |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
-         |   traversal.filter{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
+         |  traversal.filter{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
          | }
          |
          |/**
@@ -84,6 +103,26 @@ object CodeSnippets {
          |  val valueSet = values.toSet
          |  traversal.filter{item => val tmp = item.$nameCamelCase; tmp.isDefined && valueSet.contains(tmp.get)}
          |  }
+         |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase does not match the regular expression `value`.
+         |  * */
+         |def ${nameCamelCase}Not(pattern: $baseType): Iterator[NodeType] = {
+         |  if(!Misc.isRegex(pattern)){
+         |    traversal.filter{node => node.$nameCamelCase.isEmpty || node.${nameCamelCase}.get != pattern}
+         |  } else {
+         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    traversal.filterNot{ item =>  val tmp = item.${nameCamelCase}; tmp.isDefined && matcher.reset(tmp.get).matches}
+         |  }
+         |}
+         |
+         |/**
+         |  * Traverse to nodes where $nameCamelCase does not match any of the regular expressions in `values`.
+         |  * */
+         |def ${nameCamelCase}Not(patterns: $baseType*): Iterator[NodeType] = {
+         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |  traversal.filterNot{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
+         | }
          |""".stripMargin
     }
 
