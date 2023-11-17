@@ -46,26 +46,10 @@ class DomainClassesGenerator(schema: Schema) {
     val nodeTypes          = schema.nodeTypes.sortBy(_.name).toArray
     val nodeKindByNodeType = nodeTypes.zipWithIndex.toMap
 
-    val containedIndexByName  = mutable.HashMap.empty[String, Int]
-    val forbiddenSlotsByIndex = mutable.ArrayBuffer.empty[mutable.HashSet[NodeType]]
-
-    // TODO: remove knapsack - as discussed with Bernhard and Markus, we don't need this complicated mechanism for a relatively small benefit
-    // context: the original idea was to have a high L1 usage, but that's not realistic, and adds lots of complexity
-    // we need to assign non-conflicting indices to each containedNode. Knapsack!
-    for ((name, containing) <- propertyContexts.containedNodesByName.toList.sortBy { case (n, c) => (-c.size, n) }) {
-      forbiddenSlotsByIndex.iterator.zipWithIndex.find { case (forbidden, _) =>
-        forbidden.intersect(containing).isEmpty
-      } match {
-        case Some((oldForbidden, idx)) =>
-          containedIndexByName(name) = idx
-          oldForbidden.addAll(containing)
-        case None =>
-          containedIndexByName(name) = forbiddenSlotsByIndex.length
-          forbiddenSlotsByIndex.append(
-            containing.filter(_ => true)
-          ) // this looks silly (because it is!) - apparently .filter copies the map, and since it's mutable...
-      }
-    }
+    // We used to support multiplexing of different containedNode pseudo-properties into the same index.
+    // We removed that feature, look at git blame on this line to find the supporting code.
+    val containedNames = propertyContexts.containedNodesByName.keys.toArray.sorted
+    val containedIndexByName  = containedNames.zipWithIndex.toMap
 
     val propertyKindByProperty = relevantProperties.zipWithIndex.toMap
     val edgeTypes              = schema.edgeTypes.sortBy(_.name).toArray
@@ -554,7 +538,7 @@ class DomainClassesGenerator(schema: Schema) {
           .mkString(", ")})
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array(${(relevantProperties.map { p =>
           s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
-        }.iterator ++ forbiddenSlotsByIndex.map { _ => "size => new Array[odb2.GNode](size)" }).mkString(", ")})
+        }.iterator ++ containedNames.map { _ => "size => new Array[odb2.GNode](size)" }).mkString(", ")})
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap${containedIndexByName.toList
           .sortBy { case (name, idx) => (idx, name) }
@@ -586,7 +570,7 @@ class DomainClassesGenerator(schema: Schema) {
          |    else null
          |
          | override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, -1)
-         | override def getNumberOfProperties: Int = ${relevantProperties.size + forbiddenSlotsByIndex.size}
+         | override def getNumberOfProperties: Int = ${relevantProperties.size + containedNames.size}
          | override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          | override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
          | override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
