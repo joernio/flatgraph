@@ -1356,7 +1356,7 @@ class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
     interface.insertProperty(this, 22, Iterator(this.fullName))
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
+    interface.insertProperty(this, 43, Iterator(this.order))
   }
 
   override def copy(): this.type = {

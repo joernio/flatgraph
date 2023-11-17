@@ -8,6 +8,7 @@ trait MethodParameterInEMT
     extends AnyRef
     with CfgNodeEMT
     with DeclarationEMT
+    with HasClosureBindingIdEMT
     with HasDynamicTypeHintFullNameEMT
     with HasEvaluationStrategyEMT
     with HasIndexEMT
@@ -20,6 +21,7 @@ trait MethodParameterInBase extends AbstractNode with CfgNodeBase with Declarati
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
+    this.closureBindingId.foreach { p => res.put("CLOSURE_BINDING_ID", p) }
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
     val tmpDynamicTypeHintFullName = this.dynamicTypeHintFullName;
@@ -39,6 +41,7 @@ trait MethodParameterInBase extends AbstractNode with CfgNodeBase with Declarati
 object MethodParameterIn {
   val Label = "METHOD_PARAMETER_IN"
   object PropertyNames {
+    val ClosureBindingId        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CLOSURE_BINDING_ID
     val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
     val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
     val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.DYNAMIC_TYPE_HINT_FULL_NAME
@@ -71,38 +74,40 @@ class MethodParameterIn(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def productElementName(n: Int): String =
     n match {
-      case 0  => "code"
-      case 1  => "columnNumber"
-      case 2  => "dynamicTypeHintFullName"
-      case 3  => "evaluationStrategy"
-      case 4  => "index"
-      case 5  => "isVariadic"
-      case 6  => "lineNumber"
-      case 7  => "name"
-      case 8  => "order"
-      case 9  => "possibleTypes"
-      case 10 => "typeFullName"
+      case 0  => "closureBindingId"
+      case 1  => "code"
+      case 2  => "columnNumber"
+      case 3  => "dynamicTypeHintFullName"
+      case 4  => "evaluationStrategy"
+      case 5  => "index"
+      case 6  => "isVariadic"
+      case 7  => "lineNumber"
+      case 8  => "name"
+      case 9  => "order"
+      case 10 => "possibleTypes"
+      case 11 => "typeFullName"
       case _  => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0  => this.code
-      case 1  => this.columnNumber
-      case 2  => this.dynamicTypeHintFullName
-      case 3  => this.evaluationStrategy
-      case 4  => this.index
-      case 5  => this.isVariadic
-      case 6  => this.lineNumber
-      case 7  => this.name
-      case 8  => this.order
-      case 9  => this.possibleTypes
-      case 10 => this.typeFullName
+      case 0  => this.closureBindingId
+      case 1  => this.code
+      case 2  => this.columnNumber
+      case 3  => this.dynamicTypeHintFullName
+      case 4  => this.evaluationStrategy
+      case 5  => this.index
+      case 6  => this.isVariadic
+      case 7  => this.lineNumber
+      case 8  => this.name
+      case 9  => this.order
+      case 10 => this.possibleTypes
+      case 11 => this.typeFullName
       case _  => null
     }
 
   override def productPrefix = "MethodParameterIn"
-  override def productArity  = 11
+  override def productArity  = 12
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[MethodParameterIn]
 }
@@ -1354,6 +1359,7 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
     NewMethodParameterIn.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
+  var closureBindingId: Option[String]                                = None
   var code: String                                                    = "<empty>": String
   var columnNumber: Option[Int]                                       = None
   var dynamicTypeHintFullName: IndexedSeq[String]                     = ArraySeq.empty
@@ -1365,6 +1371,8 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
   var order: Int                                                      = -1: Int
   var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
+  def closureBindingId(value: Option[String]): this.type              = { this.closureBindingId = value; this }
+  def closureBindingId(value: String): this.type                      = { this.closureBindingId = Option(value); this }
   def code(value: String): this.type                                  = { this.code = value; this }
   def columnNumber(value: Int): this.type                             = { this.columnNumber = Option(value); this }
   def columnNumber(value: Option[Int]): this.type                     = { this.columnNumber = value; this }
@@ -1379,6 +1387,7 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+    if (closureBindingId.nonEmpty) interface.insertProperty(this, 8, this.closureBindingId)
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 18, this.dynamicTypeHintFullName)
@@ -1387,13 +1396,14 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
     interface.insertProperty(this, 30, Iterator(this.isVariadic))
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
-    interface.insertProperty(this, 50, Iterator(this.typeFullName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 47, this.possibleTypes)
+    interface.insertProperty(this, 52, Iterator(this.typeFullName))
   }
 
   override def copy(): this.type = {
     val newInstance = new NewMethodParameterIn
+    newInstance.closureBindingId = this.closureBindingId
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber
     newInstance.dynamicTypeHintFullName = this.dynamicTypeHintFullName
@@ -1410,37 +1420,39 @@ class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBas
 
   override def productElementName(n: Int): String =
     n match {
-      case 0  => "code"
-      case 1  => "columnNumber"
-      case 2  => "dynamicTypeHintFullName"
-      case 3  => "evaluationStrategy"
-      case 4  => "index"
-      case 5  => "isVariadic"
-      case 6  => "lineNumber"
-      case 7  => "name"
-      case 8  => "order"
-      case 9  => "possibleTypes"
-      case 10 => "typeFullName"
+      case 0  => "closureBindingId"
+      case 1  => "code"
+      case 2  => "columnNumber"
+      case 3  => "dynamicTypeHintFullName"
+      case 4  => "evaluationStrategy"
+      case 5  => "index"
+      case 6  => "isVariadic"
+      case 7  => "lineNumber"
+      case 8  => "name"
+      case 9  => "order"
+      case 10 => "possibleTypes"
+      case 11 => "typeFullName"
       case _  => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0  => this.code
-      case 1  => this.columnNumber
-      case 2  => this.dynamicTypeHintFullName
-      case 3  => this.evaluationStrategy
-      case 4  => this.index
-      case 5  => this.isVariadic
-      case 6  => this.lineNumber
-      case 7  => this.name
-      case 8  => this.order
-      case 9  => this.possibleTypes
-      case 10 => this.typeFullName
+      case 0  => this.closureBindingId
+      case 1  => this.code
+      case 2  => this.columnNumber
+      case 3  => this.dynamicTypeHintFullName
+      case 4  => this.evaluationStrategy
+      case 5  => this.index
+      case 6  => this.isVariadic
+      case 7  => this.lineNumber
+      case 8  => this.name
+      case 9  => this.order
+      case 10 => this.possibleTypes
+      case 11 => this.typeFullName
       case _  => null
     }
 
   override def productPrefix                = "NewMethodParameterIn"
-  override def productArity                 = 11
+  override def productArity                 = 12
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethodParameterIn]
 }

@@ -1340,7 +1340,7 @@ class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
-    interface.insertProperty(this, 41, Iterator(this.order))
+    interface.insertProperty(this, 43, Iterator(this.order))
   }
 
   override def copy(): this.type = {

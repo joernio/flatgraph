@@ -97,9 +97,9 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     if (hash.nonEmpty) interface.insertProperty(this, 23, this.hash)
     interface.insertProperty(this, 33, Iterator(this.language))
-    if (overlays.nonEmpty) interface.insertProperty(this, 42, this.overlays)
-    interface.insertProperty(this, 46, Iterator(this.root))
-    interface.insertProperty(this, 52, Iterator(this.version))
+    if (overlays.nonEmpty) interface.insertProperty(this, 44, this.overlays)
+    interface.insertProperty(this, 48, Iterator(this.root))
+    interface.insertProperty(this, 54, Iterator(this.version))
   }
 
   override def copy(): this.type = {

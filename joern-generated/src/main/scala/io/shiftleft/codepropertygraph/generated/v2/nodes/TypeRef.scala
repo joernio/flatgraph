@@ -1361,9 +1361,9 @@ class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 18, this.dynamicTypeHintFullName)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
-    interface.insertProperty(this, 41, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
-    interface.insertProperty(this, 50, Iterator(this.typeFullName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 47, this.possibleTypes)
+    interface.insertProperty(this, 52, Iterator(this.typeFullName))
   }
 
   override def copy(): this.type = {

@@ -4,7 +4,7 @@ import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
-trait FileEMT extends AnyRef with AstNodeEMT with HasHashEMT with HasNameEMT
+trait FileEMT extends AnyRef with AstNodeEMT with HasContentEMT with HasHashEMT with HasNameEMT
 
 trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileEMT] {
 
@@ -13,6 +13,7 @@ trait FileBase extends AbstractNode with AstNodeBase with StaticType[FileEMT] {
     val res = new java.util.HashMap[String, Any]()
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
+    res.put("CONTENT", this.content)
     this.hash.foreach { p => res.put("HASH", p) }
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("NAME", this.name)
@@ -26,15 +27,17 @@ object File {
   object PropertyNames {
     val Code         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
     val ColumnNumber = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
+    val Content      = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CONTENT
     val Hash         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.HASH
     val LineNumber   = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
     val Name         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
     val Order        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
   }
   object PropertyDefaults {
-    val Code  = "<empty>"
-    val Name  = "<empty>"
-    val Order = -1: Int
+    val Code    = "<empty>"
+    val Content = "<empty>"
+    val Name    = "<empty>"
+    val Order   = -1: Int
   }
 }
 
@@ -48,10 +51,11 @@ class File(graph_4762: odb2.Graph, seq_4762: Int)
     n match {
       case 0 => "code"
       case 1 => "columnNumber"
-      case 2 => "hash"
-      case 3 => "lineNumber"
-      case 4 => "name"
-      case 5 => "order"
+      case 2 => "content"
+      case 3 => "hash"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
       case _ => ""
     }
 
@@ -59,15 +63,16 @@ class File(graph_4762: odb2.Graph, seq_4762: Int)
     n match {
       case 0 => this.code
       case 1 => this.columnNumber
-      case 2 => this.hash
-      case 3 => this.lineNumber
-      case 4 => this.name
-      case 5 => this.order
+      case 2 => this.content
+      case 3 => this.hash
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
       case _ => null
     }
 
   override def productPrefix = "File"
-  override def productArity  = 6
+  override def productArity  = 7
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[File]
 }
@@ -1321,6 +1326,7 @@ class NewFile extends NewNode(14.toShort) with FileBase {
 
   var code: String                                = "<empty>": String
   var columnNumber: Option[Int]                   = None
+  var content: String                             = "<empty>": String
   var hash: Option[String]                        = None
   var lineNumber: Option[Int]                     = None
   var name: String                                = "<empty>": String
@@ -1328,6 +1334,7 @@ class NewFile extends NewNode(14.toShort) with FileBase {
   def code(value: String): this.type              = { this.code = value; this }
   def columnNumber(value: Int): this.type         = { this.columnNumber = Option(value); this }
   def columnNumber(value: Option[Int]): this.type = { this.columnNumber = value; this }
+  def content(value: String): this.type           = { this.content = value; this }
   def hash(value: Option[String]): this.type      = { this.hash = value; this }
   def hash(value: String): this.type              = { this.hash = Option(value); this }
   def lineNumber(value: Int): this.type           = { this.lineNumber = Option(value); this }
@@ -1337,16 +1344,18 @@ class NewFile extends NewNode(14.toShort) with FileBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
+    interface.insertProperty(this, 14, Iterator(this.content))
     if (hash.nonEmpty) interface.insertProperty(this, 23, this.hash)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
+    interface.insertProperty(this, 43, Iterator(this.order))
   }
 
   override def copy(): this.type = {
     val newInstance = new NewFile
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber
+    newInstance.content = this.content
     newInstance.hash = this.hash
     newInstance.lineNumber = this.lineNumber
     newInstance.name = this.name
@@ -1358,10 +1367,11 @@ class NewFile extends NewNode(14.toShort) with FileBase {
     n match {
       case 0 => "code"
       case 1 => "columnNumber"
-      case 2 => "hash"
-      case 3 => "lineNumber"
-      case 4 => "name"
-      case 5 => "order"
+      case 2 => "content"
+      case 3 => "hash"
+      case 4 => "lineNumber"
+      case 5 => "name"
+      case 6 => "order"
       case _ => ""
     }
 
@@ -1369,14 +1379,15 @@ class NewFile extends NewNode(14.toShort) with FileBase {
     n match {
       case 0 => this.code
       case 1 => this.columnNumber
-      case 2 => this.hash
-      case 3 => this.lineNumber
-      case 4 => this.name
-      case 5 => this.order
+      case 2 => this.content
+      case 3 => this.hash
+      case 4 => this.lineNumber
+      case 5 => this.name
+      case 6 => this.order
       case _ => null
     }
 
   override def productPrefix                = "NewFile"
-  override def productArity                 = 6
+  override def productArity                 = 7
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewFile]
 }

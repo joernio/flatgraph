@@ -84,7 +84,7 @@ class NewDependency extends NewNode(12.toShort) with DependencyBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     if (dependencyGroupId.nonEmpty) interface.insertProperty(this, 16, this.dependencyGroupId)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 52, Iterator(this.version))
+    interface.insertProperty(this, 54, Iterator(this.version))
   }
 
   override def copy(): this.type = {

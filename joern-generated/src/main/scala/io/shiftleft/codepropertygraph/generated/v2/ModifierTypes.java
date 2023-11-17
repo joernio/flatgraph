@@ -38,6 +38,9 @@ public static final String FINAL = "FINAL";
 /** The readonly modifier */
 public static final String READONLY = "READONLY";
 
+/** Indicate that a method defines a module in the sense e.g. a python module does with the creation of a module object */
+public static final String MODULE = "MODULE";
+
 public static Set<String> ALL = new HashSet<String>() {{
 add(STATIC);
 add(PUBLIC);
@@ -50,6 +53,7 @@ add(VIRTUAL);
 add(INTERNAL);
 add(FINAL);
 add(READONLY);
+add(MODULE);
 }};
 
 }

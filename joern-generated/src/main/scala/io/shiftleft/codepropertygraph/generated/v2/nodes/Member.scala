@@ -8,6 +8,8 @@ trait MemberEMT
     extends AnyRef
     with AstNodeEMT
     with DeclarationEMT
+    with HasAstParentFullNameEMT
+    with HasAstParentTypeEMT
     with HasDynamicTypeHintFullNameEMT
     with HasPossibleTypesEMT
     with HasTypeFullNameEMT
@@ -17,6 +19,8 @@ trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with
   override def propertiesMap: java.util.Map[String, Any] = {
     import io.shiftleft.codepropertygraph.generated.v2.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
+    res.put("AST_PARENT_FULL_NAME", this.astParentFullName)
+    res.put("AST_PARENT_TYPE", this.astParentType)
     res.put("CODE", this.code)
     this.columnNumber.foreach { p => res.put("COLUMN_NUMBER", p) }
     val tmpDynamicTypeHintFullName = this.dynamicTypeHintFullName;
@@ -33,6 +37,8 @@ trait MemberBase extends AbstractNode with AstNodeBase with DeclarationBase with
 object Member {
   val Label = "MEMBER"
   object PropertyNames {
+    val AstParentFullName       = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.AST_PARENT_FULL_NAME
+    val AstParentType           = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.AST_PARENT_TYPE
     val Code                    = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.CODE
     val ColumnNumber            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.COLUMN_NUMBER
     val DynamicTypeHintFullName = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.DYNAMIC_TYPE_HINT_FULL_NAME
@@ -43,10 +49,12 @@ object Member {
     val TypeFullName            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.TYPE_FULL_NAME
   }
   object PropertyDefaults {
-    val Code         = "<empty>"
-    val Name         = "<empty>"
-    val Order        = -1: Int
-    val TypeFullName = "<empty>"
+    val AstParentFullName = "<empty>"
+    val AstParentType     = "<empty>"
+    val Code              = "<empty>"
+    val Name              = "<empty>"
+    val Order             = -1: Int
+    val TypeFullName      = "<empty>"
   }
 }
 
@@ -59,32 +67,36 @@ class Member(graph_4762: odb2.Graph, seq_4762: Int)
 
   override def productElementName(n: Int): String =
     n match {
-      case 0 => "code"
-      case 1 => "columnNumber"
-      case 2 => "dynamicTypeHintFullName"
-      case 3 => "lineNumber"
-      case 4 => "name"
-      case 5 => "order"
-      case 6 => "possibleTypes"
-      case 7 => "typeFullName"
+      case 0 => "astParentFullName"
+      case 1 => "astParentType"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
       case _ => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0 => this.code
-      case 1 => this.columnNumber
-      case 2 => this.dynamicTypeHintFullName
-      case 3 => this.lineNumber
-      case 4 => this.name
-      case 5 => this.order
-      case 6 => this.possibleTypes
-      case 7 => this.typeFullName
+      case 0 => this.astParentFullName
+      case 1 => this.astParentType
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
       case _ => null
     }
 
   override def productPrefix = "Member"
-  override def productArity  = 8
+  override def productArity  = 10
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Member]
 }
@@ -1336,6 +1348,8 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
     NewMember.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
+  var astParentFullName: String                                       = "<empty>": String
+  var astParentType: String                                           = "<empty>": String
   var code: String                                                    = "<empty>": String
   var columnNumber: Option[Int]                                       = None
   var dynamicTypeHintFullName: IndexedSeq[String]                     = ArraySeq.empty
@@ -1344,6 +1358,8 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
   var order: Int                                                      = -1: Int
   var possibleTypes: IndexedSeq[String]                               = ArraySeq.empty
   var typeFullName: String                                            = "<empty>": String
+  def astParentFullName(value: String): this.type                     = { this.astParentFullName = value; this }
+  def astParentType(value: String): this.type                         = { this.astParentType = value; this }
   def code(value: String): this.type                                  = { this.code = value; this }
   def columnNumber(value: Int): this.type                             = { this.columnNumber = Option(value); this }
   def columnNumber(value: Option[Int]): this.type                     = { this.columnNumber = value; this }
@@ -1355,18 +1371,22 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+    interface.insertProperty(this, 3, Iterator(this.astParentFullName))
+    interface.insertProperty(this, 4, Iterator(this.astParentType))
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 18, this.dynamicTypeHintFullName)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
-    interface.insertProperty(this, 50, Iterator(this.typeFullName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 47, this.possibleTypes)
+    interface.insertProperty(this, 52, Iterator(this.typeFullName))
   }
 
   override def copy(): this.type = {
     val newInstance = new NewMember
+    newInstance.astParentFullName = this.astParentFullName
+    newInstance.astParentType = this.astParentType
     newInstance.code = this.code
     newInstance.columnNumber = this.columnNumber
     newInstance.dynamicTypeHintFullName = this.dynamicTypeHintFullName
@@ -1380,31 +1400,35 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
 
   override def productElementName(n: Int): String =
     n match {
-      case 0 => "code"
-      case 1 => "columnNumber"
-      case 2 => "dynamicTypeHintFullName"
-      case 3 => "lineNumber"
-      case 4 => "name"
-      case 5 => "order"
-      case 6 => "possibleTypes"
-      case 7 => "typeFullName"
+      case 0 => "astParentFullName"
+      case 1 => "astParentType"
+      case 2 => "code"
+      case 3 => "columnNumber"
+      case 4 => "dynamicTypeHintFullName"
+      case 5 => "lineNumber"
+      case 6 => "name"
+      case 7 => "order"
+      case 8 => "possibleTypes"
+      case 9 => "typeFullName"
       case _ => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0 => this.code
-      case 1 => this.columnNumber
-      case 2 => this.dynamicTypeHintFullName
-      case 3 => this.lineNumber
-      case 4 => this.name
-      case 5 => this.order
-      case 6 => this.possibleTypes
-      case 7 => this.typeFullName
+      case 0 => this.astParentFullName
+      case 1 => this.astParentType
+      case 2 => this.code
+      case 3 => this.columnNumber
+      case 4 => this.dynamicTypeHintFullName
+      case 5 => this.lineNumber
+      case 6 => this.name
+      case 7 => this.order
+      case 8 => this.possibleTypes
+      case 9 => this.typeFullName
       case _ => null
     }
 
   override def productPrefix                = "NewMember"
-  override def productArity                 = 8
+  override def productArity                 = 10
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMember]
 }

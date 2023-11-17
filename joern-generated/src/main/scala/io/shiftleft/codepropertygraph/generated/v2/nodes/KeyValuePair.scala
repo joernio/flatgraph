@@ -76,7 +76,7 @@ class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 32, Iterator(this.key))
-    interface.insertProperty(this, 51, Iterator(this.value))
+    interface.insertProperty(this, 53, Iterator(this.value))
   }
 
   override def copy(): this.type = {

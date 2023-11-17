@@ -84,7 +84,7 @@ class NewBinding extends NewNode(5.toShort) with BindingBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 36, Iterator(this.methodFullName))
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 47, Iterator(this.signature))
+    interface.insertProperty(this, 49, Iterator(this.signature))
   }
 
   override def copy(): this.type = {

@@ -16,6 +16,8 @@ trait MethodEMT
     with HasHashEMT
     with HasIsExternalEMT
     with HasLineNumberEndEMT
+    with HasOffsetEMT
+    with HasOffsetEndEMT
     with HasSignatureEMT
 
 trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with StaticType[MethodEMT] {
@@ -35,6 +37,8 @@ trait MethodBase extends AbstractNode with CfgNodeBase with DeclarationBase with
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     this.lineNumberEnd.foreach { p => res.put("LINE_NUMBER_END", p) }
     res.put("NAME", this.name)
+    this.offset.foreach { p => res.put("OFFSET", p) }
+    this.offsetEnd.foreach { p => res.put("OFFSET_END", p) }
     res.put("ORDER", this.order)
     res.put("SIGNATURE", this.signature)
     res
@@ -56,6 +60,8 @@ object Method {
     val LineNumber        = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER
     val LineNumberEnd     = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.LINE_NUMBER_END
     val Name              = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.NAME
+    val Offset            = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.OFFSET
+    val OffsetEnd         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.OFFSET_END
     val Order             = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.ORDER
     val Signature         = io.shiftleft.codepropertygraph.generated.v2.PropertyNames.SIGNATURE
   }
@@ -93,8 +99,10 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
       case 9  => "lineNumber"
       case 10 => "lineNumberEnd"
       case 11 => "name"
-      case 12 => "order"
-      case 13 => "signature"
+      case 12 => "offset"
+      case 13 => "offsetEnd"
+      case 14 => "order"
+      case 15 => "signature"
       case _  => ""
     }
 
@@ -112,13 +120,15 @@ class Method(graph_4762: odb2.Graph, seq_4762: Int)
       case 9  => this.lineNumber
       case 10 => this.lineNumberEnd
       case 11 => this.name
-      case 12 => this.order
-      case 13 => this.signature
+      case 12 => this.offset
+      case 13 => this.offsetEnd
+      case 14 => this.order
+      case 15 => this.signature
       case _  => null
     }
 
   override def productPrefix = "Method"
-  override def productArity  = 14
+  override def productArity  = 16
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Method]
 }
@@ -1382,6 +1392,8 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
   var lineNumber: Option[Int]                        = None
   var lineNumberEnd: Option[Int]                     = None
   var name: String                                   = "<empty>": String
+  var offset: Option[Int]                            = None
+  var offsetEnd: Option[Int]                         = None
   var order: Int                                     = -1: Int
   var signature: String                              = "": String
   def astParentFullName(value: String): this.type    = { this.astParentFullName = value; this }
@@ -1401,6 +1413,10 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
   def lineNumberEnd(value: Int): this.type           = { this.lineNumberEnd = Option(value); this }
   def lineNumberEnd(value: Option[Int]): this.type   = { this.lineNumberEnd = value; this }
   def name(value: String): this.type                 = { this.name = value; this }
+  def offset(value: Int): this.type                  = { this.offset = Option(value); this }
+  def offset(value: Option[Int]): this.type          = { this.offset = value; this }
+  def offsetEnd(value: Int): this.type               = { this.offsetEnd = Option(value); this }
+  def offsetEnd(value: Option[Int]): this.type       = { this.offsetEnd = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   def signature(value: String): this.type            = { this.signature = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
@@ -1416,8 +1432,10 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     if (lineNumberEnd.nonEmpty) interface.insertProperty(this, 35, this.lineNumberEnd)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
-    interface.insertProperty(this, 47, Iterator(this.signature))
+    if (offset.nonEmpty) interface.insertProperty(this, 41, this.offset)
+    if (offsetEnd.nonEmpty) interface.insertProperty(this, 42, this.offsetEnd)
+    interface.insertProperty(this, 43, Iterator(this.order))
+    interface.insertProperty(this, 49, Iterator(this.signature))
   }
 
   override def copy(): this.type = {
@@ -1434,6 +1452,8 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
     newInstance.lineNumber = this.lineNumber
     newInstance.lineNumberEnd = this.lineNumberEnd
     newInstance.name = this.name
+    newInstance.offset = this.offset
+    newInstance.offsetEnd = this.offsetEnd
     newInstance.order = this.order
     newInstance.signature = this.signature
     newInstance.asInstanceOf[this.type]
@@ -1453,8 +1473,10 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
       case 9  => "lineNumber"
       case 10 => "lineNumberEnd"
       case 11 => "name"
-      case 12 => "order"
-      case 13 => "signature"
+      case 12 => "offset"
+      case 13 => "offsetEnd"
+      case 14 => "order"
+      case 15 => "signature"
       case _  => ""
     }
 
@@ -1472,12 +1494,14 @@ class NewMethod extends NewNode(26.toShort) with MethodBase {
       case 9  => this.lineNumber
       case 10 => this.lineNumberEnd
       case 11 => this.name
-      case 12 => this.order
-      case 13 => this.signature
+      case 12 => this.offset
+      case 13 => this.offsetEnd
+      case 14 => this.order
+      case 15 => this.signature
       case _  => null
     }
 
   override def productPrefix                = "NewMethod"
-  override def productArity                 = 14
+  override def productArity                 = 16
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewMethod]
 }

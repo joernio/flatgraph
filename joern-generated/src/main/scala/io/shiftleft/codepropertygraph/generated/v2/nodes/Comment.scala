@@ -1332,7 +1332,7 @@ class NewComment extends NewNode(9.toShort) with CommentBase {
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     interface.insertProperty(this, 21, Iterator(this.filename))
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
-    interface.insertProperty(this, 41, Iterator(this.order))
+    interface.insertProperty(this, 43, Iterator(this.order))
   }
 
   override def copy(): this.type = {
