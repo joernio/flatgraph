@@ -33,7 +33,7 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
 
 }
 
-final class AccessNeighborsForBindingTraversal(val traversal: Iterator[nodes.Binding]) extends AnyVal {
+final class AccessNeighborsForBindingTraversal(val traversal: IterableOnce[nodes.Binding]) extends AnyVal {
 
   /** Traverse to METHOD via REF OUT edge.
     */

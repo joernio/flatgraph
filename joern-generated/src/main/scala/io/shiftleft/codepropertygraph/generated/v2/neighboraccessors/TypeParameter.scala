@@ -28,7 +28,7 @@ final class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) exten
 
 }
 
-final class AccessNeighborsForTypeParameterTraversal(val traversal: Iterator[nodes.TypeParameter]) extends AnyVal {
+final class AccessNeighborsForTypeParameterTraversal(val traversal: IterableOnce[nodes.TypeParameter]) extends AnyVal {
 
   /** Traverse to METHOD via AST IN edge.
     */

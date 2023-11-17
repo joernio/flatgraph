@@ -31,7 +31,7 @@ final class AccessNeighborsForTemplateDom(val node: nodes.TemplateDom) extends A
 
 }
 
-final class AccessNeighborsForTemplateDomTraversal(val traversal: Iterator[nodes.TemplateDom]) extends AnyVal {
+final class AccessNeighborsForTemplateDomTraversal(val traversal: IterableOnce[nodes.TemplateDom]) extends AnyVal {
 
   /** Traverse to EXPRESSION via ARGUMENT IN edge.
     */

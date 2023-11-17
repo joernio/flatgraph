@@ -83,7 +83,7 @@ final class AccessNeighborsForType(val node: nodes.Type) extends AnyVal {
 
 }
 
-final class AccessNeighborsForTypeTraversal(val traversal: Iterator[nodes.Type]) extends AnyVal {
+final class AccessNeighborsForTypeTraversal(val traversal: IterableOnce[nodes.Type]) extends AnyVal {
 
   /** Traverse to ARRAY_INITIALIZER via EVAL_TYPE IN edge.
     */

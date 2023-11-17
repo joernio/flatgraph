@@ -344,7 +344,7 @@ final class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) e
 
 }
 
-final class AccessNeighborsForFieldIdentifierTraversal(val traversal: Iterator[nodes.FieldIdentifier]) extends AnyVal {
+final class AccessNeighborsForFieldIdentifierTraversal(val traversal: IterableOnce[nodes.FieldIdentifier]) extends AnyVal {
 
   /** Traverse to BLOCK via CDG IN edge.
     */

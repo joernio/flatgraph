@@ -49,7 +49,7 @@ final class AccessNeighborsForAnnotation(val node: nodes.Annotation) extends Any
 
 }
 
-final class AccessNeighborsForAnnotationTraversal(val traversal: Iterator[nodes.Annotation]) extends AnyVal {
+final class AccessNeighborsForAnnotationTraversal(val traversal: IterableOnce[nodes.Annotation]) extends AnyVal {
 
   /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
     */

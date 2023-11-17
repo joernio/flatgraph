@@ -11,7 +11,7 @@ final class AccessNeighborsForNamespace(val node: nodes.Namespace) extends AnyVa
 
 }
 
-final class AccessNeighborsForNamespaceTraversal(val traversal: Iterator[nodes.Namespace]) extends AnyVal {
+final class AccessNeighborsForNamespaceTraversal(val traversal: IterableOnce[nodes.Namespace]) extends AnyVal {
 
   /** Traverse to NAMESPACE_BLOCK via REF IN edge.
     */

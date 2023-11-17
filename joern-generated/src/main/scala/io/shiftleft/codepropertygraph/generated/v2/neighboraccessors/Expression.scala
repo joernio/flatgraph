@@ -19,7 +19,7 @@ final class AccessNeighborsForExpression(val node: nodes.Expression) extends Any
 
 }
 
-final class AccessNeighborsForExpressionTraversal(val traversal: Iterator[nodes.Expression]) extends AnyVal {
+final class AccessNeighborsForExpressionTraversal(val traversal: IterableOnce[nodes.Expression]) extends AnyVal {
 
   /** Traverse to TEMPLATE_DOM via ARGUMENT OUT edge.
     */

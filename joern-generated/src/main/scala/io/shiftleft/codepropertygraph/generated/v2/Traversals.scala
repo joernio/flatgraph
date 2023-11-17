@@ -10,12 +10,12 @@ object Accessors {
 
   /* accessors for concrete stored nodes start */
   final class Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to aliasTypeFullName property */
     def aliasTypeFullName: Iterator[String] =
-      traversal.flatMap(_.aliasTypeFullName)
+      traversal.iterator.flatMap(_.aliasTypeFullName).iterator
 
     /** Traverse to nodes where the aliasTypeFullName matches the regular expression `value`
       */
@@ -24,7 +24,7 @@ object Accessors {
         aliasTypeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.aliasTypeFullName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -34,7 +34,7 @@ object Accessors {
       */
     def aliasTypeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.aliasTypeFullName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -46,7 +46,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.aliasTypeFullName; tmp.isDefined && tmp.get == value
         }
     }
@@ -57,7 +57,7 @@ object Accessors {
       if (values.length == 1) aliasTypeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.aliasTypeFullName; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -66,10 +66,10 @@ object Accessors {
       */
     def aliasTypeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.aliasTypeFullName.isEmpty || node.aliasTypeFullName.get != pattern }
+        traversal.iterator.filter { node => node.aliasTypeFullName.isEmpty || node.aliasTypeFullName.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.aliasTypeFullName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -79,60 +79,60 @@ object Accessors {
       */
     def aliasTypeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.aliasTypeFullName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_ARGUMENT_INDEX[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentIndexEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to argumentIndex property */
     def argumentIndex: Iterator[Int] =
-      traversal.map(_.argumentIndex)
+      traversal.iterator.map(_.argumentIndex).iterator
 
     /** Traverse to nodes where the argumentIndex equals the given `value`
       */
     def argumentIndex(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex == value }
+      traversal.iterator.filter { _.argumentIndex == value }
 
     /** Traverse to nodes where the argumentIndex equals at least one of the given `values`
       */
     def argumentIndex(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.argumentIndex) }
+      traversal.iterator.filter { node => vset.contains(node.argumentIndex) }
     }
 
     /** Traverse to nodes where the argumentIndex is greater than the given `value`
       */
     def argumentIndexGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex > value }
+      traversal.iterator.filter { _.argumentIndex > value }
 
     /** Traverse to nodes where the argumentIndex is greater than or equal the given `value`
       */
     def argumentIndexGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex >= value }
+      traversal.iterator.filter { _.argumentIndex >= value }
 
     /** Traverse to nodes where the argumentIndex is less than the given `value`
       */
     def argumentIndexLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex < value }
+      traversal.iterator.filter { _.argumentIndex < value }
 
     /** Traverse to nodes where the argumentIndex is less than or equal the given `value`
       */
     def argumentIndexLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex <= value }
+      traversal.iterator.filter { _.argumentIndex <= value }
 
   }
   final class Traversal_Property_ARGUMENT_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to argumentName property */
     def argumentName: Iterator[String] =
-      traversal.flatMap(_.argumentName)
+      traversal.iterator.flatMap(_.argumentName).iterator
 
     /** Traverse to nodes where the argumentName matches the regular expression `value`
       */
@@ -141,7 +141,7 @@ object Accessors {
         argumentNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.argumentName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -151,7 +151,7 @@ object Accessors {
       */
     def argumentName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.argumentName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -163,7 +163,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 2, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.argumentName; tmp.isDefined && tmp.get == value
         }
     }
@@ -174,7 +174,7 @@ object Accessors {
       if (values.length == 1) argumentNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.argumentName; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -183,10 +183,10 @@ object Accessors {
       */
     def argumentNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.argumentName.isEmpty || node.argumentName.get != pattern }
+        traversal.iterator.filter { node => node.argumentName.isEmpty || node.argumentName.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.argumentName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -196,19 +196,19 @@ object Accessors {
       */
     def argumentNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.argumentName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_AST_PARENT_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentFullNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to astParentFullName property */
     def astParentFullName: Iterator[String] =
-      traversal.map(_.astParentFullName)
+      traversal.iterator.map(_.astParentFullName).iterator
 
     /** Traverse to nodes where the astParentFullName matches the regular expression `value`
       */
@@ -217,14 +217,14 @@ object Accessors {
         astParentFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentFullName).matches }
       }
 
     /** Traverse to nodes where the astParentFullName matches at least one of the regular expressions in `values`
       */
     def astParentFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
     }
 
     /** Traverse to nodes where astParentFullName matches `value` exactly.
@@ -233,7 +233,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 3, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentFullName == value }
+      case _ => traversal.iterator.filter { _.astParentFullName == value }
     }
 
     /** Traverse to nodes where astParentFullName matches one of the elements in `values` exactly.
@@ -242,17 +242,17 @@ object Accessors {
       if (values.length == 1) astParentFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentFullName) }
       }
 
     /** Traverse to nodes where astParentFullName does not match the regular expression `value`.
       */
     def astParentFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentFullName != pattern }
+        traversal.iterator.filter { node => node.astParentFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentFullName).matches }
       }
     }
 
@@ -260,17 +260,17 @@ object Accessors {
       */
     def astParentFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_AST_PARENT_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentTypeEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to astParentType property */
     def astParentType: Iterator[String] =
-      traversal.map(_.astParentType)
+      traversal.iterator.map(_.astParentType).iterator
 
     /** Traverse to nodes where the astParentType matches the regular expression `value`
       */
@@ -279,14 +279,14 @@ object Accessors {
         astParentTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentType).matches }
       }
 
     /** Traverse to nodes where the astParentType matches at least one of the regular expressions in `values`
       */
     def astParentType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
     }
 
     /** Traverse to nodes where astParentType matches `value` exactly.
@@ -295,7 +295,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentType == value }
+      case _ => traversal.iterator.filter { _.astParentType == value }
     }
 
     /** Traverse to nodes where astParentType matches one of the elements in `values` exactly.
@@ -304,17 +304,17 @@ object Accessors {
       if (values.length == 1) astParentTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentType) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentType) }
       }
 
     /** Traverse to nodes where astParentType does not match the regular expression `value`.
       */
     def astParentTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentType != pattern }
+        traversal.iterator.filter { node => node.astParentType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentType).matches }
       }
     }
 
@@ -322,17 +322,17 @@ object Accessors {
       */
     def astParentTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_CANONICAL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCanonicalNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to canonicalName property */
     def canonicalName: Iterator[String] =
-      traversal.map(_.canonicalName)
+      traversal.iterator.map(_.canonicalName).iterator
 
     /** Traverse to nodes where the canonicalName matches the regular expression `value`
       */
@@ -341,14 +341,14 @@ object Accessors {
         canonicalNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.canonicalName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.canonicalName).matches }
       }
 
     /** Traverse to nodes where the canonicalName matches at least one of the regular expressions in `values`
       */
     def canonicalName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.canonicalName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.canonicalName).matches } }
     }
 
     /** Traverse to nodes where canonicalName matches `value` exactly.
@@ -357,7 +357,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.canonicalName == value }
+      case _ => traversal.iterator.filter { _.canonicalName == value }
     }
 
     /** Traverse to nodes where canonicalName matches one of the elements in `values` exactly.
@@ -366,17 +366,17 @@ object Accessors {
       if (values.length == 1) canonicalNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.canonicalName) }
+        traversal.iterator.filter { item => valueSet.contains(item.canonicalName) }
       }
 
     /** Traverse to nodes where canonicalName does not match the regular expression `value`.
       */
     def canonicalNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.canonicalName != pattern }
+        traversal.iterator.filter { node => node.canonicalName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.canonicalName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.canonicalName).matches }
       }
     }
 
@@ -384,17 +384,17 @@ object Accessors {
       */
     def canonicalNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.canonicalName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.canonicalName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_CLASS_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to className property */
     def className: Iterator[String] =
-      traversal.map(_.className)
+      traversal.iterator.map(_.className).iterator
 
     /** Traverse to nodes where the className matches the regular expression `value`
       */
@@ -403,14 +403,14 @@ object Accessors {
         classNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.className).matches }
+        traversal.iterator.filter { item => matcher.reset(item.className).matches }
       }
 
     /** Traverse to nodes where the className matches at least one of the regular expressions in `values`
       */
     def className(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.className).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.className).matches } }
     }
 
     /** Traverse to nodes where className matches `value` exactly.
@@ -419,7 +419,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 6, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.className == value }
+      case _ => traversal.iterator.filter { _.className == value }
     }
 
     /** Traverse to nodes where className matches one of the elements in `values` exactly.
@@ -428,17 +428,17 @@ object Accessors {
       if (values.length == 1) classNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.className) }
+        traversal.iterator.filter { item => valueSet.contains(item.className) }
       }
 
     /** Traverse to nodes where className does not match the regular expression `value`.
       */
     def classNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.className != pattern }
+        traversal.iterator.filter { node => node.className != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.className).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.className).matches }
       }
     }
 
@@ -446,17 +446,17 @@ object Accessors {
       */
     def classNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.className).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.className).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_CLASS_SHORT_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassShortNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to classShortName property */
     def classShortName: Iterator[String] =
-      traversal.map(_.classShortName)
+      traversal.iterator.map(_.classShortName).iterator
 
     /** Traverse to nodes where the classShortName matches the regular expression `value`
       */
@@ -465,14 +465,14 @@ object Accessors {
         classShortNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.classShortName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.classShortName).matches }
       }
 
     /** Traverse to nodes where the classShortName matches at least one of the regular expressions in `values`
       */
     def classShortName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.classShortName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.classShortName).matches } }
     }
 
     /** Traverse to nodes where classShortName matches `value` exactly.
@@ -481,7 +481,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 7, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.classShortName == value }
+      case _ => traversal.iterator.filter { _.classShortName == value }
     }
 
     /** Traverse to nodes where classShortName matches one of the elements in `values` exactly.
@@ -490,17 +490,17 @@ object Accessors {
       if (values.length == 1) classShortNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.classShortName) }
+        traversal.iterator.filter { item => valueSet.contains(item.classShortName) }
       }
 
     /** Traverse to nodes where classShortName does not match the regular expression `value`.
       */
     def classShortNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.classShortName != pattern }
+        traversal.iterator.filter { node => node.classShortName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.classShortName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.classShortName).matches }
       }
     }
 
@@ -508,17 +508,17 @@ object Accessors {
       */
     def classShortNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.classShortName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.classShortName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_CLOSURE_BINDING_ID[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureBindingIdEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to closureBindingId property */
     def closureBindingId: Iterator[String] =
-      traversal.flatMap(_.closureBindingId)
+      traversal.iterator.flatMap(_.closureBindingId).iterator
 
     /** Traverse to nodes where the closureBindingId matches the regular expression `value`
       */
@@ -527,7 +527,7 @@ object Accessors {
         closureBindingIdExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -537,7 +537,7 @@ object Accessors {
       */
     def closureBindingId(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -549,7 +549,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.closureBindingId; tmp.isDefined && tmp.get == value
         }
     }
@@ -560,7 +560,7 @@ object Accessors {
       if (values.length == 1) closureBindingIdExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -569,10 +569,10 @@ object Accessors {
       */
     def closureBindingIdNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
+        traversal.iterator.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -582,19 +582,19 @@ object Accessors {
       */
     def closureBindingIdNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_CLOSURE_ORIGINAL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureOriginalNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to closureOriginalName property */
     def closureOriginalName: Iterator[String] =
-      traversal.flatMap(_.closureOriginalName)
+      traversal.iterator.flatMap(_.closureOriginalName).iterator
 
     /** Traverse to nodes where the closureOriginalName matches the regular expression `value`
       */
@@ -603,7 +603,7 @@ object Accessors {
         closureOriginalNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureOriginalName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -613,7 +613,7 @@ object Accessors {
       */
     def closureOriginalName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.closureOriginalName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -625,7 +625,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 9, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.closureOriginalName; tmp.isDefined && tmp.get == value
         }
     }
@@ -636,7 +636,7 @@ object Accessors {
       if (values.length == 1) closureOriginalNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureOriginalName; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -645,10 +645,10 @@ object Accessors {
       */
     def closureOriginalNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.closureOriginalName.isEmpty || node.closureOriginalName.get != pattern }
+        traversal.iterator.filter { node => node.closureOriginalName.isEmpty || node.closureOriginalName.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.closureOriginalName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -658,19 +658,19 @@ object Accessors {
       */
     def closureOriginalNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.closureOriginalName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_CODE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCodeEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to code property */
     def code: Iterator[String] =
-      traversal.map(_.code)
+      traversal.iterator.map(_.code).iterator
 
     /** Traverse to nodes where the code matches the regular expression `value`
       */
@@ -679,14 +679,14 @@ object Accessors {
         codeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.code).matches }
+        traversal.iterator.filter { item => matcher.reset(item.code).matches }
       }
 
     /** Traverse to nodes where the code matches at least one of the regular expressions in `values`
       */
     def code(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.code).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.code).matches } }
     }
 
     /** Traverse to nodes where code matches `value` exactly.
@@ -695,7 +695,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 10, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.code == value }
+      case _ => traversal.iterator.filter { _.code == value }
     }
 
     /** Traverse to nodes where code matches one of the elements in `values` exactly.
@@ -704,17 +704,17 @@ object Accessors {
       if (values.length == 1) codeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.code) }
+        traversal.iterator.filter { item => valueSet.contains(item.code) }
       }
 
     /** Traverse to nodes where code does not match the regular expression `value`.
       */
     def codeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.code != pattern }
+        traversal.iterator.filter { node => node.code != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.code).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.code).matches }
       }
     }
 
@@ -722,22 +722,22 @@ object Accessors {
       */
     def codeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.code).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.code).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_COLUMN_NUMBER[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to columnNumber property */
     def columnNumber: Iterator[Int] =
-      traversal.flatMap(_.columnNumber)
+      traversal.iterator.flatMap(_.columnNumber).iterator
 
     /** Traverse to nodes where the columnNumber equals the given `value`
       */
     def columnNumber(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get == value
       }
 
@@ -745,7 +745,7 @@ object Accessors {
       */
     def columnNumber(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -753,44 +753,44 @@ object Accessors {
     /** Traverse to nodes where the columnNumber is greater than the given `value`
       */
     def columnNumberGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the columnNumber is greater than or equal the given `value`
       */
     def columnNumberGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the columnNumber is less than the given `value`
       */
     def columnNumberLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the columnNumber is less than or equal the given `value`
       */
     def columnNumberLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get <= value
       }
 
   }
   final class Traversal_Property_COLUMN_NUMBER_END[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberEndEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to columnNumberEnd property */
     def columnNumberEnd: Iterator[Int] =
-      traversal.flatMap(_.columnNumberEnd)
+      traversal.iterator.flatMap(_.columnNumberEnd).iterator
 
     /** Traverse to nodes where the columnNumberEnd equals the given `value`
       */
     def columnNumberEnd(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get == value
       }
 
@@ -798,7 +798,7 @@ object Accessors {
       */
     def columnNumberEnd(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -806,39 +806,39 @@ object Accessors {
     /** Traverse to nodes where the columnNumberEnd is greater than the given `value`
       */
     def columnNumberEndGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the columnNumberEnd is greater than or equal the given `value`
       */
     def columnNumberEndGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the columnNumberEnd is less than the given `value`
       */
     def columnNumberEndLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the columnNumberEnd is less than or equal the given `value`
       */
     def columnNumberEndLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get <= value
       }
 
   }
   final class Traversal_Property_CONTAINED_REF[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContainedRefEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to containedRef property */
     def containedRef: Iterator[String] =
-      traversal.map(_.containedRef)
+      traversal.iterator.map(_.containedRef).iterator
 
     /** Traverse to nodes where the containedRef matches the regular expression `value`
       */
@@ -847,14 +847,14 @@ object Accessors {
         containedRefExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.containedRef).matches }
+        traversal.iterator.filter { item => matcher.reset(item.containedRef).matches }
       }
 
     /** Traverse to nodes where the containedRef matches at least one of the regular expressions in `values`
       */
     def containedRef(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.containedRef).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.containedRef).matches } }
     }
 
     /** Traverse to nodes where containedRef matches `value` exactly.
@@ -863,7 +863,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 13, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.containedRef == value }
+      case _ => traversal.iterator.filter { _.containedRef == value }
     }
 
     /** Traverse to nodes where containedRef matches one of the elements in `values` exactly.
@@ -872,17 +872,17 @@ object Accessors {
       if (values.length == 1) containedRefExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.containedRef) }
+        traversal.iterator.filter { item => valueSet.contains(item.containedRef) }
       }
 
     /** Traverse to nodes where containedRef does not match the regular expression `value`.
       */
     def containedRefNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.containedRef != pattern }
+        traversal.iterator.filter { node => node.containedRef != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.containedRef).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.containedRef).matches }
       }
     }
 
@@ -890,17 +890,17 @@ object Accessors {
       */
     def containedRefNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.containedRef).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.containedRef).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_CONTENT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContentEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to content property */
     def content: Iterator[String] =
-      traversal.map(_.content)
+      traversal.iterator.map(_.content).iterator
 
     /** Traverse to nodes where the content matches the regular expression `value`
       */
@@ -909,14 +909,14 @@ object Accessors {
         contentExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.content).matches }
+        traversal.iterator.filter { item => matcher.reset(item.content).matches }
       }
 
     /** Traverse to nodes where the content matches at least one of the regular expressions in `values`
       */
     def content(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.content).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.content).matches } }
     }
 
     /** Traverse to nodes where content matches `value` exactly.
@@ -925,7 +925,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 14, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.content == value }
+      case _ => traversal.iterator.filter { _.content == value }
     }
 
     /** Traverse to nodes where content matches one of the elements in `values` exactly.
@@ -934,17 +934,17 @@ object Accessors {
       if (values.length == 1) contentExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.content) }
+        traversal.iterator.filter { item => valueSet.contains(item.content) }
       }
 
     /** Traverse to nodes where content does not match the regular expression `value`.
       */
     def contentNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.content != pattern }
+        traversal.iterator.filter { node => node.content != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.content).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.content).matches }
       }
     }
 
@@ -952,18 +952,18 @@ object Accessors {
       */
     def contentNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.content).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.content).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_CONTROL_STRUCTURE_TYPE[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasControlStructureTypeEMT]
-  ](val traversal: Iterator[NodeType])
+  ](val traversal: IterableOnce[NodeType])
       extends AnyVal {
 
     /** Traverse to controlStructureType property */
     def controlStructureType: Iterator[String] =
-      traversal.map(_.controlStructureType)
+      traversal.iterator.map(_.controlStructureType).iterator
 
     /** Traverse to nodes where the controlStructureType matches the regular expression `value`
       */
@@ -972,14 +972,14 @@ object Accessors {
         controlStructureTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.controlStructureType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.controlStructureType).matches }
       }
 
     /** Traverse to nodes where the controlStructureType matches at least one of the regular expressions in `values`
       */
     def controlStructureType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.controlStructureType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.controlStructureType).matches } }
     }
 
     /** Traverse to nodes where controlStructureType matches `value` exactly.
@@ -988,7 +988,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 15, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.controlStructureType == value }
+      case _ => traversal.iterator.filter { _.controlStructureType == value }
     }
 
     /** Traverse to nodes where controlStructureType matches one of the elements in `values` exactly.
@@ -997,17 +997,17 @@ object Accessors {
       if (values.length == 1) controlStructureTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.controlStructureType) }
+        traversal.iterator.filter { item => valueSet.contains(item.controlStructureType) }
       }
 
     /** Traverse to nodes where controlStructureType does not match the regular expression `value`.
       */
     def controlStructureTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.controlStructureType != pattern }
+        traversal.iterator.filter { node => node.controlStructureType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.controlStructureType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.controlStructureType).matches }
       }
     }
 
@@ -1015,17 +1015,17 @@ object Accessors {
       */
     def controlStructureTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.controlStructureType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.controlStructureType).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_DEPENDENCY_GROUP_ID[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDependencyGroupIdEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to dependencyGroupId property */
     def dependencyGroupId: Iterator[String] =
-      traversal.flatMap(_.dependencyGroupId)
+      traversal.iterator.flatMap(_.dependencyGroupId).iterator
 
     /** Traverse to nodes where the dependencyGroupId matches the regular expression `value`
       */
@@ -1034,7 +1034,7 @@ object Accessors {
         dependencyGroupIdExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.dependencyGroupId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1044,7 +1044,7 @@ object Accessors {
       */
     def dependencyGroupId(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.dependencyGroupId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -1056,7 +1056,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 16, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.dependencyGroupId; tmp.isDefined && tmp.get == value
         }
     }
@@ -1067,7 +1067,7 @@ object Accessors {
       if (values.length == 1) dependencyGroupIdExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.dependencyGroupId; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -1076,10 +1076,10 @@ object Accessors {
       */
     def dependencyGroupIdNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.dependencyGroupId.isEmpty || node.dependencyGroupId.get != pattern }
+        traversal.iterator.filter { node => node.dependencyGroupId.isEmpty || node.dependencyGroupId.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.dependencyGroupId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1089,19 +1089,19 @@ object Accessors {
       */
     def dependencyGroupIdNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.dependencyGroupId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_DISPATCH_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDispatchTypeEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to dispatchType property */
     def dispatchType: Iterator[String] =
-      traversal.map(_.dispatchType)
+      traversal.iterator.map(_.dispatchType).iterator
 
     /** Traverse to nodes where the dispatchType matches the regular expression `value`
       */
@@ -1110,14 +1110,14 @@ object Accessors {
         dispatchTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.dispatchType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.dispatchType).matches }
       }
 
     /** Traverse to nodes where the dispatchType matches at least one of the regular expressions in `values`
       */
     def dispatchType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.dispatchType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.dispatchType).matches } }
     }
 
     /** Traverse to nodes where dispatchType matches `value` exactly.
@@ -1126,7 +1126,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 17, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.dispatchType == value }
+      case _ => traversal.iterator.filter { _.dispatchType == value }
     }
 
     /** Traverse to nodes where dispatchType matches one of the elements in `values` exactly.
@@ -1135,17 +1135,17 @@ object Accessors {
       if (values.length == 1) dispatchTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.dispatchType) }
+        traversal.iterator.filter { item => valueSet.contains(item.dispatchType) }
       }
 
     /** Traverse to nodes where dispatchType does not match the regular expression `value`.
       */
     def dispatchTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.dispatchType != pattern }
+        traversal.iterator.filter { node => node.dispatchType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.dispatchType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.dispatchType).matches }
       }
     }
 
@@ -1153,27 +1153,27 @@ object Accessors {
       */
     def dispatchTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.dispatchType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.dispatchType).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDynamicTypeHintFullNameEMT]
-  ](val traversal: Iterator[NodeType])
+  ](val traversal: IterableOnce[NodeType])
       extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
   }
   final class Traversal_Property_EVALUATION_STRATEGY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasEvaluationStrategyEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to evaluationStrategy property */
     def evaluationStrategy: Iterator[String] =
-      traversal.map(_.evaluationStrategy)
+      traversal.iterator.map(_.evaluationStrategy).iterator
 
     /** Traverse to nodes where the evaluationStrategy matches the regular expression `value`
       */
@@ -1182,14 +1182,14 @@ object Accessors {
         evaluationStrategyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filter { item => matcher.reset(item.evaluationStrategy).matches }
       }
 
     /** Traverse to nodes where the evaluationStrategy matches at least one of the regular expressions in `values`
       */
     def evaluationStrategy(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
     }
 
     /** Traverse to nodes where evaluationStrategy matches `value` exactly.
@@ -1198,7 +1198,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 19, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.evaluationStrategy == value }
+      case _ => traversal.iterator.filter { _.evaluationStrategy == value }
     }
 
     /** Traverse to nodes where evaluationStrategy matches one of the elements in `values` exactly.
@@ -1207,17 +1207,17 @@ object Accessors {
       if (values.length == 1) evaluationStrategyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.evaluationStrategy) }
+        traversal.iterator.filter { item => valueSet.contains(item.evaluationStrategy) }
       }
 
     /** Traverse to nodes where evaluationStrategy does not match the regular expression `value`.
       */
     def evaluationStrategyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.evaluationStrategy != pattern }
+        traversal.iterator.filter { node => node.evaluationStrategy != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
       }
     }
 
@@ -1225,31 +1225,31 @@ object Accessors {
       */
     def evaluationStrategyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_EXPLICIT_AS[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasExplicitAsEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to explicitAs property */
     def explicitAs: Iterator[Boolean] =
-      traversal.flatMap(_.explicitAs)
+      traversal.iterator.flatMap(_.explicitAs).iterator
 
     /** Traverse to nodes where the explicitAs equals the given `value`
       */
     def explicitAs(value: Boolean): Iterator[NodeType] =
-      traversal.filter { node => node.explicitAs.isDefined && node.explicitAs.get == value }
+      traversal.iterator.filter { node => node.explicitAs.isDefined && node.explicitAs.get == value }
 
   }
   final class Traversal_Property_FILENAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFilenameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
-      traversal.map(_.filename)
+      traversal.iterator.map(_.filename).iterator
 
     /** Traverse to nodes where the filename matches the regular expression `value`
       */
@@ -1258,14 +1258,14 @@ object Accessors {
         filenameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filter { item => matcher.reset(item.filename).matches }
       }
 
     /** Traverse to nodes where the filename matches at least one of the regular expressions in `values`
       */
     def filename(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.filename).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.filename).matches } }
     }
 
     /** Traverse to nodes where filename matches `value` exactly.
@@ -1274,7 +1274,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 21, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.filename == value }
+      case _ => traversal.iterator.filter { _.filename == value }
     }
 
     /** Traverse to nodes where filename matches one of the elements in `values` exactly.
@@ -1283,17 +1283,17 @@ object Accessors {
       if (values.length == 1) filenameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.filename) }
+        traversal.iterator.filter { item => valueSet.contains(item.filename) }
       }
 
     /** Traverse to nodes where filename does not match the regular expression `value`.
       */
     def filenameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.filename != pattern }
+        traversal.iterator.filter { node => node.filename != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.filename).matches }
       }
     }
 
@@ -1301,17 +1301,17 @@ object Accessors {
       */
     def filenameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFullNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
-      traversal.map(_.fullName)
+      traversal.iterator.map(_.fullName).iterator
 
     /** Traverse to nodes where the fullName matches the regular expression `value`
       */
@@ -1320,14 +1320,14 @@ object Accessors {
         fullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.fullName).matches }
       }
 
     /** Traverse to nodes where the fullName matches at least one of the regular expressions in `values`
       */
     def fullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.fullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.fullName).matches } }
     }
 
     /** Traverse to nodes where fullName matches `value` exactly.
@@ -1336,7 +1336,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 22, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.fullName == value }
+      case _ => traversal.iterator.filter { _.fullName == value }
     }
 
     /** Traverse to nodes where fullName matches one of the elements in `values` exactly.
@@ -1345,17 +1345,17 @@ object Accessors {
       if (values.length == 1) fullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.fullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.fullName) }
       }
 
     /** Traverse to nodes where fullName does not match the regular expression `value`.
       */
     def fullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.fullName != pattern }
+        traversal.iterator.filter { node => node.fullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.fullName).matches }
       }
     }
 
@@ -1363,17 +1363,17 @@ object Accessors {
       */
     def fullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_HASH[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasHashEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
-      traversal.flatMap(_.hash)
+      traversal.iterator.flatMap(_.hash).iterator
 
     /** Traverse to nodes where the hash matches the regular expression `value`
       */
@@ -1382,7 +1382,7 @@ object Accessors {
         hashExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1392,7 +1392,7 @@ object Accessors {
       */
     def hash(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -1404,7 +1404,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 23, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.hash; tmp.isDefined && tmp.get == value
         }
     }
@@ -1415,7 +1415,7 @@ object Accessors {
       if (values.length == 1) hashExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -1424,10 +1424,10 @@ object Accessors {
       */
     def hashNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.hash.isEmpty || node.hash.get != pattern }
+        traversal.iterator.filter { node => node.hash.isEmpty || node.hash.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1437,19 +1437,19 @@ object Accessors {
       */
     def hashNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_IMPORTED_AS[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedAsEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to importedAs property */
     def importedAs: Iterator[String] =
-      traversal.flatMap(_.importedAs)
+      traversal.iterator.flatMap(_.importedAs).iterator
 
     /** Traverse to nodes where the importedAs matches the regular expression `value`
       */
@@ -1458,7 +1458,7 @@ object Accessors {
         importedAsExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedAs; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1468,7 +1468,7 @@ object Accessors {
       */
     def importedAs(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.importedAs; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -1480,7 +1480,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 24, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.importedAs; tmp.isDefined && tmp.get == value
         }
     }
@@ -1491,7 +1491,7 @@ object Accessors {
       if (values.length == 1) importedAsExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedAs; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -1500,10 +1500,10 @@ object Accessors {
       */
     def importedAsNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.importedAs.isEmpty || node.importedAs.get != pattern }
+        traversal.iterator.filter { node => node.importedAs.isEmpty || node.importedAs.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.importedAs; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1513,19 +1513,19 @@ object Accessors {
       */
     def importedAsNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.importedAs; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_IMPORTED_ENTITY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedEntityEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to importedEntity property */
     def importedEntity: Iterator[String] =
-      traversal.flatMap(_.importedEntity)
+      traversal.iterator.flatMap(_.importedEntity).iterator
 
     /** Traverse to nodes where the importedEntity matches the regular expression `value`
       */
@@ -1534,7 +1534,7 @@ object Accessors {
         importedEntityExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedEntity; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1544,7 +1544,7 @@ object Accessors {
       */
     def importedEntity(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.importedEntity; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -1556,7 +1556,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 25, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.importedEntity; tmp.isDefined && tmp.get == value
         }
     }
@@ -1567,7 +1567,7 @@ object Accessors {
       if (values.length == 1) importedEntityExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedEntity; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -1576,10 +1576,10 @@ object Accessors {
       */
     def importedEntityNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.importedEntity.isEmpty || node.importedEntity.get != pattern }
+        traversal.iterator.filter { node => node.importedEntity.isEmpty || node.importedEntity.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.importedEntity; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -1589,125 +1589,126 @@ object Accessors {
       */
     def importedEntityNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.importedEntity; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
   final class Traversal_Property_INDEX[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIndexEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to index property */
     def index: Iterator[Int] =
-      traversal.map(_.index)
+      traversal.iterator.map(_.index).iterator
 
     /** Traverse to nodes where the index equals the given `value`
       */
     def index(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index == value }
+      traversal.iterator.filter { _.index == value }
 
     /** Traverse to nodes where the index equals at least one of the given `values`
       */
     def index(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.index) }
+      traversal.iterator.filter { node => vset.contains(node.index) }
     }
 
     /** Traverse to nodes where the index is greater than the given `value`
       */
     def indexGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index > value }
+      traversal.iterator.filter { _.index > value }
 
     /** Traverse to nodes where the index is greater than or equal the given `value`
       */
     def indexGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index >= value }
+      traversal.iterator.filter { _.index >= value }
 
     /** Traverse to nodes where the index is less than the given `value`
       */
     def indexLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index < value }
+      traversal.iterator.filter { _.index < value }
 
     /** Traverse to nodes where the index is less than or equal the given `value`
       */
     def indexLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index <= value }
+      traversal.iterator.filter { _.index <= value }
 
   }
   final class Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasInheritsFromTypeFullNameEMT]
-  ](val traversal: Iterator[NodeType])
+  ](val traversal: IterableOnce[NodeType])
       extends AnyVal {
 
     /** Traverse to inheritsFromTypeFullName property */
     def inheritsFromTypeFullName: Iterator[String] =
-      traversal.flatMap(_.inheritsFromTypeFullName)
+      traversal.iterator.flatMap(_.inheritsFromTypeFullName).iterator
 
   }
   final class Traversal_Property_IS_EXPLICIT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExplicitEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to isExplicit property */
     def isExplicit: Iterator[Boolean] =
-      traversal.flatMap(_.isExplicit)
+      traversal.iterator.flatMap(_.isExplicit).iterator
 
     /** Traverse to nodes where the isExplicit equals the given `value`
       */
     def isExplicit(value: Boolean): Iterator[NodeType] =
-      traversal.filter { node => node.isExplicit.isDefined && node.isExplicit.get == value }
+      traversal.iterator.filter { node => node.isExplicit.isDefined && node.isExplicit.get == value }
 
   }
   final class Traversal_Property_IS_EXTERNAL[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExternalEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to isExternal property */
     def isExternal: Iterator[Boolean] =
-      traversal.map(_.isExternal)
+      traversal.iterator.map(_.isExternal).iterator
 
     /** Traverse to nodes where the isExternal equals the given `value`
       */
     def isExternal(value: Boolean): Iterator[NodeType] =
-      traversal.filter { _.isExternal == value }
+      traversal.iterator.filter { _.isExternal == value }
 
   }
   final class Traversal_Property_IS_VARIADIC[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsVariadicEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to isVariadic property */
     def isVariadic: Iterator[Boolean] =
-      traversal.map(_.isVariadic)
+      traversal.iterator.map(_.isVariadic).iterator
 
     /** Traverse to nodes where the isVariadic equals the given `value`
       */
     def isVariadic(value: Boolean): Iterator[NodeType] =
-      traversal.filter { _.isVariadic == value }
+      traversal.iterator.filter { _.isVariadic == value }
 
   }
   final class Traversal_Property_IS_WILDCARD[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsWildcardEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to isWildcard property */
     def isWildcard: Iterator[Boolean] =
-      traversal.flatMap(_.isWildcard)
+      traversal.iterator.flatMap(_.isWildcard).iterator
 
     /** Traverse to nodes where the isWildcard equals the given `value`
       */
     def isWildcard(value: Boolean): Iterator[NodeType] =
-      traversal.filter { node => node.isWildcard.isDefined && node.isWildcard.get == value }
+      traversal.iterator.filter { node => node.isWildcard.isDefined && node.isWildcard.get == value }
 
   }
-  final class Traversal_Property_KEY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasKeyEMT]](val traversal: Iterator[NodeType])
-      extends AnyVal {
+  final class Traversal_Property_KEY[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasKeyEMT]](
+    val traversal: IterableOnce[NodeType]
+  ) extends AnyVal {
 
     /** Traverse to key property */
     def key: Iterator[String] =
-      traversal.map(_.key)
+      traversal.iterator.map(_.key).iterator
 
     /** Traverse to nodes where the key matches the regular expression `value`
       */
@@ -1716,14 +1717,14 @@ object Accessors {
         keyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.key).matches }
+        traversal.iterator.filter { item => matcher.reset(item.key).matches }
       }
 
     /** Traverse to nodes where the key matches at least one of the regular expressions in `values`
       */
     def key(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.key).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.key).matches } }
     }
 
     /** Traverse to nodes where key matches `value` exactly.
@@ -1732,7 +1733,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 32, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.key == value }
+      case _ => traversal.iterator.filter { _.key == value }
     }
 
     /** Traverse to nodes where key matches one of the elements in `values` exactly.
@@ -1741,17 +1742,17 @@ object Accessors {
       if (values.length == 1) keyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.key) }
+        traversal.iterator.filter { item => valueSet.contains(item.key) }
       }
 
     /** Traverse to nodes where key does not match the regular expression `value`.
       */
     def keyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.key != pattern }
+        traversal.iterator.filter { node => node.key != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.key).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.key).matches }
       }
     }
 
@@ -1759,17 +1760,17 @@ object Accessors {
       */
     def keyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.key).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.key).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_LANGUAGE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLanguageEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to language property */
     def language: Iterator[String] =
-      traversal.map(_.language)
+      traversal.iterator.map(_.language).iterator
 
     /** Traverse to nodes where the language matches the regular expression `value`
       */
@@ -1778,14 +1779,14 @@ object Accessors {
         languageExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.language).matches }
+        traversal.iterator.filter { item => matcher.reset(item.language).matches }
       }
 
     /** Traverse to nodes where the language matches at least one of the regular expressions in `values`
       */
     def language(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.language).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.language).matches } }
     }
 
     /** Traverse to nodes where language matches `value` exactly.
@@ -1794,7 +1795,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 33, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.language == value }
+      case _ => traversal.iterator.filter { _.language == value }
     }
 
     /** Traverse to nodes where language matches one of the elements in `values` exactly.
@@ -1803,17 +1804,17 @@ object Accessors {
       if (values.length == 1) languageExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.language) }
+        traversal.iterator.filter { item => valueSet.contains(item.language) }
       }
 
     /** Traverse to nodes where language does not match the regular expression `value`.
       */
     def languageNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.language != pattern }
+        traversal.iterator.filter { node => node.language != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.language).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.language).matches }
       }
     }
 
@@ -1821,22 +1822,22 @@ object Accessors {
       */
     def languageNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.language).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.language).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_LINE_NUMBER[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to lineNumber property */
     def lineNumber: Iterator[Int] =
-      traversal.flatMap(_.lineNumber)
+      traversal.iterator.flatMap(_.lineNumber).iterator
 
     /** Traverse to nodes where the lineNumber equals the given `value`
       */
     def lineNumber(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get == value
       }
 
@@ -1844,7 +1845,7 @@ object Accessors {
       */
     def lineNumber(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -1852,44 +1853,44 @@ object Accessors {
     /** Traverse to nodes where the lineNumber is greater than the given `value`
       */
     def lineNumberGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the lineNumber is greater than or equal the given `value`
       */
     def lineNumberGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the lineNumber is less than the given `value`
       */
     def lineNumberLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the lineNumber is less than or equal the given `value`
       */
     def lineNumberLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get <= value
       }
 
   }
   final class Traversal_Property_LINE_NUMBER_END[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberEndEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to lineNumberEnd property */
     def lineNumberEnd: Iterator[Int] =
-      traversal.flatMap(_.lineNumberEnd)
+      traversal.iterator.flatMap(_.lineNumberEnd).iterator
 
     /** Traverse to nodes where the lineNumberEnd equals the given `value`
       */
     def lineNumberEnd(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get == value
       }
 
@@ -1897,7 +1898,7 @@ object Accessors {
       */
     def lineNumberEnd(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -1905,39 +1906,39 @@ object Accessors {
     /** Traverse to nodes where the lineNumberEnd is greater than the given `value`
       */
     def lineNumberEndGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the lineNumberEnd is greater than or equal the given `value`
       */
     def lineNumberEndGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the lineNumberEnd is less than the given `value`
       */
     def lineNumberEndLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the lineNumberEnd is less than or equal the given `value`
       */
     def lineNumberEndLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get <= value
       }
 
   }
   final class Traversal_Property_METHOD_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodFullNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to methodFullName property */
     def methodFullName: Iterator[String] =
-      traversal.map(_.methodFullName)
+      traversal.iterator.map(_.methodFullName).iterator
 
     /** Traverse to nodes where the methodFullName matches the regular expression `value`
       */
@@ -1946,14 +1947,14 @@ object Accessors {
         methodFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodFullName).matches }
       }
 
     /** Traverse to nodes where the methodFullName matches at least one of the regular expressions in `values`
       */
     def methodFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
     }
 
     /** Traverse to nodes where methodFullName matches `value` exactly.
@@ -1962,7 +1963,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 36, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodFullName == value }
+      case _ => traversal.iterator.filter { _.methodFullName == value }
     }
 
     /** Traverse to nodes where methodFullName matches one of the elements in `values` exactly.
@@ -1971,17 +1972,17 @@ object Accessors {
       if (values.length == 1) methodFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodFullName) }
       }
 
     /** Traverse to nodes where methodFullName does not match the regular expression `value`.
       */
     def methodFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodFullName != pattern }
+        traversal.iterator.filter { node => node.methodFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodFullName).matches }
       }
     }
 
@@ -1989,17 +1990,17 @@ object Accessors {
       */
     def methodFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_METHOD_SHORT_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodShortNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to methodShortName property */
     def methodShortName: Iterator[String] =
-      traversal.map(_.methodShortName)
+      traversal.iterator.map(_.methodShortName).iterator
 
     /** Traverse to nodes where the methodShortName matches the regular expression `value`
       */
@@ -2008,14 +2009,14 @@ object Accessors {
         methodShortNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodShortName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodShortName).matches }
       }
 
     /** Traverse to nodes where the methodShortName matches at least one of the regular expressions in `values`
       */
     def methodShortName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodShortName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodShortName).matches } }
     }
 
     /** Traverse to nodes where methodShortName matches `value` exactly.
@@ -2024,7 +2025,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 37, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodShortName == value }
+      case _ => traversal.iterator.filter { _.methodShortName == value }
     }
 
     /** Traverse to nodes where methodShortName matches one of the elements in `values` exactly.
@@ -2033,17 +2034,17 @@ object Accessors {
       if (values.length == 1) methodShortNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodShortName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodShortName) }
       }
 
     /** Traverse to nodes where methodShortName does not match the regular expression `value`.
       */
     def methodShortNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodShortName != pattern }
+        traversal.iterator.filter { node => node.methodShortName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodShortName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodShortName).matches }
       }
     }
 
@@ -2051,17 +2052,17 @@ object Accessors {
       */
     def methodShortNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodShortName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodShortName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_MODIFIER_TYPE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasModifierTypeEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to modifierType property */
     def modifierType: Iterator[String] =
-      traversal.map(_.modifierType)
+      traversal.iterator.map(_.modifierType).iterator
 
     /** Traverse to nodes where the modifierType matches the regular expression `value`
       */
@@ -2070,14 +2071,14 @@ object Accessors {
         modifierTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.modifierType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.modifierType).matches }
       }
 
     /** Traverse to nodes where the modifierType matches at least one of the regular expressions in `values`
       */
     def modifierType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.modifierType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.modifierType).matches } }
     }
 
     /** Traverse to nodes where modifierType matches `value` exactly.
@@ -2086,7 +2087,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 38, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.modifierType == value }
+      case _ => traversal.iterator.filter { _.modifierType == value }
     }
 
     /** Traverse to nodes where modifierType matches one of the elements in `values` exactly.
@@ -2095,17 +2096,17 @@ object Accessors {
       if (values.length == 1) modifierTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.modifierType) }
+        traversal.iterator.filter { item => valueSet.contains(item.modifierType) }
       }
 
     /** Traverse to nodes where modifierType does not match the regular expression `value`.
       */
     def modifierTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.modifierType != pattern }
+        traversal.iterator.filter { node => node.modifierType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.modifierType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.modifierType).matches }
       }
     }
 
@@ -2113,17 +2114,17 @@ object Accessors {
       */
     def modifierTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.modifierType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.modifierType).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -2132,14 +2133,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -2148,7 +2149,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -2157,17 +2158,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -2175,17 +2176,17 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_NODE_LABEL[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNodeLabelEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to nodeLabel property */
     def nodeLabel: Iterator[String] =
-      traversal.map(_.nodeLabel)
+      traversal.iterator.map(_.nodeLabel).iterator
 
     /** Traverse to nodes where the nodeLabel matches the regular expression `value`
       */
@@ -2194,14 +2195,14 @@ object Accessors {
         nodeLabelExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.nodeLabel).matches }
+        traversal.iterator.filter { item => matcher.reset(item.nodeLabel).matches }
       }
 
     /** Traverse to nodes where the nodeLabel matches at least one of the regular expressions in `values`
       */
     def nodeLabel(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.nodeLabel).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.nodeLabel).matches } }
     }
 
     /** Traverse to nodes where nodeLabel matches `value` exactly.
@@ -2210,7 +2211,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 40, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.nodeLabel == value }
+      case _ => traversal.iterator.filter { _.nodeLabel == value }
     }
 
     /** Traverse to nodes where nodeLabel matches one of the elements in `values` exactly.
@@ -2219,17 +2220,17 @@ object Accessors {
       if (values.length == 1) nodeLabelExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.nodeLabel) }
+        traversal.iterator.filter { item => valueSet.contains(item.nodeLabel) }
       }
 
     /** Traverse to nodes where nodeLabel does not match the regular expression `value`.
       */
     def nodeLabelNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.nodeLabel != pattern }
+        traversal.iterator.filter { node => node.nodeLabel != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.nodeLabel).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.nodeLabel).matches }
       }
     }
 
@@ -2237,22 +2238,22 @@ object Accessors {
       */
     def nodeLabelNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.nodeLabel).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.nodeLabel).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_OFFSET[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOffsetEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to offset property */
     def offset: Iterator[Int] =
-      traversal.flatMap(_.offset)
+      traversal.iterator.flatMap(_.offset).iterator
 
     /** Traverse to nodes where the offset equals the given `value`
       */
     def offset(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get == value
       }
 
@@ -2260,7 +2261,7 @@ object Accessors {
       */
     def offset(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -2268,44 +2269,44 @@ object Accessors {
     /** Traverse to nodes where the offset is greater than the given `value`
       */
     def offsetGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the offset is greater than or equal the given `value`
       */
     def offsetGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the offset is less than the given `value`
       */
     def offsetLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the offset is less than or equal the given `value`
       */
     def offsetLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get <= value
       }
 
   }
   final class Traversal_Property_OFFSET_END[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOffsetEndEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to offsetEnd property */
     def offsetEnd: Iterator[Int] =
-      traversal.flatMap(_.offsetEnd)
+      traversal.iterator.flatMap(_.offsetEnd).iterator
 
     /** Traverse to nodes where the offsetEnd equals the given `value`
       */
     def offsetEnd(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get == value
       }
 
@@ -2313,7 +2314,7 @@ object Accessors {
       */
     def offsetEnd(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -2321,89 +2322,89 @@ object Accessors {
     /** Traverse to nodes where the offsetEnd is greater than the given `value`
       */
     def offsetEndGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the offsetEnd is greater than or equal the given `value`
       */
     def offsetEndGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the offsetEnd is less than the given `value`
       */
     def offsetEndLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the offsetEnd is less than or equal the given `value`
       */
     def offsetEndLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get <= value
       }
 
   }
   final class Traversal_Property_ORDER[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOrderEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to order property */
     def order: Iterator[Int] =
-      traversal.map(_.order)
+      traversal.iterator.map(_.order).iterator
 
     /** Traverse to nodes where the order equals the given `value`
       */
     def order(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order == value }
+      traversal.iterator.filter { _.order == value }
 
     /** Traverse to nodes where the order equals at least one of the given `values`
       */
     def order(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.order) }
+      traversal.iterator.filter { node => vset.contains(node.order) }
     }
 
     /** Traverse to nodes where the order is greater than the given `value`
       */
     def orderGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order > value }
+      traversal.iterator.filter { _.order > value }
 
     /** Traverse to nodes where the order is greater than or equal the given `value`
       */
     def orderGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order >= value }
+      traversal.iterator.filter { _.order >= value }
 
     /** Traverse to nodes where the order is less than the given `value`
       */
     def orderLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order < value }
+      traversal.iterator.filter { _.order < value }
 
     /** Traverse to nodes where the order is less than or equal the given `value`
       */
     def orderLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order <= value }
+      traversal.iterator.filter { _.order <= value }
 
   }
   final class Traversal_Property_OVERLAYS[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOverlaysEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to overlays property */
     def overlays: Iterator[String] =
-      traversal.flatMap(_.overlays)
+      traversal.iterator.flatMap(_.overlays).iterator
 
   }
   final class Traversal_Property_PACKAGE_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPackageNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to packageName property */
     def packageName: Iterator[String] =
-      traversal.map(_.packageName)
+      traversal.iterator.map(_.packageName).iterator
 
     /** Traverse to nodes where the packageName matches the regular expression `value`
       */
@@ -2412,14 +2413,14 @@ object Accessors {
         packageNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.packageName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.packageName).matches }
       }
 
     /** Traverse to nodes where the packageName matches at least one of the regular expressions in `values`
       */
     def packageName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.packageName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.packageName).matches } }
     }
 
     /** Traverse to nodes where packageName matches `value` exactly.
@@ -2428,7 +2429,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 45, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.packageName == value }
+      case _ => traversal.iterator.filter { _.packageName == value }
     }
 
     /** Traverse to nodes where packageName matches one of the elements in `values` exactly.
@@ -2437,17 +2438,17 @@ object Accessors {
       if (values.length == 1) packageNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.packageName) }
+        traversal.iterator.filter { item => valueSet.contains(item.packageName) }
       }
 
     /** Traverse to nodes where packageName does not match the regular expression `value`.
       */
     def packageNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.packageName != pattern }
+        traversal.iterator.filter { node => node.packageName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.packageName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.packageName).matches }
       }
     }
 
@@ -2455,17 +2456,17 @@ object Accessors {
       */
     def packageNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.packageName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.packageName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_PARSER_TYPE_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasParserTypeNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to parserTypeName property */
     def parserTypeName: Iterator[String] =
-      traversal.map(_.parserTypeName)
+      traversal.iterator.map(_.parserTypeName).iterator
 
     /** Traverse to nodes where the parserTypeName matches the regular expression `value`
       */
@@ -2474,14 +2475,14 @@ object Accessors {
         parserTypeNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.parserTypeName).matches }
       }
 
     /** Traverse to nodes where the parserTypeName matches at least one of the regular expressions in `values`
       */
     def parserTypeName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
     }
 
     /** Traverse to nodes where parserTypeName matches `value` exactly.
@@ -2490,7 +2491,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.parserTypeName == value }
+      case _ => traversal.iterator.filter { _.parserTypeName == value }
     }
 
     /** Traverse to nodes where parserTypeName matches one of the elements in `values` exactly.
@@ -2499,17 +2500,17 @@ object Accessors {
       if (values.length == 1) parserTypeNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.parserTypeName) }
+        traversal.iterator.filter { item => valueSet.contains(item.parserTypeName) }
       }
 
     /** Traverse to nodes where parserTypeName does not match the regular expression `value`.
       */
     def parserTypeNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.parserTypeName != pattern }
+        traversal.iterator.filter { node => node.parserTypeName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.parserTypeName).matches }
       }
     }
 
@@ -2517,26 +2518,26 @@ object Accessors {
       */
     def parserTypeNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_POSSIBLE_TYPES[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
   }
   final class Traversal_Property_ROOT[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasRootEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to root property */
     def root: Iterator[String] =
-      traversal.map(_.root)
+      traversal.iterator.map(_.root).iterator
 
     /** Traverse to nodes where the root matches the regular expression `value`
       */
@@ -2545,14 +2546,14 @@ object Accessors {
         rootExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.root).matches }
+        traversal.iterator.filter { item => matcher.reset(item.root).matches }
       }
 
     /** Traverse to nodes where the root matches at least one of the regular expressions in `values`
       */
     def root(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.root).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.root).matches } }
     }
 
     /** Traverse to nodes where root matches `value` exactly.
@@ -2561,7 +2562,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 48, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.root == value }
+      case _ => traversal.iterator.filter { _.root == value }
     }
 
     /** Traverse to nodes where root matches one of the elements in `values` exactly.
@@ -2570,17 +2571,17 @@ object Accessors {
       if (values.length == 1) rootExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.root) }
+        traversal.iterator.filter { item => valueSet.contains(item.root) }
       }
 
     /** Traverse to nodes where root does not match the regular expression `value`.
       */
     def rootNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.root != pattern }
+        traversal.iterator.filter { node => node.root != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.root).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.root).matches }
       }
     }
 
@@ -2588,17 +2589,17 @@ object Accessors {
       */
     def rootNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.root).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.root).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_SIGNATURE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSignatureEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to signature property */
     def signature: Iterator[String] =
-      traversal.map(_.signature)
+      traversal.iterator.map(_.signature).iterator
 
     /** Traverse to nodes where the signature matches the regular expression `value`
       */
@@ -2607,14 +2608,14 @@ object Accessors {
         signatureExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filter { item => matcher.reset(item.signature).matches }
       }
 
     /** Traverse to nodes where the signature matches at least one of the regular expressions in `values`
       */
     def signature(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.signature).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.signature).matches } }
     }
 
     /** Traverse to nodes where signature matches `value` exactly.
@@ -2623,7 +2624,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.signature == value }
+      case _ => traversal.iterator.filter { _.signature == value }
     }
 
     /** Traverse to nodes where signature matches one of the elements in `values` exactly.
@@ -2632,17 +2633,17 @@ object Accessors {
       if (values.length == 1) signatureExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.signature) }
+        traversal.iterator.filter { item => valueSet.contains(item.signature) }
       }
 
     /** Traverse to nodes where signature does not match the regular expression `value`.
       */
     def signatureNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.signature != pattern }
+        traversal.iterator.filter { node => node.signature != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.signature).matches }
       }
     }
 
@@ -2650,17 +2651,17 @@ object Accessors {
       */
     def signatureNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_SYMBOL[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSymbolEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to symbol property */
     def symbol: Iterator[String] =
-      traversal.map(_.symbol)
+      traversal.iterator.map(_.symbol).iterator
 
     /** Traverse to nodes where the symbol matches the regular expression `value`
       */
@@ -2669,14 +2670,14 @@ object Accessors {
         symbolExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.symbol).matches }
+        traversal.iterator.filter { item => matcher.reset(item.symbol).matches }
       }
 
     /** Traverse to nodes where the symbol matches at least one of the regular expressions in `values`
       */
     def symbol(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.symbol).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.symbol).matches } }
     }
 
     /** Traverse to nodes where symbol matches `value` exactly.
@@ -2685,7 +2686,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.symbol == value }
+      case _ => traversal.iterator.filter { _.symbol == value }
     }
 
     /** Traverse to nodes where symbol matches one of the elements in `values` exactly.
@@ -2694,17 +2695,17 @@ object Accessors {
       if (values.length == 1) symbolExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.symbol) }
+        traversal.iterator.filter { item => valueSet.contains(item.symbol) }
       }
 
     /** Traverse to nodes where symbol does not match the regular expression `value`.
       */
     def symbolNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.symbol != pattern }
+        traversal.iterator.filter { node => node.symbol != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.symbol).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.symbol).matches }
       }
     }
 
@@ -2712,17 +2713,17 @@ object Accessors {
       */
     def symbolNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.symbol).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.symbol).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_TYPE_DECL_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeDeclFullNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to typeDeclFullName property */
     def typeDeclFullName: Iterator[String] =
-      traversal.map(_.typeDeclFullName)
+      traversal.iterator.map(_.typeDeclFullName).iterator
 
     /** Traverse to nodes where the typeDeclFullName matches the regular expression `value`
       */
@@ -2731,14 +2732,14 @@ object Accessors {
         typeDeclFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeDeclFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeDeclFullName).matches }
       }
 
     /** Traverse to nodes where the typeDeclFullName matches at least one of the regular expressions in `values`
       */
     def typeDeclFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeDeclFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeDeclFullName).matches } }
     }
 
     /** Traverse to nodes where typeDeclFullName matches `value` exactly.
@@ -2747,7 +2748,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeDeclFullName == value }
+      case _ => traversal.iterator.filter { _.typeDeclFullName == value }
     }
 
     /** Traverse to nodes where typeDeclFullName matches one of the elements in `values` exactly.
@@ -2756,17 +2757,17 @@ object Accessors {
       if (values.length == 1) typeDeclFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeDeclFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeDeclFullName) }
       }
 
     /** Traverse to nodes where typeDeclFullName does not match the regular expression `value`.
       */
     def typeDeclFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeDeclFullName != pattern }
+        traversal.iterator.filter { node => node.typeDeclFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeDeclFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeDeclFullName).matches }
       }
     }
 
@@ -2774,17 +2775,17 @@ object Accessors {
       */
     def typeDeclFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeDeclFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeDeclFullName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_TYPE_FULL_NAME[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeFullNameEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -2793,14 +2794,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -2809,7 +2810,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -2818,17 +2819,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -2836,17 +2837,17 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_VALUE[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasValueEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to value property */
     def value: Iterator[String] =
-      traversal.map(_.value)
+      traversal.iterator.map(_.value).iterator
 
     /** Traverse to nodes where the value matches the regular expression `value`
       */
@@ -2855,14 +2856,14 @@ object Accessors {
         valueExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.value).matches }
+        traversal.iterator.filter { item => matcher.reset(item.value).matches }
       }
 
     /** Traverse to nodes where the value matches at least one of the regular expressions in `values`
       */
     def value(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.value).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.value).matches } }
     }
 
     /** Traverse to nodes where value matches `value` exactly.
@@ -2871,7 +2872,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 53, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.value == value }
+      case _ => traversal.iterator.filter { _.value == value }
     }
 
     /** Traverse to nodes where value matches one of the elements in `values` exactly.
@@ -2880,17 +2881,17 @@ object Accessors {
       if (values.length == 1) valueExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.value) }
+        traversal.iterator.filter { item => valueSet.contains(item.value) }
       }
 
     /** Traverse to nodes where value does not match the regular expression `value`.
       */
     def valueNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.value != pattern }
+        traversal.iterator.filter { node => node.value != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.value).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.value).matches }
       }
     }
 
@@ -2898,17 +2899,17 @@ object Accessors {
       */
     def valueNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.value).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.value).matches }.isEmpty }
     }
 
   }
   final class Traversal_Property_VERSION[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasVersionEMT]](
-    val traversal: Iterator[NodeType]
+    val traversal: IterableOnce[NodeType]
   ) extends AnyVal {
 
     /** Traverse to version property */
     def version: Iterator[String] =
-      traversal.map(_.version)
+      traversal.iterator.map(_.version).iterator
 
     /** Traverse to nodes where the version matches the regular expression `value`
       */
@@ -2917,14 +2918,14 @@ object Accessors {
         versionExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.version).matches }
+        traversal.iterator.filter { item => matcher.reset(item.version).matches }
       }
 
     /** Traverse to nodes where the version matches at least one of the regular expressions in `values`
       */
     def version(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.version).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.version).matches } }
     }
 
     /** Traverse to nodes where version matches `value` exactly.
@@ -2933,7 +2934,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 54, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.version == value }
+      case _ => traversal.iterator.filter { _.version == value }
     }
 
     /** Traverse to nodes where version matches one of the elements in `values` exactly.
@@ -2942,17 +2943,17 @@ object Accessors {
       if (values.length == 1) versionExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.version) }
+        traversal.iterator.filter { item => valueSet.contains(item.version) }
       }
 
     /** Traverse to nodes where version does not match the regular expression `value`.
       */
     def versionNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.version != pattern }
+        traversal.iterator.filter { node => node.version != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.version).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.version).matches }
       }
     }
 
@@ -2960,18 +2961,18 @@ object Accessors {
       */
     def versionNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.version).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.version).matches }.isEmpty }
     }
 
   }
   /* accessors for concrete stored nodes end */
 
   /* accessors for base nodes start */
-  final class Traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
-      traversal.map(_.fullName)
+      traversal.iterator.map(_.fullName).iterator
 
     /** Traverse to nodes where the fullName matches the regular expression `value`
       */
@@ -2980,14 +2981,14 @@ object Accessors {
         fullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.fullName).matches }
       }
 
     /** Traverse to nodes where the fullName matches at least one of the regular expressions in `values`
       */
     def fullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.fullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.fullName).matches } }
     }
 
     /** Traverse to nodes where fullName matches `value` exactly.
@@ -2996,7 +2997,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 22, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.fullName == value }
+      case _ => traversal.iterator.filter { _.fullName == value }
     }
 
     /** Traverse to nodes where fullName matches one of the elements in `values` exactly.
@@ -3005,17 +3006,17 @@ object Accessors {
       if (values.length == 1) fullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.fullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.fullName) }
       }
 
     /** Traverse to nodes where fullName does not match the regular expression `value`.
       */
     def fullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.fullName != pattern }
+        traversal.iterator.filter { node => node.fullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.fullName).matches }
       }
     }
 
@@ -3023,12 +3024,12 @@ object Accessors {
       */
     def fullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -3037,14 +3038,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -3053,7 +3054,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -3062,17 +3063,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -3080,15 +3081,16 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_AnnotationLiteralBase[NodeType <: nodes.AnnotationLiteralBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_AnnotationLiteralBase[NodeType <: nodes.AnnotationLiteralBase](val traversal: IterableOnce[NodeType])
+      extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -3097,14 +3099,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -3113,7 +3115,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -3122,17 +3124,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -3140,20 +3142,22 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_AnnotationParameterBase[NodeType <: nodes.AnnotationParameterBase](val traversal: Iterator[NodeType])
+  final class Traversal_AnnotationParameterBase[NodeType <: nodes.AnnotationParameterBase](val traversal: IterableOnce[NodeType])
       extends AnyVal {}
-  final class Traversal_AnnotationParameterAssignBase[NodeType <: nodes.AnnotationParameterAssignBase](val traversal: Iterator[NodeType])
+  final class Traversal_AnnotationParameterAssignBase[NodeType <: nodes.AnnotationParameterAssignBase](
+    val traversal: IterableOnce[NodeType]
+  ) extends AnyVal {}
+  final class Traversal_ArrayInitializerBase[NodeType <: nodes.ArrayInitializerBase](val traversal: IterableOnce[NodeType])
       extends AnyVal {}
-  final class Traversal_ArrayInitializerBase[NodeType <: nodes.ArrayInitializerBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_BindingBase[NodeType <: nodes.BindingBase](val traversal: Iterator[NodeType])                   extends AnyVal {
+  final class Traversal_BindingBase[NodeType <: nodes.BindingBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to methodFullName property */
     def methodFullName: Iterator[String] =
-      traversal.map(_.methodFullName)
+      traversal.iterator.map(_.methodFullName).iterator
 
     /** Traverse to nodes where the methodFullName matches the regular expression `value`
       */
@@ -3162,14 +3166,14 @@ object Accessors {
         methodFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodFullName).matches }
       }
 
     /** Traverse to nodes where the methodFullName matches at least one of the regular expressions in `values`
       */
     def methodFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
     }
 
     /** Traverse to nodes where methodFullName matches `value` exactly.
@@ -3178,7 +3182,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 36, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodFullName == value }
+      case _ => traversal.iterator.filter { _.methodFullName == value }
     }
 
     /** Traverse to nodes where methodFullName matches one of the elements in `values` exactly.
@@ -3187,17 +3191,17 @@ object Accessors {
       if (values.length == 1) methodFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodFullName) }
       }
 
     /** Traverse to nodes where methodFullName does not match the regular expression `value`.
       */
     def methodFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodFullName != pattern }
+        traversal.iterator.filter { node => node.methodFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodFullName).matches }
       }
     }
 
@@ -3205,12 +3209,12 @@ object Accessors {
       */
     def methodFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -3219,14 +3223,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -3235,7 +3239,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -3244,17 +3248,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -3262,12 +3266,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to signature property */
     def signature: Iterator[String] =
-      traversal.map(_.signature)
+      traversal.iterator.map(_.signature).iterator
 
     /** Traverse to nodes where the signature matches the regular expression `value`
       */
@@ -3276,14 +3280,14 @@ object Accessors {
         signatureExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filter { item => matcher.reset(item.signature).matches }
       }
 
     /** Traverse to nodes where the signature matches at least one of the regular expressions in `values`
       */
     def signature(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.signature).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.signature).matches } }
     }
 
     /** Traverse to nodes where signature matches `value` exactly.
@@ -3292,7 +3296,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.signature == value }
+      case _ => traversal.iterator.filter { _.signature == value }
     }
 
     /** Traverse to nodes where signature matches one of the elements in `values` exactly.
@@ -3301,17 +3305,17 @@ object Accessors {
       if (values.length == 1) signatureExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.signature) }
+        traversal.iterator.filter { item => valueSet.contains(item.signature) }
       }
 
     /** Traverse to nodes where signature does not match the regular expression `value`.
       */
     def signatureNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.signature != pattern }
+        traversal.iterator.filter { node => node.signature != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.signature).matches }
       }
     }
 
@@ -3319,23 +3323,23 @@ object Accessors {
       */
     def signatureNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
     }
 
   }
-  final class Traversal_BlockBase[NodeType <: nodes.BlockBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_BlockBase[NodeType <: nodes.BlockBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -3344,14 +3348,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -3360,7 +3364,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -3369,17 +3373,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -3387,15 +3391,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_CallBase[NodeType <: nodes.CallBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CallBase[NodeType <: nodes.CallBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dispatchType property */
     def dispatchType: Iterator[String] =
-      traversal.map(_.dispatchType)
+      traversal.iterator.map(_.dispatchType).iterator
 
     /** Traverse to nodes where the dispatchType matches the regular expression `value`
       */
@@ -3404,14 +3408,14 @@ object Accessors {
         dispatchTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.dispatchType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.dispatchType).matches }
       }
 
     /** Traverse to nodes where the dispatchType matches at least one of the regular expressions in `values`
       */
     def dispatchType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.dispatchType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.dispatchType).matches } }
     }
 
     /** Traverse to nodes where dispatchType matches `value` exactly.
@@ -3420,7 +3424,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 17, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.dispatchType == value }
+      case _ => traversal.iterator.filter { _.dispatchType == value }
     }
 
     /** Traverse to nodes where dispatchType matches one of the elements in `values` exactly.
@@ -3429,17 +3433,17 @@ object Accessors {
       if (values.length == 1) dispatchTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.dispatchType) }
+        traversal.iterator.filter { item => valueSet.contains(item.dispatchType) }
       }
 
     /** Traverse to nodes where dispatchType does not match the regular expression `value`.
       */
     def dispatchTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.dispatchType != pattern }
+        traversal.iterator.filter { node => node.dispatchType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.dispatchType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.dispatchType).matches }
       }
     }
 
@@ -3447,16 +3451,16 @@ object Accessors {
       */
     def dispatchTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.dispatchType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.dispatchType).matches }.isEmpty }
     }
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to methodFullName property */
     def methodFullName: Iterator[String] =
-      traversal.map(_.methodFullName)
+      traversal.iterator.map(_.methodFullName).iterator
 
     /** Traverse to nodes where the methodFullName matches the regular expression `value`
       */
@@ -3465,14 +3469,14 @@ object Accessors {
         methodFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodFullName).matches }
       }
 
     /** Traverse to nodes where the methodFullName matches at least one of the regular expressions in `values`
       */
     def methodFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
     }
 
     /** Traverse to nodes where methodFullName matches `value` exactly.
@@ -3481,7 +3485,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 36, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodFullName == value }
+      case _ => traversal.iterator.filter { _.methodFullName == value }
     }
 
     /** Traverse to nodes where methodFullName matches one of the elements in `values` exactly.
@@ -3490,17 +3494,17 @@ object Accessors {
       if (values.length == 1) methodFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodFullName) }
       }
 
     /** Traverse to nodes where methodFullName does not match the regular expression `value`.
       */
     def methodFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodFullName != pattern }
+        traversal.iterator.filter { node => node.methodFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodFullName).matches }
       }
     }
 
@@ -3508,16 +3512,16 @@ object Accessors {
       */
     def methodFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
     }
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -3526,14 +3530,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -3542,7 +3546,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -3551,17 +3555,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -3569,15 +3573,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_ClosureBindingBase[NodeType <: nodes.ClosureBindingBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ClosureBindingBase[NodeType <: nodes.ClosureBindingBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to closureBindingId property */
     def closureBindingId: Iterator[String] =
-      traversal.flatMap(_.closureBindingId)
+      traversal.iterator.flatMap(_.closureBindingId).iterator
 
     /** Traverse to nodes where the closureBindingId matches the regular expression `value`
       */
@@ -3586,7 +3590,7 @@ object Accessors {
         closureBindingIdExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -3596,7 +3600,7 @@ object Accessors {
       */
     def closureBindingId(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -3608,7 +3612,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.closureBindingId; tmp.isDefined && tmp.get == value
         }
     }
@@ -3619,7 +3623,7 @@ object Accessors {
       if (values.length == 1) closureBindingIdExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -3628,10 +3632,10 @@ object Accessors {
       */
     def closureBindingIdNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
+        traversal.iterator.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -3641,14 +3645,14 @@ object Accessors {
       */
     def closureBindingIdNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to closureOriginalName property */
     def closureOriginalName: Iterator[String] =
-      traversal.flatMap(_.closureOriginalName)
+      traversal.iterator.flatMap(_.closureOriginalName).iterator
 
     /** Traverse to nodes where the closureOriginalName matches the regular expression `value`
       */
@@ -3657,7 +3661,7 @@ object Accessors {
         closureOriginalNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureOriginalName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -3667,7 +3671,7 @@ object Accessors {
       */
     def closureOriginalName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.closureOriginalName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -3679,7 +3683,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 9, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.closureOriginalName; tmp.isDefined && tmp.get == value
         }
     }
@@ -3690,7 +3694,7 @@ object Accessors {
       if (values.length == 1) closureOriginalNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureOriginalName; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -3699,10 +3703,10 @@ object Accessors {
       */
     def closureOriginalNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.closureOriginalName.isEmpty || node.closureOriginalName.get != pattern }
+        traversal.iterator.filter { node => node.closureOriginalName.isEmpty || node.closureOriginalName.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.closureOriginalName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -3712,14 +3716,14 @@ object Accessors {
       */
     def closureOriginalNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.closureOriginalName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to evaluationStrategy property */
     def evaluationStrategy: Iterator[String] =
-      traversal.map(_.evaluationStrategy)
+      traversal.iterator.map(_.evaluationStrategy).iterator
 
     /** Traverse to nodes where the evaluationStrategy matches the regular expression `value`
       */
@@ -3728,14 +3732,14 @@ object Accessors {
         evaluationStrategyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filter { item => matcher.reset(item.evaluationStrategy).matches }
       }
 
     /** Traverse to nodes where the evaluationStrategy matches at least one of the regular expressions in `values`
       */
     def evaluationStrategy(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
     }
 
     /** Traverse to nodes where evaluationStrategy matches `value` exactly.
@@ -3744,7 +3748,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 19, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.evaluationStrategy == value }
+      case _ => traversal.iterator.filter { _.evaluationStrategy == value }
     }
 
     /** Traverse to nodes where evaluationStrategy matches one of the elements in `values` exactly.
@@ -3753,17 +3757,17 @@ object Accessors {
       if (values.length == 1) evaluationStrategyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.evaluationStrategy) }
+        traversal.iterator.filter { item => valueSet.contains(item.evaluationStrategy) }
       }
 
     /** Traverse to nodes where evaluationStrategy does not match the regular expression `value`.
       */
     def evaluationStrategyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.evaluationStrategy != pattern }
+        traversal.iterator.filter { node => node.evaluationStrategy != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
       }
     }
 
@@ -3771,15 +3775,15 @@ object Accessors {
       */
     def evaluationStrategyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
     }
 
   }
-  final class Traversal_CommentBase[NodeType <: nodes.CommentBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CommentBase[NodeType <: nodes.CommentBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
-      traversal.map(_.filename)
+      traversal.iterator.map(_.filename).iterator
 
     /** Traverse to nodes where the filename matches the regular expression `value`
       */
@@ -3788,14 +3792,14 @@ object Accessors {
         filenameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filter { item => matcher.reset(item.filename).matches }
       }
 
     /** Traverse to nodes where the filename matches at least one of the regular expressions in `values`
       */
     def filename(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.filename).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.filename).matches } }
     }
 
     /** Traverse to nodes where filename matches `value` exactly.
@@ -3804,7 +3808,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 21, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.filename == value }
+      case _ => traversal.iterator.filter { _.filename == value }
     }
 
     /** Traverse to nodes where filename matches one of the elements in `values` exactly.
@@ -3813,17 +3817,17 @@ object Accessors {
       if (values.length == 1) filenameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.filename) }
+        traversal.iterator.filter { item => valueSet.contains(item.filename) }
       }
 
     /** Traverse to nodes where filename does not match the regular expression `value`.
       */
     def filenameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.filename != pattern }
+        traversal.iterator.filter { node => node.filename != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.filename).matches }
       }
     }
 
@@ -3831,15 +3835,15 @@ object Accessors {
       */
     def filenameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
     }
 
   }
-  final class Traversal_ConfigFileBase[NodeType <: nodes.ConfigFileBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ConfigFileBase[NodeType <: nodes.ConfigFileBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to content property */
     def content: Iterator[String] =
-      traversal.map(_.content)
+      traversal.iterator.map(_.content).iterator
 
     /** Traverse to nodes where the content matches the regular expression `value`
       */
@@ -3848,14 +3852,14 @@ object Accessors {
         contentExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.content).matches }
+        traversal.iterator.filter { item => matcher.reset(item.content).matches }
       }
 
     /** Traverse to nodes where the content matches at least one of the regular expressions in `values`
       */
     def content(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.content).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.content).matches } }
     }
 
     /** Traverse to nodes where content matches `value` exactly.
@@ -3864,7 +3868,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 14, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.content == value }
+      case _ => traversal.iterator.filter { _.content == value }
     }
 
     /** Traverse to nodes where content matches one of the elements in `values` exactly.
@@ -3873,17 +3877,17 @@ object Accessors {
       if (values.length == 1) contentExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.content) }
+        traversal.iterator.filter { item => valueSet.contains(item.content) }
       }
 
     /** Traverse to nodes where content does not match the regular expression `value`.
       */
     def contentNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.content != pattern }
+        traversal.iterator.filter { node => node.content != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.content).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.content).matches }
       }
     }
 
@@ -3891,12 +3895,12 @@ object Accessors {
       */
     def contentNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.content).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.content).matches }.isEmpty }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -3905,14 +3909,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -3921,7 +3925,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -3930,17 +3934,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -3948,15 +3952,15 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_ControlStructureBase[NodeType <: nodes.ControlStructureBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ControlStructureBase[NodeType <: nodes.ControlStructureBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to controlStructureType property */
     def controlStructureType: Iterator[String] =
-      traversal.map(_.controlStructureType)
+      traversal.iterator.map(_.controlStructureType).iterator
 
     /** Traverse to nodes where the controlStructureType matches the regular expression `value`
       */
@@ -3965,14 +3969,14 @@ object Accessors {
         controlStructureTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.controlStructureType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.controlStructureType).matches }
       }
 
     /** Traverse to nodes where the controlStructureType matches at least one of the regular expressions in `values`
       */
     def controlStructureType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.controlStructureType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.controlStructureType).matches } }
     }
 
     /** Traverse to nodes where controlStructureType matches `value` exactly.
@@ -3981,7 +3985,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 15, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.controlStructureType == value }
+      case _ => traversal.iterator.filter { _.controlStructureType == value }
     }
 
     /** Traverse to nodes where controlStructureType matches one of the elements in `values` exactly.
@@ -3990,17 +3994,17 @@ object Accessors {
       if (values.length == 1) controlStructureTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.controlStructureType) }
+        traversal.iterator.filter { item => valueSet.contains(item.controlStructureType) }
       }
 
     /** Traverse to nodes where controlStructureType does not match the regular expression `value`.
       */
     def controlStructureTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.controlStructureType != pattern }
+        traversal.iterator.filter { node => node.controlStructureType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.controlStructureType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.controlStructureType).matches }
       }
     }
 
@@ -4008,12 +4012,12 @@ object Accessors {
       */
     def controlStructureTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.controlStructureType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.controlStructureType).matches }.isEmpty }
     }
 
     /** Traverse to parserTypeName property */
     def parserTypeName: Iterator[String] =
-      traversal.map(_.parserTypeName)
+      traversal.iterator.map(_.parserTypeName).iterator
 
     /** Traverse to nodes where the parserTypeName matches the regular expression `value`
       */
@@ -4022,14 +4026,14 @@ object Accessors {
         parserTypeNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.parserTypeName).matches }
       }
 
     /** Traverse to nodes where the parserTypeName matches at least one of the regular expressions in `values`
       */
     def parserTypeName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
     }
 
     /** Traverse to nodes where parserTypeName matches `value` exactly.
@@ -4038,7 +4042,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.parserTypeName == value }
+      case _ => traversal.iterator.filter { _.parserTypeName == value }
     }
 
     /** Traverse to nodes where parserTypeName matches one of the elements in `values` exactly.
@@ -4047,17 +4051,17 @@ object Accessors {
       if (values.length == 1) parserTypeNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.parserTypeName) }
+        traversal.iterator.filter { item => valueSet.contains(item.parserTypeName) }
       }
 
     /** Traverse to nodes where parserTypeName does not match the regular expression `value`.
       */
     def parserTypeNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.parserTypeName != pattern }
+        traversal.iterator.filter { node => node.parserTypeName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.parserTypeName).matches }
       }
     }
 
@@ -4065,15 +4069,15 @@ object Accessors {
       */
     def parserTypeNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_DependencyBase[NodeType <: nodes.DependencyBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_DependencyBase[NodeType <: nodes.DependencyBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dependencyGroupId property */
     def dependencyGroupId: Iterator[String] =
-      traversal.flatMap(_.dependencyGroupId)
+      traversal.iterator.flatMap(_.dependencyGroupId).iterator
 
     /** Traverse to nodes where the dependencyGroupId matches the regular expression `value`
       */
@@ -4082,7 +4086,7 @@ object Accessors {
         dependencyGroupIdExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.dependencyGroupId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4092,7 +4096,7 @@ object Accessors {
       */
     def dependencyGroupId(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.dependencyGroupId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -4104,7 +4108,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 16, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.dependencyGroupId; tmp.isDefined && tmp.get == value
         }
     }
@@ -4115,7 +4119,7 @@ object Accessors {
       if (values.length == 1) dependencyGroupIdExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.dependencyGroupId; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -4124,10 +4128,10 @@ object Accessors {
       */
     def dependencyGroupIdNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.dependencyGroupId.isEmpty || node.dependencyGroupId.get != pattern }
+        traversal.iterator.filter { node => node.dependencyGroupId.isEmpty || node.dependencyGroupId.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.dependencyGroupId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4137,14 +4141,14 @@ object Accessors {
       */
     def dependencyGroupIdNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.dependencyGroupId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -4153,14 +4157,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -4169,7 +4173,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -4178,17 +4182,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -4196,12 +4200,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to version property */
     def version: Iterator[String] =
-      traversal.map(_.version)
+      traversal.iterator.map(_.version).iterator
 
     /** Traverse to nodes where the version matches the regular expression `value`
       */
@@ -4210,14 +4214,14 @@ object Accessors {
         versionExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.version).matches }
+        traversal.iterator.filter { item => matcher.reset(item.version).matches }
       }
 
     /** Traverse to nodes where the version matches at least one of the regular expressions in `values`
       */
     def version(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.version).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.version).matches } }
     }
 
     /** Traverse to nodes where version matches `value` exactly.
@@ -4226,7 +4230,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 54, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.version == value }
+      case _ => traversal.iterator.filter { _.version == value }
     }
 
     /** Traverse to nodes where version matches one of the elements in `values` exactly.
@@ -4235,17 +4239,17 @@ object Accessors {
       if (values.length == 1) versionExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.version) }
+        traversal.iterator.filter { item => valueSet.contains(item.version) }
       }
 
     /** Traverse to nodes where version does not match the regular expression `value`.
       */
     def versionNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.version != pattern }
+        traversal.iterator.filter { node => node.version != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.version).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.version).matches }
       }
     }
 
@@ -4253,15 +4257,15 @@ object Accessors {
       */
     def versionNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.version).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.version).matches }.isEmpty }
     }
 
   }
-  final class Traversal_FieldIdentifierBase[NodeType <: nodes.FieldIdentifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_FieldIdentifierBase[NodeType <: nodes.FieldIdentifierBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to canonicalName property */
     def canonicalName: Iterator[String] =
-      traversal.map(_.canonicalName)
+      traversal.iterator.map(_.canonicalName).iterator
 
     /** Traverse to nodes where the canonicalName matches the regular expression `value`
       */
@@ -4270,14 +4274,14 @@ object Accessors {
         canonicalNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.canonicalName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.canonicalName).matches }
       }
 
     /** Traverse to nodes where the canonicalName matches at least one of the regular expressions in `values`
       */
     def canonicalName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.canonicalName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.canonicalName).matches } }
     }
 
     /** Traverse to nodes where canonicalName matches `value` exactly.
@@ -4286,7 +4290,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.canonicalName == value }
+      case _ => traversal.iterator.filter { _.canonicalName == value }
     }
 
     /** Traverse to nodes where canonicalName matches one of the elements in `values` exactly.
@@ -4295,17 +4299,17 @@ object Accessors {
       if (values.length == 1) canonicalNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.canonicalName) }
+        traversal.iterator.filter { item => valueSet.contains(item.canonicalName) }
       }
 
     /** Traverse to nodes where canonicalName does not match the regular expression `value`.
       */
     def canonicalNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.canonicalName != pattern }
+        traversal.iterator.filter { node => node.canonicalName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.canonicalName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.canonicalName).matches }
       }
     }
 
@@ -4313,15 +4317,15 @@ object Accessors {
       */
     def canonicalNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.canonicalName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.canonicalName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_FileBase[NodeType <: nodes.FileBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_FileBase[NodeType <: nodes.FileBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to content property */
     def content: Iterator[String] =
-      traversal.map(_.content)
+      traversal.iterator.map(_.content).iterator
 
     /** Traverse to nodes where the content matches the regular expression `value`
       */
@@ -4330,14 +4334,14 @@ object Accessors {
         contentExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.content).matches }
+        traversal.iterator.filter { item => matcher.reset(item.content).matches }
       }
 
     /** Traverse to nodes where the content matches at least one of the regular expressions in `values`
       */
     def content(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.content).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.content).matches } }
     }
 
     /** Traverse to nodes where content matches `value` exactly.
@@ -4346,7 +4350,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 14, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.content == value }
+      case _ => traversal.iterator.filter { _.content == value }
     }
 
     /** Traverse to nodes where content matches one of the elements in `values` exactly.
@@ -4355,17 +4359,17 @@ object Accessors {
       if (values.length == 1) contentExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.content) }
+        traversal.iterator.filter { item => valueSet.contains(item.content) }
       }
 
     /** Traverse to nodes where content does not match the regular expression `value`.
       */
     def contentNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.content != pattern }
+        traversal.iterator.filter { node => node.content != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.content).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.content).matches }
       }
     }
 
@@ -4373,12 +4377,12 @@ object Accessors {
       */
     def contentNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.content).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.content).matches }.isEmpty }
     }
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
-      traversal.flatMap(_.hash)
+      traversal.iterator.flatMap(_.hash).iterator
 
     /** Traverse to nodes where the hash matches the regular expression `value`
       */
@@ -4387,7 +4391,7 @@ object Accessors {
         hashExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4397,7 +4401,7 @@ object Accessors {
       */
     def hash(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -4409,7 +4413,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 23, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.hash; tmp.isDefined && tmp.get == value
         }
     }
@@ -4420,7 +4424,7 @@ object Accessors {
       if (values.length == 1) hashExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -4429,10 +4433,10 @@ object Accessors {
       */
     def hashNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.hash.isEmpty || node.hash.get != pattern }
+        traversal.iterator.filter { node => node.hash.isEmpty || node.hash.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4442,14 +4446,14 @@ object Accessors {
       */
     def hashNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -4458,14 +4462,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -4474,7 +4478,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -4483,17 +4487,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -4501,20 +4505,20 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_FindingBase[NodeType <: nodes.FindingBase](val traversal: Iterator[NodeType])       extends AnyVal {}
-  final class Traversal_IdentifierBase[NodeType <: nodes.IdentifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_FindingBase[NodeType <: nodes.FindingBase](val traversal: IterableOnce[NodeType])       extends AnyVal {}
+  final class Traversal_IdentifierBase[NodeType <: nodes.IdentifierBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -4523,14 +4527,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -4539,7 +4543,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -4548,17 +4552,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -4566,16 +4570,16 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -4584,14 +4588,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -4600,7 +4604,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -4609,17 +4613,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -4627,24 +4631,24 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_ImportBase[NodeType <: nodes.ImportBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ImportBase[NodeType <: nodes.ImportBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to explicitAs property */
     def explicitAs: Iterator[Boolean] =
-      traversal.flatMap(_.explicitAs)
+      traversal.iterator.flatMap(_.explicitAs).iterator
 
     /** Traverse to nodes where the explicitAs equals the given `value`
       */
     def explicitAs(value: Boolean): Iterator[NodeType] =
-      traversal.filter { node => node.explicitAs.isDefined && node.explicitAs.get == value }
+      traversal.iterator.filter { node => node.explicitAs.isDefined && node.explicitAs.get == value }
 
     /** Traverse to importedAs property */
     def importedAs: Iterator[String] =
-      traversal.flatMap(_.importedAs)
+      traversal.iterator.flatMap(_.importedAs).iterator
 
     /** Traverse to nodes where the importedAs matches the regular expression `value`
       */
@@ -4653,7 +4657,7 @@ object Accessors {
         importedAsExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedAs; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4663,7 +4667,7 @@ object Accessors {
       */
     def importedAs(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.importedAs; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -4675,7 +4679,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 24, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.importedAs; tmp.isDefined && tmp.get == value
         }
     }
@@ -4686,7 +4690,7 @@ object Accessors {
       if (values.length == 1) importedAsExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedAs; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -4695,10 +4699,10 @@ object Accessors {
       */
     def importedAsNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.importedAs.isEmpty || node.importedAs.get != pattern }
+        traversal.iterator.filter { node => node.importedAs.isEmpty || node.importedAs.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.importedAs; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4708,14 +4712,14 @@ object Accessors {
       */
     def importedAsNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.importedAs; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to importedEntity property */
     def importedEntity: Iterator[String] =
-      traversal.flatMap(_.importedEntity)
+      traversal.iterator.flatMap(_.importedEntity).iterator
 
     /** Traverse to nodes where the importedEntity matches the regular expression `value`
       */
@@ -4724,7 +4728,7 @@ object Accessors {
         importedEntityExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedEntity; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4734,7 +4738,7 @@ object Accessors {
       */
     def importedEntity(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.importedEntity; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -4746,7 +4750,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 25, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.importedEntity; tmp.isDefined && tmp.get == value
         }
     }
@@ -4757,7 +4761,7 @@ object Accessors {
       if (values.length == 1) importedEntityExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.importedEntity; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -4766,10 +4770,10 @@ object Accessors {
       */
     def importedEntityNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.importedEntity.isEmpty || node.importedEntity.get != pattern }
+        traversal.iterator.filter { node => node.importedEntity.isEmpty || node.importedEntity.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.importedEntity; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -4779,35 +4783,35 @@ object Accessors {
       */
     def importedEntityNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.importedEntity; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to isExplicit property */
     def isExplicit: Iterator[Boolean] =
-      traversal.flatMap(_.isExplicit)
+      traversal.iterator.flatMap(_.isExplicit).iterator
 
     /** Traverse to nodes where the isExplicit equals the given `value`
       */
     def isExplicit(value: Boolean): Iterator[NodeType] =
-      traversal.filter { node => node.isExplicit.isDefined && node.isExplicit.get == value }
+      traversal.iterator.filter { node => node.isExplicit.isDefined && node.isExplicit.get == value }
 
     /** Traverse to isWildcard property */
     def isWildcard: Iterator[Boolean] =
-      traversal.flatMap(_.isWildcard)
+      traversal.iterator.flatMap(_.isWildcard).iterator
 
     /** Traverse to nodes where the isWildcard equals the given `value`
       */
     def isWildcard(value: Boolean): Iterator[NodeType] =
-      traversal.filter { node => node.isWildcard.isDefined && node.isWildcard.get == value }
+      traversal.iterator.filter { node => node.isWildcard.isDefined && node.isWildcard.get == value }
 
   }
-  final class Traversal_JumpLabelBase[NodeType <: nodes.JumpLabelBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_JumpLabelBase[NodeType <: nodes.JumpLabelBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -4816,14 +4820,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -4832,7 +4836,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -4841,17 +4845,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -4859,12 +4863,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to parserTypeName property */
     def parserTypeName: Iterator[String] =
-      traversal.map(_.parserTypeName)
+      traversal.iterator.map(_.parserTypeName).iterator
 
     /** Traverse to nodes where the parserTypeName matches the regular expression `value`
       */
@@ -4873,14 +4877,14 @@ object Accessors {
         parserTypeNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.parserTypeName).matches }
       }
 
     /** Traverse to nodes where the parserTypeName matches at least one of the regular expressions in `values`
       */
     def parserTypeName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
     }
 
     /** Traverse to nodes where parserTypeName matches `value` exactly.
@@ -4889,7 +4893,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.parserTypeName == value }
+      case _ => traversal.iterator.filter { _.parserTypeName == value }
     }
 
     /** Traverse to nodes where parserTypeName matches one of the elements in `values` exactly.
@@ -4898,17 +4902,17 @@ object Accessors {
       if (values.length == 1) parserTypeNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.parserTypeName) }
+        traversal.iterator.filter { item => valueSet.contains(item.parserTypeName) }
       }
 
     /** Traverse to nodes where parserTypeName does not match the regular expression `value`.
       */
     def parserTypeNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.parserTypeName != pattern }
+        traversal.iterator.filter { node => node.parserTypeName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.parserTypeName).matches }
       }
     }
 
@@ -4916,51 +4920,51 @@ object Accessors {
       */
     def parserTypeNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_JumpTargetBase[NodeType <: nodes.JumpTargetBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_JumpTargetBase[NodeType <: nodes.JumpTargetBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to argumentIndex property */
     def argumentIndex: Iterator[Int] =
-      traversal.map(_.argumentIndex)
+      traversal.iterator.map(_.argumentIndex).iterator
 
     /** Traverse to nodes where the argumentIndex equals the given `value`
       */
     def argumentIndex(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex == value }
+      traversal.iterator.filter { _.argumentIndex == value }
 
     /** Traverse to nodes where the argumentIndex equals at least one of the given `values`
       */
     def argumentIndex(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.argumentIndex) }
+      traversal.iterator.filter { node => vset.contains(node.argumentIndex) }
     }
 
     /** Traverse to nodes where the argumentIndex is greater than the given `value`
       */
     def argumentIndexGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex > value }
+      traversal.iterator.filter { _.argumentIndex > value }
 
     /** Traverse to nodes where the argumentIndex is greater than or equal the given `value`
       */
     def argumentIndexGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex >= value }
+      traversal.iterator.filter { _.argumentIndex >= value }
 
     /** Traverse to nodes where the argumentIndex is less than the given `value`
       */
     def argumentIndexLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex < value }
+      traversal.iterator.filter { _.argumentIndex < value }
 
     /** Traverse to nodes where the argumentIndex is less than or equal the given `value`
       */
     def argumentIndexLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex <= value }
+      traversal.iterator.filter { _.argumentIndex <= value }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -4969,14 +4973,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -4985,7 +4989,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -4994,17 +4998,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -5012,12 +5016,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to parserTypeName property */
     def parserTypeName: Iterator[String] =
-      traversal.map(_.parserTypeName)
+      traversal.iterator.map(_.parserTypeName).iterator
 
     /** Traverse to nodes where the parserTypeName matches the regular expression `value`
       */
@@ -5026,14 +5030,14 @@ object Accessors {
         parserTypeNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.parserTypeName).matches }
       }
 
     /** Traverse to nodes where the parserTypeName matches at least one of the regular expressions in `values`
       */
     def parserTypeName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
     }
 
     /** Traverse to nodes where parserTypeName matches `value` exactly.
@@ -5042,7 +5046,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.parserTypeName == value }
+      case _ => traversal.iterator.filter { _.parserTypeName == value }
     }
 
     /** Traverse to nodes where parserTypeName matches one of the elements in `values` exactly.
@@ -5051,17 +5055,17 @@ object Accessors {
       if (values.length == 1) parserTypeNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.parserTypeName) }
+        traversal.iterator.filter { item => valueSet.contains(item.parserTypeName) }
       }
 
     /** Traverse to nodes where parserTypeName does not match the regular expression `value`.
       */
     def parserTypeNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.parserTypeName != pattern }
+        traversal.iterator.filter { node => node.parserTypeName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.parserTypeName).matches }
       }
     }
 
@@ -5069,15 +5073,15 @@ object Accessors {
       */
     def parserTypeNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_KeyValuePairBase[NodeType <: nodes.KeyValuePairBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_KeyValuePairBase[NodeType <: nodes.KeyValuePairBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to key property */
     def key: Iterator[String] =
-      traversal.map(_.key)
+      traversal.iterator.map(_.key).iterator
 
     /** Traverse to nodes where the key matches the regular expression `value`
       */
@@ -5086,14 +5090,14 @@ object Accessors {
         keyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.key).matches }
+        traversal.iterator.filter { item => matcher.reset(item.key).matches }
       }
 
     /** Traverse to nodes where the key matches at least one of the regular expressions in `values`
       */
     def key(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.key).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.key).matches } }
     }
 
     /** Traverse to nodes where key matches `value` exactly.
@@ -5102,7 +5106,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 32, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.key == value }
+      case _ => traversal.iterator.filter { _.key == value }
     }
 
     /** Traverse to nodes where key matches one of the elements in `values` exactly.
@@ -5111,17 +5115,17 @@ object Accessors {
       if (values.length == 1) keyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.key) }
+        traversal.iterator.filter { item => valueSet.contains(item.key) }
       }
 
     /** Traverse to nodes where key does not match the regular expression `value`.
       */
     def keyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.key != pattern }
+        traversal.iterator.filter { node => node.key != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.key).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.key).matches }
       }
     }
 
@@ -5129,12 +5133,12 @@ object Accessors {
       */
     def keyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.key).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.key).matches }.isEmpty }
     }
 
     /** Traverse to value property */
     def value: Iterator[String] =
-      traversal.map(_.value)
+      traversal.iterator.map(_.value).iterator
 
     /** Traverse to nodes where the value matches the regular expression `value`
       */
@@ -5143,14 +5147,14 @@ object Accessors {
         valueExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.value).matches }
+        traversal.iterator.filter { item => matcher.reset(item.value).matches }
       }
 
     /** Traverse to nodes where the value matches at least one of the regular expressions in `values`
       */
     def value(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.value).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.value).matches } }
     }
 
     /** Traverse to nodes where value matches `value` exactly.
@@ -5159,7 +5163,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 53, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.value == value }
+      case _ => traversal.iterator.filter { _.value == value }
     }
 
     /** Traverse to nodes where value matches one of the elements in `values` exactly.
@@ -5168,17 +5172,17 @@ object Accessors {
       if (values.length == 1) valueExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.value) }
+        traversal.iterator.filter { item => valueSet.contains(item.value) }
       }
 
     /** Traverse to nodes where value does not match the regular expression `value`.
       */
     def valueNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.value != pattern }
+        traversal.iterator.filter { node => node.value != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.value).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.value).matches }
       }
     }
 
@@ -5186,23 +5190,23 @@ object Accessors {
       */
     def valueNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.value).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.value).matches }.isEmpty }
     }
 
   }
-  final class Traversal_LiteralBase[NodeType <: nodes.LiteralBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_LiteralBase[NodeType <: nodes.LiteralBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -5211,14 +5215,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -5227,7 +5231,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -5236,17 +5240,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -5254,15 +5258,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_LocalBase[NodeType <: nodes.LocalBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_LocalBase[NodeType <: nodes.LocalBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to closureBindingId property */
     def closureBindingId: Iterator[String] =
-      traversal.flatMap(_.closureBindingId)
+      traversal.iterator.flatMap(_.closureBindingId).iterator
 
     /** Traverse to nodes where the closureBindingId matches the regular expression `value`
       */
@@ -5271,7 +5275,7 @@ object Accessors {
         closureBindingIdExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -5281,7 +5285,7 @@ object Accessors {
       */
     def closureBindingId(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -5293,7 +5297,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.closureBindingId; tmp.isDefined && tmp.get == value
         }
     }
@@ -5304,7 +5308,7 @@ object Accessors {
       if (values.length == 1) closureBindingIdExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -5313,10 +5317,10 @@ object Accessors {
       */
     def closureBindingIdNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
+        traversal.iterator.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -5326,22 +5330,22 @@ object Accessors {
       */
     def closureBindingIdNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -5350,14 +5354,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -5366,7 +5370,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -5375,17 +5379,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -5393,15 +5397,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_LocationBase[NodeType <: nodes.LocationBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_LocationBase[NodeType <: nodes.LocationBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to className property */
     def className: Iterator[String] =
-      traversal.map(_.className)
+      traversal.iterator.map(_.className).iterator
 
     /** Traverse to nodes where the className matches the regular expression `value`
       */
@@ -5410,14 +5414,14 @@ object Accessors {
         classNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.className).matches }
+        traversal.iterator.filter { item => matcher.reset(item.className).matches }
       }
 
     /** Traverse to nodes where the className matches at least one of the regular expressions in `values`
       */
     def className(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.className).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.className).matches } }
     }
 
     /** Traverse to nodes where className matches `value` exactly.
@@ -5426,7 +5430,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 6, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.className == value }
+      case _ => traversal.iterator.filter { _.className == value }
     }
 
     /** Traverse to nodes where className matches one of the elements in `values` exactly.
@@ -5435,17 +5439,17 @@ object Accessors {
       if (values.length == 1) classNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.className) }
+        traversal.iterator.filter { item => valueSet.contains(item.className) }
       }
 
     /** Traverse to nodes where className does not match the regular expression `value`.
       */
     def classNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.className != pattern }
+        traversal.iterator.filter { node => node.className != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.className).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.className).matches }
       }
     }
 
@@ -5453,12 +5457,12 @@ object Accessors {
       */
     def classNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.className).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.className).matches }.isEmpty }
     }
 
     /** Traverse to classShortName property */
     def classShortName: Iterator[String] =
-      traversal.map(_.classShortName)
+      traversal.iterator.map(_.classShortName).iterator
 
     /** Traverse to nodes where the classShortName matches the regular expression `value`
       */
@@ -5467,14 +5471,14 @@ object Accessors {
         classShortNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.classShortName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.classShortName).matches }
       }
 
     /** Traverse to nodes where the classShortName matches at least one of the regular expressions in `values`
       */
     def classShortName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.classShortName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.classShortName).matches } }
     }
 
     /** Traverse to nodes where classShortName matches `value` exactly.
@@ -5483,7 +5487,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 7, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.classShortName == value }
+      case _ => traversal.iterator.filter { _.classShortName == value }
     }
 
     /** Traverse to nodes where classShortName matches one of the elements in `values` exactly.
@@ -5492,17 +5496,17 @@ object Accessors {
       if (values.length == 1) classShortNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.classShortName) }
+        traversal.iterator.filter { item => valueSet.contains(item.classShortName) }
       }
 
     /** Traverse to nodes where classShortName does not match the regular expression `value`.
       */
     def classShortNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.classShortName != pattern }
+        traversal.iterator.filter { node => node.classShortName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.classShortName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.classShortName).matches }
       }
     }
 
@@ -5510,12 +5514,12 @@ object Accessors {
       */
     def classShortNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.classShortName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.classShortName).matches }.isEmpty }
     }
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
-      traversal.map(_.filename)
+      traversal.iterator.map(_.filename).iterator
 
     /** Traverse to nodes where the filename matches the regular expression `value`
       */
@@ -5524,14 +5528,14 @@ object Accessors {
         filenameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filter { item => matcher.reset(item.filename).matches }
       }
 
     /** Traverse to nodes where the filename matches at least one of the regular expressions in `values`
       */
     def filename(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.filename).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.filename).matches } }
     }
 
     /** Traverse to nodes where filename matches `value` exactly.
@@ -5540,7 +5544,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 21, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.filename == value }
+      case _ => traversal.iterator.filter { _.filename == value }
     }
 
     /** Traverse to nodes where filename matches one of the elements in `values` exactly.
@@ -5549,17 +5553,17 @@ object Accessors {
       if (values.length == 1) filenameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.filename) }
+        traversal.iterator.filter { item => valueSet.contains(item.filename) }
       }
 
     /** Traverse to nodes where filename does not match the regular expression `value`.
       */
     def filenameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.filename != pattern }
+        traversal.iterator.filter { node => node.filename != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.filename).matches }
       }
     }
 
@@ -5567,17 +5571,17 @@ object Accessors {
       */
     def filenameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
     }
 
     /** Traverse to lineNumber property */
     def lineNumber: Iterator[Int] =
-      traversal.flatMap(_.lineNumber)
+      traversal.iterator.flatMap(_.lineNumber).iterator
 
     /** Traverse to nodes where the lineNumber equals the given `value`
       */
     def lineNumber(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get == value
       }
 
@@ -5585,7 +5589,7 @@ object Accessors {
       */
     def lineNumber(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -5593,34 +5597,34 @@ object Accessors {
     /** Traverse to nodes where the lineNumber is greater than the given `value`
       */
     def lineNumberGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the lineNumber is greater than or equal the given `value`
       */
     def lineNumberGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the lineNumber is less than the given `value`
       */
     def lineNumberLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the lineNumber is less than or equal the given `value`
       */
     def lineNumberLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to methodFullName property */
     def methodFullName: Iterator[String] =
-      traversal.map(_.methodFullName)
+      traversal.iterator.map(_.methodFullName).iterator
 
     /** Traverse to nodes where the methodFullName matches the regular expression `value`
       */
@@ -5629,14 +5633,14 @@ object Accessors {
         methodFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodFullName).matches }
       }
 
     /** Traverse to nodes where the methodFullName matches at least one of the regular expressions in `values`
       */
     def methodFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
     }
 
     /** Traverse to nodes where methodFullName matches `value` exactly.
@@ -5645,7 +5649,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 36, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodFullName == value }
+      case _ => traversal.iterator.filter { _.methodFullName == value }
     }
 
     /** Traverse to nodes where methodFullName matches one of the elements in `values` exactly.
@@ -5654,17 +5658,17 @@ object Accessors {
       if (values.length == 1) methodFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodFullName) }
       }
 
     /** Traverse to nodes where methodFullName does not match the regular expression `value`.
       */
     def methodFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodFullName != pattern }
+        traversal.iterator.filter { node => node.methodFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodFullName).matches }
       }
     }
 
@@ -5672,12 +5676,12 @@ object Accessors {
       */
     def methodFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
     }
 
     /** Traverse to methodShortName property */
     def methodShortName: Iterator[String] =
-      traversal.map(_.methodShortName)
+      traversal.iterator.map(_.methodShortName).iterator
 
     /** Traverse to nodes where the methodShortName matches the regular expression `value`
       */
@@ -5686,14 +5690,14 @@ object Accessors {
         methodShortNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodShortName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodShortName).matches }
       }
 
     /** Traverse to nodes where the methodShortName matches at least one of the regular expressions in `values`
       */
     def methodShortName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodShortName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodShortName).matches } }
     }
 
     /** Traverse to nodes where methodShortName matches `value` exactly.
@@ -5702,7 +5706,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 37, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodShortName == value }
+      case _ => traversal.iterator.filter { _.methodShortName == value }
     }
 
     /** Traverse to nodes where methodShortName matches one of the elements in `values` exactly.
@@ -5711,17 +5715,17 @@ object Accessors {
       if (values.length == 1) methodShortNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodShortName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodShortName) }
       }
 
     /** Traverse to nodes where methodShortName does not match the regular expression `value`.
       */
     def methodShortNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodShortName != pattern }
+        traversal.iterator.filter { node => node.methodShortName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodShortName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodShortName).matches }
       }
     }
 
@@ -5729,12 +5733,12 @@ object Accessors {
       */
     def methodShortNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodShortName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodShortName).matches }.isEmpty }
     }
 
     /** Traverse to nodeLabel property */
     def nodeLabel: Iterator[String] =
-      traversal.map(_.nodeLabel)
+      traversal.iterator.map(_.nodeLabel).iterator
 
     /** Traverse to nodes where the nodeLabel matches the regular expression `value`
       */
@@ -5743,14 +5747,14 @@ object Accessors {
         nodeLabelExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.nodeLabel).matches }
+        traversal.iterator.filter { item => matcher.reset(item.nodeLabel).matches }
       }
 
     /** Traverse to nodes where the nodeLabel matches at least one of the regular expressions in `values`
       */
     def nodeLabel(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.nodeLabel).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.nodeLabel).matches } }
     }
 
     /** Traverse to nodes where nodeLabel matches `value` exactly.
@@ -5759,7 +5763,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 40, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.nodeLabel == value }
+      case _ => traversal.iterator.filter { _.nodeLabel == value }
     }
 
     /** Traverse to nodes where nodeLabel matches one of the elements in `values` exactly.
@@ -5768,17 +5772,17 @@ object Accessors {
       if (values.length == 1) nodeLabelExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.nodeLabel) }
+        traversal.iterator.filter { item => valueSet.contains(item.nodeLabel) }
       }
 
     /** Traverse to nodes where nodeLabel does not match the regular expression `value`.
       */
     def nodeLabelNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.nodeLabel != pattern }
+        traversal.iterator.filter { node => node.nodeLabel != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.nodeLabel).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.nodeLabel).matches }
       }
     }
 
@@ -5786,12 +5790,12 @@ object Accessors {
       */
     def nodeLabelNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.nodeLabel).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.nodeLabel).matches }.isEmpty }
     }
 
     /** Traverse to packageName property */
     def packageName: Iterator[String] =
-      traversal.map(_.packageName)
+      traversal.iterator.map(_.packageName).iterator
 
     /** Traverse to nodes where the packageName matches the regular expression `value`
       */
@@ -5800,14 +5804,14 @@ object Accessors {
         packageNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.packageName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.packageName).matches }
       }
 
     /** Traverse to nodes where the packageName matches at least one of the regular expressions in `values`
       */
     def packageName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.packageName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.packageName).matches } }
     }
 
     /** Traverse to nodes where packageName matches `value` exactly.
@@ -5816,7 +5820,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 45, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.packageName == value }
+      case _ => traversal.iterator.filter { _.packageName == value }
     }
 
     /** Traverse to nodes where packageName matches one of the elements in `values` exactly.
@@ -5825,17 +5829,17 @@ object Accessors {
       if (values.length == 1) packageNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.packageName) }
+        traversal.iterator.filter { item => valueSet.contains(item.packageName) }
       }
 
     /** Traverse to nodes where packageName does not match the regular expression `value`.
       */
     def packageNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.packageName != pattern }
+        traversal.iterator.filter { node => node.packageName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.packageName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.packageName).matches }
       }
     }
 
@@ -5843,12 +5847,12 @@ object Accessors {
       */
     def packageNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.packageName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.packageName).matches }.isEmpty }
     }
 
     /** Traverse to symbol property */
     def symbol: Iterator[String] =
-      traversal.map(_.symbol)
+      traversal.iterator.map(_.symbol).iterator
 
     /** Traverse to nodes where the symbol matches the regular expression `value`
       */
@@ -5857,14 +5861,14 @@ object Accessors {
         symbolExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.symbol).matches }
+        traversal.iterator.filter { item => matcher.reset(item.symbol).matches }
       }
 
     /** Traverse to nodes where the symbol matches at least one of the regular expressions in `values`
       */
     def symbol(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.symbol).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.symbol).matches } }
     }
 
     /** Traverse to nodes where symbol matches `value` exactly.
@@ -5873,7 +5877,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 50, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.symbol == value }
+      case _ => traversal.iterator.filter { _.symbol == value }
     }
 
     /** Traverse to nodes where symbol matches one of the elements in `values` exactly.
@@ -5882,17 +5886,17 @@ object Accessors {
       if (values.length == 1) symbolExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.symbol) }
+        traversal.iterator.filter { item => valueSet.contains(item.symbol) }
       }
 
     /** Traverse to nodes where symbol does not match the regular expression `value`.
       */
     def symbolNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.symbol != pattern }
+        traversal.iterator.filter { node => node.symbol != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.symbol).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.symbol).matches }
       }
     }
 
@@ -5900,15 +5904,15 @@ object Accessors {
       */
     def symbolNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.symbol).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.symbol).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MemberBase[NodeType <: nodes.MemberBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MemberBase[NodeType <: nodes.MemberBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to astParentFullName property */
     def astParentFullName: Iterator[String] =
-      traversal.map(_.astParentFullName)
+      traversal.iterator.map(_.astParentFullName).iterator
 
     /** Traverse to nodes where the astParentFullName matches the regular expression `value`
       */
@@ -5917,14 +5921,14 @@ object Accessors {
         astParentFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentFullName).matches }
       }
 
     /** Traverse to nodes where the astParentFullName matches at least one of the regular expressions in `values`
       */
     def astParentFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
     }
 
     /** Traverse to nodes where astParentFullName matches `value` exactly.
@@ -5933,7 +5937,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 3, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentFullName == value }
+      case _ => traversal.iterator.filter { _.astParentFullName == value }
     }
 
     /** Traverse to nodes where astParentFullName matches one of the elements in `values` exactly.
@@ -5942,17 +5946,17 @@ object Accessors {
       if (values.length == 1) astParentFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentFullName) }
       }
 
     /** Traverse to nodes where astParentFullName does not match the regular expression `value`.
       */
     def astParentFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentFullName != pattern }
+        traversal.iterator.filter { node => node.astParentFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentFullName).matches }
       }
     }
 
@@ -5960,12 +5964,12 @@ object Accessors {
       */
     def astParentFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
     }
 
     /** Traverse to astParentType property */
     def astParentType: Iterator[String] =
-      traversal.map(_.astParentType)
+      traversal.iterator.map(_.astParentType).iterator
 
     /** Traverse to nodes where the astParentType matches the regular expression `value`
       */
@@ -5974,14 +5978,14 @@ object Accessors {
         astParentTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentType).matches }
       }
 
     /** Traverse to nodes where the astParentType matches at least one of the regular expressions in `values`
       */
     def astParentType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
     }
 
     /** Traverse to nodes where astParentType matches `value` exactly.
@@ -5990,7 +5994,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentType == value }
+      case _ => traversal.iterator.filter { _.astParentType == value }
     }
 
     /** Traverse to nodes where astParentType matches one of the elements in `values` exactly.
@@ -5999,17 +6003,17 @@ object Accessors {
       if (values.length == 1) astParentTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentType) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentType) }
       }
 
     /** Traverse to nodes where astParentType does not match the regular expression `value`.
       */
     def astParentTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentType != pattern }
+        traversal.iterator.filter { node => node.astParentType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentType).matches }
       }
     }
 
@@ -6017,20 +6021,20 @@ object Accessors {
       */
     def astParentTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
     }
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -6039,14 +6043,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -6055,7 +6059,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -6064,17 +6068,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -6082,15 +6086,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MetaDataBase[NodeType <: nodes.MetaDataBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MetaDataBase[NodeType <: nodes.MetaDataBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
-      traversal.flatMap(_.hash)
+      traversal.iterator.flatMap(_.hash).iterator
 
     /** Traverse to nodes where the hash matches the regular expression `value`
       */
@@ -6099,7 +6103,7 @@ object Accessors {
         hashExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -6109,7 +6113,7 @@ object Accessors {
       */
     def hash(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -6121,7 +6125,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 23, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.hash; tmp.isDefined && tmp.get == value
         }
     }
@@ -6132,7 +6136,7 @@ object Accessors {
       if (values.length == 1) hashExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -6141,10 +6145,10 @@ object Accessors {
       */
     def hashNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.hash.isEmpty || node.hash.get != pattern }
+        traversal.iterator.filter { node => node.hash.isEmpty || node.hash.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -6154,14 +6158,14 @@ object Accessors {
       */
     def hashNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to language property */
     def language: Iterator[String] =
-      traversal.map(_.language)
+      traversal.iterator.map(_.language).iterator
 
     /** Traverse to nodes where the language matches the regular expression `value`
       */
@@ -6170,14 +6174,14 @@ object Accessors {
         languageExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.language).matches }
+        traversal.iterator.filter { item => matcher.reset(item.language).matches }
       }
 
     /** Traverse to nodes where the language matches at least one of the regular expressions in `values`
       */
     def language(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.language).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.language).matches } }
     }
 
     /** Traverse to nodes where language matches `value` exactly.
@@ -6186,7 +6190,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 33, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.language == value }
+      case _ => traversal.iterator.filter { _.language == value }
     }
 
     /** Traverse to nodes where language matches one of the elements in `values` exactly.
@@ -6195,17 +6199,17 @@ object Accessors {
       if (values.length == 1) languageExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.language) }
+        traversal.iterator.filter { item => valueSet.contains(item.language) }
       }
 
     /** Traverse to nodes where language does not match the regular expression `value`.
       */
     def languageNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.language != pattern }
+        traversal.iterator.filter { node => node.language != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.language).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.language).matches }
       }
     }
 
@@ -6213,16 +6217,16 @@ object Accessors {
       */
     def languageNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.language).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.language).matches }.isEmpty }
     }
 
     /** Traverse to overlays property */
     def overlays: Iterator[String] =
-      traversal.flatMap(_.overlays)
+      traversal.iterator.flatMap(_.overlays).iterator
 
     /** Traverse to root property */
     def root: Iterator[String] =
-      traversal.map(_.root)
+      traversal.iterator.map(_.root).iterator
 
     /** Traverse to nodes where the root matches the regular expression `value`
       */
@@ -6231,14 +6235,14 @@ object Accessors {
         rootExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.root).matches }
+        traversal.iterator.filter { item => matcher.reset(item.root).matches }
       }
 
     /** Traverse to nodes where the root matches at least one of the regular expressions in `values`
       */
     def root(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.root).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.root).matches } }
     }
 
     /** Traverse to nodes where root matches `value` exactly.
@@ -6247,7 +6251,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 48, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.root == value }
+      case _ => traversal.iterator.filter { _.root == value }
     }
 
     /** Traverse to nodes where root matches one of the elements in `values` exactly.
@@ -6256,17 +6260,17 @@ object Accessors {
       if (values.length == 1) rootExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.root) }
+        traversal.iterator.filter { item => valueSet.contains(item.root) }
       }
 
     /** Traverse to nodes where root does not match the regular expression `value`.
       */
     def rootNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.root != pattern }
+        traversal.iterator.filter { node => node.root != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.root).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.root).matches }
       }
     }
 
@@ -6274,12 +6278,12 @@ object Accessors {
       */
     def rootNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.root).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.root).matches }.isEmpty }
     }
 
     /** Traverse to version property */
     def version: Iterator[String] =
-      traversal.map(_.version)
+      traversal.iterator.map(_.version).iterator
 
     /** Traverse to nodes where the version matches the regular expression `value`
       */
@@ -6288,14 +6292,14 @@ object Accessors {
         versionExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.version).matches }
+        traversal.iterator.filter { item => matcher.reset(item.version).matches }
       }
 
     /** Traverse to nodes where the version matches at least one of the regular expressions in `values`
       */
     def version(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.version).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.version).matches } }
     }
 
     /** Traverse to nodes where version matches `value` exactly.
@@ -6304,7 +6308,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 54, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.version == value }
+      case _ => traversal.iterator.filter { _.version == value }
     }
 
     /** Traverse to nodes where version matches one of the elements in `values` exactly.
@@ -6313,17 +6317,17 @@ object Accessors {
       if (values.length == 1) versionExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.version) }
+        traversal.iterator.filter { item => valueSet.contains(item.version) }
       }
 
     /** Traverse to nodes where version does not match the regular expression `value`.
       */
     def versionNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.version != pattern }
+        traversal.iterator.filter { node => node.version != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.version).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.version).matches }
       }
     }
 
@@ -6331,15 +6335,15 @@ object Accessors {
       */
     def versionNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.version).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.version).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MethodBase[NodeType <: nodes.MethodBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodBase[NodeType <: nodes.MethodBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to astParentFullName property */
     def astParentFullName: Iterator[String] =
-      traversal.map(_.astParentFullName)
+      traversal.iterator.map(_.astParentFullName).iterator
 
     /** Traverse to nodes where the astParentFullName matches the regular expression `value`
       */
@@ -6348,14 +6352,14 @@ object Accessors {
         astParentFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentFullName).matches }
       }
 
     /** Traverse to nodes where the astParentFullName matches at least one of the regular expressions in `values`
       */
     def astParentFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
     }
 
     /** Traverse to nodes where astParentFullName matches `value` exactly.
@@ -6364,7 +6368,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 3, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentFullName == value }
+      case _ => traversal.iterator.filter { _.astParentFullName == value }
     }
 
     /** Traverse to nodes where astParentFullName matches one of the elements in `values` exactly.
@@ -6373,17 +6377,17 @@ object Accessors {
       if (values.length == 1) astParentFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentFullName) }
       }
 
     /** Traverse to nodes where astParentFullName does not match the regular expression `value`.
       */
     def astParentFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentFullName != pattern }
+        traversal.iterator.filter { node => node.astParentFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentFullName).matches }
       }
     }
 
@@ -6391,12 +6395,12 @@ object Accessors {
       */
     def astParentFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
     }
 
     /** Traverse to astParentType property */
     def astParentType: Iterator[String] =
-      traversal.map(_.astParentType)
+      traversal.iterator.map(_.astParentType).iterator
 
     /** Traverse to nodes where the astParentType matches the regular expression `value`
       */
@@ -6405,14 +6409,14 @@ object Accessors {
         astParentTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentType).matches }
       }
 
     /** Traverse to nodes where the astParentType matches at least one of the regular expressions in `values`
       */
     def astParentType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
     }
 
     /** Traverse to nodes where astParentType matches `value` exactly.
@@ -6421,7 +6425,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentType == value }
+      case _ => traversal.iterator.filter { _.astParentType == value }
     }
 
     /** Traverse to nodes where astParentType matches one of the elements in `values` exactly.
@@ -6430,17 +6434,17 @@ object Accessors {
       if (values.length == 1) astParentTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentType) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentType) }
       }
 
     /** Traverse to nodes where astParentType does not match the regular expression `value`.
       */
     def astParentTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentType != pattern }
+        traversal.iterator.filter { node => node.astParentType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentType).matches }
       }
     }
 
@@ -6448,17 +6452,17 @@ object Accessors {
       */
     def astParentTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
     }
 
     /** Traverse to columnNumberEnd property */
     def columnNumberEnd: Iterator[Int] =
-      traversal.flatMap(_.columnNumberEnd)
+      traversal.iterator.flatMap(_.columnNumberEnd).iterator
 
     /** Traverse to nodes where the columnNumberEnd equals the given `value`
       */
     def columnNumberEnd(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get == value
       }
 
@@ -6466,7 +6470,7 @@ object Accessors {
       */
     def columnNumberEnd(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -6474,34 +6478,34 @@ object Accessors {
     /** Traverse to nodes where the columnNumberEnd is greater than the given `value`
       */
     def columnNumberEndGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the columnNumberEnd is greater than or equal the given `value`
       */
     def columnNumberEndGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the columnNumberEnd is less than the given `value`
       */
     def columnNumberEndLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the columnNumberEnd is less than or equal the given `value`
       */
     def columnNumberEndLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumberEnd; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
-      traversal.map(_.filename)
+      traversal.iterator.map(_.filename).iterator
 
     /** Traverse to nodes where the filename matches the regular expression `value`
       */
@@ -6510,14 +6514,14 @@ object Accessors {
         filenameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filter { item => matcher.reset(item.filename).matches }
       }
 
     /** Traverse to nodes where the filename matches at least one of the regular expressions in `values`
       */
     def filename(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.filename).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.filename).matches } }
     }
 
     /** Traverse to nodes where filename matches `value` exactly.
@@ -6526,7 +6530,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 21, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.filename == value }
+      case _ => traversal.iterator.filter { _.filename == value }
     }
 
     /** Traverse to nodes where filename matches one of the elements in `values` exactly.
@@ -6535,17 +6539,17 @@ object Accessors {
       if (values.length == 1) filenameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.filename) }
+        traversal.iterator.filter { item => valueSet.contains(item.filename) }
       }
 
     /** Traverse to nodes where filename does not match the regular expression `value`.
       */
     def filenameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.filename != pattern }
+        traversal.iterator.filter { node => node.filename != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.filename).matches }
       }
     }
 
@@ -6553,12 +6557,12 @@ object Accessors {
       */
     def filenameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
     }
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
-      traversal.map(_.fullName)
+      traversal.iterator.map(_.fullName).iterator
 
     /** Traverse to nodes where the fullName matches the regular expression `value`
       */
@@ -6567,14 +6571,14 @@ object Accessors {
         fullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.fullName).matches }
       }
 
     /** Traverse to nodes where the fullName matches at least one of the regular expressions in `values`
       */
     def fullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.fullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.fullName).matches } }
     }
 
     /** Traverse to nodes where fullName matches `value` exactly.
@@ -6583,7 +6587,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 22, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.fullName == value }
+      case _ => traversal.iterator.filter { _.fullName == value }
     }
 
     /** Traverse to nodes where fullName matches one of the elements in `values` exactly.
@@ -6592,17 +6596,17 @@ object Accessors {
       if (values.length == 1) fullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.fullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.fullName) }
       }
 
     /** Traverse to nodes where fullName does not match the regular expression `value`.
       */
     def fullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.fullName != pattern }
+        traversal.iterator.filter { node => node.fullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.fullName).matches }
       }
     }
 
@@ -6610,12 +6614,12 @@ object Accessors {
       */
     def fullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
     }
 
     /** Traverse to hash property */
     def hash: Iterator[String] =
-      traversal.flatMap(_.hash)
+      traversal.iterator.flatMap(_.hash).iterator
 
     /** Traverse to nodes where the hash matches the regular expression `value`
       */
@@ -6624,7 +6628,7 @@ object Accessors {
         hashExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -6634,7 +6638,7 @@ object Accessors {
       */
     def hash(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -6646,7 +6650,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 23, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.hash; tmp.isDefined && tmp.get == value
         }
     }
@@ -6657,7 +6661,7 @@ object Accessors {
       if (values.length == 1) hashExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.hash; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -6666,10 +6670,10 @@ object Accessors {
       */
     def hashNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.hash.isEmpty || node.hash.get != pattern }
+        traversal.iterator.filter { node => node.hash.isEmpty || node.hash.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.hash; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -6679,28 +6683,28 @@ object Accessors {
       */
     def hashNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.hash; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to isExternal property */
     def isExternal: Iterator[Boolean] =
-      traversal.map(_.isExternal)
+      traversal.iterator.map(_.isExternal).iterator
 
     /** Traverse to nodes where the isExternal equals the given `value`
       */
     def isExternal(value: Boolean): Iterator[NodeType] =
-      traversal.filter { _.isExternal == value }
+      traversal.iterator.filter { _.isExternal == value }
 
     /** Traverse to lineNumberEnd property */
     def lineNumberEnd: Iterator[Int] =
-      traversal.flatMap(_.lineNumberEnd)
+      traversal.iterator.flatMap(_.lineNumberEnd).iterator
 
     /** Traverse to nodes where the lineNumberEnd equals the given `value`
       */
     def lineNumberEnd(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get == value
       }
 
@@ -6708,7 +6712,7 @@ object Accessors {
       */
     def lineNumberEnd(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -6716,39 +6720,39 @@ object Accessors {
     /** Traverse to nodes where the lineNumberEnd is greater than the given `value`
       */
     def lineNumberEndGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the lineNumberEnd is greater than or equal the given `value`
       */
     def lineNumberEndGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the lineNumberEnd is less than the given `value`
       */
     def lineNumberEndLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the lineNumberEnd is less than or equal the given `value`
       */
     def lineNumberEndLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumberEnd; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to offset property */
     def offset: Iterator[Int] =
-      traversal.flatMap(_.offset)
+      traversal.iterator.flatMap(_.offset).iterator
 
     /** Traverse to nodes where the offset equals the given `value`
       */
     def offset(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get == value
       }
 
@@ -6756,7 +6760,7 @@ object Accessors {
       */
     def offset(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -6764,39 +6768,39 @@ object Accessors {
     /** Traverse to nodes where the offset is greater than the given `value`
       */
     def offsetGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the offset is greater than or equal the given `value`
       */
     def offsetGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the offset is less than the given `value`
       */
     def offsetLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the offset is less than or equal the given `value`
       */
     def offsetLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offset; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to offsetEnd property */
     def offsetEnd: Iterator[Int] =
-      traversal.flatMap(_.offsetEnd)
+      traversal.iterator.flatMap(_.offsetEnd).iterator
 
     /** Traverse to nodes where the offsetEnd equals the given `value`
       */
     def offsetEnd(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get == value
       }
 
@@ -6804,7 +6808,7 @@ object Accessors {
       */
     def offsetEnd(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -6812,34 +6816,34 @@ object Accessors {
     /** Traverse to nodes where the offsetEnd is greater than the given `value`
       */
     def offsetEndGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the offsetEnd is greater than or equal the given `value`
       */
     def offsetEndGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the offsetEnd is less than the given `value`
       */
     def offsetEndLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the offsetEnd is less than or equal the given `value`
       */
     def offsetEndLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.offsetEnd; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to signature property */
     def signature: Iterator[String] =
-      traversal.map(_.signature)
+      traversal.iterator.map(_.signature).iterator
 
     /** Traverse to nodes where the signature matches the regular expression `value`
       */
@@ -6848,14 +6852,14 @@ object Accessors {
         signatureExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filter { item => matcher.reset(item.signature).matches }
       }
 
     /** Traverse to nodes where the signature matches at least one of the regular expressions in `values`
       */
     def signature(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.signature).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.signature).matches } }
     }
 
     /** Traverse to nodes where signature matches `value` exactly.
@@ -6864,7 +6868,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.signature == value }
+      case _ => traversal.iterator.filter { _.signature == value }
     }
 
     /** Traverse to nodes where signature matches one of the elements in `values` exactly.
@@ -6873,17 +6877,17 @@ object Accessors {
       if (values.length == 1) signatureExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.signature) }
+        traversal.iterator.filter { item => valueSet.contains(item.signature) }
       }
 
     /** Traverse to nodes where signature does not match the regular expression `value`.
       */
     def signatureNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.signature != pattern }
+        traversal.iterator.filter { node => node.signature != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.signature).matches }
       }
     }
 
@@ -6891,15 +6895,16 @@ object Accessors {
       */
     def signatureNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MethodParameterInBase[NodeType <: nodes.MethodParameterInBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodParameterInBase[NodeType <: nodes.MethodParameterInBase](val traversal: IterableOnce[NodeType])
+      extends AnyVal {
 
     /** Traverse to closureBindingId property */
     def closureBindingId: Iterator[String] =
-      traversal.flatMap(_.closureBindingId)
+      traversal.iterator.flatMap(_.closureBindingId).iterator
 
     /** Traverse to nodes where the closureBindingId matches the regular expression `value`
       */
@@ -6908,7 +6913,7 @@ object Accessors {
         closureBindingIdExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -6918,7 +6923,7 @@ object Accessors {
       */
     def closureBindingId(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -6930,7 +6935,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.closureBindingId; tmp.isDefined && tmp.get == value
         }
     }
@@ -6941,7 +6946,7 @@ object Accessors {
       if (values.length == 1) closureBindingIdExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.closureBindingId; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -6950,10 +6955,10 @@ object Accessors {
       */
     def closureBindingIdNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
+        traversal.iterator.filter { node => node.closureBindingId.isEmpty || node.closureBindingId.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.closureBindingId; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -6963,18 +6968,18 @@ object Accessors {
       */
     def closureBindingIdNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.closureBindingId; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to evaluationStrategy property */
     def evaluationStrategy: Iterator[String] =
-      traversal.map(_.evaluationStrategy)
+      traversal.iterator.map(_.evaluationStrategy).iterator
 
     /** Traverse to nodes where the evaluationStrategy matches the regular expression `value`
       */
@@ -6983,14 +6988,14 @@ object Accessors {
         evaluationStrategyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filter { item => matcher.reset(item.evaluationStrategy).matches }
       }
 
     /** Traverse to nodes where the evaluationStrategy matches at least one of the regular expressions in `values`
       */
     def evaluationStrategy(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
     }
 
     /** Traverse to nodes where evaluationStrategy matches `value` exactly.
@@ -6999,7 +7004,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 19, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.evaluationStrategy == value }
+      case _ => traversal.iterator.filter { _.evaluationStrategy == value }
     }
 
     /** Traverse to nodes where evaluationStrategy matches one of the elements in `values` exactly.
@@ -7008,17 +7013,17 @@ object Accessors {
       if (values.length == 1) evaluationStrategyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.evaluationStrategy) }
+        traversal.iterator.filter { item => valueSet.contains(item.evaluationStrategy) }
       }
 
     /** Traverse to nodes where evaluationStrategy does not match the regular expression `value`.
       */
     def evaluationStrategyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.evaluationStrategy != pattern }
+        traversal.iterator.filter { node => node.evaluationStrategy != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
       }
     }
 
@@ -7026,61 +7031,61 @@ object Accessors {
       */
     def evaluationStrategyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
     }
 
     /** Traverse to index property */
     def index: Iterator[Int] =
-      traversal.map(_.index)
+      traversal.iterator.map(_.index).iterator
 
     /** Traverse to nodes where the index equals the given `value`
       */
     def index(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index == value }
+      traversal.iterator.filter { _.index == value }
 
     /** Traverse to nodes where the index equals at least one of the given `values`
       */
     def index(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.index) }
+      traversal.iterator.filter { node => vset.contains(node.index) }
     }
 
     /** Traverse to nodes where the index is greater than the given `value`
       */
     def indexGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index > value }
+      traversal.iterator.filter { _.index > value }
 
     /** Traverse to nodes where the index is greater than or equal the given `value`
       */
     def indexGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index >= value }
+      traversal.iterator.filter { _.index >= value }
 
     /** Traverse to nodes where the index is less than the given `value`
       */
     def indexLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index < value }
+      traversal.iterator.filter { _.index < value }
 
     /** Traverse to nodes where the index is less than or equal the given `value`
       */
     def indexLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index <= value }
+      traversal.iterator.filter { _.index <= value }
 
     /** Traverse to isVariadic property */
     def isVariadic: Iterator[Boolean] =
-      traversal.map(_.isVariadic)
+      traversal.iterator.map(_.isVariadic).iterator
 
     /** Traverse to nodes where the isVariadic equals the given `value`
       */
     def isVariadic(value: Boolean): Iterator[NodeType] =
-      traversal.filter { _.isVariadic == value }
+      traversal.iterator.filter { _.isVariadic == value }
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -7089,14 +7094,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -7105,7 +7110,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -7114,17 +7119,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -7132,15 +7137,16 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MethodParameterOutBase[NodeType <: nodes.MethodParameterOutBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodParameterOutBase[NodeType <: nodes.MethodParameterOutBase](val traversal: IterableOnce[NodeType])
+      extends AnyVal {
 
     /** Traverse to evaluationStrategy property */
     def evaluationStrategy: Iterator[String] =
-      traversal.map(_.evaluationStrategy)
+      traversal.iterator.map(_.evaluationStrategy).iterator
 
     /** Traverse to nodes where the evaluationStrategy matches the regular expression `value`
       */
@@ -7149,14 +7155,14 @@ object Accessors {
         evaluationStrategyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filter { item => matcher.reset(item.evaluationStrategy).matches }
       }
 
     /** Traverse to nodes where the evaluationStrategy matches at least one of the regular expressions in `values`
       */
     def evaluationStrategy(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
     }
 
     /** Traverse to nodes where evaluationStrategy matches `value` exactly.
@@ -7165,7 +7171,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 19, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.evaluationStrategy == value }
+      case _ => traversal.iterator.filter { _.evaluationStrategy == value }
     }
 
     /** Traverse to nodes where evaluationStrategy matches one of the elements in `values` exactly.
@@ -7174,17 +7180,17 @@ object Accessors {
       if (values.length == 1) evaluationStrategyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.evaluationStrategy) }
+        traversal.iterator.filter { item => valueSet.contains(item.evaluationStrategy) }
       }
 
     /** Traverse to nodes where evaluationStrategy does not match the regular expression `value`.
       */
     def evaluationStrategyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.evaluationStrategy != pattern }
+        traversal.iterator.filter { node => node.evaluationStrategy != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
       }
     }
 
@@ -7192,57 +7198,57 @@ object Accessors {
       */
     def evaluationStrategyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
     }
 
     /** Traverse to index property */
     def index: Iterator[Int] =
-      traversal.map(_.index)
+      traversal.iterator.map(_.index).iterator
 
     /** Traverse to nodes where the index equals the given `value`
       */
     def index(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index == value }
+      traversal.iterator.filter { _.index == value }
 
     /** Traverse to nodes where the index equals at least one of the given `values`
       */
     def index(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.index) }
+      traversal.iterator.filter { node => vset.contains(node.index) }
     }
 
     /** Traverse to nodes where the index is greater than the given `value`
       */
     def indexGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index > value }
+      traversal.iterator.filter { _.index > value }
 
     /** Traverse to nodes where the index is greater than or equal the given `value`
       */
     def indexGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index >= value }
+      traversal.iterator.filter { _.index >= value }
 
     /** Traverse to nodes where the index is less than the given `value`
       */
     def indexLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index < value }
+      traversal.iterator.filter { _.index < value }
 
     /** Traverse to nodes where the index is less than or equal the given `value`
       */
     def indexLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.index <= value }
+      traversal.iterator.filter { _.index <= value }
 
     /** Traverse to isVariadic property */
     def isVariadic: Iterator[Boolean] =
-      traversal.map(_.isVariadic)
+      traversal.iterator.map(_.isVariadic).iterator
 
     /** Traverse to nodes where the isVariadic equals the given `value`
       */
     def isVariadic(value: Boolean): Iterator[NodeType] =
-      traversal.filter { _.isVariadic == value }
+      traversal.iterator.filter { _.isVariadic == value }
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -7251,14 +7257,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -7267,7 +7273,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -7276,17 +7282,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -7294,19 +7300,19 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MethodRefBase[NodeType <: nodes.MethodRefBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodRefBase[NodeType <: nodes.MethodRefBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to methodFullName property */
     def methodFullName: Iterator[String] =
-      traversal.map(_.methodFullName)
+      traversal.iterator.map(_.methodFullName).iterator
 
     /** Traverse to nodes where the methodFullName matches the regular expression `value`
       */
@@ -7315,14 +7321,14 @@ object Accessors {
         methodFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.methodFullName).matches }
       }
 
     /** Traverse to nodes where the methodFullName matches at least one of the regular expressions in `values`
       */
     def methodFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.methodFullName).matches } }
     }
 
     /** Traverse to nodes where methodFullName matches `value` exactly.
@@ -7331,7 +7337,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 36, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.methodFullName == value }
+      case _ => traversal.iterator.filter { _.methodFullName == value }
     }
 
     /** Traverse to nodes where methodFullName matches one of the elements in `values` exactly.
@@ -7340,17 +7346,17 @@ object Accessors {
       if (values.length == 1) methodFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.methodFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.methodFullName) }
       }
 
     /** Traverse to nodes where methodFullName does not match the regular expression `value`.
       */
     def methodFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.methodFullName != pattern }
+        traversal.iterator.filter { node => node.methodFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.methodFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.methodFullName).matches }
       }
     }
 
@@ -7358,16 +7364,16 @@ object Accessors {
       */
     def methodFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.methodFullName).matches }.isEmpty }
     }
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -7376,14 +7382,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -7392,7 +7398,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -7401,17 +7407,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -7419,19 +7425,19 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_MethodReturnBase[NodeType <: nodes.MethodReturnBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_MethodReturnBase[NodeType <: nodes.MethodReturnBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to evaluationStrategy property */
     def evaluationStrategy: Iterator[String] =
-      traversal.map(_.evaluationStrategy)
+      traversal.iterator.map(_.evaluationStrategy).iterator
 
     /** Traverse to nodes where the evaluationStrategy matches the regular expression `value`
       */
@@ -7440,14 +7446,14 @@ object Accessors {
         evaluationStrategyExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filter { item => matcher.reset(item.evaluationStrategy).matches }
       }
 
     /** Traverse to nodes where the evaluationStrategy matches at least one of the regular expressions in `values`
       */
     def evaluationStrategy(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.evaluationStrategy).matches } }
     }
 
     /** Traverse to nodes where evaluationStrategy matches `value` exactly.
@@ -7456,7 +7462,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 19, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.evaluationStrategy == value }
+      case _ => traversal.iterator.filter { _.evaluationStrategy == value }
     }
 
     /** Traverse to nodes where evaluationStrategy matches one of the elements in `values` exactly.
@@ -7465,17 +7471,17 @@ object Accessors {
       if (values.length == 1) evaluationStrategyExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.evaluationStrategy) }
+        traversal.iterator.filter { item => valueSet.contains(item.evaluationStrategy) }
       }
 
     /** Traverse to nodes where evaluationStrategy does not match the regular expression `value`.
       */
     def evaluationStrategyNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.evaluationStrategy != pattern }
+        traversal.iterator.filter { node => node.evaluationStrategy != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.evaluationStrategy).matches }
       }
     }
 
@@ -7483,16 +7489,16 @@ object Accessors {
       */
     def evaluationStrategyNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.evaluationStrategy).matches }.isEmpty }
     }
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -7501,14 +7507,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -7517,7 +7523,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -7526,17 +7532,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -7544,15 +7550,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_ModifierBase[NodeType <: nodes.ModifierBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_ModifierBase[NodeType <: nodes.ModifierBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to modifierType property */
     def modifierType: Iterator[String] =
-      traversal.map(_.modifierType)
+      traversal.iterator.map(_.modifierType).iterator
 
     /** Traverse to nodes where the modifierType matches the regular expression `value`
       */
@@ -7561,14 +7567,14 @@ object Accessors {
         modifierTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.modifierType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.modifierType).matches }
       }
 
     /** Traverse to nodes where the modifierType matches at least one of the regular expressions in `values`
       */
     def modifierType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.modifierType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.modifierType).matches } }
     }
 
     /** Traverse to nodes where modifierType matches `value` exactly.
@@ -7577,7 +7583,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 38, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.modifierType == value }
+      case _ => traversal.iterator.filter { _.modifierType == value }
     }
 
     /** Traverse to nodes where modifierType matches one of the elements in `values` exactly.
@@ -7586,17 +7592,17 @@ object Accessors {
       if (values.length == 1) modifierTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.modifierType) }
+        traversal.iterator.filter { item => valueSet.contains(item.modifierType) }
       }
 
     /** Traverse to nodes where modifierType does not match the regular expression `value`.
       */
     def modifierTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.modifierType != pattern }
+        traversal.iterator.filter { node => node.modifierType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.modifierType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.modifierType).matches }
       }
     }
 
@@ -7604,15 +7610,15 @@ object Accessors {
       */
     def modifierTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.modifierType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.modifierType).matches }.isEmpty }
     }
 
   }
-  final class Traversal_NamespaceBase[NodeType <: nodes.NamespaceBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_NamespaceBase[NodeType <: nodes.NamespaceBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -7621,14 +7627,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -7637,7 +7643,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -7646,17 +7652,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -7664,15 +7670,15 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_NamespaceBlockBase[NodeType <: nodes.NamespaceBlockBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_NamespaceBlockBase[NodeType <: nodes.NamespaceBlockBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
-      traversal.map(_.filename)
+      traversal.iterator.map(_.filename).iterator
 
     /** Traverse to nodes where the filename matches the regular expression `value`
       */
@@ -7681,14 +7687,14 @@ object Accessors {
         filenameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filter { item => matcher.reset(item.filename).matches }
       }
 
     /** Traverse to nodes where the filename matches at least one of the regular expressions in `values`
       */
     def filename(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.filename).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.filename).matches } }
     }
 
     /** Traverse to nodes where filename matches `value` exactly.
@@ -7697,7 +7703,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 21, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.filename == value }
+      case _ => traversal.iterator.filter { _.filename == value }
     }
 
     /** Traverse to nodes where filename matches one of the elements in `values` exactly.
@@ -7706,17 +7712,17 @@ object Accessors {
       if (values.length == 1) filenameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.filename) }
+        traversal.iterator.filter { item => valueSet.contains(item.filename) }
       }
 
     /** Traverse to nodes where filename does not match the regular expression `value`.
       */
     def filenameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.filename != pattern }
+        traversal.iterator.filter { node => node.filename != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.filename).matches }
       }
     }
 
@@ -7724,12 +7730,12 @@ object Accessors {
       */
     def filenameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
     }
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
-      traversal.map(_.fullName)
+      traversal.iterator.map(_.fullName).iterator
 
     /** Traverse to nodes where the fullName matches the regular expression `value`
       */
@@ -7738,14 +7744,14 @@ object Accessors {
         fullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.fullName).matches }
       }
 
     /** Traverse to nodes where the fullName matches at least one of the regular expressions in `values`
       */
     def fullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.fullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.fullName).matches } }
     }
 
     /** Traverse to nodes where fullName matches `value` exactly.
@@ -7754,7 +7760,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 22, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.fullName == value }
+      case _ => traversal.iterator.filter { _.fullName == value }
     }
 
     /** Traverse to nodes where fullName matches one of the elements in `values` exactly.
@@ -7763,17 +7769,17 @@ object Accessors {
       if (values.length == 1) fullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.fullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.fullName) }
       }
 
     /** Traverse to nodes where fullName does not match the regular expression `value`.
       */
     def fullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.fullName != pattern }
+        traversal.iterator.filter { node => node.fullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.fullName).matches }
       }
     }
 
@@ -7781,12 +7787,12 @@ object Accessors {
       */
     def fullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -7795,14 +7801,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -7811,7 +7817,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -7820,17 +7826,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -7838,16 +7844,16 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_ReturnBase[NodeType <: nodes.ReturnBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_TagBase[NodeType <: nodes.TagBase](val traversal: Iterator[NodeType])       extends AnyVal {
+  final class Traversal_ReturnBase[NodeType <: nodes.ReturnBase](val traversal: IterableOnce[NodeType]) extends AnyVal {}
+  final class Traversal_TagBase[NodeType <: nodes.TagBase](val traversal: IterableOnce[NodeType])       extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -7856,14 +7862,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -7872,7 +7878,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -7881,17 +7887,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -7899,12 +7905,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to value property */
     def value: Iterator[String] =
-      traversal.map(_.value)
+      traversal.iterator.map(_.value).iterator
 
     /** Traverse to nodes where the value matches the regular expression `value`
       */
@@ -7913,14 +7919,14 @@ object Accessors {
         valueExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.value).matches }
+        traversal.iterator.filter { item => matcher.reset(item.value).matches }
       }
 
     /** Traverse to nodes where the value matches at least one of the regular expressions in `values`
       */
     def value(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.value).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.value).matches } }
     }
 
     /** Traverse to nodes where value matches `value` exactly.
@@ -7929,7 +7935,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 53, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.value == value }
+      case _ => traversal.iterator.filter { _.value == value }
     }
 
     /** Traverse to nodes where value matches one of the elements in `values` exactly.
@@ -7938,17 +7944,17 @@ object Accessors {
       if (values.length == 1) valueExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.value) }
+        traversal.iterator.filter { item => valueSet.contains(item.value) }
       }
 
     /** Traverse to nodes where value does not match the regular expression `value`.
       */
     def valueNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.value != pattern }
+        traversal.iterator.filter { node => node.value != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.value).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.value).matches }
       }
     }
 
@@ -7956,16 +7962,16 @@ object Accessors {
       */
     def valueNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.value).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.value).matches }.isEmpty }
     }
 
   }
-  final class Traversal_TagNodePairBase[NodeType <: nodes.TagNodePairBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_TemplateDomBase[NodeType <: nodes.TemplateDomBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TagNodePairBase[NodeType <: nodes.TagNodePairBase](val traversal: IterableOnce[NodeType]) extends AnyVal {}
+  final class Traversal_TemplateDomBase[NodeType <: nodes.TemplateDomBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -7974,14 +7980,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -7990,7 +7996,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -7999,17 +8005,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -8017,15 +8023,15 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_TypeBase[NodeType <: nodes.TypeBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TypeBase[NodeType <: nodes.TypeBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
-      traversal.map(_.fullName)
+      traversal.iterator.map(_.fullName).iterator
 
     /** Traverse to nodes where the fullName matches the regular expression `value`
       */
@@ -8034,14 +8040,14 @@ object Accessors {
         fullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.fullName).matches }
       }
 
     /** Traverse to nodes where the fullName matches at least one of the regular expressions in `values`
       */
     def fullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.fullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.fullName).matches } }
     }
 
     /** Traverse to nodes where fullName matches `value` exactly.
@@ -8050,7 +8056,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 22, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.fullName == value }
+      case _ => traversal.iterator.filter { _.fullName == value }
     }
 
     /** Traverse to nodes where fullName matches one of the elements in `values` exactly.
@@ -8059,17 +8065,17 @@ object Accessors {
       if (values.length == 1) fullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.fullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.fullName) }
       }
 
     /** Traverse to nodes where fullName does not match the regular expression `value`.
       */
     def fullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.fullName != pattern }
+        traversal.iterator.filter { node => node.fullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.fullName).matches }
       }
     }
 
@@ -8077,12 +8083,12 @@ object Accessors {
       */
     def fullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
     }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -8091,14 +8097,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -8107,7 +8113,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -8116,17 +8122,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -8134,12 +8140,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to typeDeclFullName property */
     def typeDeclFullName: Iterator[String] =
-      traversal.map(_.typeDeclFullName)
+      traversal.iterator.map(_.typeDeclFullName).iterator
 
     /** Traverse to nodes where the typeDeclFullName matches the regular expression `value`
       */
@@ -8148,14 +8154,14 @@ object Accessors {
         typeDeclFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeDeclFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeDeclFullName).matches }
       }
 
     /** Traverse to nodes where the typeDeclFullName matches at least one of the regular expressions in `values`
       */
     def typeDeclFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeDeclFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeDeclFullName).matches } }
     }
 
     /** Traverse to nodes where typeDeclFullName matches `value` exactly.
@@ -8164,7 +8170,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 51, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeDeclFullName == value }
+      case _ => traversal.iterator.filter { _.typeDeclFullName == value }
     }
 
     /** Traverse to nodes where typeDeclFullName matches one of the elements in `values` exactly.
@@ -8173,17 +8179,17 @@ object Accessors {
       if (values.length == 1) typeDeclFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeDeclFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeDeclFullName) }
       }
 
     /** Traverse to nodes where typeDeclFullName does not match the regular expression `value`.
       */
     def typeDeclFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeDeclFullName != pattern }
+        traversal.iterator.filter { node => node.typeDeclFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeDeclFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeDeclFullName).matches }
       }
     }
 
@@ -8191,16 +8197,16 @@ object Accessors {
       */
     def typeDeclFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeDeclFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeDeclFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_TypeArgumentBase[NodeType <: nodes.TypeArgumentBase](val traversal: Iterator[NodeType]) extends AnyVal {}
-  final class Traversal_TypeDeclBase[NodeType <: nodes.TypeDeclBase](val traversal: Iterator[NodeType])         extends AnyVal {
+  final class Traversal_TypeArgumentBase[NodeType <: nodes.TypeArgumentBase](val traversal: IterableOnce[NodeType]) extends AnyVal {}
+  final class Traversal_TypeDeclBase[NodeType <: nodes.TypeDeclBase](val traversal: IterableOnce[NodeType])         extends AnyVal {
 
     /** Traverse to aliasTypeFullName property */
     def aliasTypeFullName: Iterator[String] =
-      traversal.flatMap(_.aliasTypeFullName)
+      traversal.iterator.flatMap(_.aliasTypeFullName).iterator
 
     /** Traverse to nodes where the aliasTypeFullName matches the regular expression `value`
       */
@@ -8209,7 +8215,7 @@ object Accessors {
         aliasTypeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.aliasTypeFullName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -8219,7 +8225,7 @@ object Accessors {
       */
     def aliasTypeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.aliasTypeFullName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -8231,7 +8237,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.aliasTypeFullName; tmp.isDefined && tmp.get == value
         }
     }
@@ -8242,7 +8248,7 @@ object Accessors {
       if (values.length == 1) aliasTypeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.aliasTypeFullName; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -8251,10 +8257,10 @@ object Accessors {
       */
     def aliasTypeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.aliasTypeFullName.isEmpty || node.aliasTypeFullName.get != pattern }
+        traversal.iterator.filter { node => node.aliasTypeFullName.isEmpty || node.aliasTypeFullName.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.aliasTypeFullName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -8264,14 +8270,14 @@ object Accessors {
       */
     def aliasTypeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.aliasTypeFullName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
     /** Traverse to astParentFullName property */
     def astParentFullName: Iterator[String] =
-      traversal.map(_.astParentFullName)
+      traversal.iterator.map(_.astParentFullName).iterator
 
     /** Traverse to nodes where the astParentFullName matches the regular expression `value`
       */
@@ -8280,14 +8286,14 @@ object Accessors {
         astParentFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentFullName).matches }
       }
 
     /** Traverse to nodes where the astParentFullName matches at least one of the regular expressions in `values`
       */
     def astParentFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentFullName).matches } }
     }
 
     /** Traverse to nodes where astParentFullName matches `value` exactly.
@@ -8296,7 +8302,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 3, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentFullName == value }
+      case _ => traversal.iterator.filter { _.astParentFullName == value }
     }
 
     /** Traverse to nodes where astParentFullName matches one of the elements in `values` exactly.
@@ -8305,17 +8311,17 @@ object Accessors {
       if (values.length == 1) astParentFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentFullName) }
       }
 
     /** Traverse to nodes where astParentFullName does not match the regular expression `value`.
       */
     def astParentFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentFullName != pattern }
+        traversal.iterator.filter { node => node.astParentFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentFullName).matches }
       }
     }
 
@@ -8323,12 +8329,12 @@ object Accessors {
       */
     def astParentFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentFullName).matches }.isEmpty }
     }
 
     /** Traverse to astParentType property */
     def astParentType: Iterator[String] =
-      traversal.map(_.astParentType)
+      traversal.iterator.map(_.astParentType).iterator
 
     /** Traverse to nodes where the astParentType matches the regular expression `value`
       */
@@ -8337,14 +8343,14 @@ object Accessors {
         astParentTypeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filter { item => matcher.reset(item.astParentType).matches }
       }
 
     /** Traverse to nodes where the astParentType matches at least one of the regular expressions in `values`
       */
     def astParentType(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.astParentType).matches } }
     }
 
     /** Traverse to nodes where astParentType matches `value` exactly.
@@ -8353,7 +8359,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.astParentType == value }
+      case _ => traversal.iterator.filter { _.astParentType == value }
     }
 
     /** Traverse to nodes where astParentType matches one of the elements in `values` exactly.
@@ -8362,17 +8368,17 @@ object Accessors {
       if (values.length == 1) astParentTypeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.astParentType) }
+        traversal.iterator.filter { item => valueSet.contains(item.astParentType) }
       }
 
     /** Traverse to nodes where astParentType does not match the regular expression `value`.
       */
     def astParentTypeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.astParentType != pattern }
+        traversal.iterator.filter { node => node.astParentType != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.astParentType).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.astParentType).matches }
       }
     }
 
@@ -8380,12 +8386,12 @@ object Accessors {
       */
     def astParentTypeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.astParentType).matches }.isEmpty }
     }
 
     /** Traverse to filename property */
     def filename: Iterator[String] =
-      traversal.map(_.filename)
+      traversal.iterator.map(_.filename).iterator
 
     /** Traverse to nodes where the filename matches the regular expression `value`
       */
@@ -8394,14 +8400,14 @@ object Accessors {
         filenameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filter { item => matcher.reset(item.filename).matches }
       }
 
     /** Traverse to nodes where the filename matches at least one of the regular expressions in `values`
       */
     def filename(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.filename).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.filename).matches } }
     }
 
     /** Traverse to nodes where filename matches `value` exactly.
@@ -8410,7 +8416,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 21, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.filename == value }
+      case _ => traversal.iterator.filter { _.filename == value }
     }
 
     /** Traverse to nodes where filename matches one of the elements in `values` exactly.
@@ -8419,17 +8425,17 @@ object Accessors {
       if (values.length == 1) filenameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.filename) }
+        traversal.iterator.filter { item => valueSet.contains(item.filename) }
       }
 
     /** Traverse to nodes where filename does not match the regular expression `value`.
       */
     def filenameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.filename != pattern }
+        traversal.iterator.filter { node => node.filename != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.filename).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.filename).matches }
       }
     }
 
@@ -8437,12 +8443,12 @@ object Accessors {
       */
     def filenameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.filename).matches }.isEmpty }
     }
 
     /** Traverse to fullName property */
     def fullName: Iterator[String] =
-      traversal.map(_.fullName)
+      traversal.iterator.map(_.fullName).iterator
 
     /** Traverse to nodes where the fullName matches the regular expression `value`
       */
@@ -8451,14 +8457,14 @@ object Accessors {
         fullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.fullName).matches }
       }
 
     /** Traverse to nodes where the fullName matches at least one of the regular expressions in `values`
       */
     def fullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.fullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.fullName).matches } }
     }
 
     /** Traverse to nodes where fullName matches `value` exactly.
@@ -8467,7 +8473,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 22, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.fullName == value }
+      case _ => traversal.iterator.filter { _.fullName == value }
     }
 
     /** Traverse to nodes where fullName matches one of the elements in `values` exactly.
@@ -8476,17 +8482,17 @@ object Accessors {
       if (values.length == 1) fullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.fullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.fullName) }
       }
 
     /** Traverse to nodes where fullName does not match the regular expression `value`.
       */
     def fullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.fullName != pattern }
+        traversal.iterator.filter { node => node.fullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.fullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.fullName).matches }
       }
     }
 
@@ -8494,25 +8500,25 @@ object Accessors {
       */
     def fullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.fullName).matches }.isEmpty }
     }
 
     /** Traverse to inheritsFromTypeFullName property */
     def inheritsFromTypeFullName: Iterator[String] =
-      traversal.flatMap(_.inheritsFromTypeFullName)
+      traversal.iterator.flatMap(_.inheritsFromTypeFullName).iterator
 
     /** Traverse to isExternal property */
     def isExternal: Iterator[Boolean] =
-      traversal.map(_.isExternal)
+      traversal.iterator.map(_.isExternal).iterator
 
     /** Traverse to nodes where the isExternal equals the given `value`
       */
     def isExternal(value: Boolean): Iterator[NodeType] =
-      traversal.filter { _.isExternal == value }
+      traversal.iterator.filter { _.isExternal == value }
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -8521,14 +8527,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -8537,7 +8543,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -8546,17 +8552,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -8564,15 +8570,15 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_TypeParameterBase[NodeType <: nodes.TypeParameterBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TypeParameterBase[NodeType <: nodes.TypeParameterBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -8581,14 +8587,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -8597,7 +8603,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -8606,17 +8612,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -8624,23 +8630,23 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
-  final class Traversal_TypeRefBase[NodeType <: nodes.TypeRefBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_TypeRefBase[NodeType <: nodes.TypeRefBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -8649,14 +8655,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -8665,7 +8671,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -8674,17 +8680,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -8692,15 +8698,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_UnknownBase[NodeType <: nodes.UnknownBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_UnknownBase[NodeType <: nodes.UnknownBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to containedRef property */
     def containedRef: Iterator[String] =
-      traversal.map(_.containedRef)
+      traversal.iterator.map(_.containedRef).iterator
 
     /** Traverse to nodes where the containedRef matches the regular expression `value`
       */
@@ -8709,14 +8715,14 @@ object Accessors {
         containedRefExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.containedRef).matches }
+        traversal.iterator.filter { item => matcher.reset(item.containedRef).matches }
       }
 
     /** Traverse to nodes where the containedRef matches at least one of the regular expressions in `values`
       */
     def containedRef(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.containedRef).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.containedRef).matches } }
     }
 
     /** Traverse to nodes where containedRef matches `value` exactly.
@@ -8725,7 +8731,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 13, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.containedRef == value }
+      case _ => traversal.iterator.filter { _.containedRef == value }
     }
 
     /** Traverse to nodes where containedRef matches one of the elements in `values` exactly.
@@ -8734,17 +8740,17 @@ object Accessors {
       if (values.length == 1) containedRefExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.containedRef) }
+        traversal.iterator.filter { item => valueSet.contains(item.containedRef) }
       }
 
     /** Traverse to nodes where containedRef does not match the regular expression `value`.
       */
     def containedRefNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.containedRef != pattern }
+        traversal.iterator.filter { node => node.containedRef != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.containedRef).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.containedRef).matches }
       }
     }
 
@@ -8752,16 +8758,16 @@ object Accessors {
       */
     def containedRefNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.containedRef).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.containedRef).matches }.isEmpty }
     }
 
     /** Traverse to dynamicTypeHintFullName property */
     def dynamicTypeHintFullName: Iterator[String] =
-      traversal.flatMap(_.dynamicTypeHintFullName)
+      traversal.iterator.flatMap(_.dynamicTypeHintFullName).iterator
 
     /** Traverse to parserTypeName property */
     def parserTypeName: Iterator[String] =
-      traversal.map(_.parserTypeName)
+      traversal.iterator.map(_.parserTypeName).iterator
 
     /** Traverse to nodes where the parserTypeName matches the regular expression `value`
       */
@@ -8770,14 +8776,14 @@ object Accessors {
         parserTypeNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.parserTypeName).matches }
       }
 
     /** Traverse to nodes where the parserTypeName matches at least one of the regular expressions in `values`
       */
     def parserTypeName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.parserTypeName).matches } }
     }
 
     /** Traverse to nodes where parserTypeName matches `value` exactly.
@@ -8786,7 +8792,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 46, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.parserTypeName == value }
+      case _ => traversal.iterator.filter { _.parserTypeName == value }
     }
 
     /** Traverse to nodes where parserTypeName matches one of the elements in `values` exactly.
@@ -8795,17 +8801,17 @@ object Accessors {
       if (values.length == 1) parserTypeNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.parserTypeName) }
+        traversal.iterator.filter { item => valueSet.contains(item.parserTypeName) }
       }
 
     /** Traverse to nodes where parserTypeName does not match the regular expression `value`.
       */
     def parserTypeNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.parserTypeName != pattern }
+        traversal.iterator.filter { node => node.parserTypeName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.parserTypeName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.parserTypeName).matches }
       }
     }
 
@@ -8813,16 +8819,16 @@ object Accessors {
       */
     def parserTypeNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.parserTypeName).matches }.isEmpty }
     }
 
     /** Traverse to possibleTypes property */
     def possibleTypes: Iterator[String] =
-      traversal.flatMap(_.possibleTypes)
+      traversal.iterator.flatMap(_.possibleTypes).iterator
 
     /** Traverse to typeFullName property */
     def typeFullName: Iterator[String] =
-      traversal.map(_.typeFullName)
+      traversal.iterator.map(_.typeFullName).iterator
 
     /** Traverse to nodes where the typeFullName matches the regular expression `value`
       */
@@ -8831,14 +8837,14 @@ object Accessors {
         typeFullNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filter { item => matcher.reset(item.typeFullName).matches }
       }
 
     /** Traverse to nodes where the typeFullName matches at least one of the regular expressions in `values`
       */
     def typeFullName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.typeFullName).matches } }
     }
 
     /** Traverse to nodes where typeFullName matches `value` exactly.
@@ -8847,7 +8853,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 52, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.typeFullName == value }
+      case _ => traversal.iterator.filter { _.typeFullName == value }
     }
 
     /** Traverse to nodes where typeFullName matches one of the elements in `values` exactly.
@@ -8856,17 +8862,17 @@ object Accessors {
       if (values.length == 1) typeFullNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.typeFullName) }
+        traversal.iterator.filter { item => valueSet.contains(item.typeFullName) }
       }
 
     /** Traverse to nodes where typeFullName does not match the regular expression `value`.
       */
     def typeFullNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.typeFullName != pattern }
+        traversal.iterator.filter { node => node.typeFullName != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.typeFullName).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.typeFullName).matches }
       }
     }
 
@@ -8874,15 +8880,15 @@ object Accessors {
       */
     def typeFullNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.typeFullName).matches }.isEmpty }
     }
 
   }
-  final class Traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to code property */
     def code: Iterator[String] =
-      traversal.map(_.code)
+      traversal.iterator.map(_.code).iterator
 
     /** Traverse to nodes where the code matches the regular expression `value`
       */
@@ -8891,14 +8897,14 @@ object Accessors {
         codeExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.code).matches }
+        traversal.iterator.filter { item => matcher.reset(item.code).matches }
       }
 
     /** Traverse to nodes where the code matches at least one of the regular expressions in `values`
       */
     def code(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.code).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.code).matches } }
     }
 
     /** Traverse to nodes where code matches `value` exactly.
@@ -8907,7 +8913,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 10, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.code == value }
+      case _ => traversal.iterator.filter { _.code == value }
     }
 
     /** Traverse to nodes where code matches one of the elements in `values` exactly.
@@ -8916,17 +8922,17 @@ object Accessors {
       if (values.length == 1) codeExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.code) }
+        traversal.iterator.filter { item => valueSet.contains(item.code) }
       }
 
     /** Traverse to nodes where code does not match the regular expression `value`.
       */
     def codeNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.code != pattern }
+        traversal.iterator.filter { node => node.code != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.code).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.code).matches }
       }
     }
 
@@ -8934,17 +8940,17 @@ object Accessors {
       */
     def codeNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.code).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.code).matches }.isEmpty }
     }
 
     /** Traverse to columnNumber property */
     def columnNumber: Iterator[Int] =
-      traversal.flatMap(_.columnNumber)
+      traversal.iterator.flatMap(_.columnNumber).iterator
 
     /** Traverse to nodes where the columnNumber equals the given `value`
       */
     def columnNumber(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get == value
       }
 
@@ -8952,7 +8958,7 @@ object Accessors {
       */
     def columnNumber(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -8960,39 +8966,39 @@ object Accessors {
     /** Traverse to nodes where the columnNumber is greater than the given `value`
       */
     def columnNumberGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the columnNumber is greater than or equal the given `value`
       */
     def columnNumberGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the columnNumber is less than the given `value`
       */
     def columnNumberLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the columnNumber is less than or equal the given `value`
       */
     def columnNumberLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.columnNumber; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to lineNumber property */
     def lineNumber: Iterator[Int] =
-      traversal.flatMap(_.lineNumber)
+      traversal.iterator.flatMap(_.lineNumber).iterator
 
     /** Traverse to nodes where the lineNumber equals the given `value`
       */
     def lineNumber(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get == value
       }
 
@@ -9000,7 +9006,7 @@ object Accessors {
       */
     def lineNumber(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && vset.contains(tmp.get)
       }
     }
@@ -9008,73 +9014,73 @@ object Accessors {
     /** Traverse to nodes where the lineNumber is greater than the given `value`
       */
     def lineNumberGt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get > value
       }
 
     /** Traverse to nodes where the lineNumber is greater than or equal the given `value`
       */
     def lineNumberGte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get >= value
       }
 
     /** Traverse to nodes where the lineNumber is less than the given `value`
       */
     def lineNumberLt(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get < value
       }
 
     /** Traverse to nodes where the lineNumber is less than or equal the given `value`
       */
     def lineNumberLte(value: Int): Iterator[NodeType] =
-      traversal.filter { node =>
+      traversal.iterator.filter { node =>
         val tmp = node.lineNumber; tmp.isDefined && tmp.get <= value
       }
 
     /** Traverse to order property */
     def order: Iterator[Int] =
-      traversal.map(_.order)
+      traversal.iterator.map(_.order).iterator
 
     /** Traverse to nodes where the order equals the given `value`
       */
     def order(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order == value }
+      traversal.iterator.filter { _.order == value }
 
     /** Traverse to nodes where the order equals at least one of the given `values`
       */
     def order(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.order) }
+      traversal.iterator.filter { node => vset.contains(node.order) }
     }
 
     /** Traverse to nodes where the order is greater than the given `value`
       */
     def orderGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order > value }
+      traversal.iterator.filter { _.order > value }
 
     /** Traverse to nodes where the order is greater than or equal the given `value`
       */
     def orderGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order >= value }
+      traversal.iterator.filter { _.order >= value }
 
     /** Traverse to nodes where the order is less than the given `value`
       */
     def orderLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order < value }
+      traversal.iterator.filter { _.order < value }
 
     /** Traverse to nodes where the order is less than or equal the given `value`
       */
     def orderLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.order <= value }
+      traversal.iterator.filter { _.order <= value }
 
   }
-  final class Traversal_CallReprBase[NodeType <: nodes.CallReprBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CallReprBase[NodeType <: nodes.CallReprBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -9083,14 +9089,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -9099,7 +9105,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -9108,17 +9114,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -9126,12 +9132,12 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
     /** Traverse to signature property */
     def signature: Iterator[String] =
-      traversal.map(_.signature)
+      traversal.iterator.map(_.signature).iterator
 
     /** Traverse to nodes where the signature matches the regular expression `value`
       */
@@ -9140,14 +9146,14 @@ object Accessors {
         signatureExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filter { item => matcher.reset(item.signature).matches }
       }
 
     /** Traverse to nodes where the signature matches at least one of the regular expressions in `values`
       */
     def signature(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.signature).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.signature).matches } }
     }
 
     /** Traverse to nodes where signature matches `value` exactly.
@@ -9156,7 +9162,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 49, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.signature == value }
+      case _ => traversal.iterator.filter { _.signature == value }
     }
 
     /** Traverse to nodes where signature matches one of the elements in `values` exactly.
@@ -9165,17 +9171,17 @@ object Accessors {
       if (values.length == 1) signatureExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.signature) }
+        traversal.iterator.filter { item => valueSet.contains(item.signature) }
       }
 
     /** Traverse to nodes where signature does not match the regular expression `value`.
       */
     def signatureNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.signature != pattern }
+        traversal.iterator.filter { node => node.signature != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.signature).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.signature).matches }
       }
     }
 
@@ -9183,52 +9189,52 @@ object Accessors {
       */
     def signatureNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.signature).matches }.isEmpty }
     }
 
   }
-  final class Traversal_CfgNodeBase[NodeType <: nodes.CfgNodeBase](val traversal: Iterator[NodeType])       extends AnyVal {}
-  final class Traversal_ExpressionBase[NodeType <: nodes.ExpressionBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_CfgNodeBase[NodeType <: nodes.CfgNodeBase](val traversal: IterableOnce[NodeType])       extends AnyVal {}
+  final class Traversal_ExpressionBase[NodeType <: nodes.ExpressionBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to argumentIndex property */
     def argumentIndex: Iterator[Int] =
-      traversal.map(_.argumentIndex)
+      traversal.iterator.map(_.argumentIndex).iterator
 
     /** Traverse to nodes where the argumentIndex equals the given `value`
       */
     def argumentIndex(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex == value }
+      traversal.iterator.filter { _.argumentIndex == value }
 
     /** Traverse to nodes where the argumentIndex equals at least one of the given `values`
       */
     def argumentIndex(values: Int*): Iterator[NodeType] = {
       val vset = values.toSet
-      traversal.filter { node => vset.contains(node.argumentIndex) }
+      traversal.iterator.filter { node => vset.contains(node.argumentIndex) }
     }
 
     /** Traverse to nodes where the argumentIndex is greater than the given `value`
       */
     def argumentIndexGt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex > value }
+      traversal.iterator.filter { _.argumentIndex > value }
 
     /** Traverse to nodes where the argumentIndex is greater than or equal the given `value`
       */
     def argumentIndexGte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex >= value }
+      traversal.iterator.filter { _.argumentIndex >= value }
 
     /** Traverse to nodes where the argumentIndex is less than the given `value`
       */
     def argumentIndexLt(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex < value }
+      traversal.iterator.filter { _.argumentIndex < value }
 
     /** Traverse to nodes where the argumentIndex is less than or equal the given `value`
       */
     def argumentIndexLte(value: Int): Iterator[NodeType] =
-      traversal.filter { _.argumentIndex <= value }
+      traversal.iterator.filter { _.argumentIndex <= value }
 
     /** Traverse to argumentName property */
     def argumentName: Iterator[String] =
-      traversal.flatMap(_.argumentName)
+      traversal.iterator.flatMap(_.argumentName).iterator
 
     /** Traverse to nodes where the argumentName matches the regular expression `value`
       */
@@ -9237,7 +9243,7 @@ object Accessors {
         argumentNameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.argumentName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -9247,7 +9253,7 @@ object Accessors {
       */
     def argumentName(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item =>
+      traversal.iterator.filter { item =>
         val tmp = item.argumentName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
@@ -9259,7 +9265,7 @@ object Accessors {
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 2, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
-        traversal.filter { node =>
+        traversal.iterator.filter { node =>
           val tmp = node.argumentName; tmp.isDefined && tmp.get == value
         }
     }
@@ -9270,7 +9276,7 @@ object Accessors {
       if (values.length == 1) argumentNameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item =>
+        traversal.iterator.filter { item =>
           val tmp = item.argumentName; tmp.isDefined && valueSet.contains(tmp.get)
         }
       }
@@ -9279,10 +9285,10 @@ object Accessors {
       */
     def argumentNameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.argumentName.isEmpty || node.argumentName.get != pattern }
+        traversal.iterator.filter { node => node.argumentName.isEmpty || node.argumentName.get != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item =>
+        traversal.iterator.filterNot { item =>
           val tmp = item.argumentName; tmp.isDefined && matcher.reset(tmp.get).matches
         }
       }
@@ -9292,17 +9298,17 @@ object Accessors {
       */
     def argumentNameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filterNot { item =>
+      traversal.iterator.filterNot { item =>
         val tmp = item.argumentName; tmp.isDefined && matchers.exists { _.reset(tmp.get).matches }
       }
     }
 
   }
-  final class Traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](val traversal: Iterator[NodeType]) extends AnyVal {
+  final class Traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](val traversal: IterableOnce[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
-      traversal.map(_.name)
+      traversal.iterator.map(_.name).iterator
 
     /** Traverse to nodes where the name matches the regular expression `value`
       */
@@ -9311,14 +9317,14 @@ object Accessors {
         nameExact(pattern)
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filter { item => matcher.reset(item.name).matches }
+        traversal.iterator.filter { item => matcher.reset(item.name).matches }
       }
 
     /** Traverse to nodes where the name matches at least one of the regular expressions in `values`
       */
     def name(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.exists { _.reset(item.name).matches } }
+      traversal.iterator.filter { item => matchers.exists { _.reset(item.name).matches } }
     }
 
     /** Traverse to nodes where name matches `value` exactly.
@@ -9327,7 +9333,7 @@ object Accessors {
       case init: odb2.misc.InitNodeIterator[odb2.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         odb2.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 39, value).asInstanceOf[Iterator[NodeType]]
-      case _ => traversal.filter { _.name == value }
+      case _ => traversal.iterator.filter { _.name == value }
     }
 
     /** Traverse to nodes where name matches one of the elements in `values` exactly.
@@ -9336,17 +9342,17 @@ object Accessors {
       if (values.length == 1) nameExact(values.head)
       else {
         val valueSet = values.toSet
-        traversal.filter { item => valueSet.contains(item.name) }
+        traversal.iterator.filter { item => valueSet.contains(item.name) }
       }
 
     /** Traverse to nodes where name does not match the regular expression `value`.
       */
     def nameNot(pattern: String): Iterator[NodeType] = {
       if (!Misc.isRegex(pattern)) {
-        traversal.filter { node => node.name != pattern }
+        traversal.iterator.filter { node => node.name != pattern }
       } else {
         val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
-        traversal.filterNot { item => matcher.reset(item.name).matches }
+        traversal.iterator.filterNot { item => matcher.reset(item.name).matches }
       }
     }
 
@@ -9354,7 +9360,7 @@ object Accessors {
       */
     def nameNot(patterns: String*): Iterator[NodeType] = {
       val matchers = patterns.map { java.util.regex.Pattern.compile(_).matcher("") }
-      traversal.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
+      traversal.iterator.filter { item => matchers.find { _.reset(item.name).matches }.isEmpty }
     }
 
   }
@@ -9363,307 +9369,312 @@ object Accessors {
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
   import Accessors.*
   implicit def accessPropertyAliasTypeFullNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAliasTypeFullNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType] = new Traversal_Property_ALIAS_TYPE_FULL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_ALIAS_TYPE_FULL_NAME[NodeType] = new Traversal_Property_ALIAS_TYPE_FULL_NAME(traversal.iterator)
   implicit def accessPropertyArgumentIndexTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentIndexEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_ARGUMENT_INDEX[NodeType] = new Traversal_Property_ARGUMENT_INDEX(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_ARGUMENT_INDEX[NodeType] = new Traversal_Property_ARGUMENT_INDEX(traversal.iterator)
   implicit def accessPropertyArgumentNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasArgumentNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_ARGUMENT_NAME[NodeType] = new Traversal_Property_ARGUMENT_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_ARGUMENT_NAME[NodeType] = new Traversal_Property_ARGUMENT_NAME(traversal.iterator)
   implicit def accessPropertyAstParentFullNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentFullNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_AST_PARENT_FULL_NAME[NodeType] = new Traversal_Property_AST_PARENT_FULL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_AST_PARENT_FULL_NAME[NodeType] = new Traversal_Property_AST_PARENT_FULL_NAME(traversal.iterator)
   implicit def accessPropertyAstParentTypeTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasAstParentTypeEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_AST_PARENT_TYPE[NodeType] = new Traversal_Property_AST_PARENT_TYPE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_AST_PARENT_TYPE[NodeType] = new Traversal_Property_AST_PARENT_TYPE(traversal.iterator)
   implicit def accessPropertyCanonicalNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCanonicalNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CANONICAL_NAME[NodeType] = new Traversal_Property_CANONICAL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CANONICAL_NAME[NodeType] = new Traversal_Property_CANONICAL_NAME(traversal.iterator)
   implicit def accessPropertyClassNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CLASS_NAME[NodeType] = new Traversal_Property_CLASS_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CLASS_NAME[NodeType] = new Traversal_Property_CLASS_NAME(traversal.iterator)
   implicit def accessPropertyClassShortNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClassShortNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CLASS_SHORT_NAME[NodeType] = new Traversal_Property_CLASS_SHORT_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CLASS_SHORT_NAME[NodeType] = new Traversal_Property_CLASS_SHORT_NAME(traversal.iterator)
   implicit def accessPropertyClosureBindingIdTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureBindingIdEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CLOSURE_BINDING_ID[NodeType] = new Traversal_Property_CLOSURE_BINDING_ID(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CLOSURE_BINDING_ID[NodeType] = new Traversal_Property_CLOSURE_BINDING_ID(traversal.iterator)
   implicit def accessPropertyClosureOriginalNameTraversal[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasClosureOriginalNameEMT]
-  ](traversal: Iterator[NodeType]): Traversal_Property_CLOSURE_ORIGINAL_NAME[NodeType] = new Traversal_Property_CLOSURE_ORIGINAL_NAME(
-    traversal
+  ](traversal: IterableOnce[NodeType]): Traversal_Property_CLOSURE_ORIGINAL_NAME[NodeType] = new Traversal_Property_CLOSURE_ORIGINAL_NAME(
+    traversal.iterator
   )
   implicit def accessPropertyCodeTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasCodeEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CODE[NodeType] = new Traversal_Property_CODE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CODE[NodeType] = new Traversal_Property_CODE(traversal.iterator)
   implicit def accessPropertyColumnNumberTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_COLUMN_NUMBER[NodeType] = new Traversal_Property_COLUMN_NUMBER(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_COLUMN_NUMBER[NodeType] = new Traversal_Property_COLUMN_NUMBER(traversal.iterator)
   implicit def accessPropertyColumnNumberEndTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasColumnNumberEndEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_COLUMN_NUMBER_END[NodeType] = new Traversal_Property_COLUMN_NUMBER_END(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_COLUMN_NUMBER_END[NodeType] = new Traversal_Property_COLUMN_NUMBER_END(traversal.iterator)
   implicit def accessPropertyContainedRefTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContainedRefEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CONTAINED_REF[NodeType] = new Traversal_Property_CONTAINED_REF(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CONTAINED_REF[NodeType] = new Traversal_Property_CONTAINED_REF(traversal.iterator)
   implicit def accessPropertyContentTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasContentEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_CONTENT[NodeType] = new Traversal_Property_CONTENT(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_CONTENT[NodeType] = new Traversal_Property_CONTENT(traversal.iterator)
   implicit def accessPropertyControlStructureTypeTraversal[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasControlStructureTypeEMT]
-  ](traversal: Iterator[NodeType]): Traversal_Property_CONTROL_STRUCTURE_TYPE[NodeType] = new Traversal_Property_CONTROL_STRUCTURE_TYPE(
-    traversal
+  ](traversal: IterableOnce[NodeType]): Traversal_Property_CONTROL_STRUCTURE_TYPE[NodeType] = new Traversal_Property_CONTROL_STRUCTURE_TYPE(
+    traversal.iterator
   )
   implicit def accessPropertyDependencyGroupIdTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDependencyGroupIdEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_DEPENDENCY_GROUP_ID[NodeType] = new Traversal_Property_DEPENDENCY_GROUP_ID(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_DEPENDENCY_GROUP_ID[NodeType] = new Traversal_Property_DEPENDENCY_GROUP_ID(traversal.iterator)
   implicit def accessPropertyDispatchTypeTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDispatchTypeEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_DISPATCH_TYPE[NodeType] = new Traversal_Property_DISPATCH_TYPE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_DISPATCH_TYPE[NodeType] = new Traversal_Property_DISPATCH_TYPE(traversal.iterator)
   implicit def accessPropertyDynamicTypeHintFullNameTraversal[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasDynamicTypeHintFullNameEMT]
-  ](traversal: Iterator[NodeType]): Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME[NodeType] =
-    new Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME(traversal)
+  ](traversal: IterableOnce[NodeType]): Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME[NodeType] =
+    new Traversal_Property_DYNAMIC_TYPE_HINT_FULL_NAME(traversal.iterator)
   implicit def accessPropertyEvaluationStrategyTraversal[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasEvaluationStrategyEMT]
-  ](traversal: Iterator[NodeType]): Traversal_Property_EVALUATION_STRATEGY[NodeType] = new Traversal_Property_EVALUATION_STRATEGY(traversal)
+  ](traversal: IterableOnce[NodeType]): Traversal_Property_EVALUATION_STRATEGY[NodeType] = new Traversal_Property_EVALUATION_STRATEGY(
+    traversal.iterator
+  )
   implicit def accessPropertyExplicitAsTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasExplicitAsEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_EXPLICIT_AS[NodeType] = new Traversal_Property_EXPLICIT_AS(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_EXPLICIT_AS[NodeType] = new Traversal_Property_EXPLICIT_AS(traversal.iterator)
   implicit def accessPropertyFilenameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFilenameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_FILENAME[NodeType] = new Traversal_Property_FILENAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_FILENAME[NodeType] = new Traversal_Property_FILENAME(traversal.iterator)
   implicit def accessPropertyFullNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasFullNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_FULL_NAME[NodeType] = new Traversal_Property_FULL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_FULL_NAME[NodeType] = new Traversal_Property_FULL_NAME(traversal.iterator)
   implicit def accessPropertyHashTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasHashEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_HASH[NodeType] = new Traversal_Property_HASH(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_HASH[NodeType] = new Traversal_Property_HASH(traversal.iterator)
   implicit def accessPropertyImportedAsTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedAsEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_IMPORTED_AS[NodeType] = new Traversal_Property_IMPORTED_AS(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_IMPORTED_AS[NodeType] = new Traversal_Property_IMPORTED_AS(traversal.iterator)
   implicit def accessPropertyImportedEntityTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasImportedEntityEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_IMPORTED_ENTITY[NodeType] = new Traversal_Property_IMPORTED_ENTITY(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_IMPORTED_ENTITY[NodeType] = new Traversal_Property_IMPORTED_ENTITY(traversal.iterator)
   implicit def accessPropertyIndexTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIndexEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_INDEX[NodeType] = new Traversal_Property_INDEX(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_INDEX[NodeType] = new Traversal_Property_INDEX(traversal.iterator)
   implicit def accessPropertyInheritsFromTypeFullNameTraversal[
     NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasInheritsFromTypeFullNameEMT]
-  ](traversal: Iterator[NodeType]): Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[NodeType] =
-    new Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME(traversal)
+  ](traversal: IterableOnce[NodeType]): Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME[NodeType] =
+    new Traversal_Property_INHERITS_FROM_TYPE_FULL_NAME(traversal.iterator)
   implicit def accessPropertyIsExplicitTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExplicitEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_IS_EXPLICIT[NodeType] = new Traversal_Property_IS_EXPLICIT(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_IS_EXPLICIT[NodeType] = new Traversal_Property_IS_EXPLICIT(traversal.iterator)
   implicit def accessPropertyIsExternalTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsExternalEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_IS_EXTERNAL[NodeType] = new Traversal_Property_IS_EXTERNAL(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_IS_EXTERNAL[NodeType] = new Traversal_Property_IS_EXTERNAL(traversal.iterator)
   implicit def accessPropertyIsVariadicTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsVariadicEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_IS_VARIADIC[NodeType] = new Traversal_Property_IS_VARIADIC(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_IS_VARIADIC[NodeType] = new Traversal_Property_IS_VARIADIC(traversal.iterator)
   implicit def accessPropertyIsWildcardTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasIsWildcardEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_IS_WILDCARD[NodeType] = new Traversal_Property_IS_WILDCARD(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_IS_WILDCARD[NodeType] = new Traversal_Property_IS_WILDCARD(traversal.iterator)
   implicit def accessPropertyKeyTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasKeyEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_KEY[NodeType] = new Traversal_Property_KEY(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_KEY[NodeType] = new Traversal_Property_KEY(traversal.iterator)
   implicit def accessPropertyLanguageTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLanguageEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_LANGUAGE[NodeType] = new Traversal_Property_LANGUAGE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_LANGUAGE[NodeType] = new Traversal_Property_LANGUAGE(traversal.iterator)
   implicit def accessPropertyLineNumberTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_LINE_NUMBER[NodeType] = new Traversal_Property_LINE_NUMBER(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_LINE_NUMBER[NodeType] = new Traversal_Property_LINE_NUMBER(traversal.iterator)
   implicit def accessPropertyLineNumberEndTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasLineNumberEndEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_LINE_NUMBER_END[NodeType] = new Traversal_Property_LINE_NUMBER_END(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_LINE_NUMBER_END[NodeType] = new Traversal_Property_LINE_NUMBER_END(traversal.iterator)
   implicit def accessPropertyMethodFullNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodFullNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_METHOD_FULL_NAME[NodeType] = new Traversal_Property_METHOD_FULL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_METHOD_FULL_NAME[NodeType] = new Traversal_Property_METHOD_FULL_NAME(traversal.iterator)
   implicit def accessPropertyMethodShortNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasMethodShortNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_METHOD_SHORT_NAME[NodeType] = new Traversal_Property_METHOD_SHORT_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_METHOD_SHORT_NAME[NodeType] = new Traversal_Property_METHOD_SHORT_NAME(traversal.iterator)
   implicit def accessPropertyModifierTypeTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasModifierTypeEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_MODIFIER_TYPE[NodeType] = new Traversal_Property_MODIFIER_TYPE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_MODIFIER_TYPE[NodeType] = new Traversal_Property_MODIFIER_TYPE(traversal.iterator)
   implicit def accessPropertyNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_NAME[NodeType] = new Traversal_Property_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_NAME[NodeType] = new Traversal_Property_NAME(traversal.iterator)
   implicit def accessPropertyNodeLabelTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasNodeLabelEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_NODE_LABEL[NodeType] = new Traversal_Property_NODE_LABEL(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_NODE_LABEL[NodeType] = new Traversal_Property_NODE_LABEL(traversal.iterator)
   implicit def accessPropertyOffsetTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOffsetEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_OFFSET[NodeType] = new Traversal_Property_OFFSET(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_OFFSET[NodeType] = new Traversal_Property_OFFSET(traversal.iterator)
   implicit def accessPropertyOffsetEndTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOffsetEndEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_OFFSET_END[NodeType] = new Traversal_Property_OFFSET_END(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_OFFSET_END[NodeType] = new Traversal_Property_OFFSET_END(traversal.iterator)
   implicit def accessPropertyOrderTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOrderEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_ORDER[NodeType] = new Traversal_Property_ORDER(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_ORDER[NodeType] = new Traversal_Property_ORDER(traversal.iterator)
   implicit def accessPropertyOverlaysTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasOverlaysEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_OVERLAYS[NodeType] = new Traversal_Property_OVERLAYS(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_OVERLAYS[NodeType] = new Traversal_Property_OVERLAYS(traversal.iterator)
   implicit def accessPropertyPackageNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPackageNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_PACKAGE_NAME[NodeType] = new Traversal_Property_PACKAGE_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_PACKAGE_NAME[NodeType] = new Traversal_Property_PACKAGE_NAME(traversal.iterator)
   implicit def accessPropertyParserTypeNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasParserTypeNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_PARSER_TYPE_NAME[NodeType] = new Traversal_Property_PARSER_TYPE_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_PARSER_TYPE_NAME[NodeType] = new Traversal_Property_PARSER_TYPE_NAME(traversal.iterator)
   implicit def accessPropertyPossibleTypesTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasPossibleTypesEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_POSSIBLE_TYPES[NodeType] = new Traversal_Property_POSSIBLE_TYPES(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_POSSIBLE_TYPES[NodeType] = new Traversal_Property_POSSIBLE_TYPES(traversal.iterator)
   implicit def accessPropertyRootTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasRootEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_ROOT[NodeType] = new Traversal_Property_ROOT(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_ROOT[NodeType] = new Traversal_Property_ROOT(traversal.iterator)
   implicit def accessPropertySignatureTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSignatureEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_SIGNATURE[NodeType] = new Traversal_Property_SIGNATURE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_SIGNATURE[NodeType] = new Traversal_Property_SIGNATURE(traversal.iterator)
   implicit def accessPropertySymbolTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasSymbolEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_SYMBOL[NodeType] = new Traversal_Property_SYMBOL(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_SYMBOL[NodeType] = new Traversal_Property_SYMBOL(traversal.iterator)
   implicit def accessPropertyTypeDeclFullNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeDeclFullNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_TYPE_DECL_FULL_NAME[NodeType] = new Traversal_Property_TYPE_DECL_FULL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_TYPE_DECL_FULL_NAME[NodeType] = new Traversal_Property_TYPE_DECL_FULL_NAME(traversal.iterator)
   implicit def accessPropertyTypeFullNameTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasTypeFullNameEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_TYPE_FULL_NAME[NodeType] = new Traversal_Property_TYPE_FULL_NAME(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_TYPE_FULL_NAME[NodeType] = new Traversal_Property_TYPE_FULL_NAME(traversal.iterator)
   implicit def accessPropertyValueTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasValueEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_VALUE[NodeType] = new Traversal_Property_VALUE(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_VALUE[NodeType] = new Traversal_Property_VALUE(traversal.iterator)
   implicit def accessPropertyVersionTraversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.HasVersionEMT]](
-    traversal: Iterator[NodeType]
-  ): Traversal_Property_VERSION[NodeType] = new Traversal_Property_VERSION(traversal)
+    traversal: IterableOnce[NodeType]
+  ): Traversal_Property_VERSION[NodeType] = new Traversal_Property_VERSION(traversal.iterator)
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
   import Accessors.*
   implicit def traversal_AnnotationBase[NodeType <: nodes.AnnotationBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_AnnotationBase[NodeType] = new Traversal_AnnotationBase(traversal)
   implicit def traversal_AnnotationLiteralBase[NodeType <: nodes.AnnotationLiteralBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_AnnotationLiteralBase[NodeType] = new Traversal_AnnotationLiteralBase(traversal)
   implicit def traversal_AnnotationParameterBase[NodeType <: nodes.AnnotationParameterBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_AnnotationParameterBase[NodeType] = new Traversal_AnnotationParameterBase(traversal)
   implicit def traversal_AnnotationParameterAssignBase[NodeType <: nodes.AnnotationParameterAssignBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_AnnotationParameterAssignBase[NodeType] = new Traversal_AnnotationParameterAssignBase(traversal)
   implicit def traversal_ArrayInitializerBase[NodeType <: nodes.ArrayInitializerBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_ArrayInitializerBase[NodeType] = new Traversal_ArrayInitializerBase(traversal)
-  implicit def traversal_BindingBase[NodeType <: nodes.BindingBase](traversal: Iterator[NodeType]): Traversal_BindingBase[NodeType] =
+  implicit def traversal_BindingBase[NodeType <: nodes.BindingBase](traversal: IterableOnce[NodeType]): Traversal_BindingBase[NodeType] =
     new Traversal_BindingBase(traversal)
-  implicit def traversal_BlockBase[NodeType <: nodes.BlockBase](traversal: Iterator[NodeType]): Traversal_BlockBase[NodeType] =
+  implicit def traversal_BlockBase[NodeType <: nodes.BlockBase](traversal: IterableOnce[NodeType]): Traversal_BlockBase[NodeType] =
     new Traversal_BlockBase(traversal)
-  implicit def traversal_CallBase[NodeType <: nodes.CallBase](traversal: Iterator[NodeType]): Traversal_CallBase[NodeType] =
+  implicit def traversal_CallBase[NodeType <: nodes.CallBase](traversal: IterableOnce[NodeType]): Traversal_CallBase[NodeType] =
     new Traversal_CallBase(traversal)
   implicit def traversal_ClosureBindingBase[NodeType <: nodes.ClosureBindingBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_ClosureBindingBase[NodeType] = new Traversal_ClosureBindingBase(traversal)
-  implicit def traversal_CommentBase[NodeType <: nodes.CommentBase](traversal: Iterator[NodeType]): Traversal_CommentBase[NodeType] =
+  implicit def traversal_CommentBase[NodeType <: nodes.CommentBase](traversal: IterableOnce[NodeType]): Traversal_CommentBase[NodeType] =
     new Traversal_CommentBase(traversal)
   implicit def traversal_ConfigFileBase[NodeType <: nodes.ConfigFileBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_ConfigFileBase[NodeType] = new Traversal_ConfigFileBase(traversal)
   implicit def traversal_ControlStructureBase[NodeType <: nodes.ControlStructureBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_ControlStructureBase[NodeType] = new Traversal_ControlStructureBase(traversal)
   implicit def traversal_DependencyBase[NodeType <: nodes.DependencyBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_DependencyBase[NodeType] = new Traversal_DependencyBase(traversal)
   implicit def traversal_FieldIdentifierBase[NodeType <: nodes.FieldIdentifierBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_FieldIdentifierBase[NodeType] = new Traversal_FieldIdentifierBase(traversal)
-  implicit def traversal_FileBase[NodeType <: nodes.FileBase](traversal: Iterator[NodeType]): Traversal_FileBase[NodeType] =
+  implicit def traversal_FileBase[NodeType <: nodes.FileBase](traversal: IterableOnce[NodeType]): Traversal_FileBase[NodeType] =
     new Traversal_FileBase(traversal)
-  implicit def traversal_FindingBase[NodeType <: nodes.FindingBase](traversal: Iterator[NodeType]): Traversal_FindingBase[NodeType] =
+  implicit def traversal_FindingBase[NodeType <: nodes.FindingBase](traversal: IterableOnce[NodeType]): Traversal_FindingBase[NodeType] =
     new Traversal_FindingBase(traversal)
   implicit def traversal_IdentifierBase[NodeType <: nodes.IdentifierBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_IdentifierBase[NodeType] = new Traversal_IdentifierBase(traversal)
-  implicit def traversal_ImportBase[NodeType <: nodes.ImportBase](traversal: Iterator[NodeType]): Traversal_ImportBase[NodeType] =
+  implicit def traversal_ImportBase[NodeType <: nodes.ImportBase](traversal: IterableOnce[NodeType]): Traversal_ImportBase[NodeType] =
     new Traversal_ImportBase(traversal)
-  implicit def traversal_JumpLabelBase[NodeType <: nodes.JumpLabelBase](traversal: Iterator[NodeType]): Traversal_JumpLabelBase[NodeType] =
-    new Traversal_JumpLabelBase(traversal)
+  implicit def traversal_JumpLabelBase[NodeType <: nodes.JumpLabelBase](
+    traversal: IterableOnce[NodeType]
+  ): Traversal_JumpLabelBase[NodeType] = new Traversal_JumpLabelBase(traversal)
   implicit def traversal_JumpTargetBase[NodeType <: nodes.JumpTargetBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_JumpTargetBase[NodeType] = new Traversal_JumpTargetBase(traversal)
   implicit def traversal_KeyValuePairBase[NodeType <: nodes.KeyValuePairBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_KeyValuePairBase[NodeType] = new Traversal_KeyValuePairBase(traversal)
-  implicit def traversal_LiteralBase[NodeType <: nodes.LiteralBase](traversal: Iterator[NodeType]): Traversal_LiteralBase[NodeType] =
+  implicit def traversal_LiteralBase[NodeType <: nodes.LiteralBase](traversal: IterableOnce[NodeType]): Traversal_LiteralBase[NodeType] =
     new Traversal_LiteralBase(traversal)
-  implicit def traversal_LocalBase[NodeType <: nodes.LocalBase](traversal: Iterator[NodeType]): Traversal_LocalBase[NodeType] =
+  implicit def traversal_LocalBase[NodeType <: nodes.LocalBase](traversal: IterableOnce[NodeType]): Traversal_LocalBase[NodeType] =
     new Traversal_LocalBase(traversal)
-  implicit def traversal_LocationBase[NodeType <: nodes.LocationBase](traversal: Iterator[NodeType]): Traversal_LocationBase[NodeType] =
+  implicit def traversal_LocationBase[NodeType <: nodes.LocationBase](traversal: IterableOnce[NodeType]): Traversal_LocationBase[NodeType] =
     new Traversal_LocationBase(traversal)
-  implicit def traversal_MemberBase[NodeType <: nodes.MemberBase](traversal: Iterator[NodeType]): Traversal_MemberBase[NodeType] =
+  implicit def traversal_MemberBase[NodeType <: nodes.MemberBase](traversal: IterableOnce[NodeType]): Traversal_MemberBase[NodeType] =
     new Traversal_MemberBase(traversal)
-  implicit def traversal_MetaDataBase[NodeType <: nodes.MetaDataBase](traversal: Iterator[NodeType]): Traversal_MetaDataBase[NodeType] =
+  implicit def traversal_MetaDataBase[NodeType <: nodes.MetaDataBase](traversal: IterableOnce[NodeType]): Traversal_MetaDataBase[NodeType] =
     new Traversal_MetaDataBase(traversal)
-  implicit def traversal_MethodBase[NodeType <: nodes.MethodBase](traversal: Iterator[NodeType]): Traversal_MethodBase[NodeType] =
+  implicit def traversal_MethodBase[NodeType <: nodes.MethodBase](traversal: IterableOnce[NodeType]): Traversal_MethodBase[NodeType] =
     new Traversal_MethodBase(traversal)
   implicit def traversal_MethodParameterInBase[NodeType <: nodes.MethodParameterInBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_MethodParameterInBase[NodeType] = new Traversal_MethodParameterInBase(traversal)
   implicit def traversal_MethodParameterOutBase[NodeType <: nodes.MethodParameterOutBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_MethodParameterOutBase[NodeType] = new Traversal_MethodParameterOutBase(traversal)
-  implicit def traversal_MethodRefBase[NodeType <: nodes.MethodRefBase](traversal: Iterator[NodeType]): Traversal_MethodRefBase[NodeType] =
-    new Traversal_MethodRefBase(traversal)
+  implicit def traversal_MethodRefBase[NodeType <: nodes.MethodRefBase](
+    traversal: IterableOnce[NodeType]
+  ): Traversal_MethodRefBase[NodeType] = new Traversal_MethodRefBase(traversal)
   implicit def traversal_MethodReturnBase[NodeType <: nodes.MethodReturnBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_MethodReturnBase[NodeType] = new Traversal_MethodReturnBase(traversal)
-  implicit def traversal_ModifierBase[NodeType <: nodes.ModifierBase](traversal: Iterator[NodeType]): Traversal_ModifierBase[NodeType] =
+  implicit def traversal_ModifierBase[NodeType <: nodes.ModifierBase](traversal: IterableOnce[NodeType]): Traversal_ModifierBase[NodeType] =
     new Traversal_ModifierBase(traversal)
-  implicit def traversal_NamespaceBase[NodeType <: nodes.NamespaceBase](traversal: Iterator[NodeType]): Traversal_NamespaceBase[NodeType] =
-    new Traversal_NamespaceBase(traversal)
+  implicit def traversal_NamespaceBase[NodeType <: nodes.NamespaceBase](
+    traversal: IterableOnce[NodeType]
+  ): Traversal_NamespaceBase[NodeType] = new Traversal_NamespaceBase(traversal)
   implicit def traversal_NamespaceBlockBase[NodeType <: nodes.NamespaceBlockBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_NamespaceBlockBase[NodeType] = new Traversal_NamespaceBlockBase(traversal)
-  implicit def traversal_ReturnBase[NodeType <: nodes.ReturnBase](traversal: Iterator[NodeType]): Traversal_ReturnBase[NodeType] =
+  implicit def traversal_ReturnBase[NodeType <: nodes.ReturnBase](traversal: IterableOnce[NodeType]): Traversal_ReturnBase[NodeType] =
     new Traversal_ReturnBase(traversal)
-  implicit def traversal_TagBase[NodeType <: nodes.TagBase](traversal: Iterator[NodeType]): Traversal_TagBase[NodeType] =
+  implicit def traversal_TagBase[NodeType <: nodes.TagBase](traversal: IterableOnce[NodeType]): Traversal_TagBase[NodeType] =
     new Traversal_TagBase(traversal)
   implicit def traversal_TagNodePairBase[NodeType <: nodes.TagNodePairBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_TagNodePairBase[NodeType] = new Traversal_TagNodePairBase(traversal)
   implicit def traversal_TemplateDomBase[NodeType <: nodes.TemplateDomBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_TemplateDomBase[NodeType] = new Traversal_TemplateDomBase(traversal)
-  implicit def traversal_TypeBase[NodeType <: nodes.TypeBase](traversal: Iterator[NodeType]): Traversal_TypeBase[NodeType] =
+  implicit def traversal_TypeBase[NodeType <: nodes.TypeBase](traversal: IterableOnce[NodeType]): Traversal_TypeBase[NodeType] =
     new Traversal_TypeBase(traversal)
   implicit def traversal_TypeArgumentBase[NodeType <: nodes.TypeArgumentBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_TypeArgumentBase[NodeType] = new Traversal_TypeArgumentBase(traversal)
-  implicit def traversal_TypeDeclBase[NodeType <: nodes.TypeDeclBase](traversal: Iterator[NodeType]): Traversal_TypeDeclBase[NodeType] =
+  implicit def traversal_TypeDeclBase[NodeType <: nodes.TypeDeclBase](traversal: IterableOnce[NodeType]): Traversal_TypeDeclBase[NodeType] =
     new Traversal_TypeDeclBase(traversal)
   implicit def traversal_TypeParameterBase[NodeType <: nodes.TypeParameterBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_TypeParameterBase[NodeType] = new Traversal_TypeParameterBase(traversal)
-  implicit def traversal_TypeRefBase[NodeType <: nodes.TypeRefBase](traversal: Iterator[NodeType]): Traversal_TypeRefBase[NodeType] =
+  implicit def traversal_TypeRefBase[NodeType <: nodes.TypeRefBase](traversal: IterableOnce[NodeType]): Traversal_TypeRefBase[NodeType] =
     new Traversal_TypeRefBase(traversal)
-  implicit def traversal_UnknownBase[NodeType <: nodes.UnknownBase](traversal: Iterator[NodeType]): Traversal_UnknownBase[NodeType] =
+  implicit def traversal_UnknownBase[NodeType <: nodes.UnknownBase](traversal: IterableOnce[NodeType]): Traversal_UnknownBase[NodeType] =
     new Traversal_UnknownBase(traversal)
 }
 
 trait AbstractBaseConversions0 extends AbstractBaseConversions1 {
   import Accessors.*
-  implicit def traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](traversal: Iterator[NodeType]): Traversal_AstNodeBase[NodeType] =
+  implicit def traversal_AstNodeBase[NodeType <: nodes.AstNodeBase](traversal: IterableOnce[NodeType]): Traversal_AstNodeBase[NodeType] =
     new Traversal_AstNodeBase(traversal)
-  implicit def traversal_CallReprBase[NodeType <: nodes.CallReprBase](traversal: Iterator[NodeType]): Traversal_CallReprBase[NodeType] =
+  implicit def traversal_CallReprBase[NodeType <: nodes.CallReprBase](traversal: IterableOnce[NodeType]): Traversal_CallReprBase[NodeType] =
     new Traversal_CallReprBase(traversal)
-  implicit def traversal_CfgNodeBase[NodeType <: nodes.CfgNodeBase](traversal: Iterator[NodeType]): Traversal_CfgNodeBase[NodeType] =
+  implicit def traversal_CfgNodeBase[NodeType <: nodes.CfgNodeBase](traversal: IterableOnce[NodeType]): Traversal_CfgNodeBase[NodeType] =
     new Traversal_CfgNodeBase(traversal)
   implicit def traversal_ExpressionBase[NodeType <: nodes.ExpressionBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_ExpressionBase[NodeType] = new Traversal_ExpressionBase(traversal)
 }
 
 trait AbstractBaseConversions1 {
   import Accessors.*
   implicit def traversal_DeclarationBase[NodeType <: nodes.DeclarationBase](
-    traversal: Iterator[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_DeclarationBase[NodeType] = new Traversal_DeclarationBase(traversal)
 }

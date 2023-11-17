@@ -424,7 +424,7 @@ final class AccessNeighborsForTypeRef(val node: nodes.TypeRef) extends AnyVal {
 
 }
 
-final class AccessNeighborsForTypeRefTraversal(val traversal: Iterator[nodes.TypeRef]) extends AnyVal {
+final class AccessNeighborsForTypeRefTraversal(val traversal: IterableOnce[nodes.TypeRef]) extends AnyVal {
 
   /** Traverse to BLOCK via AST IN edge.
     */

@@ -45,7 +45,7 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
 
 }
 
-final class AccessNeighborsForModifierTraversal(val traversal: Iterator[nodes.Modifier]) extends AnyVal {
+final class AccessNeighborsForModifierTraversal(val traversal: IterableOnce[nodes.Modifier]) extends AnyVal {
 
   /** Traverse to CONTROL_STRUCTURE via AST IN edge.
     */

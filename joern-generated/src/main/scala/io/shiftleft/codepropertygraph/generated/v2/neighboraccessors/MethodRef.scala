@@ -450,7 +450,7 @@ final class AccessNeighborsForMethodRef(val node: nodes.MethodRef) extends AnyVa
 
 }
 
-final class AccessNeighborsForMethodRefTraversal(val traversal: Iterator[nodes.MethodRef]) extends AnyVal {
+final class AccessNeighborsForMethodRefTraversal(val traversal: IterableOnce[nodes.MethodRef]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

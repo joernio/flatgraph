@@ -19,7 +19,7 @@ final class AccessNeighborsForTypeArgument(val node: nodes.TypeArgument) extends
 
 }
 
-final class AccessNeighborsForTypeArgumentTraversal(val traversal: Iterator[nodes.TypeArgument]) extends AnyVal {
+final class AccessNeighborsForTypeArgumentTraversal(val traversal: IterableOnce[nodes.TypeArgument]) extends AnyVal {
 
   /** Traverse to TYPE via AST IN edge.
     */

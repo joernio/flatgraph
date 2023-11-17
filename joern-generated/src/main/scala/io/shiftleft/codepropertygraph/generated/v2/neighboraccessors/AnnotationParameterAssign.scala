@@ -27,7 +27,8 @@ final class AccessNeighborsForAnnotationParameterAssign(val node: nodes.Annotati
 
 }
 
-final class AccessNeighborsForAnnotationParameterAssignTraversal(val traversal: Iterator[nodes.AnnotationParameterAssign]) extends AnyVal {
+final class AccessNeighborsForAnnotationParameterAssignTraversal(val traversal: IterableOnce[nodes.AnnotationParameterAssign])
+    extends AnyVal {
 
   /** Traverse to ANNOTATION via AST IN edge.
     */

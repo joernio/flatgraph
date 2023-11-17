@@ -437,7 +437,7 @@ final class AccessNeighborsForReturn(val node: nodes.Return) extends AnyVal {
 
 }
 
-final class AccessNeighborsForReturnTraversal(val traversal: Iterator[nodes.Return]) extends AnyVal {
+final class AccessNeighborsForReturnTraversal(val traversal: IterableOnce[nodes.Return]) extends AnyVal {
 
   /** Traverse to BLOCK via ARGUMENT OUT edge.
     */

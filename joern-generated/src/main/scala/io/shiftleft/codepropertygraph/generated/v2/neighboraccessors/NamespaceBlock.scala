@@ -27,7 +27,7 @@ final class AccessNeighborsForNamespaceBlock(val node: nodes.NamespaceBlock) ext
 
 }
 
-final class AccessNeighborsForNamespaceBlockTraversal(val traversal: Iterator[nodes.NamespaceBlock]) extends AnyVal {
+final class AccessNeighborsForNamespaceBlockTraversal(val traversal: IterableOnce[nodes.NamespaceBlock]) extends AnyVal {
 
   /** Traverse to FILE via AST IN edge.
     */

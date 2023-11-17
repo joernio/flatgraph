@@ -545,7 +545,7 @@ final class AccessNeighborsForCall(val node: nodes.Call) extends AnyVal {
 
 }
 
-final class AccessNeighborsForCallTraversal(val traversal: Iterator[nodes.Call]) extends AnyVal {
+final class AccessNeighborsForCallTraversal(val traversal: IterableOnce[nodes.Call]) extends AnyVal {
 
   /** Traverse to BLOCK via ARGUMENT OUT edge.
     */

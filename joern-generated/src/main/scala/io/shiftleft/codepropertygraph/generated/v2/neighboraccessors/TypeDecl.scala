@@ -79,7 +79,7 @@ final class AccessNeighborsForTypeDecl(val node: nodes.TypeDecl) extends AnyVal 
 
 }
 
-final class AccessNeighborsForTypeDeclTraversal(val traversal: Iterator[nodes.TypeDecl]) extends AnyVal {
+final class AccessNeighborsForTypeDeclTraversal(val traversal: IterableOnce[nodes.TypeDecl]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

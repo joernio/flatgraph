@@ -432,7 +432,7 @@ final class AccessNeighborsForIdentifier(val node: nodes.Identifier) extends Any
 
 }
 
-final class AccessNeighborsForIdentifierTraversal(val traversal: Iterator[nodes.Identifier]) extends AnyVal {
+final class AccessNeighborsForIdentifierTraversal(val traversal: IterableOnce[nodes.Identifier]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */
