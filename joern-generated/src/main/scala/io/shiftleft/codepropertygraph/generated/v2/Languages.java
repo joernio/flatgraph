@@ -56,6 +56,9 @@ public static final String SOLIDITY = "SOLIDITY";
 /** Source-based frontend for Ruby */
 public static final String RUBYSRC = "RUBYSRC";
 
+/** Source-based frontend for Swift */
+public static final String SWIFTSRC = "SWIFTSRC";
+
 public static Set<String> ALL = new HashSet<String>() {{
 add(JAVA);
 add(JAVASCRIPT);
@@ -74,6 +77,7 @@ add(PYTHONSRC);
 add(JSSRC);
 add(SOLIDITY);
 add(RUBYSRC);
+add(SWIFTSRC);
 }};
 
 }

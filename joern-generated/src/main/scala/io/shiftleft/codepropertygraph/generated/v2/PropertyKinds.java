@@ -363,6 +363,28 @@ public static final int NAME = Integer.valueOf(39).intValue();
  * see https://stackoverflow.com/a/3524336/452762 */
 public static final int NODE_LABEL = Integer.valueOf(40).intValue();
 
+/** Start offset into the CONTENT property of the corresponding FILE node.
+The offset is measure in characters so parts of the content can easily
+be accessed via `content.substring(offset, offsetEnd)`.
+E.g. for METHOD nodes this start offset points to the start of the methods
+source code in the string holding the source code of the entire file. */
+
+/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+ * projects have the ability to run with newly generated domain classes
+ * see https://stackoverflow.com/a/3524336/452762 */
+public static final int OFFSET = Integer.valueOf(41).intValue();
+
+/** End offset (exclusive) into the CONTENT property of the corresponding FILE node.
+The end offset is measure in characters so parts of the content can easily
+be accessed via `content.substring(offset, offsetEnd)`.
+E.g. for METHOD nodes this end offset points to the first code position which is
+not part of the method. */
+
+/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
+ * projects have the ability to run with newly generated domain classes
+ * see https://stackoverflow.com/a/3524336/452762 */
+public static final int OFFSET_END = Integer.valueOf(42).intValue();
+
 /** This integer indicates the position of the node among
 its siblings in the AST. The left-most child has an
 order of 0. */
@@ -370,7 +392,7 @@ order of 0. */
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int ORDER = Integer.valueOf(41).intValue();
+public static final int ORDER = Integer.valueOf(43).intValue();
 
 /** The field contains the names of the overlays applied to this CPG, in order of their
 application. Names are free-form strings, that is, this specification does not
@@ -380,35 +402,35 @@ between each other. */
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int OVERLAYS = Integer.valueOf(42).intValue();
+public static final int OVERLAYS = Integer.valueOf(44).intValue();
 
 
 
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int PACKAGE_NAME = Integer.valueOf(43).intValue();
+public static final int PACKAGE_NAME = Integer.valueOf(45).intValue();
 
 /** AST node type name emitted by parser. */
 
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int PARSER_TYPE_NAME = Integer.valueOf(44).intValue();
+public static final int PARSER_TYPE_NAME = Integer.valueOf(46).intValue();
 
 /** Similar to `DYNAMIC_TYPE_HINT_FULL_NAME`, but that this makes no guarantee that types within this property are correct. This property is used to capture observations between node interactions during a 'may-analysis'. */
 
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int POSSIBLE_TYPES = Integer.valueOf(45).intValue();
+public static final int POSSIBLE_TYPES = Integer.valueOf(47).intValue();
 
 /** The path to the root directory of the source/binary this CPG is generated from. */
 
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int ROOT = Integer.valueOf(46).intValue();
+public static final int ROOT = Integer.valueOf(48).intValue();
 
 /** The method signature encodes the types of parameters in a string.
 The string SHOULD be human readable and suitable for differentiating methods
@@ -420,14 +442,14 @@ implementor to fit the source language. */
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int SIGNATURE = Integer.valueOf(47).intValue();
+public static final int SIGNATURE = Integer.valueOf(49).intValue();
 
 
 
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int SYMBOL = Integer.valueOf(48).intValue();
+public static final int SYMBOL = Integer.valueOf(50).intValue();
 
 /** The static type decl of a TYPE. This property is matched against the FULL_NAME
 of TYPE_DECL nodes. It is required to have exactly one TYPE_DECL for each
@@ -436,7 +458,7 @@ different TYPE_DECL_FULL_NAME */
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int TYPE_DECL_FULL_NAME = Integer.valueOf(49).intValue();
+public static final int TYPE_DECL_FULL_NAME = Integer.valueOf(51).intValue();
 
 /** This field contains the fully-qualified static type name of the program
 construct represented by a node. It is the name of an instantiated type, e.g.,
@@ -446,14 +468,14 @@ cannot be determined, this field should be set to the empty string. */
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int TYPE_FULL_NAME = Integer.valueOf(50).intValue();
+public static final int TYPE_FULL_NAME = Integer.valueOf(52).intValue();
 
 /** This property denotes a string value as used in a key-value pair. */
 
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int VALUE = Integer.valueOf(51).intValue();
+public static final int VALUE = Integer.valueOf(53).intValue();
 
 /** A version, given as a string. Used, for example, in the META_DATA node to
 indicate which version of the CPG spec this CPG conforms to */
@@ -461,7 +483,7 @@ indicate which version of the CPG spec this CPG conforms to */
 /* implementation note: we want to ensure that javac does not inline the final value, so that downstream
  * projects have the ability to run with newly generated domain classes
  * see https://stackoverflow.com/a/3524336/452762 */
-public static final int VERSION = Integer.valueOf(52).intValue();
+public static final int VERSION = Integer.valueOf(54).intValue();
 
 
 }

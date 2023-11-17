@@ -13,6 +13,10 @@ final class AccessNeighborsForMethodParameterIn(val node: nodes.MethodParameterI
     */
   def _callViaReachingDefOut: Iterator[nodes.Call] = node._reachingDefOut.iterator.collectAll[nodes.Call]
 
+  /** Traverse to CLOSURE_BINDING via CAPTURED_BY OUT edge.
+    */
+  def _closureBindingViaCapturedByOut: Iterator[nodes.ClosureBinding] = node._capturedByOut.iterator.collectAll[nodes.ClosureBinding]
+
   /** Traverse to CLOSURE_BINDING via REF IN edge.
     */
   def _closureBindingViaRefIn: Iterator[nodes.ClosureBinding] = node._refIn.iterator.collectAll[nodes.ClosureBinding]
@@ -99,6 +103,10 @@ final class AccessNeighborsForMethodParameterInTraversal(val traversal: Iterator
   /** Traverse to CALL via REACHING_DEF OUT edge.
     */
   def _callViaReachingDefOut: Iterator[nodes.Call] = traversal.flatMap(_._callViaReachingDefOut)
+
+  /** Traverse to CLOSURE_BINDING via CAPTURED_BY OUT edge.
+    */
+  def _closureBindingViaCapturedByOut: Iterator[nodes.ClosureBinding] = traversal.flatMap(_._closureBindingViaCapturedByOut)
 
   /** Traverse to CLOSURE_BINDING via REF IN edge.
     */

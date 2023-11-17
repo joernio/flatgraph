@@ -1401,10 +1401,10 @@ class NewCall extends NewNode(7.toShort) with CallBase {
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 36, Iterator(this.methodFullName))
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
-    if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
-    interface.insertProperty(this, 47, Iterator(this.signature))
-    interface.insertProperty(this, 50, Iterator(this.typeFullName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 47, this.possibleTypes)
+    interface.insertProperty(this, 49, Iterator(this.signature))
+    interface.insertProperty(this, 52, Iterator(this.typeFullName))
   }
 
   override def copy(): this.type = {

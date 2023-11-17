@@ -85,6 +85,10 @@ final class AccessNeighborsForTag(val node: nodes.Tag) extends AnyVal {
     */
   def _templateDomViaTaggedByIn: Iterator[nodes.TemplateDom] = node._taggedByIn.iterator.collectAll[nodes.TemplateDom]
 
+  /** Traverse to TYPE_DECL via TAGGED_BY IN edge.
+    */
+  def _typeDeclViaTaggedByIn: Iterator[nodes.TypeDecl] = node._taggedByIn.iterator.collectAll[nodes.TypeDecl]
+
   /** Traverse to TYPE_REF via TAGGED_BY IN edge.
     */
   def _typeRefViaTaggedByIn: Iterator[nodes.TypeRef] = node._taggedByIn.iterator.collectAll[nodes.TypeRef]
@@ -176,6 +180,10 @@ final class AccessNeighborsForTagTraversal(val traversal: Iterator[nodes.Tag]) e
   /** Traverse to TEMPLATE_DOM via TAGGED_BY IN edge.
     */
   def _templateDomViaTaggedByIn: Iterator[nodes.TemplateDom] = traversal.flatMap(_._templateDomViaTaggedByIn)
+
+  /** Traverse to TYPE_DECL via TAGGED_BY IN edge.
+    */
+  def _typeDeclViaTaggedByIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_._typeDeclViaTaggedByIn)
 
   /** Traverse to TYPE_REF via TAGGED_BY IN edge.
     */

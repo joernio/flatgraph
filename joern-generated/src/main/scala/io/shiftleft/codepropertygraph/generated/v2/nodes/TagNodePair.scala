@@ -28,8 +28,8 @@ class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 36.toShort, seq_4762)
     with TagNodePairBase
     with StaticType[TagNodePairEMT] {
-  def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 53, seq, null: StoredNode)
-  def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 54, seq, null: Tag)
+  def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 55, seq, null: StoredNode)
+  def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 56, seq, null: Tag)
 
   override def productElementName(n: Int): String =
     n match {
@@ -72,8 +72,8 @@ class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
   def node(value: AbstractNode): this.type = { this.node = value; this }
   def tag(value: TagBase): this.type       = { this.tag = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    interface.insertProperty(this, 53, Iterator(this.node))
-    interface.insertProperty(this, 54, Iterator(this.tag))
+    interface.insertProperty(this, 55, Iterator(this.node))
+    interface.insertProperty(this, 56, Iterator(this.tag))
   }
 
   override def copy(): this.type = {

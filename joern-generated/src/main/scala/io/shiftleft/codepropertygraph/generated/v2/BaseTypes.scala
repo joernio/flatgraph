@@ -332,6 +332,16 @@ trait HasNameEMT
   */
 trait HasNodeLabelEMT
 
+/** Node types with this marker trait are guaranteed to have the OFFSET property. EMT stands for: "erased marker trait", it exists only at
+  * compile time in order to improve type safety.
+  */
+trait HasOffsetEMT
+
+/** Node types with this marker trait are guaranteed to have the OFFSET_END property. EMT stands for: "erased marker trait", it exists only
+  * at compile time in order to improve type safety.
+  */
+trait HasOffsetEndEMT
+
 /** Node types with this marker trait are guaranteed to have the ORDER property. EMT stands for: "erased marker trait", it exists only at
   * compile time in order to improve type safety.
   */

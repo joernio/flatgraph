@@ -1355,8 +1355,8 @@ class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase 
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     interface.insertProperty(this, 15, Iterator(this.controlStructureType))
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
-    interface.insertProperty(this, 41, Iterator(this.order))
-    interface.insertProperty(this, 44, Iterator(this.parserTypeName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    interface.insertProperty(this, 46, Iterator(this.parserTypeName))
   }
 
   override def copy(): this.type = {

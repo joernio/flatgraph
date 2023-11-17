@@ -1371,7 +1371,7 @@ class NewImport extends NewNode(17.toShort) with ImportBase {
     if (isExplicit.nonEmpty) interface.insertProperty(this, 28, this.isExplicit)
     if (isWildcard.nonEmpty) interface.insertProperty(this, 31, this.isWildcard)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
-    interface.insertProperty(this, 41, Iterator(this.order))
+    interface.insertProperty(this, 43, Iterator(this.order))
   }
 
   override def copy(): this.type = {

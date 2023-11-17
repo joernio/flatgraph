@@ -130,41 +130,47 @@ object Accessors {
   final class Access_Property_NODE_LABEL(val node: nodes.StoredNode) extends AnyVal {
     def nodeLabel: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 40, node.seq(), "<empty>": String)
   }
+  final class Access_Property_OFFSET(val node: nodes.StoredNode) extends AnyVal {
+    def offset: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 41, node.seq)
+  }
+  final class Access_Property_OFFSET_END(val node: nodes.StoredNode) extends AnyVal {
+    def offsetEnd: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 42, node.seq)
+  }
   final class Access_Property_ORDER(val node: nodes.StoredNode) extends AnyVal {
-    def order: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 41, node.seq(), -1: Int)
+    def order: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 43, node.seq(), -1: Int)
   }
   final class Access_Property_OVERLAYS(val node: nodes.StoredNode) extends AnyVal {
-    def overlays: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 42, node.seq)
+    def overlays: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 44, node.seq)
   }
   final class Access_Property_PACKAGE_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def packageName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 43, node.seq(), "<empty>": String)
+    def packageName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 45, node.seq(), "<empty>": String)
   }
   final class Access_Property_PARSER_TYPE_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def parserTypeName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 44, node.seq(), "<empty>": String)
+    def parserTypeName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 46, node.seq(), "<empty>": String)
   }
   final class Access_Property_POSSIBLE_TYPES(val node: nodes.StoredNode) extends AnyVal {
-    def possibleTypes: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 45, node.seq)
+    def possibleTypes: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 47, node.seq)
   }
   final class Access_Property_ROOT(val node: nodes.StoredNode) extends AnyVal {
-    def root: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 46, node.seq(), "<empty>": String)
+    def root: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 48, node.seq(), "<empty>": String)
   }
   final class Access_Property_SIGNATURE(val node: nodes.StoredNode) extends AnyVal {
-    def signature: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 47, node.seq(), "": String)
+    def signature: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 49, node.seq(), "": String)
   }
   final class Access_Property_SYMBOL(val node: nodes.StoredNode) extends AnyVal {
-    def symbol: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 48, node.seq(), "<empty>": String)
+    def symbol: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 50, node.seq(), "<empty>": String)
   }
   final class Access_Property_TYPE_DECL_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def typeDeclFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 49, node.seq(), "<empty>": String)
+    def typeDeclFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 51, node.seq(), "<empty>": String)
   }
   final class Access_Property_TYPE_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def typeFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 50, node.seq(), "<empty>": String)
+    def typeFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 52, node.seq(), "<empty>": String)
   }
   final class Access_Property_VALUE(val node: nodes.StoredNode) extends AnyVal {
-    def value: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 51, node.seq(), "": String)
+    def value: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 53, node.seq(), "": String)
   }
   final class Access_Property_VERSION(val node: nodes.StoredNode) extends AnyVal {
-    def version: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 52, node.seq(), "<empty>": String)
+    def version: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 54, node.seq(), "<empty>": String)
   }
   /* accessors for concrete stored nodes end */
 
@@ -299,6 +305,10 @@ object Accessors {
     }
   }
   final class Access_FileBase(val node: nodes.FileBase) extends AnyVal {
+    def content: String = node match {
+      case stored: nodes.StoredNode => new Access_Property_CONTENT(stored).content
+      case newNode: nodes.NewFile   => newNode.content
+    }
     def hash: Option[String] = node match {
       case stored: nodes.StoredNode => new Access_Property_HASH(stored).hash
       case newNode: nodes.NewFile   => newNode.hash
@@ -454,6 +464,14 @@ object Accessors {
     }
   }
   final class Access_MemberBase(val node: nodes.MemberBase) extends AnyVal {
+    def astParentFullName: String = node match {
+      case stored: nodes.StoredNode => new Access_Property_AST_PARENT_FULL_NAME(stored).astParentFullName
+      case newNode: nodes.NewMember => newNode.astParentFullName
+    }
+    def astParentType: String = node match {
+      case stored: nodes.StoredNode => new Access_Property_AST_PARENT_TYPE(stored).astParentType
+      case newNode: nodes.NewMember => newNode.astParentType
+    }
     def dynamicTypeHintFullName: IndexedSeq[String] = node match {
       case stored: nodes.StoredNode => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewMember => newNode.dynamicTypeHintFullName
@@ -522,12 +540,24 @@ object Accessors {
       case stored: nodes.StoredNode => new Access_Property_LINE_NUMBER_END(stored).lineNumberEnd
       case newNode: nodes.NewMethod => newNode.lineNumberEnd
     }
+    def offset: Option[Int] = node match {
+      case stored: nodes.StoredNode => new Access_Property_OFFSET(stored).offset
+      case newNode: nodes.NewMethod => newNode.offset
+    }
+    def offsetEnd: Option[Int] = node match {
+      case stored: nodes.StoredNode => new Access_Property_OFFSET_END(stored).offsetEnd
+      case newNode: nodes.NewMethod => newNode.offsetEnd
+    }
     def signature: String = node match {
       case stored: nodes.StoredNode => new Access_Property_SIGNATURE(stored).signature
       case newNode: nodes.NewMethod => newNode.signature
     }
   }
   final class Access_MethodParameterInBase(val node: nodes.MethodParameterInBase) extends AnyVal {
+    def closureBindingId: Option[String] = node match {
+      case stored: nodes.StoredNode            => new Access_Property_CLOSURE_BINDING_ID(stored).closureBindingId
+      case newNode: nodes.NewMethodParameterIn => newNode.closureBindingId
+    }
     def dynamicTypeHintFullName: IndexedSeq[String] = node match {
       case stored: nodes.StoredNode            => new Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(stored).dynamicTypeHintFullName
       case newNode: nodes.NewMethodParameterIn => newNode.dynamicTypeHintFullName
@@ -897,6 +927,10 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
     new Access_Property_NAME(node)
   implicit def accessPropertyNodeLabel(node: nodes.StoredNode with nodes.StaticType[nodes.HasNodeLabelEMT]): Access_Property_NODE_LABEL =
     new Access_Property_NODE_LABEL(node)
+  implicit def accessPropertyOffset(node: nodes.StoredNode with nodes.StaticType[nodes.HasOffsetEMT]): Access_Property_OFFSET =
+    new Access_Property_OFFSET(node)
+  implicit def accessPropertyOffsetEnd(node: nodes.StoredNode with nodes.StaticType[nodes.HasOffsetEndEMT]): Access_Property_OFFSET_END =
+    new Access_Property_OFFSET_END(node)
   implicit def accessPropertyOrder(node: nodes.StoredNode with nodes.StaticType[nodes.HasOrderEMT]): Access_Property_ORDER =
     new Access_Property_ORDER(node)
   implicit def accessPropertyOverlays(node: nodes.StoredNode with nodes.StaticType[nodes.HasOverlaysEMT]): Access_Property_OVERLAYS =

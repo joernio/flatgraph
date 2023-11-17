@@ -3,8 +3,8 @@ ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := "3.3.1"
 publish / skip := true
 
-val cpgVersion = "1.4.22"
-val joernVersion = "2.0.86"
+val cpgVersion = "1.4.29"
+val joernVersion = "2.0.157"
 val slf4jVersion = "2.0.7"
 
 /** Only the below listed projects are included in things like `sbt compile`.

@@ -1371,8 +1371,8 @@ class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutB
     interface.insertProperty(this, 30, Iterator(this.isVariadic))
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 41, Iterator(this.order))
-    interface.insertProperty(this, 50, Iterator(this.typeFullName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    interface.insertProperty(this, 52, Iterator(this.typeFullName))
   }
 
   override def copy(): this.type = {

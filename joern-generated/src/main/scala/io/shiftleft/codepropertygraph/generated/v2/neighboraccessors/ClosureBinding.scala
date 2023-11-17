@@ -11,20 +11,15 @@ final class AccessNeighborsForClosureBinding(val node: nodes.ClosureBinding) ext
 
   /** Traverse to LOCAL via REF OUT edge.
     */
-  def _localViaRefOut: nodes.Local = {
-    try { node._refOut.iterator.collectAll[nodes.Local].next() }
-    catch {
-      case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
-          "OUT edge with label REF to an adjacent LOCAL is mandatory, but not defined for this CLOSURE_BINDING node with seq=" + node.seq,
-          e
-        )
-    }
-  }
+  def _localViaRefOut: Option[nodes.Local] = node._refOut.iterator.collectAll[nodes.Local].nextOption()
+
+  /** Traverse to METHOD_PARAMETER_IN via CAPTURED_BY IN edge.
+    */
+  def _methodParameterInViaCapturedByIn: Iterator[nodes.MethodParameterIn] = node._capturedByIn.iterator.collectAll[nodes.MethodParameterIn]
 
   /** Traverse to METHOD_PARAMETER_IN via REF OUT edge.
     */
-  def _methodParameterInViaRefOut: Iterator[nodes.MethodParameterIn] = node._refOut.iterator.collectAll[nodes.MethodParameterIn]
+  def _methodParameterInViaRefOut: Option[nodes.MethodParameterIn] = node._refOut.iterator.collectAll[nodes.MethodParameterIn].nextOption()
 
   /** Traverse to METHOD_REF via CAPTURE IN edge.
     */
@@ -44,7 +39,11 @@ final class AccessNeighborsForClosureBindingTraversal(val traversal: Iterator[no
 
   /** Traverse to LOCAL via REF OUT edge.
     */
-  def _localViaRefOut: Iterator[nodes.Local] = traversal.map(_._localViaRefOut)
+  def _localViaRefOut: Iterator[nodes.Local] = traversal.flatMap(_._localViaRefOut)
+
+  /** Traverse to METHOD_PARAMETER_IN via CAPTURED_BY IN edge.
+    */
+  def _methodParameterInViaCapturedByIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_._methodParameterInViaCapturedByIn)
 
   /** Traverse to METHOD_PARAMETER_IN via REF OUT edge.
     */

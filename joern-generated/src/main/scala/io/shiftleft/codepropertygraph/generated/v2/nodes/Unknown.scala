@@ -1383,10 +1383,10 @@ class NewUnknown extends NewNode(43.toShort) with UnknownBase {
     interface.insertProperty(this, 13, Iterator(this.containedRef))
     if (dynamicTypeHintFullName.nonEmpty) interface.insertProperty(this, 18, this.dynamicTypeHintFullName)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
-    interface.insertProperty(this, 41, Iterator(this.order))
-    interface.insertProperty(this, 44, Iterator(this.parserTypeName))
-    if (possibleTypes.nonEmpty) interface.insertProperty(this, 45, this.possibleTypes)
-    interface.insertProperty(this, 50, Iterator(this.typeFullName))
+    interface.insertProperty(this, 43, Iterator(this.order))
+    interface.insertProperty(this, 46, Iterator(this.parserTypeName))
+    if (possibleTypes.nonEmpty) interface.insertProperty(this, 47, this.possibleTypes)
+    interface.insertProperty(this, 52, Iterator(this.typeFullName))
   }
 
   override def copy(): this.type = {

@@ -28,8 +28,8 @@ class Finding(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 15.toShort, seq_4762)
     with FindingBase
     with StaticType[FindingEMT] {
-  def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 53, seq)
-  def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 54, seq)
+  def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 55, seq)
+  def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 56, seq)
 
   override def productElementName(n: Int): String =
     n match {
@@ -72,8 +72,8 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
   def evidence(value: IterableOnce[AbstractNode]): this.type          = { this.evidence = value.iterator.to(ArraySeq); this }
   def keyValuePairs(value: IterableOnce[KeyValuePairBase]): this.type = { this.keyValuePairs = value.iterator.to(ArraySeq); this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
-    if (evidence.nonEmpty) interface.insertProperty(this, 53, this.evidence)
-    if (keyValuePairs.nonEmpty) interface.insertProperty(this, 54, this.keyValuePairs)
+    if (evidence.nonEmpty) interface.insertProperty(this, 55, this.evidence)
+    if (keyValuePairs.nonEmpty) interface.insertProperty(this, 56, this.keyValuePairs)
   }
 
   override def copy(): this.type = {

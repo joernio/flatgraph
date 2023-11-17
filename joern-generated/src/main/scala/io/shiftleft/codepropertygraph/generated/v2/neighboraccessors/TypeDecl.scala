@@ -49,6 +49,10 @@ final class AccessNeighborsForTypeDecl(val node: nodes.TypeDecl) extends AnyVal 
     */
   def namespaceBlock: Option[nodes.NamespaceBlock] = node._astIn.iterator.collectAll[nodes.NamespaceBlock].nextOption()
 
+  /** Traverse to TAG via TAGGED_BY OUT edge.
+    */
+  def _tagViaTaggedByOut: Iterator[nodes.Tag] = node._taggedByOut.iterator.collectAll[nodes.Tag]
+
   /** Traverse to TYPE via ALIAS_OF OUT edge.
     */
   def aliasedType: Iterator[nodes.Type] = node._aliasOfOut.iterator.collectAll[nodes.Type]
@@ -120,6 +124,10 @@ final class AccessNeighborsForTypeDeclTraversal(val traversal: Iterator[nodes.Ty
   /** Traverse to NAMESPACE_BLOCK via AST IN edge.
     */
   def namespaceBlock: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_.namespaceBlock)
+
+  /** Traverse to TAG via TAGGED_BY OUT edge.
+    */
+  def _tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_._tagViaTaggedByOut)
 
   /** Traverse to TYPE via ALIAS_OF OUT edge.
     */

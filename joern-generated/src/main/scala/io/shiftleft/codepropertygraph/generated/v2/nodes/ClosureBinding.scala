@@ -60,7 +60,8 @@ class ClosureBinding(graph_4762: odb2.Graph, seq_4762: Int)
 object NewClosureBinding {
   def apply(): NewClosureBinding                     = new NewClosureBinding
   private val outNeighbors: Map[String, Set[String]] = Map("REF" -> Set("LOCAL", "METHOD_PARAMETER_IN"))
-  private val inNeighbors: Map[String, Set[String]]  = Map("CAPTURE" -> Set("METHOD_REF", "TYPE_REF"), "CAPTURED_BY" -> Set("LOCAL"))
+  private val inNeighbors: Map[String, Set[String]] =
+    Map("CAPTURE" -> Set("METHOD_REF", "TYPE_REF"), "CAPTURED_BY" -> Set("LOCAL", "METHOD_PARAMETER_IN"))
 }
 class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
   type RelatedStored = ClosureBinding

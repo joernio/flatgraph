@@ -75,6 +75,7 @@ object NewTag {
       "RETURN",
       "TAG",
       "TEMPLATE_DOM",
+      "TYPE_DECL",
       "TYPE_REF",
       "UNKNOWN"
     )
@@ -97,7 +98,7 @@ class NewTag extends NewNode(35.toShort) with TagBase {
   def value(value: String): this.type = { this.value = value; this }
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 51, Iterator(this.value))
+    interface.insertProperty(this, 53, Iterator(this.value))
   }
 
   override def copy(): this.type = {

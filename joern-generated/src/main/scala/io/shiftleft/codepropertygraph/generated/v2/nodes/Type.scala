@@ -104,7 +104,7 @@ class NewType extends NewNode(38.toShort) with TypeBase {
   override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 22, Iterator(this.fullName))
     interface.insertProperty(this, 39, Iterator(this.name))
-    interface.insertProperty(this, 49, Iterator(this.typeDeclFullName))
+    interface.insertProperty(this, 51, Iterator(this.typeDeclFullName))
   }
 
   override def copy(): this.type = {
