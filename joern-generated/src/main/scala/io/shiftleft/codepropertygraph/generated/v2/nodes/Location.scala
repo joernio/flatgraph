@@ -64,7 +64,7 @@ class Location(graph_4762: odb2.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 23.toShort, seq_4762)
     with LocationBase
     with StaticType[LocationEMT] {
-  def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 55, seq)
+  def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 57, seq)
 
   override def productElementName(n: Int): String =
     n match {
@@ -150,7 +150,7 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
     interface.insertProperty(this, 40, Iterator(this.nodeLabel))
     interface.insertProperty(this, 45, Iterator(this.packageName))
     interface.insertProperty(this, 50, Iterator(this.symbol))
-    if (node.nonEmpty) interface.insertProperty(this, 55, this.node)
+    if (node.nonEmpty) interface.insertProperty(this, 57, this.node)
   }
 
   override def copy(): this.type = {

@@ -233,6 +233,8 @@ object GraphSchema extends odb2.Schema {
     size => new Array[String](size),
     size => new Array[String](size),
     size => new Array[odb2.GNode](size),
+    size => new Array[odb2.GNode](size),
+    size => new Array[odb2.GNode](size),
     size => new Array[odb2.GNode](size)
   )
   val normalNodePropertyNames = Array(
@@ -293,7 +295,7 @@ object GraphSchema extends odb2.Schema {
     "VERSION"
   )
   val nodePropertyByLabel =
-    normalNodePropertyNames.zipWithIndex.toMap.updated("evidence", 55).updated("node", 55).updated("keyValuePairs", 56).updated("tag", 56)
+    normalNodePropertyNames.zipWithIndex.toMap.updated("evidence", 55).updated("keyValuePairs", 56).updated("node", 57).updated("tag", 58)
 
   override def getNumberOfNodeKinds: Int                          = 44
   override def getNumberOfEdgeKinds: Int                          = 24
@@ -304,14 +306,14 @@ object GraphSchema extends odb2.Schema {
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
     if (propertyKind < 55) normalNodePropertyNames(propertyKind)
     else if (propertyKind == 55 && nodeKind == 15) "evidence"      /*on node FINDING*/
-    else if (propertyKind == 55 && nodeKind == 23) "node"          /*on node LOCATION*/
-    else if (propertyKind == 55 && nodeKind == 36) "node"          /*on node TAG_NODE_PAIR*/
     else if (propertyKind == 56 && nodeKind == 15) "keyValuePairs" /*on node FINDING*/
-    else if (propertyKind == 56 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
+    else if (propertyKind == 57 && nodeKind == 23) "node"          /*on node LOCATION*/
+    else if (propertyKind == 57 && nodeKind == 36) "node"          /*on node TAG_NODE_PAIR*/
+    else if (propertyKind == 58 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
     else null
 
   override def getPropertyKindByName(label: String): Int                                = nodePropertyByLabel.getOrElse(label, -1)
-  override def getNumberOfProperties: Int                                               = 57
+  override def getNumberOfProperties: Int                                               = 59
   override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
