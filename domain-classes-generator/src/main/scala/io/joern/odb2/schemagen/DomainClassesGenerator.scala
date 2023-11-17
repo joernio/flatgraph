@@ -48,8 +48,8 @@ class DomainClassesGenerator(schema: Schema) {
 
     // We used to support multiplexing of different containedNode pseudo-properties into the same index.
     // We removed that feature, look at git blame on this line to find the supporting code.
-    val containedNames = propertyContexts.containedNodesByName.keys.toArray.sorted
-    val containedIndexByName  = containedNames.zipWithIndex.toMap
+    val containedNames       = propertyContexts.containedNodesByName.keys.toArray.sorted
+    val containedIndexByName = containedNames.zipWithIndex.toMap
 
     val propertyKindByProperty = relevantProperties.zipWithIndex.toMap
     val edgeTypes              = schema.edgeTypes.sortBy(_.name).toArray
