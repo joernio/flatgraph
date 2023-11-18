@@ -276,7 +276,7 @@ final class AccessNeighborsForMethod(val node: nodes.Method) extends AnyVal {
 
 }
 
-final class AccessNeighborsForMethodTraversal(val traversal: IterableOnce[nodes.Method]) extends AnyVal {
+final class AccessNeighborsForMethodTraversal(val traversal: Iterator[nodes.Method]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

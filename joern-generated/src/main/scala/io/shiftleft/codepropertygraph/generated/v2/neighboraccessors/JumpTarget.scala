@@ -317,7 +317,7 @@ final class AccessNeighborsForJumpTarget(val node: nodes.JumpTarget) extends Any
 
 }
 
-final class AccessNeighborsForJumpTargetTraversal(val traversal: IterableOnce[nodes.JumpTarget]) extends AnyVal {
+final class AccessNeighborsForJumpTargetTraversal(val traversal: Iterator[nodes.JumpTarget]) extends AnyVal {
 
   /** Traverse to BLOCK via AST IN edge.
     */

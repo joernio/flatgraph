@@ -94,7 +94,7 @@ final class AccessNeighborsForMethodParameterIn(val node: nodes.MethodParameterI
 
 }
 
-final class AccessNeighborsForMethodParameterInTraversal(val traversal: IterableOnce[nodes.MethodParameterIn]) extends AnyVal {
+final class AccessNeighborsForMethodParameterInTraversal(val traversal: Iterator[nodes.MethodParameterIn]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

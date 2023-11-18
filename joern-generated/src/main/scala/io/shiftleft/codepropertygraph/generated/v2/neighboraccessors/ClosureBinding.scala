@@ -31,7 +31,7 @@ final class AccessNeighborsForClosureBinding(val node: nodes.ClosureBinding) ext
 
 }
 
-final class AccessNeighborsForClosureBindingTraversal(val traversal: IterableOnce[nodes.ClosureBinding]) extends AnyVal {
+final class AccessNeighborsForClosureBindingTraversal(val traversal: Iterator[nodes.ClosureBinding]) extends AnyVal {
 
   /** Traverse to LOCAL via CAPTURED_BY IN edge.
     */

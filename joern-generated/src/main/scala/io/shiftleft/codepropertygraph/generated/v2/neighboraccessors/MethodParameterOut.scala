@@ -101,7 +101,7 @@ final class AccessNeighborsForMethodParameterOut(val node: nodes.MethodParameter
 
 }
 
-final class AccessNeighborsForMethodParameterOutTraversal(val traversal: IterableOnce[nodes.MethodParameterOut]) extends AnyVal {
+final class AccessNeighborsForMethodParameterOutTraversal(val traversal: Iterator[nodes.MethodParameterOut]) extends AnyVal {
 
   /** Traverse to BLOCK via REACHING_DEF IN edge.
     */

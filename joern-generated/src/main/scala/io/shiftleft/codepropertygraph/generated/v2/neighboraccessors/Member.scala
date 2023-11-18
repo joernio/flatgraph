@@ -44,7 +44,7 @@ final class AccessNeighborsForMember(val node: nodes.Member) extends AnyVal {
 
 }
 
-final class AccessNeighborsForMemberTraversal(val traversal: IterableOnce[nodes.Member]) extends AnyVal {
+final class AccessNeighborsForMemberTraversal(val traversal: Iterator[nodes.Member]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

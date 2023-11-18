@@ -12,7 +12,7 @@ final class AccessNeighborsForAnnotationLiteral(val node: nodes.AnnotationLitera
 
 }
 
-final class AccessNeighborsForAnnotationLiteralTraversal(val traversal: IterableOnce[nodes.AnnotationLiteral]) extends AnyVal {
+final class AccessNeighborsForAnnotationLiteralTraversal(val traversal: Iterator[nodes.AnnotationLiteral]) extends AnyVal {
 
   /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
     */

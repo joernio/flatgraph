@@ -19,7 +19,7 @@ final class AccessNeighborsForComment(val node: nodes.Comment) extends AnyVal {
 
 }
 
-final class AccessNeighborsForCommentTraversal(val traversal: IterableOnce[nodes.Comment]) extends AnyVal {
+final class AccessNeighborsForCommentTraversal(val traversal: Iterator[nodes.Comment]) extends AnyVal {
 
   /** Traverse to COMMENT via SOURCE_FILE IN edge.
     */

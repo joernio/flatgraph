@@ -99,7 +99,7 @@ final class AccessNeighborsForTag(val node: nodes.Tag) extends AnyVal {
 
 }
 
-final class AccessNeighborsForTagTraversal(val traversal: IterableOnce[nodes.Tag]) extends AnyVal {
+final class AccessNeighborsForTagTraversal(val traversal: Iterator[nodes.Tag]) extends AnyVal {
 
   /** Traverse to BLOCK via TAGGED_BY IN edge.
     */

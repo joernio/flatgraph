@@ -169,7 +169,7 @@ final class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends
 
 }
 
-final class AccessNeighborsForMethodReturnTraversal(val traversal: IterableOnce[nodes.MethodReturn]) extends AnyVal {
+final class AccessNeighborsForMethodReturnTraversal(val traversal: Iterator[nodes.MethodReturn]) extends AnyVal {
 
   /** Traverse to BLOCK via CDG IN edge.
     */

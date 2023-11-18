@@ -608,7 +608,7 @@ class DomainClassesGenerator(schema: Schema) {
         s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
       accessorsForConcreteNodeTraversals.addOne(
-        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: IterableOnce[NodeType]) extends AnyVal {""".stripMargin +
+        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
           generatePropertyTraversals(p, propertyKindByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
@@ -642,7 +642,7 @@ class DomainClassesGenerator(schema: Schema) {
       stage.foreach { baseType =>
         val extensionClass = s"Traversal_${baseType.className}Base"
         convertForStage.addOne(
-          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: IterableOnce[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal)"
+          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: IterableOnce[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal.iterator)"
         )
         val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
@@ -650,7 +650,7 @@ class DomainClassesGenerator(schema: Schema) {
         }
         accessorsForBaseNodeTraversals.addOne(
           elems.mkString(
-            s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: IterableOnce[NodeType]) extends AnyVal { ",
+            s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
             "\n",
             "}"
           )
@@ -992,7 +992,7 @@ class DomainClassesGenerator(schema: Schema) {
             s"""implicit def accessNeighborsFor${nodeType.className}Traversal(traversal: IterableOnce[nodes.${nodeType.className}]): $className =
                |  new $className(traversal.iterator)""".stripMargin
           )
-          s"""final class $className(val traversal: IterableOnce[nodes.${nodeType.className}]) extends AnyVal {
+          s"""final class $className(val traversal: Iterator[nodes.${nodeType.className}]) extends AnyVal {
              |  ${stepImplementations.sorted.distinct.mkString("\n\n")}
              |}
              |""".stripMargin
@@ -1097,7 +1097,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     s"""/** Traverse to $nameCamelCase property */
        |def $nameCamelCase: Iterator[$baseType] =
-       |  traversal.iterator.$mapOrFlatMap(_.$nameCamelCase).iterator
+       |  traversal.$mapOrFlatMap(_.$nameCamelCase)
        |
        |$filterSteps
        |""".stripMargin

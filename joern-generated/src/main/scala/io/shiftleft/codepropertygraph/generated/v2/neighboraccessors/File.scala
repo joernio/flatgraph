@@ -47,7 +47,7 @@ final class AccessNeighborsForFile(val node: nodes.File) extends AnyVal {
 
 }
 
-final class AccessNeighborsForFileTraversal(val traversal: IterableOnce[nodes.File]) extends AnyVal {
+final class AccessNeighborsForFileTraversal(val traversal: Iterator[nodes.File]) extends AnyVal {
 
   /** Traverse to COMMENT via AST OUT edge.
     */

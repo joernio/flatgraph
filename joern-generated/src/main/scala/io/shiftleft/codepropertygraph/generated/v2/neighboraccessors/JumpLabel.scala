@@ -11,7 +11,7 @@ final class AccessNeighborsForJumpLabel(val node: nodes.JumpLabel) extends AnyVa
 
 }
 
-final class AccessNeighborsForJumpLabelTraversal(val traversal: IterableOnce[nodes.JumpLabel]) extends AnyVal {
+final class AccessNeighborsForJumpLabelTraversal(val traversal: Iterator[nodes.JumpLabel]) extends AnyVal {
 
   /** Traverse to CONTROL_STRUCTURE via AST IN edge.
     */

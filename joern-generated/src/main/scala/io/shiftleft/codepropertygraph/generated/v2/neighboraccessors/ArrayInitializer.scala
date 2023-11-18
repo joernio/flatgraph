@@ -20,7 +20,7 @@ final class AccessNeighborsForArrayInitializer(val node: nodes.ArrayInitializer)
 
 }
 
-final class AccessNeighborsForArrayInitializerTraversal(val traversal: IterableOnce[nodes.ArrayInitializer]) extends AnyVal {
+final class AccessNeighborsForArrayInitializerTraversal(val traversal: Iterator[nodes.ArrayInitializer]) extends AnyVal {
 
   /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
     */

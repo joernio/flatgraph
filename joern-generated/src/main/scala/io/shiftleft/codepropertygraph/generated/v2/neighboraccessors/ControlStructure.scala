@@ -458,7 +458,7 @@ final class AccessNeighborsForControlStructure(val node: nodes.ControlStructure)
 
 }
 
-final class AccessNeighborsForControlStructureTraversal(val traversal: IterableOnce[nodes.ControlStructure]) extends AnyVal {
+final class AccessNeighborsForControlStructureTraversal(val traversal: Iterator[nodes.ControlStructure]) extends AnyVal {
 
   /** Traverse to BLOCK via AST IN edge.
     */

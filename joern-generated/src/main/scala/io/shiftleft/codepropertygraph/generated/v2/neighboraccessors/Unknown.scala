@@ -422,7 +422,7 @@ final class AccessNeighborsForUnknown(val node: nodes.Unknown) extends AnyVal {
 
 }
 
-final class AccessNeighborsForUnknownTraversal(val traversal: IterableOnce[nodes.Unknown]) extends AnyVal {
+final class AccessNeighborsForUnknownTraversal(val traversal: Iterator[nodes.Unknown]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

@@ -433,7 +433,7 @@ final class AccessNeighborsForLiteral(val node: nodes.Literal) extends AnyVal {
 
 }
 
-final class AccessNeighborsForLiteralTraversal(val traversal: IterableOnce[nodes.Literal]) extends AnyVal {
+final class AccessNeighborsForLiteralTraversal(val traversal: Iterator[nodes.Literal]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */

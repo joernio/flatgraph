@@ -11,7 +11,7 @@ final class AccessNeighborsForDependency(val node: nodes.Dependency) extends Any
 
 }
 
-final class AccessNeighborsForDependencyTraversal(val traversal: IterableOnce[nodes.Dependency]) extends AnyVal {
+final class AccessNeighborsForDependencyTraversal(val traversal: Iterator[nodes.Dependency]) extends AnyVal {
 
   /** Traverse to IMPORT via IMPORTS IN edge.
     */

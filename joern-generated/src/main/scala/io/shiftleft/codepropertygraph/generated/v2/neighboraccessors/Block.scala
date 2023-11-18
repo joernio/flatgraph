@@ -452,7 +452,7 @@ final class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
 
 }
 
-final class AccessNeighborsForBlockTraversal(val traversal: IterableOnce[nodes.Block]) extends AnyVal {
+final class AccessNeighborsForBlockTraversal(val traversal: Iterator[nodes.Block]) extends AnyVal {
 
   /** Traverse to BLOCK via AST IN edge.
     */

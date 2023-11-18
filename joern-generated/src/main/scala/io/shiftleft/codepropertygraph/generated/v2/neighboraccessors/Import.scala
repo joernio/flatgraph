@@ -31,7 +31,7 @@ final class AccessNeighborsForImport(val node: nodes.Import) extends AnyVal {
 
 }
 
-final class AccessNeighborsForImportTraversal(val traversal: IterableOnce[nodes.Import]) extends AnyVal {
+final class AccessNeighborsForImportTraversal(val traversal: Iterator[nodes.Import]) extends AnyVal {
 
   /** Traverse to BLOCK via AST IN edge.
     */

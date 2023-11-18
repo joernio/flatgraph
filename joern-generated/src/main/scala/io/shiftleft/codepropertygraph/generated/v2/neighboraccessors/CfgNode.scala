@@ -51,7 +51,7 @@ final class AccessNeighborsForCfgNode(val node: nodes.CfgNode) extends AnyVal {
 
 }
 
-final class AccessNeighborsForCfgNodeTraversal(val traversal: IterableOnce[nodes.CfgNode]) extends AnyVal {
+final class AccessNeighborsForCfgNodeTraversal(val traversal: Iterator[nodes.CfgNode]) extends AnyVal {
 
   /** Traverse to BLOCK via CFG IN edge.
     */
