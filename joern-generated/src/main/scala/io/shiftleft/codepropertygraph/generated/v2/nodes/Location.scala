@@ -108,7 +108,7 @@ object NewLocation {
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewLocation extends NewNode(23.toShort) with LocationBase {
-  type RelatedStored = Location
+  override type StoredNodeType = Location
   override def label: String = "LOCATION"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

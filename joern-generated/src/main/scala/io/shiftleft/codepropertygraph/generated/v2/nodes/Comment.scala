@@ -1305,7 +1305,7 @@ object NewComment {
   )
 }
 class NewComment extends NewNode(9.toShort) with CommentBase {
-  type RelatedStored = Comment
+  override type StoredNodeType = Comment
   override def label: String = "COMMENT"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

@@ -60,7 +60,7 @@ object NewConfigFile {
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
-  type RelatedStored = ConfigFile
+  override type StoredNodeType = ConfigFile
   override def label: String = "CONFIG_FILE"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

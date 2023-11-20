@@ -65,7 +65,7 @@ object NewBinding {
   private val inNeighbors: Map[String, Set[String]]  = Map("BINDS" -> Set("TYPE_DECL"))
 }
 class NewBinding extends NewNode(5.toShort) with BindingBase {
-  type RelatedStored = Binding
+  override type StoredNodeType = Binding
   override def label: String = "BINDING"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

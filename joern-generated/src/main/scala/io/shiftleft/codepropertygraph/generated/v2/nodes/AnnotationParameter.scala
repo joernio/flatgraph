@@ -1300,7 +1300,7 @@ object NewAnnotationParameter {
   )
 }
 class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameterBase {
-  type RelatedStored = AnnotationParameter
+  override type StoredNodeType = AnnotationParameter
   override def label: String = "ANNOTATION_PARAMETER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

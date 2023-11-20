@@ -1331,7 +1331,7 @@ object NewLocal {
   )
 }
 class NewLocal extends NewNode(22.toShort) with LocalBase {
-  type RelatedStored = Local
+  override type StoredNodeType = Local
   override def label: String = "LOCAL"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

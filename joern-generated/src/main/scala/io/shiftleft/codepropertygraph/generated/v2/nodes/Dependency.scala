@@ -64,7 +64,7 @@ object NewDependency {
   private val inNeighbors: Map[String, Set[String]]  = Map("IMPORTS" -> Set("IMPORT"))
 }
 class NewDependency extends NewNode(12.toShort) with DependencyBase {
-  type RelatedStored = Dependency
+  override type StoredNodeType = Dependency
   override def label: String = "DEPENDENCY"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

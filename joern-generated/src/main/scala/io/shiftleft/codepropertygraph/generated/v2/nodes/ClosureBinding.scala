@@ -64,7 +64,7 @@ object NewClosureBinding {
     Map("CAPTURE" -> Set("METHOD_REF", "TYPE_REF"), "CAPTURED_BY" -> Set("LOCAL", "METHOD_PARAMETER_IN"))
 }
 class NewClosureBinding extends NewNode(8.toShort) with ClosureBindingBase {
-  type RelatedStored = ClosureBinding
+  override type StoredNodeType = ClosureBinding
   override def label: String = "CLOSURE_BINDING"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

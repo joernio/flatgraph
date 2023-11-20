@@ -1314,7 +1314,7 @@ object NewTemplateDom {
   )
 }
 class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
-  type RelatedStored = TemplateDom
+  override type StoredNodeType = TemplateDom
   override def label: String = "TEMPLATE_DOM"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

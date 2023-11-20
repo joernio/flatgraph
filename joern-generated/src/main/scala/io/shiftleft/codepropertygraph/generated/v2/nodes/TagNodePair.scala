@@ -57,7 +57,7 @@ object NewTagNodePair {
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
-  type RelatedStored = TagNodePair
+  override type StoredNodeType = TagNodePair
   override def label: String = "TAG_NODE_PAIR"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

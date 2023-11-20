@@ -60,7 +60,7 @@ object NewKeyValuePair {
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
-  type RelatedStored = KeyValuePair
+  override type StoredNodeType = KeyValuePair
   override def label: String = "KEY_VALUE_PAIR"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

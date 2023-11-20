@@ -1349,7 +1349,7 @@ object NewMethodParameterIn {
   )
 }
 class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBase {
-  type RelatedStored = MethodParameterIn
+  override type StoredNodeType = MethodParameterIn
   override def label: String = "METHOD_PARAMETER_IN"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

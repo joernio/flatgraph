@@ -1334,7 +1334,7 @@ object NewIdentifier {
   )
 }
 class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
-  type RelatedStored = Identifier
+  override type StoredNodeType = Identifier
   override def label: String = "IDENTIFIER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

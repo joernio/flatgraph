@@ -1315,7 +1315,7 @@ object NewNamespaceBlock {
   )
 }
 class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
-  type RelatedStored = NamespaceBlock
+  override type StoredNodeType = NamespaceBlock
   override def label: String = "NAMESPACE_BLOCK"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

@@ -1300,7 +1300,7 @@ object NewTypeArgument {
   )
 }
 class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
-  type RelatedStored = TypeArgument
+  override type StoredNodeType = TypeArgument
   override def label: String = "TYPE_ARGUMENT"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

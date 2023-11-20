@@ -1314,7 +1314,7 @@ object NewFile {
   )
 }
 class NewFile extends NewNode(14.toShort) with FileBase {
-  type RelatedStored = File
+  override type StoredNodeType = File
   override def label: String = "FILE"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

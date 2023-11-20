@@ -669,6 +669,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
   "Support custom domain classes for detached nodes" in {
     class CustomNode extends DNode {
+      override type StoredNodeType = GNode
       private var _storedRef: GNode = null
       var nodes: List[DNodeOrNode]  = Nil
       var strings: List[String]     = Nil

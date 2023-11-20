@@ -1340,7 +1340,7 @@ object NewUnknown {
   )
 }
 class NewUnknown extends NewNode(43.toShort) with UnknownBase {
-  type RelatedStored = Unknown
+  override type StoredNodeType = Unknown
   override def label: String = "UNKNOWN"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

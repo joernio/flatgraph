@@ -1305,7 +1305,7 @@ object NewTypeParameter {
   )
 }
 class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
-  type RelatedStored = TypeParameter
+  override type StoredNodeType = TypeParameter
   override def label: String = "TYPE_PARAMETER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

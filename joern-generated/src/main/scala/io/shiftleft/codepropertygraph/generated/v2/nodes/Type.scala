@@ -85,7 +85,7 @@ object NewType {
   )
 }
 class NewType extends NewNode(38.toShort) with TypeBase {
-  type RelatedStored = Type
+  override type StoredNodeType = Type
   override def label: String = "TYPE"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

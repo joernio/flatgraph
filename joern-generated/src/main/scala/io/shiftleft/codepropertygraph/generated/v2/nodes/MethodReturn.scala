@@ -1325,7 +1325,7 @@ object NewMethodReturn {
   )
 }
 class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
-  type RelatedStored = MethodReturn
+  override type StoredNodeType = MethodReturn
   override def label: String = "METHOD_RETURN"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
