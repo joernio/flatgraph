@@ -245,7 +245,6 @@ class JoernGenerated {
 
 @State(Scope.Benchmark)
 class FlatgraphGenerated {
-  import flatgraph
   import io.shiftleft.codepropertygraph.generated.v2
 
   @Param(Array("true", "false"))

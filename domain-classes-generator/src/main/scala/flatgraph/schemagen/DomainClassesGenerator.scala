@@ -97,7 +97,6 @@ class DomainClassesGenerator(schema: Schema) {
 
     val rootTypes =
       s"""package $basePackage.nodes
-         |import flatgraph
          |
          |trait StaticType[+T]
          |
@@ -202,7 +201,6 @@ class DomainClassesGenerator(schema: Schema) {
       }
       .mkString(
         s"""package $basePackage.nodes
-           |import flatgraph
            |
            |""".stripMargin,
         "\n\n",
@@ -239,7 +237,6 @@ class DomainClassesGenerator(schema: Schema) {
       }
       .mkString(
         s"""package $basePackage.edges
-           |import flatgraph
            |
            |""".stripMargin,
         "\n",
@@ -420,7 +417,11 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |  ${newNodeProps.sorted.mkString("\n")}
            |  ${newNodeFluent.sorted.mkString("\n")}
-           |  ${flattenItems.mkString("override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {\n", "\n", "\n}")}
+           |  ${flattenItems.mkString(
+            "override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {\n",
+            "\n",
+            "\n}"
+          )}
            |
            |  override def copy(): this.type = {
            |    val newInstance = new New${nodeType.className}
@@ -456,7 +457,6 @@ class DomainClassesGenerator(schema: Schema) {
       val nodeSource = {
         s"""package $basePackage.nodes
              |
-             |import flatgraph
              |import io.shiftleft.codepropertygraph.generated.v2.Language.*
              |import scala.collection.immutable.{IndexedSeq, ArraySeq}
              |
@@ -506,7 +506,6 @@ class DomainClassesGenerator(schema: Schema) {
 
     val schemaFile =
       s"""package $basePackage
-         |import flatgraph
          |import $basePackage.nodes
          |import $basePackage.edges
          |
@@ -680,7 +679,6 @@ class DomainClassesGenerator(schema: Schema) {
 
     val accessors =
       s"""package $basePackage.accessors
-         |import flatgraph
          |import $basePackage.nodes
          |import scala.collection.immutable.IndexedSeq
          |
@@ -703,7 +701,6 @@ class DomainClassesGenerator(schema: Schema) {
 
     val traversals =
       s"""package $basePackage.traversals
-         |import flatgraph
          |import $basePackage.nodes
          |
          |object Lang extends ConcreteStoredConversions
@@ -744,7 +741,6 @@ class DomainClassesGenerator(schema: Schema) {
     val domainShortName = schema.domainShortName
     val domainMain =
       s"""package $basePackage
-         |import flatgraph
          |import flatgraph.DiffGraphBuilder
          |
          |object $domainShortName {
@@ -1018,7 +1014,6 @@ class DomainClassesGenerator(schema: Schema) {
       neighborAccessorsRootDir / "package.scala",
       s"""package $basePackage
          |
-         |import flatgraph
          |import flatgraph.traversal.Language.*
          |import $basePackage.nodes
          |

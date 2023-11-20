@@ -87,8 +87,13 @@ object DiffGraphBuilder {
   private[flatgraph] class AddEdgeUnprocessed(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val property: Any)
       extends RawUpdate
 
-  private[flatgraph] class AddUnsafeHalfEdge(val src: DNodeOrNode, val dst: DNodeOrNode, val edgeKind: Short, val inout: Byte, val property: Any)
-      extends RawUpdate
+  private[flatgraph] class AddUnsafeHalfEdge(
+    val src: DNodeOrNode,
+    val dst: DNodeOrNode,
+    val edgeKind: Short,
+    val inout: Byte,
+    val property: Any
+  ) extends RawUpdate
 
   private[flatgraph] class RemoveEdge(val edge: Edge)                         extends RawUpdate
   private[flatgraph] class SetEdgeProperty(val edge: Edge, val property: Any) extends RawUpdate

@@ -11,9 +11,9 @@ class Graph(val schema: Schema) {
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
   private val propertiesCount = schema.getNumberOfProperties
 
-  private[flatgraph] val nodeCountByKind: Array[Int]     = new Array[Int](nodeKindCount)
-  private[flatgraph] val properties                      = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
-  private[flatgraph] val inverseIndices                  = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
+  private[flatgraph] val nodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
+  private[flatgraph] val properties                  = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
+  private[flatgraph] val inverseIndices              = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val nodesArray: Array[Array[GNode]] = makeNodesArray()
   private[flatgraph] val neighbors: Array[AnyRef]        = makeNeighbors()
 

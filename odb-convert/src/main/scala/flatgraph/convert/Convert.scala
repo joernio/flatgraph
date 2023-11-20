@@ -1,6 +1,5 @@
 package flatgraph.convert
 
-import flatgraph
 import flatgraph.{Edge, storage}
 import flatgraph.storage.{Keys, Serialization, Manifest, StorageType}
 import org.msgpack.core.MessagePack

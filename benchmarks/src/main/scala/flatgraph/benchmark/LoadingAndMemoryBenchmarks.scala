@@ -2,7 +2,6 @@ package flatgraph.benchmark
 
 import better.files.Dsl.cp
 import com.jerolba.jmnemohistosyne.{Histogramer, MemoryHistogram}
-import flatgraph
 import io.shiftleft.codepropertygraph.cpgloading.{CpgLoader, CpgLoaderConfig}
 import io.shiftleft.codepropertygraph.generated.Cpg
 import overflowdb.Config
