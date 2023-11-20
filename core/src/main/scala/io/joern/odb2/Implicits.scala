@@ -11,4 +11,16 @@ trait Implicits {
       Iterator.single(node)
   }
 
+  extension (graph: Graph) {
+    def applyDiff(buildDiff: DiffGraphBuilder => Unit): Unit = {
+      val diffGraphBuilder = DiffGraphBuilder(graph.schema)
+      buildDiff(diffGraphBuilder)
+      diffGraphBuilder.apply(graph)
+    }
+
+    def addNode(node: DNode): GNode = {
+      applyDiff(_.addNode(node))
+      node.storedRef.get
+    }
+  }
 }
