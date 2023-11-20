@@ -17,10 +17,10 @@ time ./odb-convert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > o
 echo "compiled and staged. Benchmarking load speed and memory consumption of odbv1:"
 time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttachSelf odb > ./odb1Results.txt
 
-echo "odbv1 load+mem benchmarked. Results are in odb1Results.txt. Benchmarking load speed and memory consumption of odbv2:"
-time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttachSelf odb2 > ./odb2Results.txt
+echo "odbv1 load+mem benchmarked. Results are in odb1Results.txt. Benchmarking load speed and memory consumption of flatgraph:"
+time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttachSelf flatgraph > ./flatgraphResults.txt
 
-echo "odbv2 load+mem benchmarked. Results are in odb2Results.txt. Running JMH benchmarks (this will take some time...)"
+echo "odbv2 load+mem benchmarked. Results are in flatgraphResults.txt. Running JMH benchmarks (this will take some time...)"
 time ./benchmarks/target/universal/stage/bin/benchmarks jmh
 
 RESULTS_FILE=benchmarks/results-history/$(date +"%Y%m%d")_$(git log -1 --pretty=format:%h)-results.csv
