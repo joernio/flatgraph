@@ -1338,7 +1338,7 @@ object NewMember {
   )
 }
 class NewMember extends NewNode(24.toShort) with MemberBase {
-  type RelatedStored = Member
+  override type StoredNodeType = Member
   override def label: String = "MEMBER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

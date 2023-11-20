@@ -1309,7 +1309,7 @@ object NewReturn {
   )
 }
 class NewReturn extends NewNode(34.toShort) with ReturnBase {
-  type RelatedStored = Return
+  override type StoredNodeType = Return
   override def label: String = "RETURN"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

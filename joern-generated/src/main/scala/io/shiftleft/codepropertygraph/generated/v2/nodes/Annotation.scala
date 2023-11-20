@@ -1319,7 +1319,7 @@ object NewAnnotation {
   )
 }
 class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
-  type RelatedStored = Annotation
+  override type StoredNodeType = Annotation
   override def label: String = "ANNOTATION"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

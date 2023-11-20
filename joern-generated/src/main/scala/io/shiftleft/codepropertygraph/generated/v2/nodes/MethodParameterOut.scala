@@ -1333,7 +1333,7 @@ object NewMethodParameterOut {
   )
 }
 class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutBase {
-  type RelatedStored = MethodParameterOut
+  override type StoredNodeType = MethodParameterOut
   override def label: String = "METHOD_PARAMETER_OUT"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

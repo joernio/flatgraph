@@ -1305,7 +1305,7 @@ object NewModifier {
   )
 }
 class NewModifier extends NewNode(31.toShort) with ModifierBase {
-  type RelatedStored = Modifier
+  override type StoredNodeType = Modifier
   override def label: String = "MODIFIER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

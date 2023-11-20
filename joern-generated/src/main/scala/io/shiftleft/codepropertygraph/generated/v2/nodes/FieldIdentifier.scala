@@ -1314,7 +1314,7 @@ object NewFieldIdentifier {
   )
 }
 class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
-  type RelatedStored = FieldIdentifier
+  override type StoredNodeType = FieldIdentifier
   override def label: String = "FIELD_IDENTIFIER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

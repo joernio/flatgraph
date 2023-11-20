@@ -82,7 +82,7 @@ object NewTag {
   )
 }
 class NewTag extends NewNode(35.toShort) with TagBase {
-  type RelatedStored = Tag
+  override type StoredNodeType = Tag
   override def label: String = "TAG"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

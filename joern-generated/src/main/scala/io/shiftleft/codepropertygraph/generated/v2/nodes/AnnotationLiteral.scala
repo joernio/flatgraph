@@ -1314,7 +1314,7 @@ object NewAnnotationLiteral {
   )
 }
 class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase {
-  type RelatedStored = AnnotationLiteral
+  override type StoredNodeType = AnnotationLiteral
   override def label: String = "ANNOTATION_LITERAL"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

@@ -1323,7 +1323,7 @@ object NewLiteral {
   )
 }
 class NewLiteral extends NewNode(21.toShort) with LiteralBase {
-  type RelatedStored = Literal
+  override type StoredNodeType = Literal
   override def label: String = "LITERAL"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

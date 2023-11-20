@@ -1309,7 +1309,7 @@ object NewArrayInitializer {
   )
 }
 class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
-  type RelatedStored = ArrayInitializer
+  override type StoredNodeType = ArrayInitializer
   override def label: String = "ARRAY_INITIALIZER"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

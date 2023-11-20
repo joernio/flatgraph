@@ -18,7 +18,6 @@ object AstNode {
 }
 
 trait AstNodeNew extends NewNode with AstNodeBase with StaticType[AstNodeEMT] {
-  override type StoredNodeType <: AstNode
   def code: String
   def code_=(value: String): Unit
   def code(value: String): this.type
@@ -52,7 +51,6 @@ object CallRepr {
 }
 
 trait CallReprNew extends NewNode with CallReprBase with CfgNodeNew with StaticType[CallReprEMT] {
-  override type StoredNodeType <: CallRepr
   def name: String
   def name_=(value: String): Unit
   def name(value: String): this.type
@@ -74,10 +72,7 @@ object CfgNode {
   object PropertyDefaults {}
 }
 
-trait CfgNodeNew extends NewNode with CfgNodeBase with AstNodeNew with StaticType[CfgNodeEMT] {
-  override type StoredNodeType <: CfgNode
-
-}
+trait CfgNodeNew extends NewNode with CfgNodeBase with AstNodeNew with StaticType[CfgNodeEMT] {}
 
 trait DeclarationEMT extends AnyRef with HasNameEMT
 
@@ -95,7 +90,6 @@ object Declaration {
 }
 
 trait DeclarationNew extends NewNode with DeclarationBase with StaticType[DeclarationEMT] {
-  override type StoredNodeType <: Declaration
   def name: String
   def name_=(value: String): Unit
   def name(value: String): this.type
@@ -117,7 +111,6 @@ object Expression {
 }
 
 trait ExpressionNew extends NewNode with ExpressionBase with AstNodeNew with CfgNodeNew with StaticType[ExpressionEMT] {
-  override type StoredNodeType <: Expression
   def argumentIndex: Int
   def argumentIndex_=(value: Int): Unit
   def argumentIndex(value: Int): this.type

@@ -1370,7 +1370,7 @@ object NewMethod {
   )
 }
 class NewMethod extends NewNode(26.toShort) with MethodBase {
-  type RelatedStored = Method
+  override type StoredNodeType = Method
   override def label: String = "METHOD"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

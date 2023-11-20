@@ -196,7 +196,6 @@ class DomainClassesGenerator(schema: Schema) {
            |}
            |
            |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
-           |  override type StoredNodeType <:  ${baseType.className}
            |  ${newNodeDefs.mkString("\n")}
            |}
            |""".stripMargin
@@ -409,7 +408,7 @@ class DomainClassesGenerator(schema: Schema) {
            |  private val inNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(inEdges)})
            |}
            |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
-           |  type RelatedStored = ${nodeType.className}
+           |  override type StoredNodeType = ${nodeType.className}
            |  override def label: String = "${nodeType.name}"
            |
            |  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

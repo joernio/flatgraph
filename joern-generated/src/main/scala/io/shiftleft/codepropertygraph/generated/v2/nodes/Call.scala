@@ -1352,7 +1352,7 @@ object NewCall {
   )
 }
 class NewCall extends NewNode(7.toShort) with CallBase {
-  type RelatedStored = Call
+  override type StoredNodeType = Call
   override def label: String = "CALL"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

@@ -57,7 +57,7 @@ object NewFinding {
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewFinding extends NewNode(15.toShort) with FindingBase {
-  type RelatedStored = Finding
+  override type StoredNodeType = Finding
   override def label: String = "FINDING"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

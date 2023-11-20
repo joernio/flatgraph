@@ -1334,7 +1334,7 @@ object NewMethodRef {
   )
 }
 class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
-  type RelatedStored = MethodRef
+  override type StoredNodeType = MethodRef
   override def label: String = "METHOD_REF"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

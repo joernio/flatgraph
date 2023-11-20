@@ -73,7 +73,7 @@ object NewMetaData {
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
-  type RelatedStored = MetaData
+  override type StoredNodeType = MetaData
   override def label: String = "META_DATA"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

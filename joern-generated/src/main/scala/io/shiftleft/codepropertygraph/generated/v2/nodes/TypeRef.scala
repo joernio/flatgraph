@@ -1323,7 +1323,7 @@ object NewTypeRef {
   )
 }
 class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
-  type RelatedStored = TypeRef
+  override type StoredNodeType = TypeRef
   override def label: String = "TYPE_REF"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

@@ -1349,7 +1349,7 @@ object NewTypeDecl {
   )
 }
 class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
-  type RelatedStored = TypeDecl
+  override type StoredNodeType = TypeDecl
   override def label: String = "TYPE_DECL"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

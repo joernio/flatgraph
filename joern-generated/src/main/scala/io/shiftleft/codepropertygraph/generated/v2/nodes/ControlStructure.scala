@@ -1319,7 +1319,7 @@ object NewControlStructure {
   )
 }
 class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase {
-  type RelatedStored = ControlStructure
+  override type StoredNodeType = ControlStructure
   override def label: String = "CONTROL_STRUCTURE"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

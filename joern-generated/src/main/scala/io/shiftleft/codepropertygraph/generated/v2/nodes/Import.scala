@@ -1327,7 +1327,7 @@ object NewImport {
   )
 }
 class NewImport extends NewNode(17.toShort) with ImportBase {
-  type RelatedStored = Import
+  override type StoredNodeType = Import
   override def label: String = "IMPORT"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

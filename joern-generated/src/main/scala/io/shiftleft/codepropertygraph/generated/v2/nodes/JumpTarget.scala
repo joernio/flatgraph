@@ -1315,7 +1315,7 @@ object NewJumpTarget {
   )
 }
 class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
-  type RelatedStored = JumpTarget
+  override type StoredNodeType = JumpTarget
   override def label: String = "JUMP_TARGET"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {

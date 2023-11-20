@@ -1323,7 +1323,7 @@ object NewBlock {
   )
 }
 class NewBlock extends NewNode(6.toShort) with BlockBase {
-  type RelatedStored = Block
+  override type StoredNodeType = Block
   override def label: String = "BLOCK"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
