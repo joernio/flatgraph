@@ -6,6 +6,11 @@ import misc.Misc.*
 
 class DiffGraphBuilder(schema: Schema) {
   var buffer = mutable.ArrayDeque[RawUpdate]()
+  
+  def apply(graph: Graph): Graph = {
+    DiffGraphApplier.applyDiff(graph, this)
+    graph
+  }
 
   def addNode(newNode: DNode): this.type = {
     this.buffer.append(newNode)
