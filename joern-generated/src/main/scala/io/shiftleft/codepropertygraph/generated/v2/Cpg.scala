@@ -6,7 +6,8 @@ object Cpg {
   def empty: Cpg                            = new Cpg(new odb2.Graph(GraphSchema))
   def newDiffGraphBuilder: DiffGraphBuilder = new DiffGraphBuilder(GraphSchema)
 }
-class Cpg(val graph: odb2.Graph) {
+class Cpg(private val _graph: odb2.Graph = new odb2.Graph(GraphSchema)) {
+  def graph: odb2.Graph = _graph
   assert(graph.schema == GraphSchema)
 }
 

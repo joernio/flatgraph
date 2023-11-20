@@ -753,8 +753,9 @@ class DomainClassesGenerator(schema: Schema) {
          |  def empty: $domainShortName = new $domainShortName(new odb2.Graph(GraphSchema))
          |  def newDiffGraphBuilder: DiffGraphBuilder = new DiffGraphBuilder(GraphSchema)
          |}
-         |class $domainShortName(val graph: odb2.Graph) {
-         |assert(graph.schema == GraphSchema)
+         |class $domainShortName(private val _graph: odb2.Graph = new odb2.Graph(GraphSchema)) {
+         |  def graph: odb2.Graph = _graph
+         |  assert(graph.schema == GraphSchema)
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) {
