@@ -111,10 +111,9 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |
          |abstract class NewNode(val nodeKind:Short) extends AbstractNode with odb2.DNode {
-         |  type RelatedStored <: StoredNode
-         |  private /* volatile? */ var _storedRef: RelatedStored = null.asInstanceOf[RelatedStored]
-         |  override def storedRef:Option[RelatedStored] = Option(this._storedRef)
-         |  override def storedRef_=(stored: Option[odb2.GNode]):Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
+         |  private /* volatile? */ var _storedRef: StoredNodeType      = null.asInstanceOf[StoredNodeType]
+         |  override def storedRef: Option[StoredNodeType]           = Option(this._storedRef)
+         |  override def storedRef_=(stored: Option[odb2.GNode]): Unit = this._storedRef = stored.orNull.asInstanceOf[StoredNodeType]
          |  def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean
          |  def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean
          |  def copy(): this.type
@@ -197,7 +196,7 @@ class DomainClassesGenerator(schema: Schema) {
            |}
            |
            |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
-           |  type RelatedStored <:  ${baseType.className}
+           |  override type StoredNodeType <:  ${baseType.className}
            |  ${newNodeDefs.mkString("\n")}
            |}
            |""".stripMargin

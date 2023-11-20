@@ -135,10 +135,9 @@ abstract class StoredNode(graph_4762: odb2.Graph, kind_4762: Short, seq_4762: In
 }
 
 abstract class NewNode(val nodeKind: Short) extends AbstractNode with odb2.DNode {
-  type RelatedStored <: StoredNode
-  private /* volatile? */ var _storedRef: RelatedStored      = null.asInstanceOf[RelatedStored]
-  override def storedRef: Option[RelatedStored]              = Option(this._storedRef)
-  override def storedRef_=(stored: Option[odb2.GNode]): Unit = this._storedRef = stored.orNull.asInstanceOf[RelatedStored]
+  private /* volatile? */ var _storedRef: StoredNodeType     = null.asInstanceOf[StoredNodeType]
+  override def storedRef: Option[StoredNodeType]             = Option(this._storedRef)
+  override def storedRef_=(stored: Option[odb2.GNode]): Unit = this._storedRef = stored.orNull.asInstanceOf[StoredNodeType]
   def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean
   def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean
   def copy(): this.type
