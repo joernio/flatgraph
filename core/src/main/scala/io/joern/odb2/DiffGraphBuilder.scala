@@ -12,7 +12,7 @@ class DiffGraphBuilder(schema: Schema) {
     graph
   }
 
-  def addNode(newNode: DNode): this.type = {
+  def addNode(newNode: DNode[_]): this.type = {
     this.buffer.append(newNode)
     this
   }

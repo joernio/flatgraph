@@ -18,7 +18,7 @@ trait Implicits {
       diffGraphBuilder.apply(graph)
     }
 
-    def addNode(node: DNode): GNode = {
+    def addNode[StoredNodeType <: GNode](node: DNode[StoredNodeType]): StoredNodeType = {
       applyDiff(_.addNode(node))
       node.storedRef.get
     }

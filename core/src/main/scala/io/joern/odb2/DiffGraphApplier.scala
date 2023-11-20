@@ -16,17 +16,17 @@ object DiffGraphApplier {
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
 private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
-  val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
+  val newNodes = new Array[mutable.ArrayBuffer[DNode[_]]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges          = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
   val delEdges          = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
   val setEdgeProperties = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
-  val deferred          = new mutable.ArrayDeque[DNode]()
+  val deferred          = new mutable.ArrayDeque[DNode[_]]()
   val delNodes          = mutable.ArrayBuffer[GNode]()
   val setNodeProperties = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
 
   object NewNodeInterface extends BatchedUpdateInterface {
-    override def insertProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
+    override def insertProperty(node: DNode[_], propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
       val iter = propertyValues.iterator
       if (iter.hasNext) {
         insertProperty0(node.storedRef.get, propertyKind, iter)
@@ -41,7 +41,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     val buf   = setNodeProperties(pos)
     val start = buf.size
     propertyValues.iterator.foreach {
-      case dnode: DNode => buf.addOne(getGNode(dnode))
+      case dnode: DNode[_] => buf.addOne(getGNode(dnode))
       case other        => buf.addOne(other)
     }
     val bound = new SetPropertyDesc(node, start, buf.size)
@@ -66,7 +66,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
       case already: GNode =>
         assert(already.graph == graph, "expected a different graph instance")
         already
-      case detached: DNode =>
+      case detached: DNode[_] =>
         detached.storedRef match {
           case Some(already: GNode) =>
             assert(already.graph == graph, "expected a different graph instance")
@@ -92,7 +92,7 @@ private[odb2] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
     }
 
     diff.buffer.foreach {
-      case addNode: DNode =>
+      case addNode: DNode[_] =>
         getGNode(addNode)
       case halfEdge: AddUnsafeHalfEdge =>
         val src = getGNode(halfEdge.src)
