@@ -6,7 +6,7 @@ import misc.Misc.*
 
 class DiffGraphBuilder(schema: Schema) {
   var buffer = mutable.ArrayDeque[RawUpdate]()
-  
+
   def apply(graph: Graph): Graph = {
     DiffGraphApplier.applyDiff(graph, this)
     graph
