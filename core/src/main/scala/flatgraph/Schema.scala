@@ -5,6 +5,11 @@ import flatgraph.Edge.Direction
 object DefaultValue
 object NoProperty
 final class DefaultValue(val default: Any)
+
+object Schema {
+  val UndefinedKind: Short = -1
+}
+
 abstract class Schema {
   def getNumberOfNodeKinds: Int
   def getNumberOfEdgeKinds: Int
@@ -69,11 +74,11 @@ class FreeSchema(
   override def getNumberOfNodeKinds: Int                                  = nodeLabels.length
   override def getNumberOfEdgeKinds: Int                                  = edgeLabels.length
   override def getNodeLabel(nodeKind: Int): String                        = nodeLabels(nodeKind)
-  override def getNodeKindByLabel(label: String): Int                     = nodeMap.getOrElse(label, -1)
+  override def getNodeKindByLabel(label: String): Int                     = nodeMap.getOrElse(label, Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String         = edgeLabels(edgeKind)
-  override def getEdgeKindByLabel(label: String): Int                     = edgeMap.getOrElse(label, -1)
+  override def getEdgeKindByLabel(label: String): Int                     = edgeMap.getOrElse(label, Schema.UndefinedKind)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
-  override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, -1)
+  override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
   override def getNumberOfProperties: Int                                 = propertyLabels.length
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =

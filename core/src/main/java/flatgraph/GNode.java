@@ -14,12 +14,13 @@ public class GNode implements DNodeOrNode {
     //an extra field just for this looks quite wasteful. But we have 2 bytes of alignment padding anyways...
     boolean _isDeleted = false;
 
+    /** the unique identifier for a node of _this kind_ */
     final public int seq() {
         return this._seqId;
     }
 
     /** 
-     * Combines nodeKind and seq into a unique id
+     * Combines nodeKind and seq into a unique id (for this graph)
      * Mostly for backwards compatibility with overflowdb v1 where nodes have a `id: Long`
      */
     final public long id() {

@@ -7,13 +7,10 @@ object Misc {
 
   extension (i: Int) {
     def toShortSafely: Short = {
-      assert(
-        0 <= i && i <= Short.MaxValue,
-        () => throw new ConversionException(s"cannot downcast int with value=$i to short without overflow")
-      )
+      assert(0 <= i && i <= Short.MaxValue, throw new ConversionException(s"cannot safely downcast int with value=$i to short"))
       i.toShort
     }
   }
-
-  class ConversionException(msg: String) extends RuntimeException(msg)
 }
+
+class ConversionException(msg: String) extends RuntimeException(msg)

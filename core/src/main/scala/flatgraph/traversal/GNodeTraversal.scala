@@ -8,6 +8,11 @@ trait GNodeTraversal {
 
   extension [A <: GNode](traversal: Iterator[A]) {
 
+    /** `id` combines nodeKind and seq into a unique id Mostly for backwards compatibility with overflowdb v1 where nodes have a `id: Long`
+      */
+    def id: Iterator[Long] =
+      traversal.map(_.id())
+
     /** traverse to the node label */
     // TODO bring back doc/help etc
     // @Doc(info = "Traverse to the node label")

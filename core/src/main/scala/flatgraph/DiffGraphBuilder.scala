@@ -16,8 +16,10 @@ class DiffGraphBuilder(schema: Schema) {
     * the readme.md for more context
     */
   def addEdge(src: DNodeOrNode, dst: DNodeOrNode, edgeLabel: String, property: Any = DefaultValue): this.type = {
-    val edgeKind = schema.getEdgeKindByLabel(edgeLabel).toShortSafely
-    this._addEdge(src, dst, edgeKind, property)
+    val edgeKind = schema.getEdgeKindByLabel(edgeLabel)
+    if (edgeKind == Schema.UndefinedKind)
+      throw new SchemaViolationException(s"unknown edge label: `$edgeLabel`")
+    this._addEdge(src, dst, edgeKind.toShortSafely, property)
   }
 
   /** n.b. one would expect a property name/value pair here, but since each edge has exactly one property we don't need the key here... see
@@ -35,6 +37,8 @@ class DiffGraphBuilder(schema: Schema) {
 
   def setNodeProperty(node: GNode, propertyName: String, property: Any): this.type = {
     val propertyKind = schema.getPropertyKindByName(propertyName)
+    if (propertyKind == Schema.UndefinedKind)
+      throw new SchemaViolationException(s"unknown property: `$propertyName`")
     this._setNodeProperty(node, propertyKind, property)
   }
 

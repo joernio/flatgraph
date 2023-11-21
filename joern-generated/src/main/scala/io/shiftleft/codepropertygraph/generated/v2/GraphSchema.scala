@@ -299,9 +299,9 @@ object GraphSchema extends flatgraph.Schema {
   override def getNumberOfNodeKinds: Int                          = 44
   override def getNumberOfEdgeKinds: Int                          = 24
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
-  override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, -1)
+  override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-  override def getEdgeKindByLabel(label: String): Int             = edgeIdByLabel.getOrElse(label, -1)
+  override def getEdgeKindByLabel(label: String): Int             = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
     if (propertyKind < 55) normalNodePropertyNames(propertyKind)
     else if (propertyKind == 55 && nodeKind == 15) "evidence"      /*on node FINDING*/
@@ -311,8 +311,8 @@ object GraphSchema extends flatgraph.Schema {
     else if (propertyKind == 58 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
     else null
 
-  override def getPropertyKindByName(label: String): Int                                     = nodePropertyByLabel.getOrElse(label, -1)
-  override def getNumberOfProperties: Int                                                    = 59
+  override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+  override def getNumberOfProperties: Int                = 59
   override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
