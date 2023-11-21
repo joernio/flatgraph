@@ -13,10 +13,6 @@ trait GNodeTraversal {
     def id: Iterator[Long] =
       traversal.map(_.id())
 
-    /** the unique identifier for a node of _this kind_ */
-    def seqId: Iterator[Int] =
-      traversal.map(_.seq())
-
     /** traverse to the node label */
     // TODO bring back doc/help etc
     // @Doc(info = "Traverse to the node label")
