@@ -1,13 +1,12 @@
 package io.shiftleft.codepropertygraph.generated.v2
-import io.joern.odb2
-import io.joern.odb2.DiffGraphBuilder
+import flatgraph.DiffGraphBuilder
 
 object Cpg {
-  def empty: Cpg                            = new Cpg(new odb2.Graph(GraphSchema))
+  def empty: Cpg                            = new Cpg(new flatgraph.Graph(GraphSchema))
   def newDiffGraphBuilder: DiffGraphBuilder = new DiffGraphBuilder(GraphSchema)
 }
-class Cpg(private val _graph: odb2.Graph = new odb2.Graph(GraphSchema)) {
-  def graph: odb2.Graph = _graph
+class Cpg(private val _graph: flatgraph.Graph = new flatgraph.Graph(GraphSchema)) {
+  def graph: flatgraph.Graph = _graph
   assert(graph.schema == GraphSchema)
 }
 

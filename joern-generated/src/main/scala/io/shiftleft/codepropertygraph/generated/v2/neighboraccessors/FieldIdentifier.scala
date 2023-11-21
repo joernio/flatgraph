@@ -35,7 +35,7 @@ final class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) e
     try { node._argumentIn.iterator.collectAll[nodes.Call].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label ARGUMENT to an adjacent CALL is mandatory, but not defined for this FIELD_IDENTIFIER node with seq=" + node.seq,
           e
         )
@@ -48,7 +48,7 @@ final class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) e
     try { node._astIn.iterator.collectAll[nodes.Call].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent CALL is mandatory, but not defined for this FIELD_IDENTIFIER node with seq=" + node.seq,
           e
         )
@@ -69,7 +69,7 @@ final class AccessNeighborsForFieldIdentifier(val node: nodes.FieldIdentifier) e
     try { node._cfgOut.iterator.collectAll[nodes.Call].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "OUT edge with label CFG to an adjacent CALL is mandatory, but not defined for this FIELD_IDENTIFIER node with seq=" + node.seq,
           e
         )

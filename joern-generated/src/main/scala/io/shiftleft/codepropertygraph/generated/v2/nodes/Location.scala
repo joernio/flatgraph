@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -60,11 +59,11 @@ object Location {
   }
 }
 
-class Location(graph_4762: odb2.Graph, seq_4762: Int)
+class Location(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 23.toShort, seq_4762)
     with LocationBase
     with StaticType[LocationEMT] {
-  def node: Option[StoredNode] = odb2.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 57, seq)
+  def node: Option[StoredNode] = flatgraph.Accessors.getNodePropertyOption[StoredNode](graph, nodeKind, 57, seq)
 
   override def productElementName(n: Int): String =
     n match {
@@ -140,7 +139,7 @@ class NewLocation extends NewNode(23.toShort) with LocationBase {
   def nodeLabel(value: String): this.type          = { this.nodeLabel = value; this }
   def packageName(value: String): this.type        = { this.packageName = value; this }
   def symbol(value: String): this.type             = { this.symbol = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 6, Iterator(this.className))
     interface.insertProperty(this, 7, Iterator(this.classShortName))
     interface.insertProperty(this, 21, Iterator(this.filename))

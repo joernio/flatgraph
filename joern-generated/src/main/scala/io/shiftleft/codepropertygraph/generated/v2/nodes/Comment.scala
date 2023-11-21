@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -36,7 +35,7 @@ object Comment {
   }
 }
 
-class Comment(graph_4762: odb2.Graph, seq_4762: Int)
+class Comment(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 9.toShort, seq_4762)
     with CommentBase
     with AstNode
@@ -1327,7 +1326,7 @@ class NewComment extends NewNode(9.toShort) with CommentBase {
   def lineNumber(value: Int): this.type           = { this.lineNumber = Option(value); this }
   def lineNumber(value: Option[Int]): this.type   = { this.lineNumber = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     interface.insertProperty(this, 21, Iterator(this.filename))

@@ -92,7 +92,7 @@ final class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends
     try { node._astIn.iterator.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this METHOD_RETURN node with seq=" + node.seq,
           e
         )

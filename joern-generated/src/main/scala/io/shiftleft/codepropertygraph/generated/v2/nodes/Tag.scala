@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -29,7 +28,10 @@ object Tag {
   }
 }
 
-class Tag(graph_4762: odb2.Graph, seq_4762: Int) extends StoredNode(graph_4762, 35.toShort, seq_4762) with TagBase with StaticType[TagEMT] {
+class Tag(graph_4762: flatgraph.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 35.toShort, seq_4762)
+    with TagBase
+    with StaticType[TagEMT] {
 
   override def productElementName(n: Int): String =
     n match {
@@ -96,7 +98,7 @@ class NewTag extends NewNode(35.toShort) with TagBase {
   var value: String                   = "": String
   def name(value: String): this.type  = { this.name = value; this }
   def value(value: String): this.type = { this.value = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 53, Iterator(this.value))
   }

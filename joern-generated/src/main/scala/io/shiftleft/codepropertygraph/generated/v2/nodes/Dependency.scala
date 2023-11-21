@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -31,7 +30,7 @@ object Dependency {
   }
 }
 
-class Dependency(graph_4762: odb2.Graph, seq_4762: Int)
+class Dependency(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 12.toShort, seq_4762)
     with DependencyBase
     with StaticType[DependencyEMT] {
@@ -81,7 +80,7 @@ class NewDependency extends NewNode(12.toShort) with DependencyBase {
   def dependencyGroupId(value: String): this.type         = { this.dependencyGroupId = Option(value); this }
   def name(value: String): this.type                      = { this.name = value; this }
   def version(value: String): this.type                   = { this.version = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     if (dependencyGroupId.nonEmpty) interface.insertProperty(this, 16, this.dependencyGroupId)
     interface.insertProperty(this, 39, Iterator(this.name))
     interface.insertProperty(this, 54, Iterator(this.version))

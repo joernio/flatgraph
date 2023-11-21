@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -44,7 +43,7 @@ object ControlStructure {
   }
 }
 
-class ControlStructure(graph_4762: odb2.Graph, seq_4762: Int)
+class ControlStructure(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 11.toShort, seq_4762)
     with ControlStructureBase
     with Expression
@@ -1348,7 +1347,7 @@ class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase 
   def lineNumber(value: Option[Int]): this.type      = { this.lineNumber = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
   def parserTypeName(value: String): this.type       = { this.parserTypeName = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 1, Iterator(this.argumentIndex))
     if (argumentName.nonEmpty) interface.insertProperty(this, 2, this.argumentName)
     interface.insertProperty(this, 10, Iterator(this.code))

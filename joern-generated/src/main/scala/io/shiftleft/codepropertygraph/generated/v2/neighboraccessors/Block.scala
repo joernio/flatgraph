@@ -11,7 +11,7 @@ final class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
     try { node._astIn.iterator.collectAll[nodes.Block].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent BLOCK is mandatory, but not defined for this BLOCK node with seq=" + node.seq,
           e
         )
@@ -270,7 +270,7 @@ final class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
     try { node._astIn.iterator.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this BLOCK node with seq=" + node.seq,
           e
         )

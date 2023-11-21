@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -36,7 +35,7 @@ object TypeParameter {
   }
 }
 
-class TypeParameter(graph_4762: odb2.Graph, seq_4762: Int)
+class TypeParameter(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 41.toShort, seq_4762)
     with TypeParameterBase
     with AstNode
@@ -1327,7 +1326,7 @@ class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
   def lineNumber(value: Option[Int]): this.type   = { this.lineNumber = value; this }
   def name(value: String): this.type              = { this.name = value; this }
   def order(value: Int): this.type                = { this.order = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)

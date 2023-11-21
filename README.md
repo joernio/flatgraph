@@ -1,4 +1,5 @@
-# overflowdbv2
+# flatgraph
+Successor of [overflowdb](https://github.com/ShiftLeftSecurity/overflowdb), and formerlly known as overflowdbv2...
 
 ## Core Features
 - [x] Access nodes and neighbors
@@ -115,9 +116,9 @@ synchronization of some kind on every access (typically via atomics).
 # Benchmarks
 Prerequisite: a test graph in the old overflowdb format in `./cpg.bin`. 
 To start the benchmark, execute the `./runBenchmarks.sh` script. 
-It compiles and stages this build and converts the given `cpg.bin` from overflowdbv1 into a `./cpg.fg` in the overflowdbv2/flatgraph format using the `odbConvert` tool. 
+It compiles and stages this build and converts the given `cpg.bin` from overflowdbv1 into a `./cpg.fg` in the flatgraph format using the `odbConvert` tool. 
 
-Then outputs of the script are placed in `./benchmarks/target/jmh-output.txt` and `./benchmarks/target/jmh-results.csv` and  for iteration over the graph. And for graph loading and memory consumption in `./odb1Results.txt` and `./odb2Results.txt`. 
+Then outputs of the script are placed in `./benchmarks/target/jmh-output.txt` and `./benchmarks/target/jmh-results.csv` and  for iteration over the graph. And for graph loading and memory consumption in `./odb1Results.txt` and `./fgResults.txt`. 
 
 For this you need an example graph that you can conveniently generate with joern and take from the workspace 
 (don't forget to save). Since this uses joern domain classes, it is incompatible with ocular/codescience graphs. It is also
@@ -134,7 +135,7 @@ The jmh `perfnorm` profiler relies on linux `perf`, so make sure to have that in
 from the openjdk tree or download a binary somewhere.
 
 As of now, all profilers are disabled by default. Enable them by uncommenting the relevant lines in 
-`benchmarks/src/main/scala/io/joern/odb2/benchmark/JmhBenchmarks.scala`. Main reason for that the output somewhat too verbose 
+`benchmarks/src/main/scala/flatgraph/benchmark/JmhBenchmarks.scala`. Main reason for that the output somewhat too verbose 
 for one-glance comparisons. But when trying to understand what goes right or wrong, the output of especially perfnorm
 is super important!
 
@@ -173,55 +174,55 @@ We benchmark three operations:
   ```
 We benchmark with either the default iterator order, or with the nodes shuffled into random order (the `shuffle` parameter).
 The three kinds of graph we test are `JoernLegacy`, which uses the generic Tinkerpop-like graph API, `JoernGenerated` which uses
-the API belonging to the generated domain classes, and `Odb2Generated` which runs on the generated domain classes for odb2.
-For the `orderSum` benchmark in odb2, previous benchmarks (cf git history and PR discussion on 
+the API belonging to the generated domain classes, and `FlatgraphGenerated` which runs on the generated domain classes for flatgraph.
+For the `orderSum` benchmark in flatgraph, previous benchmarks (cf git history and PR discussion on 
 https://github.com/ShiftLeftSecurity/overflowdbv2/pull/17) have demonstrated that it is very worthwile to avoid 
 dynamic dispatch on property access. The three variants benchmarked here show three possible styles of access, and demonstrate
 that we achieved the goal of getting roughly the same performance as the devirtualized variant.
 
 Historic results are collected in [benchmarks/results-history](benchmarks/results-history).
-Basic results as of 29/09/2023 without profiler output:
+Basic results as of 20/11/2023 without profiler output:
 Note: we use the JMH mode `AverageTime`, i.e. a lower `Score` is better
 ```
-Benchmark                               (shuffled)  Mode  Cnt     Score     Error  Units
-JoernGenerated.astDFS                         true  avgt    6    35.305 ±   2.569  ns/op
-JoernGenerated.astDFS                        false  avgt    6    36.296 ±   3.610  ns/op
-JoernGenerated.astUp                          true  avgt    6    27.787 ±   1.672  ns/op
-JoernGenerated.astUp                         false  avgt    6    18.187 ±   0.849  ns/op
-JoernGenerated.callOrderExplicit              true  avgt    6     2.943 ±   0.363  ns/op
-JoernGenerated.callOrderExplicit             false  avgt    6     3.322 ±   0.728  ns/op
-JoernGenerated.callOrderTrav                  true  avgt    6     5.928 ±   0.645  ns/op
-JoernGenerated.callOrderTrav                 false  avgt    6     6.012 ±   0.209  ns/op
-JoernGenerated.indexedMethodFullName          true  avgt    6   102.902 ±   6.841  ns/op
-JoernGenerated.indexedMethodFullName         false  avgt    6    24.025 ±   0.323  ns/op
-JoernGenerated.orderSum                       true  avgt    6    25.257 ±   0.795  ns/op
-JoernGenerated.orderSum                      false  avgt    6    16.302 ±   1.183  ns/op
-JoernGenerated.unindexedMethodFullName        true  avgt    6  3609.254 ± 242.047  ns/op
-JoernGenerated.unindexedMethodFullName       false  avgt    6  3482.052 ± 179.215  ns/op
-JoernLegacy.astDFS                            true  avgt    6    44.364 ±   3.632  ns/op
-JoernLegacy.astDFS                           false  avgt    6    48.770 ±   5.442  ns/op
-JoernLegacy.astUp                             true  avgt    6    34.391 ±   1.315  ns/op
-JoernLegacy.astUp                            false  avgt    6    26.195 ±   3.760  ns/op
-JoernLegacy.orderSum                          true  avgt    6    20.371 ±   1.034  ns/op
-JoernLegacy.orderSum                         false  avgt    6    12.313 ±   2.239  ns/op
-Odb2Generated.astDFS                          true  avgt    6    19.078 ±   1.519  ns/op
-Odb2Generated.astDFS                         false  avgt    6    18.103 ±   1.393  ns/op
-Odb2Generated.astUp                           true  avgt    6    12.300 ±   0.757  ns/op
-Odb2Generated.astUp                          false  avgt    6     8.887 ±   0.403  ns/op
-Odb2Generated.callOrderExplicit               true  avgt    6     6.933 ±   1.419  ns/op
-Odb2Generated.callOrderExplicit              false  avgt    6     6.378 ±   1.407  ns/op
-Odb2Generated.callOrderTrav                   true  avgt    6    10.380 ±   0.074  ns/op
-Odb2Generated.callOrderTrav                  false  avgt    6     9.127 ±   0.237  ns/op
-Odb2Generated.indexedMethodFullName           true  avgt    6    16.775 ±   1.503  ns/op
-Odb2Generated.indexedMethodFullName          false  avgt    6    18.679 ±   0.736  ns/op
-Odb2Generated.orderSumChecked                 true  avgt    6    10.435 ±   0.397  ns/op
-Odb2Generated.orderSumChecked                false  avgt    6     7.063 ±   0.225  ns/op
-Odb2Generated.orderSumExplicit                true  avgt    6     9.293 ±   0.560  ns/op
-Odb2Generated.orderSumExplicit               false  avgt    6     6.134 ±   0.126  ns/op
-Odb2Generated.orderSumUnchecked               true  avgt    6     9.775 ±   1.330  ns/op
-Odb2Generated.orderSumUnchecked              false  avgt    6     6.053 ±   0.482  ns/op
-Odb2Generated.unindexedMethodFullName         true  avgt    6  3727.163 ± 156.514  ns/op
-Odb2Generated.unindexedMethodFullName        false  avgt    6  3764.023 ± 380.495  ns/op
+Benchmark                                   (shuffled)  Mode  Cnt     Score     Error  Units
+FlatgraphGenerated.astDFS                         true  avgt    6    23.788 ±   2.304  ns/op
+FlatgraphGenerated.astDFS                        false  avgt    6    23.226 ±   2.537  ns/op
+FlatgraphGenerated.astUp                          true  avgt    6    15.283 ±   0.775  ns/op
+FlatgraphGenerated.astUp                         false  avgt    6    13.270 ±   2.469  ns/op
+FlatgraphGenerated.callOrderExplicit              true  avgt    6     6.598 ±   1.373  ns/op
+FlatgraphGenerated.callOrderExplicit             false  avgt    6     6.204 ±   1.571  ns/op
+FlatgraphGenerated.callOrderTrav                  true  avgt    6     9.224 ±   0.447  ns/op
+FlatgraphGenerated.callOrderTrav                 false  avgt    6     9.014 ±   0.521  ns/op
+FlatgraphGenerated.indexedMethodFullName          true  avgt    6    16.214 ±   1.588  ns/op
+FlatgraphGenerated.indexedMethodFullName         false  avgt    6    18.485 ±   0.930  ns/op
+FlatgraphGenerated.orderSumChecked                true  avgt    6     9.956 ±   0.257  ns/op
+FlatgraphGenerated.orderSumChecked               false  avgt    6     6.747 ±   0.210  ns/op
+FlatgraphGenerated.orderSumExplicit               true  avgt    6     8.655 ±   0.389  ns/op
+FlatgraphGenerated.orderSumExplicit              false  avgt    6     6.033 ±   0.140  ns/op
+FlatgraphGenerated.orderSumUnchecked              true  avgt    6     8.957 ±   1.097  ns/op
+FlatgraphGenerated.orderSumUnchecked             false  avgt    6     5.772 ±   0.418  ns/op
+FlatgraphGenerated.unindexedMethodFullName        true  avgt    6  3509.614 ± 130.809  ns/op
+FlatgraphGenerated.unindexedMethodFullName       false  avgt    6  3499.558 ± 118.846  ns/op
+JoernGenerated.astDFS                             true  avgt    6    33.611 ±   2.489  ns/op
+JoernGenerated.astDFS                            false  avgt    6    33.424 ±   2.446  ns/op
+JoernGenerated.astUp                              true  avgt    6    26.639 ±   2.119  ns/op
+JoernGenerated.astUp                             false  avgt    6    17.488 ±   0.773  ns/op
+JoernGenerated.callOrderExplicit                  true  avgt    6     2.931 ±   0.638  ns/op
+JoernGenerated.callOrderExplicit                 false  avgt    6     3.097 ±   0.254  ns/op
+JoernGenerated.callOrderTrav                      true  avgt    6     5.652 ±   0.453  ns/op
+JoernGenerated.callOrderTrav                     false  avgt    6     5.900 ±   0.426  ns/op
+JoernGenerated.indexedMethodFullName              true  avgt    6    95.705 ±  15.767  ns/op
+JoernGenerated.indexedMethodFullName             false  avgt    6    25.565 ±   1.220  ns/op
+JoernGenerated.orderSum                           true  avgt    6    24.494 ±   0.497  ns/op
+JoernGenerated.orderSum                          false  avgt    6    15.831 ±   1.353  ns/op
+JoernGenerated.unindexedMethodFullName            true  avgt    6  3431.910 ± 362.269  ns/op
+JoernGenerated.unindexedMethodFullName           false  avgt    6  3379.487 ± 181.844  ns/op
+JoernLegacy.astDFS                                true  avgt    6    40.861 ±   3.241  ns/op
+JoernLegacy.astDFS                               false  avgt    6    44.164 ±   5.959  ns/op
+JoernLegacy.astUp                                 true  avgt    6    34.245 ±   1.268  ns/op
+JoernLegacy.astUp                                false  avgt    6    27.011 ±   1.946  ns/op
+JoernLegacy.orderSum                              true  avgt    6    19.391 ±   1.191  ns/op
+JoernLegacy.orderSum                             false  avgt    6    10.988 ±   0.340  ns/op
 ```
 Lengthy results with some profiler info are:
 <details>
@@ -1535,7 +1536,7 @@ We can convert odbv1 files to the current serialization format via
 That allows us to benchmark loading time and memory consumption:
 
 <details>
-  <summary>click to see details of odb2 benchmarks without generated schema</summary>
+  <summary>click to see details of flatgraph benchmarks without generated schema</summary>
 
 ```
 VM is version 19.0.2+7 with max heap 20480 mb.
@@ -1802,7 +1803,7 @@ and track its changes over time.
 
 # FAQ
 
-## What JDK does OverflowDBv2 support?
+## What JDK does flatgraph support?
 The build targets JDK8, so that's the minimum version. The build itself requires JDK11+. 
 However in any case it is highly encouraged to use a modern JVM, such as JDK20. 
 
@@ -1810,7 +1811,7 @@ However in any case it is highly encouraged to use a modern JVM, such as JDK20.
 EMT is a naming convention that stands for "erased marker trait". 
 The domain classes generator generates one for each property in the schema and users can define additional marker traits. 
 
-[CompileTests.scala][benchmarks/src/test/scala/io/joern/odb2/benchmark/CompileTests.scala] demonstrates how users can add these marker traits ad-hoc - in this case to add a `IsStaticEMT` marker to a `Call` node, to indicate that the given `Call` is static. Note that the original schema does not have that attribute, so this is to demonstrate the extensibility and type safety of the domain classes.
+[CompileTests.scala][benchmarks/src/test/scala/flatgraph/benchmark/CompileTests.scala] demonstrates how users can add these marker traits ad-hoc - in this case to add a `IsStaticEMT` marker to a `Call` node, to indicate that the given `Call` is static. Note that the original schema does not have that attribute, so this is to demonstrate the extensibility and type safety of the domain classes.
 
 The marker traits help to improve type safety, e.g. to permit specific implicits/extensions on them (see CompileTests
 linked above). They exist only at compile time. Hence, it's safe to cast a given node instance to this marker type, since it's erased at runtime.

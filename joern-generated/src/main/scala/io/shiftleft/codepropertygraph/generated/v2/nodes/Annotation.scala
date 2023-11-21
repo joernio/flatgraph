@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -44,7 +43,7 @@ object Annotation {
   }
 }
 
-class Annotation(graph_4762: odb2.Graph, seq_4762: Int)
+class Annotation(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0.toShort, seq_4762)
     with AnnotationBase
     with Expression
@@ -1348,7 +1347,7 @@ class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
   def lineNumber(value: Option[Int]): this.type      = { this.lineNumber = value; this }
   def name(value: String): this.type                 = { this.name = value; this }
   def order(value: Int): this.type                   = { this.order = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 1, Iterator(this.argumentIndex))
     if (argumentName.nonEmpty) interface.insertProperty(this, 2, this.argumentName)
     interface.insertProperty(this, 10, Iterator(this.code))

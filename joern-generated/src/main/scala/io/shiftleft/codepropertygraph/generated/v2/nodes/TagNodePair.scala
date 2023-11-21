@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -24,12 +23,12 @@ object TagNodePair {
   object PropertyDefaults {}
 }
 
-class TagNodePair(graph_4762: odb2.Graph, seq_4762: Int)
+class TagNodePair(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 36.toShort, seq_4762)
     with TagNodePairBase
     with StaticType[TagNodePairEMT] {
-  def node: StoredNode = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 57, seq, null: StoredNode)
-  def tag: Tag         = odb2.Accessors.getNodePropertySingle(graph, nodeKind, 58, seq, null: Tag)
+  def node: StoredNode = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind, 57, seq, null: StoredNode)
+  def tag: Tag         = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind, 58, seq, null: Tag)
 
   override def productElementName(n: Int): String =
     n match {
@@ -71,7 +70,7 @@ class NewTagNodePair extends NewNode(36.toShort) with TagNodePairBase {
   var tag: TagBase                         = null
   def node(value: AbstractNode): this.type = { this.node = value; this }
   def tag(value: TagBase): this.type       = { this.tag = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 57, Iterator(this.node))
     interface.insertProperty(this, 58, Iterator(this.tag))
   }

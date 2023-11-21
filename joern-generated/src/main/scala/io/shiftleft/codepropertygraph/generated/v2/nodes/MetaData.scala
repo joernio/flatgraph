@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -36,7 +35,7 @@ object MetaData {
   }
 }
 
-class MetaData(graph_4762: odb2.Graph, seq_4762: Int)
+class MetaData(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 25.toShort, seq_4762)
     with MetaDataBase
     with StaticType[MetaDataEMT] {
@@ -94,7 +93,7 @@ class NewMetaData extends NewNode(25.toShort) with MetaDataBase {
   def overlays(value: IterableOnce[String]): this.type = { this.overlays = value.iterator.to(ArraySeq); this }
   def root(value: String): this.type                   = { this.root = value; this }
   def version(value: String): this.type                = { this.version = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     if (hash.nonEmpty) interface.insertProperty(this, 23, this.hash)
     interface.insertProperty(this, 33, Iterator(this.language))
     if (overlays.nonEmpty) interface.insertProperty(this, 44, this.overlays)

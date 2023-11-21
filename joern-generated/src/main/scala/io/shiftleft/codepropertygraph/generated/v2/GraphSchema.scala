@@ -1,9 +1,8 @@
 package io.shiftleft.codepropertygraph.generated.v2
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.nodes
 import io.shiftleft.codepropertygraph.generated.v2.edges
 
-object GraphSchema extends odb2.Schema {
+object GraphSchema extends flatgraph.Schema {
   val nodeLabels = Array(
     "ANNOTATION",
     "ANNOTATION_LITERAL",
@@ -104,7 +103,7 @@ object GraphSchema extends odb2.Schema {
     size => null,
     size => null
   )
-  val nodeFactories: Array[(odb2.Graph, Int) => nodes.StoredNode] = Array(
+  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array(
     (g, seq) => new nodes.Annotation(g, seq),
     (g, seq) => new nodes.AnnotationLiteral(g, seq),
     (g, seq) => new nodes.AnnotationParameter(g, seq),
@@ -150,7 +149,7 @@ object GraphSchema extends odb2.Schema {
     (g, seq) => new nodes.TypeRef(g, seq),
     (g, seq) => new nodes.Unknown(g, seq)
   )
-  val edgeFactories: Array[(odb2.GNode, odb2.GNode, Int, Any) => odb2.Edge] = Array(
+  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array(
     (s, d, subseq, p) => new edges.AliasOf(s, d, subseq, p),
     (s, d, subseq, p) => new edges.Argument(s, d, subseq, p),
     (s, d, subseq, p) => new edges.Ast(s, d, subseq, p),
@@ -232,10 +231,10 @@ object GraphSchema extends odb2.Schema {
     size => new Array[String](size),
     size => new Array[String](size),
     size => new Array[String](size),
-    size => new Array[odb2.GNode](size),
-    size => new Array[odb2.GNode](size),
-    size => new Array[odb2.GNode](size),
-    size => new Array[odb2.GNode](size)
+    size => new Array[flatgraph.GNode](size),
+    size => new Array[flatgraph.GNode](size),
+    size => new Array[flatgraph.GNode](size),
+    size => new Array[flatgraph.GNode](size)
   )
   val normalNodePropertyNames = Array(
     "ALIAS_TYPE_FULL_NAME",
@@ -312,12 +311,12 @@ object GraphSchema extends odb2.Schema {
     else if (propertyKind == 58 && nodeKind == 36) "tag"           /*on node TAG_NODE_PAIR*/
     else null
 
-  override def getPropertyKindByName(label: String): Int                                = nodePropertyByLabel.getOrElse(label, -1)
-  override def getNumberOfProperties: Int                                               = 59
-  override def makeNode(graph: odb2.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
-  override def makeEdge(src: odb2.GNode, dst: odb2.GNode, edgeKind: Short, subSeq: Int, property: Any): odb2.Edge =
+  override def getPropertyKindByName(label: String): Int                                     = nodePropertyByLabel.getOrElse(label, -1)
+  override def getNumberOfProperties: Int                                                    = 59
+  override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
+  override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
-  override def allocateEdgeProperty(nodeKind: Int, direction: odb2.Edge.Direction, edgeKind: Int, size: Int): Array[?] =
+  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] =
     edgePropertyAllocators(edgeKind)(size)
   override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
 }

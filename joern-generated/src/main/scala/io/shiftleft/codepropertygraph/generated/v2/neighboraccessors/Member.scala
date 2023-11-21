@@ -31,7 +31,7 @@ final class AccessNeighborsForMember(val node: nodes.Member) extends AnyVal {
     try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent TYPE_DECL is mandatory, but not defined for this MEMBER node with seq=" + node.seq,
           e
         )

@@ -19,7 +19,7 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
     try { node._astIn.iterator.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent METHOD is mandatory, but not defined for this MODIFIER node with seq=" + node.seq,
           e
         )
@@ -32,7 +32,7 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
     try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent TYPE_DECL is mandatory, but not defined for this MODIFIER node with seq=" + node.seq,
           e
         )

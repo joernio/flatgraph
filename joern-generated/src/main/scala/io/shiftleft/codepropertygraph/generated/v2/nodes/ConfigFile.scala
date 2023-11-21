@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -29,7 +28,7 @@ object ConfigFile {
   }
 }
 
-class ConfigFile(graph_4762: odb2.Graph, seq_4762: Int)
+class ConfigFile(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 10.toShort, seq_4762)
     with ConfigFileBase
     with StaticType[ConfigFileEMT] {
@@ -74,7 +73,7 @@ class NewConfigFile extends NewNode(10.toShort) with ConfigFileBase {
   var name: String                      = "<empty>": String
   def content(value: String): this.type = { this.content = value; this }
   def name(value: String): this.type    = { this.name = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 14, Iterator(this.content))
     interface.insertProperty(this, 39, Iterator(this.name))
   }

@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -29,7 +28,7 @@ object KeyValuePair {
   }
 }
 
-class KeyValuePair(graph_4762: odb2.Graph, seq_4762: Int)
+class KeyValuePair(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 20.toShort, seq_4762)
     with KeyValuePairBase
     with StaticType[KeyValuePairEMT] {
@@ -74,7 +73,7 @@ class NewKeyValuePair extends NewNode(20.toShort) with KeyValuePairBase {
   var value: String                   = "": String
   def key(value: String): this.type   = { this.key = value; this }
   def value(value: String): this.type = { this.value = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 32, Iterator(this.key))
     interface.insertProperty(this, 53, Iterator(this.value))
   }

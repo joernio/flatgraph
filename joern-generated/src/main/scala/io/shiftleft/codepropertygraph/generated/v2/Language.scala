@@ -5,8 +5,8 @@ trait Language
     extends accessors.ConcreteStoredConversions
     with traversals.ConcreteStoredConversions
     with neighboraccessors.Conversions
-    with io.joern.odb2.traversal.Language
-    with io.joern.odb2.Implicits {
+    with flatgraph.traversal.Language
+    with flatgraph.Implicits {
   implicit def cpgToGeneratedNodeStarters(cpg: Cpg): CpgNodeStarters = CpgNodeStarters(cpg)
 }
 

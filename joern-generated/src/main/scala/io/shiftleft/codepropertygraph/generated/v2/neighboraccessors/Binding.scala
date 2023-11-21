@@ -11,7 +11,7 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
     try { node._refOut.iterator.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this BINDING node with seq=" + node.seq,
           e
         )
@@ -24,7 +24,7 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
     try { node._bindsIn.iterator.collectAll[nodes.TypeDecl].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label BINDS to an adjacent TYPE_DECL is mandatory, but not defined for this BINDING node with seq=" + node.seq,
           e
         )

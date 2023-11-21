@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -55,7 +54,7 @@ object MethodParameterOut {
   }
 }
 
-class MethodParameterOut(graph_4762: odb2.Graph, seq_4762: Int)
+class MethodParameterOut(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 28.toShort, seq_4762)
     with MethodParameterOutBase
     with CfgNode
@@ -1363,7 +1362,7 @@ class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutB
   def name(value: String): this.type               = { this.name = value; this }
   def order(value: Int): this.type                 = { this.order = value; this }
   def typeFullName(value: String): this.type       = { this.typeFullName = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 10, Iterator(this.code))
     if (columnNumber.nonEmpty) interface.insertProperty(this, 11, this.columnNumber)
     interface.insertProperty(this, 19, Iterator(this.evaluationStrategy))

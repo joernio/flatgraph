@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -55,7 +54,7 @@ object Identifier {
   }
 }
 
-class Identifier(graph_4762: odb2.Graph, seq_4762: Int)
+class Identifier(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 16.toShort, seq_4762)
     with IdentifierBase
     with Expression
@@ -1367,7 +1366,7 @@ class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
   def order(value: Int): this.type                                    = { this.order = value; this }
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 1, Iterator(this.argumentIndex))
     if (argumentName.nonEmpty) interface.insertProperty(this, 2, this.argumentName)
     interface.insertProperty(this, 10, Iterator(this.code))

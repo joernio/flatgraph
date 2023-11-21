@@ -99,7 +99,7 @@ final class AccessNeighborsForMethodRef(val node: nodes.MethodRef) extends AnyVa
     try { node._astIn.iterator.collectAll[nodes.ControlStructure].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "IN edge with label AST to an adjacent CONTROL_STRUCTURE is mandatory, but not defined for this METHOD_REF node with seq=" + node.seq,
           e
         )
@@ -441,7 +441,7 @@ final class AccessNeighborsForMethodRef(val node: nodes.MethodRef) extends AnyVa
     try { node._refOut.iterator.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
-        throw new io.joern.odb2.SchemaViolationException(
+        throw new flatgraph.SchemaViolationException(
           "OUT edge with label REF to an adjacent METHOD is mandatory, but not defined for this METHOD_REF node with seq=" + node.seq,
           e
         )

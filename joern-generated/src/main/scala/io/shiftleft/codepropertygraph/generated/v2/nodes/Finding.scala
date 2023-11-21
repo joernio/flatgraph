@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -24,12 +23,12 @@ object Finding {
   object PropertyDefaults {}
 }
 
-class Finding(graph_4762: odb2.Graph, seq_4762: Int)
+class Finding(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 15.toShort, seq_4762)
     with FindingBase
     with StaticType[FindingEMT] {
-  def evidence: IndexedSeq[StoredNode]        = odb2.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 55, seq)
-  def keyValuePairs: IndexedSeq[KeyValuePair] = odb2.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 56, seq)
+  def evidence: IndexedSeq[StoredNode]        = flatgraph.Accessors.getNodePropertyMulti[StoredNode](graph, nodeKind, 55, seq)
+  def keyValuePairs: IndexedSeq[KeyValuePair] = flatgraph.Accessors.getNodePropertyMulti[KeyValuePair](graph, nodeKind, 56, seq)
 
   override def productElementName(n: Int): String =
     n match {
@@ -71,7 +70,7 @@ class NewFinding extends NewNode(15.toShort) with FindingBase {
   var keyValuePairs: IndexedSeq[KeyValuePairBase]                     = ArraySeq.empty
   def evidence(value: IterableOnce[AbstractNode]): this.type          = { this.evidence = value.iterator.to(ArraySeq); this }
   def keyValuePairs(value: IterableOnce[KeyValuePairBase]): this.type = { this.keyValuePairs = value.iterator.to(ArraySeq); this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     if (evidence.nonEmpty) interface.insertProperty(this, 55, this.evidence)
     if (keyValuePairs.nonEmpty) interface.insertProperty(this, 56, this.keyValuePairs)
   }

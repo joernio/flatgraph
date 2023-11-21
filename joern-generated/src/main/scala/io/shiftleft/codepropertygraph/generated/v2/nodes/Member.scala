@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -58,7 +57,7 @@ object Member {
   }
 }
 
-class Member(graph_4762: odb2.Graph, seq_4762: Int)
+class Member(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 24.toShort, seq_4762)
     with MemberBase
     with AstNode
@@ -1370,7 +1369,7 @@ class NewMember extends NewNode(24.toShort) with MemberBase {
   def order(value: Int): this.type                                    = { this.order = value; this }
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 3, Iterator(this.astParentFullName))
     interface.insertProperty(this, 4, Iterator(this.astParentType))
     interface.insertProperty(this, 10, Iterator(this.code))

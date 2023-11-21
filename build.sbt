@@ -1,4 +1,4 @@
-name := "overflowdbv2"
+name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := "3.3.1"
 publish / skip := true
@@ -16,7 +16,7 @@ lazy val root = (project in file(".")).aggregate(core, domainClassesGenerator, o
 lazy val core = project
   .in(file("core"))
   .settings(
-    name := "odb2-core",
+    name := "flatgraph-core",
     libraryDependencies ++= Seq(
       "com.lihaoyi"     %% "upickle"  % "3.1.3",
       "com.github.luben" % "zstd-jni" % "1.5.0-4"

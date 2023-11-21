@@ -1,5 +1,4 @@
 package io.shiftleft.codepropertygraph.generated.v2.accessors
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.nodes
 import scala.collection.immutable.IndexedSeq
 
@@ -8,169 +7,172 @@ object Lang extends ConcreteStoredConversions
 object Accessors {
   /* accessors for concrete stored nodes start */
   final class Access_Property_ALIAS_TYPE_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def aliasTypeFullName: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 0, node.seq)
+    def aliasTypeFullName: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 0, node.seq)
   }
   final class Access_Property_ARGUMENT_INDEX(val node: nodes.StoredNode) extends AnyVal {
-    def argumentIndex: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 1, node.seq(), -1: Int)
+    def argumentIndex: Int = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 1, node.seq(), -1: Int)
   }
   final class Access_Property_ARGUMENT_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def argumentName: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 2, node.seq)
+    def argumentName: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 2, node.seq)
   }
   final class Access_Property_AST_PARENT_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def astParentFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 3, node.seq(), "<empty>": String)
+    def astParentFullName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 3, node.seq(), "<empty>": String)
   }
   final class Access_Property_AST_PARENT_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def astParentType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 4, node.seq(), "<empty>": String)
+    def astParentType: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 4, node.seq(), "<empty>": String)
   }
   final class Access_Property_CANONICAL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def canonicalName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 5, node.seq(), "<empty>": String)
+    def canonicalName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 5, node.seq(), "<empty>": String)
   }
   final class Access_Property_CLASS_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def className: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 6, node.seq(), "<empty>": String)
+    def className: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 6, node.seq(), "<empty>": String)
   }
   final class Access_Property_CLASS_SHORT_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def classShortName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 7, node.seq(), "<empty>": String)
+    def classShortName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 7, node.seq(), "<empty>": String)
   }
   final class Access_Property_CLOSURE_BINDING_ID(val node: nodes.StoredNode) extends AnyVal {
-    def closureBindingId: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 8, node.seq)
+    def closureBindingId: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 8, node.seq)
   }
   final class Access_Property_CLOSURE_ORIGINAL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def closureOriginalName: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 9, node.seq)
+    def closureOriginalName: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 9, node.seq)
   }
   final class Access_Property_CODE(val node: nodes.StoredNode) extends AnyVal {
-    def code: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 10, node.seq(), "<empty>": String)
+    def code: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 10, node.seq(), "<empty>": String)
   }
   final class Access_Property_COLUMN_NUMBER(val node: nodes.StoredNode) extends AnyVal {
-    def columnNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 11, node.seq)
+    def columnNumber: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 11, node.seq)
   }
   final class Access_Property_COLUMN_NUMBER_END(val node: nodes.StoredNode) extends AnyVal {
-    def columnNumberEnd: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 12, node.seq)
+    def columnNumberEnd: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 12, node.seq)
   }
   final class Access_Property_CONTAINED_REF(val node: nodes.StoredNode) extends AnyVal {
-    def containedRef: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 13, node.seq(), "<empty>": String)
+    def containedRef: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 13, node.seq(), "<empty>": String)
   }
   final class Access_Property_CONTENT(val node: nodes.StoredNode) extends AnyVal {
-    def content: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 14, node.seq(), "<empty>": String)
+    def content: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 14, node.seq(), "<empty>": String)
   }
   final class Access_Property_CONTROL_STRUCTURE_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def controlStructureType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 15, node.seq(), "<empty>": String)
+    def controlStructureType: String =
+      flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 15, node.seq(), "<empty>": String)
   }
   final class Access_Property_DEPENDENCY_GROUP_ID(val node: nodes.StoredNode) extends AnyVal {
-    def dependencyGroupId: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 16, node.seq)
+    def dependencyGroupId: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 16, node.seq)
   }
   final class Access_Property_DISPATCH_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def dispatchType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 17, node.seq(), "<empty>": String)
+    def dispatchType: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 17, node.seq(), "<empty>": String)
   }
   final class Access_Property_DYNAMIC_TYPE_HINT_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def dynamicTypeHintFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 18, node.seq)
+    def dynamicTypeHintFullName: IndexedSeq[String] =
+      flatgraph.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 18, node.seq)
   }
   final class Access_Property_EVALUATION_STRATEGY(val node: nodes.StoredNode) extends AnyVal {
-    def evaluationStrategy: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 19, node.seq(), "<empty>": String)
+    def evaluationStrategy: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 19, node.seq(), "<empty>": String)
   }
   final class Access_Property_EXPLICIT_AS(val node: nodes.StoredNode) extends AnyVal {
-    def explicitAs: Option[Boolean] = odb2.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 20, node.seq)
+    def explicitAs: Option[Boolean] = flatgraph.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 20, node.seq)
   }
   final class Access_Property_FILENAME(val node: nodes.StoredNode) extends AnyVal {
-    def filename: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 21, node.seq(), "<empty>": String)
+    def filename: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 21, node.seq(), "<empty>": String)
   }
   final class Access_Property_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def fullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 22, node.seq(), "<empty>": String)
+    def fullName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 22, node.seq(), "<empty>": String)
   }
   final class Access_Property_HASH(val node: nodes.StoredNode) extends AnyVal {
-    def hash: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 23, node.seq)
+    def hash: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 23, node.seq)
   }
   final class Access_Property_IMPORTED_AS(val node: nodes.StoredNode) extends AnyVal {
-    def importedAs: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 24, node.seq)
+    def importedAs: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 24, node.seq)
   }
   final class Access_Property_IMPORTED_ENTITY(val node: nodes.StoredNode) extends AnyVal {
-    def importedEntity: Option[String] = odb2.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 25, node.seq)
+    def importedEntity: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 25, node.seq)
   }
   final class Access_Property_INDEX(val node: nodes.StoredNode) extends AnyVal {
-    def index: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 26, node.seq(), -1: Int)
+    def index: Int = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 26, node.seq(), -1: Int)
   }
   final class Access_Property_INHERITS_FROM_TYPE_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def inheritsFromTypeFullName: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 27, node.seq)
+    def inheritsFromTypeFullName: IndexedSeq[String] =
+      flatgraph.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 27, node.seq)
   }
   final class Access_Property_IS_EXPLICIT(val node: nodes.StoredNode) extends AnyVal {
-    def isExplicit: Option[Boolean] = odb2.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 28, node.seq)
+    def isExplicit: Option[Boolean] = flatgraph.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 28, node.seq)
   }
   final class Access_Property_IS_EXTERNAL(val node: nodes.StoredNode) extends AnyVal {
-    def isExternal: Boolean = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 29, node.seq(), false: Boolean)
+    def isExternal: Boolean = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 29, node.seq(), false: Boolean)
   }
   final class Access_Property_IS_VARIADIC(val node: nodes.StoredNode) extends AnyVal {
-    def isVariadic: Boolean = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 30, node.seq(), false: Boolean)
+    def isVariadic: Boolean = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 30, node.seq(), false: Boolean)
   }
   final class Access_Property_IS_WILDCARD(val node: nodes.StoredNode) extends AnyVal {
-    def isWildcard: Option[Boolean] = odb2.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 31, node.seq)
+    def isWildcard: Option[Boolean] = flatgraph.Accessors.getNodePropertyOption[Boolean](node.graph, node.nodeKind, 31, node.seq)
   }
   final class Access_Property_KEY(val node: nodes.StoredNode) extends AnyVal {
-    def key: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 32, node.seq(), "<empty>": String)
+    def key: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 32, node.seq(), "<empty>": String)
   }
   final class Access_Property_LANGUAGE(val node: nodes.StoredNode) extends AnyVal {
-    def language: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 33, node.seq(), "<empty>": String)
+    def language: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 33, node.seq(), "<empty>": String)
   }
   final class Access_Property_LINE_NUMBER(val node: nodes.StoredNode) extends AnyVal {
-    def lineNumber: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 34, node.seq)
+    def lineNumber: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 34, node.seq)
   }
   final class Access_Property_LINE_NUMBER_END(val node: nodes.StoredNode) extends AnyVal {
-    def lineNumberEnd: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 35, node.seq)
+    def lineNumberEnd: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 35, node.seq)
   }
   final class Access_Property_METHOD_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def methodFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 36, node.seq(), "<empty>": String)
+    def methodFullName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 36, node.seq(), "<empty>": String)
   }
   final class Access_Property_METHOD_SHORT_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def methodShortName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 37, node.seq(), "<empty>": String)
+    def methodShortName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 37, node.seq(), "<empty>": String)
   }
   final class Access_Property_MODIFIER_TYPE(val node: nodes.StoredNode) extends AnyVal {
-    def modifierType: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 38, node.seq(), "<empty>": String)
+    def modifierType: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 38, node.seq(), "<empty>": String)
   }
   final class Access_Property_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def name: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 39, node.seq(), "<empty>": String)
+    def name: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 39, node.seq(), "<empty>": String)
   }
   final class Access_Property_NODE_LABEL(val node: nodes.StoredNode) extends AnyVal {
-    def nodeLabel: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 40, node.seq(), "<empty>": String)
+    def nodeLabel: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 40, node.seq(), "<empty>": String)
   }
   final class Access_Property_OFFSET(val node: nodes.StoredNode) extends AnyVal {
-    def offset: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 41, node.seq)
+    def offset: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 41, node.seq)
   }
   final class Access_Property_OFFSET_END(val node: nodes.StoredNode) extends AnyVal {
-    def offsetEnd: Option[Int] = odb2.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 42, node.seq)
+    def offsetEnd: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 42, node.seq)
   }
   final class Access_Property_ORDER(val node: nodes.StoredNode) extends AnyVal {
-    def order: Int = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 43, node.seq(), -1: Int)
+    def order: Int = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 43, node.seq(), -1: Int)
   }
   final class Access_Property_OVERLAYS(val node: nodes.StoredNode) extends AnyVal {
-    def overlays: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 44, node.seq)
+    def overlays: IndexedSeq[String] = flatgraph.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 44, node.seq)
   }
   final class Access_Property_PACKAGE_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def packageName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 45, node.seq(), "<empty>": String)
+    def packageName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 45, node.seq(), "<empty>": String)
   }
   final class Access_Property_PARSER_TYPE_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def parserTypeName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 46, node.seq(), "<empty>": String)
+    def parserTypeName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 46, node.seq(), "<empty>": String)
   }
   final class Access_Property_POSSIBLE_TYPES(val node: nodes.StoredNode) extends AnyVal {
-    def possibleTypes: IndexedSeq[String] = odb2.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 47, node.seq)
+    def possibleTypes: IndexedSeq[String] = flatgraph.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 47, node.seq)
   }
   final class Access_Property_ROOT(val node: nodes.StoredNode) extends AnyVal {
-    def root: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 48, node.seq(), "<empty>": String)
+    def root: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 48, node.seq(), "<empty>": String)
   }
   final class Access_Property_SIGNATURE(val node: nodes.StoredNode) extends AnyVal {
-    def signature: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 49, node.seq(), "": String)
+    def signature: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 49, node.seq(), "": String)
   }
   final class Access_Property_SYMBOL(val node: nodes.StoredNode) extends AnyVal {
-    def symbol: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 50, node.seq(), "<empty>": String)
+    def symbol: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 50, node.seq(), "<empty>": String)
   }
   final class Access_Property_TYPE_DECL_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def typeDeclFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 51, node.seq(), "<empty>": String)
+    def typeDeclFullName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 51, node.seq(), "<empty>": String)
   }
   final class Access_Property_TYPE_FULL_NAME(val node: nodes.StoredNode) extends AnyVal {
-    def typeFullName: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 52, node.seq(), "<empty>": String)
+    def typeFullName: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 52, node.seq(), "<empty>": String)
   }
   final class Access_Property_VALUE(val node: nodes.StoredNode) extends AnyVal {
-    def value: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 53, node.seq(), "": String)
+    def value: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 53, node.seq(), "": String)
   }
   final class Access_Property_VERSION(val node: nodes.StoredNode) extends AnyVal {
-    def version: String = odb2.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 54, node.seq(), "<empty>": String)
+    def version: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 54, node.seq(), "<empty>": String)
   }
   /* accessors for concrete stored nodes end */
 

@@ -1,6 +1,5 @@
 package io.shiftleft.codepropertygraph.generated.v2.nodes
 
-import io.joern.odb2
 import io.shiftleft.codepropertygraph.generated.v2.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
@@ -66,7 +65,7 @@ object Call {
   }
 }
 
-class Call(graph_4762: odb2.Graph, seq_4762: Int)
+class Call(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 7.toShort, seq_4762)
     with CallBase
     with CallRepr
@@ -1391,7 +1390,7 @@ class NewCall extends NewNode(7.toShort) with CallBase {
   def possibleTypes(value: IterableOnce[String]): this.type           = { this.possibleTypes = value.iterator.to(ArraySeq); this }
   def signature(value: String): this.type                             = { this.signature = value; this }
   def typeFullName(value: String): this.type                          = { this.typeFullName = value; this }
-  override def flattenProperties(interface: odb2.BatchedUpdateInterface): Unit = {
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 1, Iterator(this.argumentIndex))
     if (argumentName.nonEmpty) interface.insertProperty(this, 2, this.argumentName)
     interface.insertProperty(this, 10, Iterator(this.code))
