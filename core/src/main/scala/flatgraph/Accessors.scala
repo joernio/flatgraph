@@ -38,6 +38,12 @@ object Accessors {
     )
   }
 
+  def getEdgesOut(node: GNode): IndexedSeq[Edge] =
+    Range(0, node.graph.schema.getNumberOfEdgeKinds).flatMap(getEdgesOut(node, _))
+
+  def getEdgesIn(node: GNode): IndexedSeq[Edge] =
+    Range(0, node.graph.schema.getNumberOfEdgeKinds).flatMap(getEdgesIn(node, _))
+
   class EdgeView(neighbors: Array[GNode], base: GNode, properties: Any, inout: Byte, edgeKind: Short, start: Int, end: Int)
       extends IndexedSeq[Edge] {
     override def apply(i: Int): Edge = {

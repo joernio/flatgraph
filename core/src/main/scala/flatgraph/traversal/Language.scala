@@ -3,12 +3,12 @@ package flatgraph.traversal
 import flatgraph.{Accessors, Edge, GNode}
 
 import scala.collection.immutable.ArraySeq
-import scala.collection.mutable
+import scala.collection.{Iterator, mutable}
 import scala.reflect.ClassTag
 
 object Language extends Language
 
-trait Language extends GNodeTraversal {
+trait Language {
 
   // given [A]: Conversion[IterableOnce[A], Iterator[A]] =
   // iterable => iterable.iterator
@@ -373,10 +373,12 @@ trait Language extends GNodeTraversal {
   extension (node: GNode) {
 
     /** follow _all_ OUT edges to their adjacent nodes */
-    def out: Iterator[GNode] = Accessors.getNeighborsOut(node)
+    def out: Iterator[GNode] =
+      Accessors.getNeighborsOut(node)
 
     /** follow _all_ IN edges to their adjacent nodes */
-    def in: Iterator[GNode] = Accessors.getNeighborsIn(node)
+    def in: Iterator[GNode] =
+      Accessors.getNeighborsIn(node)
 
     /** follow the given OUT edge(s) to their adjacent nodes */
     def out(edgeLabel: String): Iterator[GNode] =
@@ -385,6 +387,14 @@ trait Language extends GNodeTraversal {
     /** follow the given IN edge(s) to their adjacent nodes */
     def in(edgeLabel: String): Iterator[GNode] =
       Accessors.getNeighborsIn(node, edgeKind = edgeKind(edgeLabel))
+
+    /** lookup all OUT edge(s) */
+    def outE: Iterator[Edge] =
+      Accessors.getEdgesOut(node)
+
+    /** lookup all IN edge(s) */
+    def inE: Iterator[Edge] =
+      Accessors.getEdgesIn(node)
 
     /** lookup the given OUT edge(s) */
     def outE(edgeLabel: String): Iterator[Edge] =
@@ -403,29 +413,89 @@ trait Language extends GNodeTraversal {
       node.graph.schema.getEdgeKindByLabel(edgeLabel)
   }
 
-  extension (iterator: Iterator[GNode]) {
+  extension [A <: GNode](traversal: Iterator[A]) {
+
+    /** `id` combines nodeKind and seq into a unique id Mostly for backwards compatibility with overflowdb v1 where nodes have a `id: Long`
+      */
+    def id: Iterator[Long] =
+      traversal.map(_.id())
+
+    /** traverse to the node label */
+    // TODO bring back doc/help etc
+    // @Doc(info = "Traverse to the node label")
+    def label: Iterator[String] =
+      traversal.map(_.label())
+
+    /** filter by the node label */
+    def label(value: String): Iterator[A] =
+      traversal.filter(_.label() == value)
+
+    /** filter by the node labels */
+    def label(values: String*): Iterator[A] = {
+      val wanted = values.toSet
+      traversal.filter(node => wanted.contains(node.label()))
+    }
+
+    /** alias for {{{label}}} */
+    def hasLabel(value: String): Iterator[A] =
+      label(value)
+
+    /** alias for {{{label}}} */
+    def hasLabel(values: String*): Iterator[A] =
+      label(values: _*)
+
+    /** filter by the node label (inverse) */
+    def labelNot(value: String): Iterator[A] =
+      traversal.filterNot(_.label() == value)
+
+    /** filter by the node labels (inverse) */
+    def labelNot(value1: String, valueN: String*): Iterator[A] = {
+      val unwanted = (valueN :+ value1).toSet
+      traversal.filterNot(node => unwanted.contains(node.label()))
+    }
+
+    /** filter by the node kind */
+    def kind(value: Int): Iterator[A] =
+      traversal.filter(_.nodeKind == value)
+
+    /** alias for {{{kind}}} */
+    def hasKind(value: Int): Iterator[A] =
+      kind(value)
 
     /** follow _all_ OUT edges to their adjacent nodes */
-    def out: Iterator[GNode] = iterator.flatMap(Accessors.getNeighborsOut)
+    def out: Iterator[GNode] =
+      traversal.flatMap(_.out)
 
     /** follow _all_ IN edges to their adjacent nodes */
-    def in: Iterator[GNode] = iterator.flatMap(Accessors.getNeighborsIn)
+    def in: Iterator[GNode] =
+      traversal.flatMap(_.in)
 
     /** follow the given OUT edge(s) to their adjacent nodes */
-    def out(edgeLabel: String): Iterator[GNode] = iterator.flatMap(_.out(edgeLabel))
+    def out(edgeLabel: String): Iterator[GNode] =
+      traversal.flatMap(_.out(edgeLabel))
 
     /** follow the given IN edge(s) to their adjacent nodes */
-    def in(edgeLabel: String): Iterator[GNode] = iterator.flatMap(_.in(edgeLabel))
+    def in(edgeLabel: String): Iterator[GNode] =
+      traversal.flatMap(_.in(edgeLabel))
+
+    /** lookup all OUT edge(s) */
+    def outE: Iterator[Edge] =
+      traversal.flatMap(_.outE)
+
+    /** lookup all IN edge(s) */
+    def inE: Iterator[Edge] =
+      traversal.flatMap(_.inE)
 
     /** lookup the given OUT edge(s) */
-    def outE(edgeLabel: String): Iterator[Edge] = iterator.flatMap(_.outE(edgeLabel))
+    def outE(edgeLabel: String): Iterator[Edge] =
+      traversal.flatMap(_.outE(edgeLabel))
 
     /** lookup the given IN edge(s) */
-    def inE(edgeLabel: String): Iterator[Edge] = iterator.flatMap(_.inE(edgeLabel))
+    def inE(edgeLabel: String): Iterator[Edge] =
+      traversal.flatMap(_.inE(edgeLabel))
 
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
-      iterator.flatMap(_.propertyOption[T](name))
-
+      traversal.flatMap(_.propertyOption[T](name))
   }
 
 }
