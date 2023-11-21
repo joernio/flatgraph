@@ -1,6 +1,9 @@
 package flatgraph
 
-class Edge(val src: GNode, val dst: GNode, val edgeKind: Short, val subSeq: Int, val property: Any)
+class Edge(val src: GNode, val dst: GNode, val edgeKind: Short, val subSeq: Int, val property: Any) {
+  def label: String =
+    src.graph.schema.getEdgeLabel(src.nodeKind, edgeKind)
+}
 
 object Edge {
 
