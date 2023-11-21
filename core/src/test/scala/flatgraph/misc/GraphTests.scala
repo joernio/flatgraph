@@ -8,6 +8,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.nio.file.Files
+
 class GraphTests extends AnyWordSpec with Matchers {
 
   // General tip: If a test fails, add println(DebugDump.debugDump(g)) in front, in order to get untruncated "actual" for copy-paste
@@ -773,16 +775,22 @@ object TestSchema {
     )
   }
 
-  def testSerialization(g: Graph): Unit = {
-    val orig = DebugDump.debugDump(g)
-    val fn   = "/tmp/foo.fg"
-    Serialization.writeGraph(g, fn)
-    val deserialized = Deserialization.readGraph(fn, g.schema)
-    val newdump      = DebugDump.debugDump(deserialized)
-    //    if (newdump != orig) {
-    //      1 + 1 // for easier breakpoints
-    //    }
-    orig shouldBe newdump
+  def testSerialization(graph: Graph): Unit = {
+    val orig        = DebugDump.debugDump(graph)
+    val storagePath = Files.createTempFile(s"flatgraph-${getClass.getName}", "fg")
+    try {
+      Serialization.writeGraph(graph, storagePath)
+      val deserialized = Deserialization.readGraph(storagePath, graph.schema)
+      val newdump      = DebugDump.debugDump(deserialized)
+      //    if (newdump != orig) {
+      //      1 + 1 // for easier breakpoints
+      //    }
+      orig shouldBe newdump
+    } catch {
+      case t: Throwable =>
+        Files.deleteIfExists(storagePath)
+        throw t
+    }
   }
 
 }

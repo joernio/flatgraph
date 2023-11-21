@@ -7,51 +7,13 @@ import flatgraph.storage.Manifest.{GraphItem, OutlineStorage}
 
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 import java.nio.{ByteBuffer, ByteOrder}
 import scala.collection.mutable
 
 object Deserialization {
-
-  def freeSchemaFromManifest(manifest: Manifest.GraphItem): FreeSchema = {
-    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
-    val nodePropNames = mutable.LinkedHashMap[String, AnyRef]()
-    for (prop <- manifest.properties) {
-      nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
-    }
-    val propertyLabels         = nodePropNames.keysIterator.toArray
-    val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
-
-    val edgePropNames = mutable.LinkedHashMap[String, AnyRef]()
-    for (edge <- manifest.edges) {
-      edgePropNames.get(edge.edgeLabel) match {
-        case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
-        case _                 =>
-      }
-    }
-    val edgeLabels             = edgePropNames.keysIterator.toArray
-    val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
-
-    new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
-  }
-
-  def protoFromOutline(outline: OutlineStorage): AnyRef = {
-    if (outline == null) return null
-    outline.typ match {
-      case StorageType.Bool   => new Array[Boolean](0)
-      case StorageType.Byte   => new Array[Byte](0)
-      case StorageType.Short  => new Array[Short](0)
-      case StorageType.Int    => new Array[Int](0)
-      case StorageType.Long   => new Array[Long](0)
-      case StorageType.Float  => new Array[Float](0)
-      case StorageType.Double => new Array[Double](0)
-      case StorageType.Ref    => new Array[GNode](0)
-      case StorageType.String => new Array[String](0)
-    }
-  }
-
-  def readGraph(filename: String, schema: Schema): Graph = {
-    val fileChannel =
-      new java.io.RandomAccessFile(filename, "r").getChannel
+  def readGraph(storagePath: Path, schema: Schema): Graph = {
+    val fileChannel = new java.io.RandomAccessFile(storagePath.toFile, "r").getChannel
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
       val manifest  = readManifest(fileChannel)
@@ -131,7 +93,44 @@ object Deserialization {
     } finally fileChannel.close()
   }
 
-  def readManifest(channel: FileChannel): GraphItem = {
+  private def freeSchemaFromManifest(manifest: Manifest.GraphItem): FreeSchema = {
+    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
+    val nodePropNames = mutable.LinkedHashMap[String, AnyRef]()
+    for (prop <- manifest.properties) {
+      nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)
+    }
+    val propertyLabels         = nodePropNames.keysIterator.toArray
+    val nodePropertyPrototypes = nodePropNames.valuesIterator.toArray
+
+    val edgePropNames = mutable.LinkedHashMap[String, AnyRef]()
+    for (edge <- manifest.edges) {
+      edgePropNames.get(edge.edgeLabel) match {
+        case None | Some(null) => edgePropNames(edge.edgeLabel) = protoFromOutline(edge.property)
+        case _                 =>
+      }
+    }
+    val edgeLabels             = edgePropNames.keysIterator.toArray
+    val edgePropertyPrototypes = edgePropNames.valuesIterator.toArray
+
+    new FreeSchema(nodeLabels, propertyLabels, nodePropertyPrototypes, edgeLabels, edgePropertyPrototypes)
+  }
+
+  private def protoFromOutline(outline: OutlineStorage): AnyRef = {
+    if (outline == null) return null
+    outline.typ match {
+      case StorageType.Bool   => new Array[Boolean](0)
+      case StorageType.Byte   => new Array[Byte](0)
+      case StorageType.Short  => new Array[Short](0)
+      case StorageType.Int    => new Array[Int](0)
+      case StorageType.Long   => new Array[Long](0)
+      case StorageType.Float  => new Array[Float](0)
+      case StorageType.Double => new Array[Double](0)
+      case StorageType.Ref    => new Array[GNode](0)
+      case StorageType.String => new Array[String](0)
+    }
+  }
+
+  private def readManifest(channel: FileChannel): GraphItem = {
     val header    = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
     while (readBytes < 16) {
@@ -152,7 +151,7 @@ object Deserialization {
     GraphItem.read(jsonObj)
   }
 
-  def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
+  private def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
     val stringPoolLength = Zstd
       .decompress(
         fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
@@ -180,7 +179,7 @@ object Deserialization {
     pool
   }
 
-  def deltaDecode(a: Array[Int]): Array[Int] = {
+  private def deltaDecode(a: Array[Int]): Array[Int] = {
     if (a == null) return null
     var idx    = 0
     var cumsum = 0
@@ -193,7 +192,7 @@ object Deserialization {
     a
   }
 
-  def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringPool: Array[String]): Array[_] = {
+  private def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringPool: Array[String]): Array[_] = {
     if (ptr == null) return null
     val dec = Zstd
       .decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)

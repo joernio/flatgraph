@@ -6,6 +6,7 @@ import io.shiftleft.codepropertygraph.cpgloading.{CpgLoader, CpgLoaderConfig}
 import io.shiftleft.codepropertygraph.generated.Cpg
 import overflowdb.Config
 
+import java.nio.file.{Path, Paths}
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 import scala.util.{Success, Try}
 
@@ -112,8 +113,8 @@ object LoadingAndMemoryBenchmarks {
     count
   }
 
-  def loadFlatgraph(filename: String, schema: flatgraph.Schema): flatgraph.Graph = {
-    flatgraph.storage.Deserialization.readGraph(filename, schema)
+  def loadFlatgraph(storagePath: Path, schema: flatgraph.Schema): flatgraph.Graph = {
+    flatgraph.storage.Deserialization.readGraph(storagePath, schema)
   }
 
   def benchJoern(): Unit = {
@@ -156,7 +157,7 @@ object LoadingAndMemoryBenchmarks {
     val box = new MeasurementBox
     box.histo = new Histogramer().createHistogram()
     val cpgBox = measure {
-      loadFlatgraph("./cpg.fg", null)
+      loadFlatgraph(Paths.get("./cpg.fg"), null)
     }
     val touch1 = measure {
       touchGraph(cpgBox.result.asInstanceOf[flatgraph.Graph])
