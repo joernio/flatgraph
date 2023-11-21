@@ -7,6 +7,7 @@ import org.openjdk.jmh.runner.Runner
 import org.openjdk.jmh.runner.options.{OptionsBuilder, TimeValue}
 import overflowdb.traversal.jIteratortoTraversal
 
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 import scala.util.Random
 
@@ -253,9 +254,10 @@ class FlatgraphGenerated {
   private var cpg: v2.Cpg                           = _
   private var nodeStart: Array[v2.nodes.StoredNode] = new Array[v2.nodes.StoredNode](0)
   private var fullnames: Array[String]              = _
+
   @Setup
   def setupFun(params: BenchmarkParams): Unit = {
-    cpg = new Cpg(flatgraph.storage.Deserialization.readGraph("./cpg.fg", v2.GraphSchema))
+    cpg = new Cpg(flatgraph.storage.Deserialization.readGraph(Paths.get("./cpg.fg"), v2.GraphSchema))
     params.getBenchmark match {
       case name if name.endsWith("astDFS") =>
         nodeStart = cpg.graph.nodesArray.iterator.flatMap { nodesOfKind =>
