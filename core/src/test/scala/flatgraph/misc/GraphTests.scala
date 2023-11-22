@@ -9,7 +9,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
+import scala.util.Try
 
 class GraphTests extends AnyWordSpec with Matchers {
 
