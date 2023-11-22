@@ -12,13 +12,17 @@ import java.nio.{ByteBuffer, ByteOrder}
 import scala.collection.mutable
 
 object Deserialization {
-  def readGraph(storagePath: Path, schema: Schema): Graph = {
+  def readGraph(storagePath: Path, schemaMaybe: Option[Schema], deserializeOnClose: Boolean = true): Graph = {
     val fileChannel = new java.io.RandomAccessFile(storagePath.toFile, "r").getChannel
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
-      val manifest  = readManifest(fileChannel)
-      val pool      = readPool(manifest, fileChannel)
-      val g         = new Graph(if (schema != null) schema else freeSchemaFromManifest(manifest))
+      val manifest = readManifest(fileChannel)
+      val pool     = readPool(manifest, fileChannel)
+      val schema   = schemaMaybe.getOrElse(freeSchemaFromManifest(manifest))
+      val storagePathMaybe =
+        if (deserializeOnClose) Option(storagePath)
+        else None
+      val g         = new Graph(schema, storagePathMaybe)
       val nodekinds = mutable.HashMap[String, Short]()
       for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
       val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
