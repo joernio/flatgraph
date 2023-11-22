@@ -745,11 +745,24 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |object $domainShortName {
          |  def empty: $domainShortName = new $domainShortName(new flatgraph.Graph(GraphSchema))
+         |
+         |  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory.
+         |   * `Graph.close` will serialise graph to that given file (and override whatever was there before), unless you
+         |   * specify `deserializeOnClose = false`. */
+         |  def withStorage(storagePath: java.nio.file.Path, deserializeOnClose: Boolean = true): $domainShortName = {
+         |    val graph = flatgraph.Graph.withStorage(GraphSchema, storagePath, deserializeOnClose)
+         |    new $domainShortName(graph)
+         |  }
+         |
          |  def newDiffGraphBuilder: DiffGraphBuilder = new DiffGraphBuilder(GraphSchema)
          |}
-         |class $domainShortName(private val _graph: flatgraph.Graph = new flatgraph.Graph(GraphSchema)) {
+         |
+         |class $domainShortName(private val _graph: flatgraph.Graph = new flatgraph.Graph(GraphSchema)) extends AutoCloseable {
          |  def graph: flatgraph.Graph = _graph
          |  assert(graph.schema == GraphSchema)
+         |
+         |  override def close(): Unit =
+         |    _graph.close()
          |}
          |
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) {

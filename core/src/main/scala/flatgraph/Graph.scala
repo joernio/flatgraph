@@ -15,8 +15,8 @@ object Graph {
   val NumberOfDirections = 2
   val PropertySlotSize   = 2
 
-  /** Configure graph with storage. If file exists: will initialise graph from there, i.e. deserialize the given file into a graph. On
-    * Graph.close: will serialise graph to that file (and override whatever was there before).
+  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
+    * serialise graph to that given file (and override whatever was there before), unless you specify `deserializeOnClose = false`.
     */
   def withStorage(schema: Schema, storagePath: Path, deserializeOnClose: Boolean = true): Graph = {
     if (Files.exists(storagePath) && Files.size(storagePath) > 0) {
@@ -97,6 +97,7 @@ class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends A
   }
 
   def isClosed: Boolean = closed
+
   override def close(): Unit = {
     this.closed = true
 
