@@ -1308,7 +1308,7 @@ object NewJumpLabel {
     )
   )
 }
-class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase {
+class NewJumpLabel extends NewNode(18.toShort) with JumpLabelBase with AstNodeNew {
   override type StoredNodeType = JumpLabel
   override def label: String = "JUMP_LABEL"
 

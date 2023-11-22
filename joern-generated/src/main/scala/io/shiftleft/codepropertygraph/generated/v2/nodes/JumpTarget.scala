@@ -1313,7 +1313,7 @@ object NewJumpTarget {
     )
   )
 }
-class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase {
+class NewJumpTarget extends NewNode(19.toShort) with JumpTargetBase with AstNodeNew with CfgNodeNew {
   override type StoredNodeType = JumpTarget
   override def label: String = "JUMP_TARGET"
 

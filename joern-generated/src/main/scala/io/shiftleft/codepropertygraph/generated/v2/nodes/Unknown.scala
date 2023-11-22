@@ -1338,7 +1338,7 @@ object NewUnknown {
     )
   )
 }
-class NewUnknown extends NewNode(43.toShort) with UnknownBase {
+class NewUnknown extends NewNode(43.toShort) with UnknownBase with ExpressionNew {
   override type StoredNodeType = Unknown
   override def label: String = "UNKNOWN"
 

@@ -398,13 +398,22 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
 
+      val newNodeMixins =
+        Seq
+          .newBuilder[String]
+          .addOne(s"${nodeType.className}Base")
+          .addAll(nodeType.extendz.map(nodeType => s"${nodeType.className}New"))
+          // TODO this should really be `New${nodeType.className}`, but it was like this in ODB, so not sure if now is the best time to change it...
+          .result()
+          .mkString("with ", " with ", "")
+
       val newNode =
         s"""object New${nodeType.className} {
            |  def apply(): New${nodeType.className} = new New${nodeType.className}
            |  private val outNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(outEdges)})
            |  private val inNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(inEdges)})
            |}
-           |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) with ${nodeType.className}Base {
+           |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) $newNodeMixins {
            |  override type StoredNodeType = ${nodeType.className}
            |  override def label: String = "${nodeType.name}"
            |

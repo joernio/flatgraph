@@ -1312,7 +1312,7 @@ object NewAnnotationLiteral {
     )
   )
 }
-class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase {
+class NewAnnotationLiteral extends NewNode(1.toShort) with AnnotationLiteralBase with ExpressionNew {
   override type StoredNodeType = AnnotationLiteral
   override def label: String = "ANNOTATION_LITERAL"
 

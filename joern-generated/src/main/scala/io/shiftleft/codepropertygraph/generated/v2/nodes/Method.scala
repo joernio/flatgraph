@@ -1368,7 +1368,7 @@ object NewMethod {
     )
   )
 }
-class NewMethod extends NewNode(26.toShort) with MethodBase {
+class NewMethod extends NewNode(26.toShort) with MethodBase with AstNodeNew with CfgNodeNew with DeclarationNew {
   override type StoredNodeType = Method
   override def label: String = "METHOD"
 

@@ -1336,7 +1336,7 @@ object NewMember {
     )
   )
 }
-class NewMember extends NewNode(24.toShort) with MemberBase {
+class NewMember extends NewNode(24.toShort) with MemberBase with AstNodeNew with DeclarationNew {
   override type StoredNodeType = Member
   override def label: String = "MEMBER"
 

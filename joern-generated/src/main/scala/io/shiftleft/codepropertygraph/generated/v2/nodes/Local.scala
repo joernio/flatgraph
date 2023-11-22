@@ -1329,7 +1329,7 @@ object NewLocal {
     )
   )
 }
-class NewLocal extends NewNode(22.toShort) with LocalBase {
+class NewLocal extends NewNode(22.toShort) with LocalBase with AstNodeNew with DeclarationNew {
   override type StoredNodeType = Local
   override def label: String = "LOCAL"
 

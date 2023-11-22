@@ -1321,7 +1321,7 @@ object NewLiteral {
     )
   )
 }
-class NewLiteral extends NewNode(21.toShort) with LiteralBase {
+class NewLiteral extends NewNode(21.toShort) with LiteralBase with ExpressionNew {
   override type StoredNodeType = Literal
   override def label: String = "LITERAL"
 

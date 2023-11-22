@@ -1331,7 +1331,7 @@ object NewMethodParameterOut {
     )
   )
 }
-class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutBase {
+class NewMethodParameterOut extends NewNode(28.toShort) with MethodParameterOutBase with AstNodeNew with CfgNodeNew with DeclarationNew {
   override type StoredNodeType = MethodParameterOut
   override def label: String = "METHOD_PARAMETER_OUT"
 

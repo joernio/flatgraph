@@ -1321,7 +1321,7 @@ object NewBlock {
     )
   )
 }
-class NewBlock extends NewNode(6.toShort) with BlockBase {
+class NewBlock extends NewNode(6.toShort) with BlockBase with ExpressionNew {
   override type StoredNodeType = Block
   override def label: String = "BLOCK"
 

@@ -1347,7 +1347,7 @@ object NewTypeDecl {
     )
   )
 }
-class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase {
+class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew {
   override type StoredNodeType = TypeDecl
   override def label: String = "TYPE_DECL"
 

@@ -1303,7 +1303,7 @@ object NewTypeParameter {
     )
   )
 }
-class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase {
+class NewTypeParameter extends NewNode(41.toShort) with TypeParameterBase with AstNodeNew {
   override type StoredNodeType = TypeParameter
   override def label: String = "TYPE_PARAMETER"
 

@@ -1312,7 +1312,7 @@ object NewFieldIdentifier {
     )
   )
 }
-class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase {
+class NewFieldIdentifier extends NewNode(13.toShort) with FieldIdentifierBase with ExpressionNew {
   override type StoredNodeType = FieldIdentifier
   override def label: String = "FIELD_IDENTIFIER"
 

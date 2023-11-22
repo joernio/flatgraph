@@ -1312,7 +1312,7 @@ object NewTemplateDom {
     )
   )
 }
-class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase {
+class NewTemplateDom extends NewNode(37.toShort) with TemplateDomBase with ExpressionNew {
   override type StoredNodeType = TemplateDom
   override def label: String = "TEMPLATE_DOM"
 
