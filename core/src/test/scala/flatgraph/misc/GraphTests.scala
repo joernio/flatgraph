@@ -9,8 +9,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.nio.file.{Files, Path}
-import scala.util.Try
+import java.nio.file.Files
 
 class GraphTests extends AnyWordSpec with Matchers {
 
@@ -721,6 +720,11 @@ class GraphTests extends AnyWordSpec with Matchers {
     val v2     = new GenericDNode(0)
     val v3     = new GenericDNode(0)
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(v0).addNode(v1).addNode(v2).addNode(v3))
+
+    // if we're asking for a valid property and no node has one defined yet, index lookups should already be possible,
+    // i.e. we want empty results rather than throwing an exception
+    Accessors.getWithInverseIndex(g, 0, 0, "p0").toList shouldBe Nil
+
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
@@ -735,7 +739,6 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_1       : 0: [p1]
         |   V0_3       : 0: [p1, p3]
         |""".stripMargin
-    g.inverseIndices.get(0) shouldBe null
     Accessors.getWithInverseIndex(g, 0, 0, "p0").toList shouldBe List(v0.storedRef.get)
     Accessors.getWithInverseIndex(g, 0, 0, "p1").toList shouldBe List(v1.storedRef.get, v3.storedRef.get)
     Accessors.getWithInverseIndex(g, 0, 0, "p2").toList shouldBe Nil
@@ -803,6 +806,11 @@ class GraphTests extends AnyWordSpec with Matchers {
       val g2Dump = DebugDump(graph2)
       g2Dump shouldBe g1Dump
     }
+  }
+
+  "trying to lookup unknown properties should be handled gracefully" in {
+    val g = Graph(schema)
+    g.nodesWithProperty("undefined", "foo").l shouldBe Nil
   }
 }
 

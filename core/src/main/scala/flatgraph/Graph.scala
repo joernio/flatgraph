@@ -67,9 +67,13 @@ class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends A
     * requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.
     */
   def nodesWithProperty(propertyName: String, value: String): Iterator[GNode] = {
-    val propertyKind = schema.getPropertyKindByName(propertyName)
-    Range(0, schema.getNumberOfNodeKinds).iterator.flatMap { nodeKind =>
-      Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
+    schema.getPropertyKindByName(propertyName) match {
+      case Schema.UndefinedKind =>
+        Iterator.empty
+      case propertyKind =>
+        Range(0, schema.getNumberOfNodeKinds).iterator.flatMap { nodeKind =>
+          Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
+        }
     }
   }
 

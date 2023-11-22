@@ -36,10 +36,12 @@ class DiffGraphBuilder(schema: Schema) {
   }
 
   def setNodeProperty(node: GNode, propertyName: String, property: Any): this.type = {
-    val propertyKind = schema.getPropertyKindByName(propertyName)
-    if (propertyKind == Schema.UndefinedKind)
-      throw new SchemaViolationException(s"unknown property: `$propertyName`")
-    this._setNodeProperty(node, propertyKind, property)
+    schema.getPropertyKindByName(propertyName) match {
+      case Schema.UndefinedKind =>
+        throw new SchemaViolationException(s"unknown property: `$propertyName`")
+      case propertyKind =>
+        this._setNodeProperty(node, propertyKind, property)
+    }
   }
 
   def _setNodeProperty(node: GNode, propertyKind: Int, property: Any): this.type = {
