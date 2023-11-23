@@ -18,7 +18,7 @@ object DebugDump {
     }
   }
 
-  def apply(g: Graph): String = {
+  def debugDump(g: Graph): String = {
     val sb = new java.lang.StringBuilder(0)
     val numstr =
       g.nodesArray
