@@ -114,7 +114,7 @@ object LoadingAndMemoryBenchmarks {
   }
 
   def loadFlatgraph(storagePath: Path, schema: flatgraph.Schema): flatgraph.Graph = {
-    flatgraph.storage.Deserialization.readGraph(storagePath, schema)
+    flatgraph.storage.Deserialization.readGraph(storagePath, Option(schema))
   }
 
   def benchJoern(): Unit = {

@@ -257,7 +257,7 @@ class FlatgraphGenerated {
 
   @Setup
   def setupFun(params: BenchmarkParams): Unit = {
-    cpg = new Cpg(flatgraph.storage.Deserialization.readGraph(Paths.get("./cpg.fg"), v2.GraphSchema))
+    cpg = new Cpg(flatgraph.storage.Deserialization.readGraph(Paths.get("./cpg.fg"), Option(v2.GraphSchema)))
     params.getBenchmark match {
       case name if name.endsWith("astDFS") =>
         nodeStart = cpg.graph.nodesArray.iterator.flatMap { nodesOfKind =>

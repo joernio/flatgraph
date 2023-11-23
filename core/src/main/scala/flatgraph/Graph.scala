@@ -3,13 +3,40 @@ package flatgraph
 import flatgraph.Edge.Direction
 import flatgraph.Graph.*
 import flatgraph.misc.{InitNodeIterator, InitNodeIteratorArray, InitNodeIteratorArrayFiltered}
+import flatgraph.storage.{Deserialization, Serialization}
 
+import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicReferenceArray
 
-class Graph(val schema: Schema) {
+object Graph {
+  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
+  // neighbors, and one array containing edge properties
+  val NeighborsSlotSize  = 3
+  val NumberOfDirections = 2
+  val PropertySlotSize   = 2
+
+  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
+    * serialise graph to that given file (and override whatever was there before), unless you specify `deserializeOnClose = false`.
+    */
+  def withStorage(schema: Schema, storagePath: Path, deserializeOnClose: Boolean = true): Graph = {
+    if (Files.exists(storagePath) && Files.size(storagePath) > 0) {
+      println(s"initialising from existing storage ($storagePath)")
+      Deserialization.readGraph(storagePath, Option(schema), deserializeOnClose)
+    } else {
+      val storagePathMaybe =
+        if (deserializeOnClose) Option(storagePath)
+        else None
+      Graph(schema, storagePathMaybe)
+    }
+  }
+
+}
+
+class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends AutoCloseable {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
   private val propertiesCount = schema.getNumberOfProperties
+  private var closed          = false
 
   private[flatgraph] val nodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
   private[flatgraph] val properties                  = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
@@ -68,12 +95,16 @@ class Graph(val schema: Schema) {
 
     neighbors
   }
-}
 
-object Graph {
-  // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
-  // neighbors, and one array containing edge properties
-  val NeighborsSlotSize  = 3
-  val NumberOfDirections = 2
-  val PropertySlotSize   = 2
+  def isClosed: Boolean = closed
+
+  override def close(): Unit = {
+    this.closed = true
+
+    storagePathMaybe.foreach { storagePath =>
+      println(s"closing graph: writing to storage at `$storagePath`")
+      Serialization.writeGraph(this, storagePath)
+    }
+  }
+
 }

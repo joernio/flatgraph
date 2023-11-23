@@ -1,6 +1,7 @@
 package flatgraph
 
-import flatgraph.TestSchema.testSerialization
+import flatgraph.TestHelpers.withTemporaryFile
+import flatgraph.TestSchema.{getClass, testSerialization}
 import flatgraph.misc.DebugDump
 import flatgraph.storage.{Deserialization, Serialization}
 import flatgraph.traversal.Language.*
@@ -8,7 +9,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
+import scala.util.Try
 
 class GraphTests extends AnyWordSpec with Matchers {
 
@@ -17,7 +19,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val schema = TestSchema.make(1, 1)
     val g      = new Graph(schema)
     // empty graph
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 0), total 0
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
         |""".stripMargin
@@ -34,7 +36,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       ._addEdge(V0_3, V0_0, 0)
       ._addEdge(V0_1, V0_0, 0)
     DiffGraphApplier.applyDiff(g, diff0)
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 5 [dense], 5 [dense]),
         |   V0_0   [0] -> V0_1
@@ -52,7 +54,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val diff2 = new DiffGraphBuilder(schema)
     diff2._addEdge(V0_2, V0_3, 0)
     DiffGraphApplier.applyDiff(g, diff2)
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
         |   V0_0   [0] -> V0_1
@@ -68,7 +70,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     // add a node. Don't resize edges array
     val V0_4 = new GenericDNode(0)
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_4))
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 5), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
         |   V0_0   [0] -> V0_1
@@ -84,7 +86,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // add an interior edge. Check that adding edges in the middle and at the end of undersized edge arrays works
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._addEdge(V0_1, V0_4, 0))
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 5), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
         |   V0_0   [0] -> V0_1
@@ -106,7 +108,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val schema = TestSchema.make(3, 2)
     val g      = new Graph(schema)
     // empty graph
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 0), (1: 0), (2: 0), total 0
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
         |Node kind 1. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
@@ -128,7 +130,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._addEdge(V0_1, V1_0, 0)
         ._addEdge(V1_1, V0_0, 1)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), (1: 2), (2: 0), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 1 [dense]), (1, 0 [NA], 1 [dense]),
         |   V0_0   [0] -> V0_0
@@ -237,7 +239,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V0_2   [0] <- V0_0, V0_3
         |   V0_3   [0] -> V0_2, V0_1
         |""".stripMargin
-    DebugDump.debugDump(g) shouldBe badGraphDump
+    DebugDump(g) shouldBe badGraphDump
     signature(g) shouldBe "+-+-"
     val perms = Array(
       List(0, 1, 2, 3),
@@ -277,7 +279,7 @@ class GraphTests extends AnyWordSpec with Matchers {
   "permit an edge deletions" in {
     // empty
     var g = mkGraph()
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
         |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
@@ -302,7 +304,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(1))
     )
-    DebugDump.debugDump(g) shouldBe expectation
+    DebugDump(g) shouldBe expectation
 
     // remove first V0_1<-V0_0, i.e. same edge from the other side
     g = mkGraph()
@@ -311,7 +313,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(0))
     )
-    DebugDump.debugDump(g) shouldBe expectation
+    DebugDump(g) shouldBe expectation
 
     // remove the edge twice
     // remove first V0_1<-V0_0, i.e. same edge from the other side
@@ -322,13 +324,13 @@ class GraphTests extends AnyWordSpec with Matchers {
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(0))
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(1))
     )
-    DebugDump.debugDump(g) shouldBe expectation
+    DebugDump(g) shouldBe expectation
     testSerialization(g)
   }
 
   "permit a different edge deletion" in {
     var g = mkGraph()
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
         |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
@@ -353,7 +355,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(4))
     )
-    DebugDump.debugDump(g) shouldBe expectation
+    DebugDump(g) shouldBe expectation
 
     g = mkGraph()
     DiffGraphApplier.applyDiff(
@@ -361,12 +363,12 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(2))
     )
-    DebugDump.debugDump(g) shouldBe expectation
+    DebugDump(g) shouldBe expectation
   }
 
   "permit multiple edge deletion" in {
     var g = mkGraph()
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
         |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
@@ -392,12 +394,12 @@ class GraphTests extends AnyWordSpec with Matchers {
         .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(4))
         .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(2), 0).toList(1))
     )
-    DebugDump.debugDump(g) shouldBe expectation
+    DebugDump(g) shouldBe expectation
   }
 
   "permit node deletion" in {
     var g = mkGraph()
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
         |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
@@ -412,7 +414,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeNode((g.nodesArray(0)(0)))
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
         |   V0_1   [0] <- V0_3
@@ -426,7 +428,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeNode((g.nodesArray(0)(1)))
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 4 [dense], 4 [dense]),
         |   V0_0   [0] -> V0_2, V0_3, V0_2
@@ -444,7 +446,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         .removeNode((g.nodesArray(0)(2)))
         .removeNode((g.nodesArray(0)(3)))
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
         |   V0_0   [0] -> V0_1, V0_1
@@ -473,7 +475,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._addEdge(V0_1, V0_0, 0, "E")
     )
 
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
         |   V0_0   [0] -> V0_1, (A) V0_1
@@ -492,7 +494,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(0), "X")
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
         |   V0_0   [0] -> (X) V0_1, (A) V0_1
@@ -510,7 +512,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .setEdgeProperty(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(1), DefaultValue)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 6 [dense], 6 [dense]),
         |   V0_0   [0] -> (X) V0_1, V0_1
@@ -528,7 +530,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeEdge(Accessors.getEdgesIn(V0_1.storedRef.get, 0)(0))
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 5 [dense], 5 [dense]),
         |   V0_0   [0] -> V0_1
@@ -547,7 +549,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       new DiffGraphBuilder(schema)
         .removeNode(V0_2.storedRef.get)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
         |   V0_0   [0] -> V0_1
@@ -568,7 +570,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g.neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0).addNode(V0_1)._addEdge(V0_0, V0_1, 0)._addEdge(V0_0, V0_1, 0))
     g.neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
         |   V0_0   [0] -> (-1) V0_1, (-1) V0_1
@@ -577,7 +579,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), 5.toShort))
     g.neighbors(2).getClass.getName shouldBe "[S"
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
         |   V0_0   [0] -> (5) V0_1, (-1) V0_1
@@ -585,7 +587,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         |""".stripMargin
 
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._addEdge(V0_1.storedRef.get, V0_1, 0, 2.toShort))
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
         |   V0_0   [0] -> (5) V0_1, (-1) V0_1
@@ -597,7 +599,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       g,
       new DiffGraphBuilder(schema).setEdgeProperty(Accessors.getEdgesOut(V0_0.storedRef.get, 0)(0), DefaultValue)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 3 [dense], 3 [dense]),
         |   V0_0   [0] -> (-1) V0_1, (-1) V0_1
@@ -617,7 +619,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val V1_0 = new GenericDNode(1)
     val V1_1 = new GenericDNode(1)
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0).addNode(V0_1).addNode(V1_0).addNode(V1_1))
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), (1: 2), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
         |Node kind 1. (eid, nEdgesOut, nEdgesIn):
@@ -628,7 +630,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V0_0.storedRef.get, 1, V0_2 :: V0_0 :: Nil)
         ._setNodeProperty(V1_1.storedRef.get, 0, 0.toShort :: 1.toShort :: Nil)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
         |   V0_0       : 1: [V0_2, V0_0]
@@ -641,7 +643,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V0_2.storedRef.get, 1, V0_2)
         ._setNodeProperty(V1_0.storedRef.get, 0, 0.toShort)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
         |   V0_0       : 1: [V0_2, V0_0]
@@ -658,7 +660,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V1_0.storedRef.get, 0, null)
         ._setNodeProperty(V0_1.storedRef.get, 1, null :: Nil)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
         |   V0_0       : 1: [<deleted V0_2>, V0_0]
@@ -700,7 +702,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val schema = TestSchema.make(2, 0, 2, nodePropertyPrototypes = Array(new Array[GNode](0), new Array[String](0)))
     val g      = new Graph(schema)
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0))
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 0), total 3
       |Node kind 0. (eid, nEdgesOut, nEdgesIn):
       |   V0_0       : 0: [V0_1]
@@ -726,7 +728,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(v1.storedRef.get, 0, "p1")
         ._setNodeProperty(v3.storedRef.get, 0, "p1" :: "p3" :: Nil)
     )
-    DebugDump.debugDump(g) shouldBe
+    DebugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
         |   V0_0       : 0: [p0]
@@ -752,9 +754,55 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(v2.storedRef.get, 0, "p2")
     )
     g.inverseIndices.get(0) shouldBe null
-
     // println(DebugDump.debugDump(g))
+  }
 
+  "write to storage on close and read from storage on open" in {
+    val schema = TestSchema.make(3, 2)
+
+    withTemporaryFile(s"flatgraph-${getClass.getSimpleName}-", "fg") { storagePath =>
+      // TODO pass storagePath to graph - in config object? check what config options odb1 had
+      val graph1 = Graph.withStorage(schema, storagePath)
+
+      val V0_0 = new GenericDNode(0)
+      val V0_1 = new GenericDNode(0)
+      val V1_0 = new GenericDNode(1)
+      val V1_1 = new GenericDNode(1)
+      DiffGraphApplier.applyDiff(
+        graph1,
+        new DiffGraphBuilder(schema)
+          .addNode(V0_0)
+          .addNode(V0_1)
+          .addNode(V1_0)
+          .addNode(V1_1)
+          ._addEdge(V0_0, V0_0, 0)
+          ._addEdge(V0_1, V1_0, 0)
+          ._addEdge(V1_1, V0_0, 1)
+      )
+      val g1Dump = DebugDump(graph1)
+      g1Dump shouldBe
+        """#Node numbers (kindId, nnodes) (0: 2), (1: 2), (2: 0), total 4
+          |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 1 [dense]), (1, 0 [NA], 1 [dense]),
+          |   V0_0   [0] -> V0_0
+          |   V0_0   [0] <- V0_0
+          |   V0_0   [1] <- V1_1
+          |   V0_1   [0] -> V1_0
+          |Node kind 1. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 1 [dense]), (1, 1 [dense], 0 [NA]),
+          |   V1_0   [0] <- V0_1
+          |   V1_1   [1] -> V0_0
+          |Node kind 2. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]), (1, 0 [NA], 0 [NA]),
+          |""".stripMargin
+      graph1.close()
+
+      Files.size(storagePath) should be > 0L
+
+      // further access to the graph should be prohibited
+      intercept[GraphClosedException](DiffGraphApplier.applyDiff(graph1, DiffGraphBuilder(schema)))
+
+      val graph2 = Graph.withStorage(schema, storagePath)
+      val g2Dump = DebugDump(graph2)
+      g2Dump shouldBe g1Dump
+    }
   }
 }
 
@@ -776,20 +824,15 @@ object TestSchema {
   }
 
   def testSerialization(graph: Graph): Unit = {
-    val orig        = DebugDump.debugDump(graph)
-    val storagePath = Files.createTempFile(s"flatgraph-${getClass.getName}", "fg")
-    try {
+    val orig = DebugDump(graph)
+    withTemporaryFile(s"flatgraph-${getClass.getSimpleName}", "fg") { storagePath =>
       Serialization.writeGraph(graph, storagePath)
-      val deserialized = Deserialization.readGraph(storagePath, graph.schema)
-      val newdump      = DebugDump.debugDump(deserialized)
+      val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
+      val newdump      = DebugDump(deserialized)
       //    if (newdump != orig) {
       //      1 + 1 // for easier breakpoints
       //    }
       orig shouldBe newdump
-    } catch {
-      case t: Throwable =>
-        Files.deleteIfExists(storagePath)
-        throw t
     }
   }
 
