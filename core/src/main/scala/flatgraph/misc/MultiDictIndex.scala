@@ -78,11 +78,11 @@ private[flatgraph] class MultiDictIndex[A <: AnyRef](sizeHint: Int) {
           return Iterator.empty
         }
       }
-      val k = keys(position)
-      if (k == null) {
+
+      if (keys.length <= position || keys(position) == null) {
         // found the right slot, but it's empty
         return Iterator.empty
-      } else if (k == key) {
+      } else if (keys(position) == key) {
         // found the right (preexistent) slot for this key: append to existing entries
         values(position) match {
           case multiple: Array[A @unchecked] =>

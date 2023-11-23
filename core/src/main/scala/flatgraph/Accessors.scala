@@ -178,8 +178,8 @@ object Accessors {
         lock.synchronized {
           if (inverseIndices.compareAndSet(pos, null, lock)) {
             // we now own the slot.
-            val numItems     = graph.properties(pos).asInstanceOf[Array[Int]]
-            val items        = graph.properties(pos + 1).asInstanceOf[Array[String]]
+            val numItems     = Option(graph.properties(pos)).getOrElse(Array.empty[Int]).asInstanceOf[Array[Int]]
+            val items        = Option(graph.properties(pos + 1)).getOrElse(Array.empty[String]).asInstanceOf[Array[String]]
             val nodes        = graph.nodesArray(nodeKind)
             val inverseIndex = new MultiDictIndex[GNode](items.length)
             try {

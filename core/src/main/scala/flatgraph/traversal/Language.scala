@@ -1,6 +1,6 @@
 package flatgraph.traversal
 
-import flatgraph.{Accessors, Edge, GNode}
+import flatgraph.{Accessors, Edge, GNode, Schema}
 
 import scala.collection.immutable.ArraySeq
 import scala.collection.{Iterator, mutable}
@@ -405,8 +405,12 @@ trait Language {
       Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
     def propertyOption[@specialized T](name: String)(implicit evidence: ClassTag[T]): Option[T] = {
-      val propertyKind = node.graph.schema.getPropertyKindByName(name)
-      Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKind, node.seq())
+      node.graph.schema.getPropertyKindByName(name) match {
+        case Schema.UndefinedKind =>
+          None
+        case propertyKind =>
+          Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKind, node.seq())
+      }
     }
 
     private def edgeKind(edgeLabel: String): Int =

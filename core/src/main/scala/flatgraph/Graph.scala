@@ -7,6 +7,7 @@ import flatgraph.storage.{Deserialization, Serialization}
 
 import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicReferenceArray
+import org.slf4j.LoggerFactory
 
 object Graph {
   // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
@@ -14,6 +15,8 @@ object Graph {
   val NeighborsSlotSize  = 3
   val NumberOfDirections = 2
   val PropertySlotSize   = 2
+
+  val logger = LoggerFactory.getLogger(classOf[Graph])
 
   /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
     * serialise graph to that given file (and override whatever was there before), unless you specify `deserializeOnClose = false`.
@@ -67,9 +70,13 @@ class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends A
     * requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.
     */
   def nodesWithProperty(propertyName: String, value: String): Iterator[GNode] = {
-    val propertyKind = schema.getPropertyKindByName(propertyName)
-    Range(0, schema.getNumberOfNodeKinds).iterator.flatMap { nodeKind =>
-      Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
+    schema.getPropertyKindByName(propertyName) match {
+      case Schema.UndefinedKind =>
+        Iterator.empty
+      case propertyKind =>
+        Range(0, schema.getNumberOfNodeKinds).iterator.flatMap { nodeKind =>
+          Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
+        }
     }
   }
 
@@ -102,7 +109,7 @@ class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends A
     this.closed = true
 
     storagePathMaybe.foreach { storagePath =>
-      println(s"closing graph: writing to storage at `$storagePath`")
+      logger.info(s"closing graph: writing to storage at `$storagePath`")
       Serialization.writeGraph(this, storagePath)
     }
   }
