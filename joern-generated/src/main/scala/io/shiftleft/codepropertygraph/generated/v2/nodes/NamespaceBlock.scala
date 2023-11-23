@@ -1313,7 +1313,7 @@ object NewNamespaceBlock {
     )
   )
 }
-class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase {
+class NewNamespaceBlock extends NewNode(33.toShort) with NamespaceBlockBase with AstNodeNew {
   override type StoredNodeType = NamespaceBlock
   override def label: String = "NAMESPACE_BLOCK"
 

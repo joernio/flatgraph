@@ -1303,7 +1303,7 @@ object NewModifier {
     )
   )
 }
-class NewModifier extends NewNode(31.toShort) with ModifierBase {
+class NewModifier extends NewNode(31.toShort) with ModifierBase with AstNodeNew {
   override type StoredNodeType = Modifier
   override def label: String = "MODIFIER"
 

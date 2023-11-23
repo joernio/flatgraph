@@ -1303,7 +1303,7 @@ object NewComment {
     )
   )
 }
-class NewComment extends NewNode(9.toShort) with CommentBase {
+class NewComment extends NewNode(9.toShort) with CommentBase with AstNodeNew {
   override type StoredNodeType = Comment
   override def label: String = "COMMENT"
 

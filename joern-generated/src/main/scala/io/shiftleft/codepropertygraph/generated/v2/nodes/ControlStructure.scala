@@ -1317,7 +1317,7 @@ object NewControlStructure {
     )
   )
 }
-class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase {
+class NewControlStructure extends NewNode(11.toShort) with ControlStructureBase with ExpressionNew {
   override type StoredNodeType = ControlStructure
   override def label: String = "CONTROL_STRUCTURE"
 

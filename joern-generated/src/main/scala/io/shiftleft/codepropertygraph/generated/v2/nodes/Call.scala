@@ -1350,7 +1350,7 @@ object NewCall {
     )
   )
 }
-class NewCall extends NewNode(7.toShort) with CallBase {
+class NewCall extends NewNode(7.toShort) with CallBase with CallReprNew with ExpressionNew {
   override type StoredNodeType = Call
   override def label: String = "CALL"
 

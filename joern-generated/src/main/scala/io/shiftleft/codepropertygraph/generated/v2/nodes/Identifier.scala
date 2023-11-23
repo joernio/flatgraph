@@ -1332,7 +1332,7 @@ object NewIdentifier {
     )
   )
 }
-class NewIdentifier extends NewNode(16.toShort) with IdentifierBase {
+class NewIdentifier extends NewNode(16.toShort) with IdentifierBase with ExpressionNew {
   override type StoredNodeType = Identifier
   override def label: String = "IDENTIFIER"
 

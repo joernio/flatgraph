@@ -1298,7 +1298,7 @@ object NewAnnotationParameter {
     )
   )
 }
-class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameterBase {
+class NewAnnotationParameter extends NewNode(2.toShort) with AnnotationParameterBase with AstNodeNew {
   override type StoredNodeType = AnnotationParameter
   override def label: String = "ANNOTATION_PARAMETER"
 

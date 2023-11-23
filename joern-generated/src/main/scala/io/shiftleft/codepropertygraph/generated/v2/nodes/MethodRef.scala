@@ -1332,7 +1332,7 @@ object NewMethodRef {
     )
   )
 }
-class NewMethodRef extends NewNode(29.toShort) with MethodRefBase {
+class NewMethodRef extends NewNode(29.toShort) with MethodRefBase with ExpressionNew {
   override type StoredNodeType = MethodRef
   override def label: String = "METHOD_REF"
 

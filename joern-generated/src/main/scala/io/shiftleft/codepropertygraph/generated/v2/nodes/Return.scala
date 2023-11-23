@@ -1307,7 +1307,7 @@ object NewReturn {
     )
   )
 }
-class NewReturn extends NewNode(34.toShort) with ReturnBase {
+class NewReturn extends NewNode(34.toShort) with ReturnBase with ExpressionNew {
   override type StoredNodeType = Return
   override def label: String = "RETURN"
 

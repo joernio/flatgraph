@@ -1312,7 +1312,7 @@ object NewFile {
     )
   )
 }
-class NewFile extends NewNode(14.toShort) with FileBase {
+class NewFile extends NewNode(14.toShort) with FileBase with AstNodeNew {
   override type StoredNodeType = File
   override def label: String = "FILE"
 

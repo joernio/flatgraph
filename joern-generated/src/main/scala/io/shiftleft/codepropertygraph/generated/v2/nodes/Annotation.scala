@@ -1317,7 +1317,7 @@ object NewAnnotation {
     )
   )
 }
-class NewAnnotation extends NewNode(0.toShort) with AnnotationBase {
+class NewAnnotation extends NewNode(0.toShort) with AnnotationBase with ExpressionNew {
   override type StoredNodeType = Annotation
   override def label: String = "ANNOTATION"
 

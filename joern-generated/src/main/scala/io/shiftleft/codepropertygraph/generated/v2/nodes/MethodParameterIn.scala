@@ -1347,7 +1347,7 @@ object NewMethodParameterIn {
     )
   )
 }
-class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBase {
+class NewMethodParameterIn extends NewNode(27.toShort) with MethodParameterInBase with AstNodeNew with CfgNodeNew with DeclarationNew {
   override type StoredNodeType = MethodParameterIn
   override def label: String = "METHOD_PARAMETER_IN"
 

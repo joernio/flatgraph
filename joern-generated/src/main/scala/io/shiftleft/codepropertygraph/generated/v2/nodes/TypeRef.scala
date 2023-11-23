@@ -1321,7 +1321,7 @@ object NewTypeRef {
     )
   )
 }
-class NewTypeRef extends NewNode(42.toShort) with TypeRefBase {
+class NewTypeRef extends NewNode(42.toShort) with TypeRefBase with ExpressionNew {
   override type StoredNodeType = TypeRef
   override def label: String = "TYPE_REF"
 

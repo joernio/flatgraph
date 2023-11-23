@@ -1323,7 +1323,7 @@ object NewMethodReturn {
     )
   )
 }
-class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase {
+class NewMethodReturn extends NewNode(30.toShort) with MethodReturnBase with CfgNodeNew {
   override type StoredNodeType = MethodReturn
   override def label: String = "METHOD_RETURN"
 

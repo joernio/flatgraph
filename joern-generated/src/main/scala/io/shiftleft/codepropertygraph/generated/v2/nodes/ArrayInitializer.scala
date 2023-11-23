@@ -1307,7 +1307,7 @@ object NewArrayInitializer {
     )
   )
 }
-class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase {
+class NewArrayInitializer extends NewNode(4.toShort) with ArrayInitializerBase with AstNodeNew with ExpressionNew {
   override type StoredNodeType = ArrayInitializer
   override def label: String = "ARRAY_INITIALIZER"
 

@@ -1298,7 +1298,7 @@ object NewTypeArgument {
     )
   )
 }
-class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase {
+class NewTypeArgument extends NewNode(39.toShort) with TypeArgumentBase with AstNodeNew {
   override type StoredNodeType = TypeArgument
   override def label: String = "TYPE_ARGUMENT"
 

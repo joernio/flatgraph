@@ -1325,7 +1325,7 @@ object NewImport {
     )
   )
 }
-class NewImport extends NewNode(17.toShort) with ImportBase {
+class NewImport extends NewNode(17.toShort) with ImportBase with AstNodeNew {
   override type StoredNodeType = Import
   override def label: String = "IMPORT"
 
