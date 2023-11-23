@@ -17,7 +17,6 @@ object Cpg {
 
 class Cpg(private val _graph: flatgraph.Graph = new flatgraph.Graph(GraphSchema)) extends AutoCloseable {
   def graph: flatgraph.Graph = _graph
-  assert(graph.schema == GraphSchema)
 
   override def close(): Unit =
     _graph.close()
