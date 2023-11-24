@@ -848,23 +848,7 @@ class DomainClassesGenerator(schema: Schema) {
         ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
       }
     )
-    writeConstants(
-      "PropertyKinds",
-      schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
-        ConstantContext(
-          property.name,
-          s"""
-             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
-             | * projects have the ability to run with newly generated domain classes
-             | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${property.name} = Integer.valueOf(${kindContexts.propertyKindByProperty(
-              property
-            )}).intValue();""".stripMargin,
-          property.comment
-        )
-      },
-      generateCombinedConstantsSet = false
-    )
+    // TODO drop - currently still used by some repeat steps
     writeConstants(
       "NodeKinds",
       schema.nodeTypes.map { nodeType =>
@@ -876,21 +860,6 @@ class DomainClassesGenerator(schema: Schema) {
              | * see https://stackoverflow.com/a/3524336/452762 */
              |public static final int ${nodeType.name} = ${kindContexts.nodeKindByNodeType(nodeType)};""".stripMargin,
           nodeType.comment
-        )
-      },
-      generateCombinedConstantsSet = false
-    )
-    writeConstants(
-      "EdgeKinds",
-      schema.edgeTypes.map { edgeType =>
-        ConstantContext(
-          edgeType.name,
-          s"""
-             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
-             | * projects have the ability to run with newly generated domain classes
-             | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${edgeType.name} = ${kindContexts.edgeKindByEdgeType(edgeType)};""".stripMargin,
-          edgeType.comment
         )
       },
       generateCombinedConstantsSet = false
