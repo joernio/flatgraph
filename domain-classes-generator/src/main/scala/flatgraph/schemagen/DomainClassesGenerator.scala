@@ -818,11 +818,7 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
       val allConstantsSetType = if (constantsSource.contains("PropertyKey")) "PropertyKey<?>" else "String"
-      val allConstantsBody = constants
-        .map { constant =>
-          s"add(${constant.name});"
-        }
-        .mkString("\n")
+      val allConstantsBody    = constants.map(constant => s"add(${constant.name});").mkString("\n")
       val allConstantsSetMaybe = if (generateCombinedConstantsSet) {
         s"""public static Set<$allConstantsSetType> ALL = new HashSet<$allConstantsSetType>() {{
            |$allConstantsBody
@@ -852,23 +848,7 @@ class DomainClassesGenerator(schema: Schema) {
         ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
       }
     )
-    writeConstants(
-      "PropertyKinds",
-      schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
-        ConstantContext(
-          property.name,
-          s"""
-             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
-             | * projects have the ability to run with newly generated domain classes
-             | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${property.name} = Integer.valueOf(${kindContexts.propertyKindByProperty(
-              property
-            )}).intValue();""".stripMargin,
-          property.comment
-        )
-      },
-      generateCombinedConstantsSet = false
-    )
+    // TODO drop - currently still used by some repeat steps
     writeConstants(
       "NodeKinds",
       schema.nodeTypes.map { nodeType =>
@@ -880,21 +860,6 @@ class DomainClassesGenerator(schema: Schema) {
              | * see https://stackoverflow.com/a/3524336/452762 */
              |public static final int ${nodeType.name} = ${kindContexts.nodeKindByNodeType(nodeType)};""".stripMargin,
           nodeType.comment
-        )
-      },
-      generateCombinedConstantsSet = false
-    )
-    writeConstants(
-      "EdgeKinds",
-      schema.edgeTypes.map { edgeType =>
-        ConstantContext(
-          edgeType.name,
-          s"""
-             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
-             | * projects have the ability to run with newly generated domain classes
-             | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${edgeType.name} = ${kindContexts.edgeKindByEdgeType(edgeType)};""".stripMargin,
-          edgeType.comment
         )
       },
       generateCombinedConstantsSet = false
@@ -919,6 +884,41 @@ class DomainClassesGenerator(schema: Schema) {
         }
       )
     }
+
+    // PropertyKeys.scala <start>
+    // TODO refactor: extract to method
+    val propertyKeysConstantsSource = {
+      schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
+        val kind              = kindContexts.propertyKindByProperty(property)
+        val valueTypeUnpacked = unpackTypeUnboxed(property.valueType, isStored = false)
+        val documentation     = property.comment.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
+        val propertyKeyConstantImpl = property.cardinality match {
+          case Cardinality.One(default) =>
+            val defaultValueImpl = Helpers.defaultValueImpl(default)
+            s"""flatgraph.SinglePropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}", default = $defaultValueImpl)"""
+          case Cardinality.ZeroOrOne =>
+            s"""flatgraph.OptionalPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
+          case Cardinality.List =>
+            s"""flatgraph.MultiPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
+        }
+        s"""$documentation
+           |val ${Helpers.camelCaseCaps(property.name)} = $propertyKeyConstantImpl
+           |""".stripMargin
+      }
+    }.mkString("\n\n")
+    val file = outputDir / "PropertyKeys.scala"
+    os.write(
+      file,
+      s"""package ${schema.basePackage}.v2
+         |
+         |import flatgraph.PropertyKey
+         |
+         |object PropertyKeys {
+         |$propertyKeysConstantsSource
+         |}""".stripMargin
+    )
+    results.addOne(file)
+    // PropertyKeys.scala <end>
 
     results.result()
   }
