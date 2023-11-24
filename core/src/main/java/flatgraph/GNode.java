@@ -1,5 +1,7 @@
 package flatgraph;
 
+import java.util.Objects;
+
 /**
  * A GNode represents a node in a graph. It is basically a glorified pointer.
  */
@@ -38,5 +40,15 @@ public class GNode implements DNodeOrNode {
 
     public String label() {
         return graph.schema().getNodeLabel(nodeKind);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "[label=" + label() + "; id=" + id() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(graph, nodeKind, _seqId);
     }
 }
