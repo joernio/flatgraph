@@ -1,6 +1,6 @@
 package flatgraph.traversal
 
-import flatgraph.{Accessors, Edge, GNode, Schema}
+import flatgraph.{Accessors, Edge, GNode, PropertyKey, Schema}
 
 import scala.collection.immutable.ArraySeq
 import scala.collection.{Iterator, mutable}
@@ -9,9 +9,6 @@ import scala.reflect.ClassTag
 object Language extends Language
 
 trait Language {
-
-  // given [A]: Conversion[IterableOnce[A], Iterator[A]] =
-  // iterable => iterable.iterator
 
   implicit def iterableOnceToIterator[A](iterableOnce: IterableOnce[A]): Iterator[A] =
     iterableOnce.iterator
@@ -404,6 +401,9 @@ trait Language {
     def inE(edgeLabel: String): Iterator[Edge] =
       Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
+    def propertyOption[@specialized T](propertyKey: PropertyKey[T])(implicit evidence: ClassTag[T]): Option[T] =
+      Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+
     def propertyOption[@specialized T](name: String)(implicit evidence: ClassTag[T]): Option[T] = {
       node.graph.schema.getPropertyKindByName(name) match {
         case Schema.UndefinedKind =>
@@ -500,6 +500,9 @@ trait Language {
 
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
+
+    def property[@specialized T](propertyKey: PropertyKey[T])(implicit evidence: ClassTag[T]): Iterator[T] =
+      traversal.flatMap(_.propertyOption[T](propertyKey))
   }
 
 }

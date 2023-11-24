@@ -818,11 +818,7 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
       val allConstantsSetType = if (constantsSource.contains("PropertyKey")) "PropertyKey<?>" else "String"
-      val allConstantsBody = constants
-        .map { constant =>
-          s"add(${constant.name});"
-        }
-        .mkString("\n")
+      val allConstantsBody    = constants.map(constant => s"add(${constant.name});").mkString("\n")
       val allConstantsSetMaybe = if (generateCombinedConstantsSet) {
         s"""public static Set<$allConstantsSetType> ALL = new HashSet<$allConstantsSetType>() {{
            |$allConstantsBody
@@ -919,6 +915,33 @@ class DomainClassesGenerator(schema: Schema) {
         }
       )
     }
+
+    // PropertyKeys.scala <start>
+    // TODO refactor: extract to method
+    val constantsSource = {
+      schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
+        val kind              = kindContexts.propertyKindByProperty(property)
+        val valueTypeUnpacked = unpackTypeUnboxed(property.valueType, isStored = false)
+
+        val documentation = property.comment.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
+        s"""$documentation
+           |val ${Helpers.camelCaseCaps(property.name)} = flatgraph.PropertyKey[$valueTypeUnpacked]($kind, "${property.name}")
+           |""".stripMargin
+      }
+    }.mkString("\n\n")
+    val file = outputDir / "PropertyKeys.scala"
+    os.write(
+      file,
+      s"""package ${schema.basePackage}.v2
+         |
+         |import flatgraph.PropertyKey
+         |
+         |object PropertyKeys {
+         |$constantsSource
+         |}""".stripMargin
+    )
+    results.addOne(file)
+    // PropertyKeys.scala <end>
 
     results.result()
   }
