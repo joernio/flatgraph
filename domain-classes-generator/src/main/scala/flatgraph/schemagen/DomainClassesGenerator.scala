@@ -887,14 +887,22 @@ class DomainClassesGenerator(schema: Schema) {
 
     // PropertyKeys.scala <start>
     // TODO refactor: extract to method
-    val constantsSource = {
+    val propertyKeysConstantsSource = {
       schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
         val kind              = kindContexts.propertyKindByProperty(property)
         val valueTypeUnpacked = unpackTypeUnboxed(property.valueType, isStored = false)
-
-        val documentation = property.comment.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
+        val documentation     = property.comment.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
+        val propertyKeyConstantImpl = property.cardinality match {
+          case Cardinality.One(default) =>
+            val defaultValueImpl = Helpers.defaultValueImpl(default)
+            s"""flatgraph.SinglePropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}", default = $defaultValueImpl)"""
+          case Cardinality.ZeroOrOne =>
+            s"""flatgraph.OptionalPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
+          case Cardinality.List =>
+            s"""flatgraph.MultiPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
+        }
         s"""$documentation
-           |val ${Helpers.camelCaseCaps(property.name)} = flatgraph.PropertyKey[$valueTypeUnpacked]($kind, "${property.name}")
+           |val ${Helpers.camelCaseCaps(property.name)} = $propertyKeyConstantImpl
            |""".stripMargin
       }
     }.mkString("\n\n")
@@ -906,7 +914,7 @@ class DomainClassesGenerator(schema: Schema) {
          |import flatgraph.PropertyKey
          |
          |object PropertyKeys {
-         |$constantsSource
+         |$propertyKeysConstantsSource
          |}""".stripMargin
     )
     results.addOne(file)

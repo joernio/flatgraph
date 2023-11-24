@@ -1,6 +1,6 @@
 package flatgraph.traversal
 
-import flatgraph.{Accessors, Edge, GNode, PropertyKey, Schema}
+import flatgraph.{Accessors, Edge, GNode, MultiPropertyKey, OptionalPropertyKey, PropertyKey, Schema, SinglePropertyKey}
 
 import scala.collection.immutable.ArraySeq
 import scala.collection.{Iterator, mutable}
@@ -401,8 +401,18 @@ trait Language {
     def inE(edgeLabel: String): Iterator[Edge] =
       Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
-    def propertyOption[@specialized T](propertyKey: PropertyKey[T])(implicit evidence: ClassTag[T]): Option[T] =
-      Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+    def property[@specialized ValueType, CompleteType](
+      propertyKey: PropertyKey[ValueType, CompleteType]
+    )(implicit evidence: ClassTag[ValueType]): CompleteType = {
+      propertyKey match {
+        case SinglePropertyKey(kind, name, default) =>
+          Accessors.getNodePropertySingle(node.graph, node.nodeKind, kind, node.seq(), default)
+        case OptionalPropertyKey(kind, name) =>
+          Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+        case MultiPropertyKey(kind, name) =>
+          Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+      }
+    }
 
     def propertyOption[@specialized T](name: String)(implicit evidence: ClassTag[T]): Option[T] = {
       node.graph.schema.getPropertyKindByName(name) match {
@@ -501,8 +511,10 @@ trait Language {
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
 
-    def property[@specialized T](propertyKey: PropertyKey[T])(implicit evidence: ClassTag[T]): Iterator[T] =
-      traversal.flatMap(_.propertyOption[T](propertyKey))
+    def property[@specialized ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Iterator[CompleteType] =
+      traversal.map(_.property[ValueType, CompleteType](propertyKey))
   }
 
 }
