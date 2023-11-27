@@ -408,9 +408,9 @@ trait Language {
         case SinglePropertyKey(kind, name, default) =>
           Accessors.getNodePropertySingle(node.graph, node.nodeKind, kind, node.seq(), default)
         case OptionalPropertyKey(kind, name) =>
-          Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+          Accessors.getNodePropertyOption(node.graph, node.nodeKind, kind, node.seq())
         case MultiPropertyKey(kind, name) =>
-          Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+          Accessors.getNodePropertyMulti(node.graph, node.nodeKind, kind, node.seq())
       }
     }
 
@@ -503,10 +503,14 @@ trait Language {
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
 
-    def property[@specialized ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType])(implicit
-      evidence: ClassTag[ValueType]
-    ): Iterator[CompleteType] =
-      traversal.map(_.property[ValueType, CompleteType](propertyKey))
+    def property[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+      traversal.map(_.property[ValueType, ValueType](propertyKey))
+
+    def property[@specialized ValueType](propertyKey: OptionalPropertyKey[ValueType])(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+      traversal.flatMap(_.property[ValueType, Option[ValueType]](propertyKey))
+
+    def property[@specialized ValueType](propertyKey: MultiPropertyKey[ValueType])(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+      traversal.flatMap(_.property[ValueType, IndexedSeq[ValueType]](propertyKey))
   }
 
 }
