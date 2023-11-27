@@ -468,14 +468,6 @@ trait Language {
       traversal.filterNot(node => unwanted.contains(node.label()))
     }
 
-    /** filter by the node kind */
-    def kind(value: Int): Iterator[A] =
-      traversal.filter(_.nodeKind == value)
-
-    /** alias for {{{kind}}} */
-    def hasKind(value: Int): Iterator[A] =
-      kind(value)
-
     /** follow _all_ OUT edges to their adjacent nodes */
     def out: Iterator[GNode] =
       traversal.flatMap(_.out)
