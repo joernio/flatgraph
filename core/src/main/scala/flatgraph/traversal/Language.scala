@@ -414,7 +414,12 @@ trait Language {
       }
     }
 
-    def propertyOption[@specialized T](name: String)(implicit evidence: ClassTag[T]): Option[T] = {
+    def propertyOption[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Option[ValueType] =
+      Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+
+    def propertyOption[@specialized ValueType](name: String)(implicit evidence: ClassTag[ValueType]): Option[ValueType] = {
       node.graph.schema.getPropertyKindByName(name) match {
         case Schema.UndefinedKind =>
           None
