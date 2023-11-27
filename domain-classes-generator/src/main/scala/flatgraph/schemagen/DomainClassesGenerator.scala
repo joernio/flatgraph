@@ -848,22 +848,6 @@ class DomainClassesGenerator(schema: Schema) {
         ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
       }
     )
-    // TODO drop - currently still used by some repeat steps
-    writeConstants(
-      "NodeKinds",
-      schema.nodeTypes.map { nodeType =>
-        ConstantContext(
-          nodeType.name,
-          s"""
-             |/* implementation note: we want to ensure that javac does not inline the final value, so that downstream
-             | * projects have the ability to run with newly generated domain classes
-             | * see https://stackoverflow.com/a/3524336/452762 */
-             |public static final int ${nodeType.name} = ${kindContexts.nodeKindByNodeType(nodeType)};""".stripMargin,
-          nodeType.comment
-        )
-      },
-      generateCombinedConstantsSet = false
-    )
     writeConstants(
       "NodeTypes",
       schema.nodeTypes.map { nodeType =>
