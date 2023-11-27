@@ -503,13 +503,19 @@ trait Language {
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
 
-    def property[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+    def property[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Iterator[ValueType] =
       traversal.map(_.property[ValueType, ValueType](propertyKey))
 
-    def property[@specialized ValueType](propertyKey: OptionalPropertyKey[ValueType])(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+    def property[@specialized ValueType](propertyKey: OptionalPropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Iterator[ValueType] =
       traversal.flatMap(_.property[ValueType, Option[ValueType]](propertyKey))
 
-    def property[@specialized ValueType](propertyKey: MultiPropertyKey[ValueType])(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+    def property[@specialized ValueType](propertyKey: MultiPropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Iterator[ValueType] =
       traversal.flatMap(_.property[ValueType, IndexedSeq[ValueType]](propertyKey))
   }
 
