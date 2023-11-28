@@ -408,13 +408,18 @@ trait Language {
         case SinglePropertyKey(kind, name, default) =>
           Accessors.getNodePropertySingle(node.graph, node.nodeKind, kind, node.seq(), default)
         case OptionalPropertyKey(kind, name) =>
-          Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+          Accessors.getNodePropertyOption(node.graph, node.nodeKind, kind, node.seq())
         case MultiPropertyKey(kind, name) =>
-          Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+          Accessors.getNodePropertyMulti(node.graph, node.nodeKind, kind, node.seq())
       }
     }
 
-    def propertyOption[@specialized T](name: String)(implicit evidence: ClassTag[T]): Option[T] = {
+    def propertyOption[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Option[ValueType] =
+      Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+
+    def propertyOption[@specialized ValueType](name: String)(implicit evidence: ClassTag[ValueType]): Option[ValueType] = {
       node.graph.schema.getPropertyKindByName(name) match {
         case Schema.UndefinedKind =>
           None
@@ -433,6 +438,16 @@ trait Language {
       */
     def id: Iterator[Long] =
       traversal.map(_.id())
+
+    /** filter by `id` */
+    def id(value: Long): Iterator[A] =
+      traversal.filter(_.id() == value)
+
+    /** filter by `id`s */
+    def id(values: Long*): Iterator[A] = {
+      val valuesSet = values.toSet
+      traversal.filter(node => valuesSet.contains(node.id()))
+    }
 
     /** traverse to the node label */
     // TODO bring back doc/help etc
@@ -503,10 +518,29 @@ trait Language {
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
 
-    def property[@specialized ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType])(implicit
+    def property[@specialized ValueType, CompleteType](
+      propertyKey: PropertyKey[ValueType, CompleteType]
+    )(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+      propertyKey match {
+        case propertyKey: SinglePropertyKey[ValueType]   => property(propertyKey)
+        case propertyKey: OptionalPropertyKey[ValueType] => property(propertyKey)
+        case propertyKey: MultiPropertyKey[ValueType]    => property(propertyKey)
+      }
+
+    def property[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit
       evidence: ClassTag[ValueType]
-    ): Iterator[CompleteType] =
-      traversal.map(_.property[ValueType, CompleteType](propertyKey))
+    ): Iterator[ValueType] =
+      traversal.map(_.property[ValueType, ValueType](propertyKey))
+
+    def property[@specialized ValueType](propertyKey: OptionalPropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Iterator[ValueType] =
+      traversal.flatMap(_.property[ValueType, Option[ValueType]](propertyKey))
+
+    def property[@specialized ValueType](propertyKey: MultiPropertyKey[ValueType])(implicit
+      evidence: ClassTag[ValueType]
+    ): Iterator[ValueType] =
+      traversal.flatMap(_.property[ValueType, IndexedSeq[ValueType]](propertyKey))
   }
 
 }

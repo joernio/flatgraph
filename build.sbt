@@ -21,6 +21,8 @@ lazy val core = project
       "com.lihaoyi"     %% "upickle"  % "3.1.3",
       "com.github.luben" % "zstd-jni" % "1.5.0-4",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
+      // for @help and @Doc etc.
+      "net.oneandone.reflections8" % "reflections8" % "0.11.7", // go back to reflections once 0.9.13 is released
     )
   )
 
