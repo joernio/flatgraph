@@ -518,6 +518,15 @@ trait Language {
     def property[@specialized T](name: String)(implicit evidence: ClassTag[T]): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
 
+    def property[@specialized ValueType, CompleteType](
+      propertyKey: PropertyKey[ValueType, CompleteType]
+    )(implicit evidence: ClassTag[ValueType]): Iterator[ValueType] =
+      propertyKey match {
+        case propertyKey: SinglePropertyKey[ValueType]   => property(propertyKey)
+        case propertyKey: OptionalPropertyKey[ValueType] => property(propertyKey)
+        case propertyKey: MultiPropertyKey[ValueType]    => property(propertyKey)
+      }
+
     def property[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType])(implicit
       evidence: ClassTag[ValueType]
     ): Iterator[ValueType] =
