@@ -439,6 +439,16 @@ trait Language {
     def id: Iterator[Long] =
       traversal.map(_.id())
 
+    /** filter by `id` */
+    def id(value: Long): Iterator[A] =
+      traversal.filter(_.id() == value)
+
+    /** filter by `id`s */
+    def id(values: Long*): Iterator[A] = {
+      val valuesSet = values.toSet
+      traversal.filter(node => valuesSet.contains(node.id()))
+    }
+
     /** traverse to the node label */
     // TODO bring back doc/help etc
     // @Doc(info = "Traverse to the node label")
