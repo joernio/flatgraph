@@ -7,8 +7,8 @@ final class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) exten
 
   /** Traverse to METHOD via AST IN edge.
     */
-  def _methodViaAstIn: nodes.Method = {
-    try { node._astIn.iterator.collectAll[nodes.Method].next() }
+  def methodViaAstIn: nodes.Method = {
+    try { astIn.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
         throw new flatgraph.SchemaViolationException(
@@ -20,26 +20,19 @@ final class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) exten
 
   /** Traverse to TYPE_ARGUMENT via BINDS_TO IN edge.
     */
-  def _typeArgumentViaBindsToIn: Iterator[nodes.TypeArgument] = node._bindsToIn.iterator.collectAll[nodes.TypeArgument]
+  def typeArgumentViaBindsToIn: Iterator[nodes.TypeArgument] = bindsToIn.collectAll[nodes.TypeArgument]
 
   /** Traverse to TYPE_DECL via AST IN edge.
     */
-  def _typeDeclViaAstIn: Iterator[nodes.TypeDecl] = node._astIn.iterator.collectAll[nodes.TypeDecl]
+  def typeDeclViaAstIn: Iterator[nodes.TypeDecl] = astIn.collectAll[nodes.TypeDecl]
 
+  def astIn: Iterator[nodes.AstNode] = node._astIn.cast[nodes.AstNode]
+
+  def bindsToIn: Iterator[nodes.TypeArgument] = node._bindsToIn.cast[nodes.TypeArgument]
 }
 
 final class AccessNeighborsForTypeParameterTraversal(val traversal: Iterator[nodes.TypeParameter]) extends AnyVal {
+  def astIn: Iterator[nodes.AstNode] = traversal.flatMap(_.astIn)
 
-  /** Traverse to METHOD via AST IN edge.
-    */
-  def _methodViaAstIn: Iterator[nodes.Method] = traversal.map(_._methodViaAstIn)
-
-  /** Traverse to TYPE_ARGUMENT via BINDS_TO IN edge.
-    */
-  def _typeArgumentViaBindsToIn: Iterator[nodes.TypeArgument] = traversal.flatMap(_._typeArgumentViaBindsToIn)
-
-  /** Traverse to TYPE_DECL via AST IN edge.
-    */
-  def _typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_._typeDeclViaAstIn)
-
+  def bindsToIn: Iterator[nodes.TypeArgument] = traversal.flatMap(_.bindsToIn)
 }

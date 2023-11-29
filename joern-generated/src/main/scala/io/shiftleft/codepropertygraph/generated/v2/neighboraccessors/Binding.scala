@@ -7,8 +7,13 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
 
   /** Traverse to METHOD via REF OUT edge.
     */
+  @deprecated("please use boundMethod instead")
+  def methodViaRefOut: nodes.Method = boundMethod
+
+  /** Traverse to METHOD via REF OUT edge.
+    */
   def boundMethod: nodes.Method = {
-    try { node._refOut.iterator.collectAll[nodes.Method].next() }
+    try { refOut.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
         throw new flatgraph.SchemaViolationException(
@@ -20,8 +25,13 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
 
   /** Traverse to TYPE_DECL via BINDS IN edge.
     */
+  @deprecated("please use bindingTypeDecl instead")
+  def typeDeclViaBindsIn: nodes.TypeDecl = bindingTypeDecl
+
+  /** Traverse to TYPE_DECL via BINDS IN edge.
+    */
   def bindingTypeDecl: nodes.TypeDecl = {
-    try { node._bindsIn.iterator.collectAll[nodes.TypeDecl].next() }
+    try { bindsIn.collectAll[nodes.TypeDecl].next() }
     catch {
       case e: java.util.NoSuchElementException =>
         throw new flatgraph.SchemaViolationException(
@@ -31,16 +41,13 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
     }
   }
 
+  def bindsIn: Iterator[nodes.TypeDecl] = node._bindsIn.cast[nodes.TypeDecl]
+
+  def refOut: Iterator[nodes.Method] = node._refOut.cast[nodes.Method]
 }
 
 final class AccessNeighborsForBindingTraversal(val traversal: Iterator[nodes.Binding]) extends AnyVal {
+  def bindsIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.bindsIn)
 
-  /** Traverse to METHOD via REF OUT edge.
-    */
-  def boundMethod: Iterator[nodes.Method] = traversal.map(_.boundMethod)
-
-  /** Traverse to TYPE_DECL via BINDS IN edge.
-    */
-  def bindingTypeDecl: Iterator[nodes.TypeDecl] = traversal.map(_.bindingTypeDecl)
-
+  def refOut: Iterator[nodes.Method] = traversal.flatMap(_.refOut)
 }

@@ -7,32 +7,27 @@ final class AccessNeighborsForArrayInitializer(val node: nodes.ArrayInitializer)
 
   /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
     */
-  def _annotationParameterAssignViaAstIn: Iterator[nodes.AnnotationParameterAssign] =
-    node._astIn.iterator.collectAll[nodes.AnnotationParameterAssign]
+  def annotationParameterAssignViaAstIn: Iterator[nodes.AnnotationParameterAssign] = astIn.collectAll[nodes.AnnotationParameterAssign]
 
   /** Traverse to LITERAL via AST OUT edge.
     */
-  def _literalViaAstOut: Iterator[nodes.Literal] = node._astOut.iterator.collectAll[nodes.Literal]
+  def literalViaAstOut: Iterator[nodes.Literal] = astOut.collectAll[nodes.Literal]
 
   /** Traverse to TYPE via EVAL_TYPE OUT edge.
     */
-  def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
+  def typeViaEvalTypeOut: Iterator[nodes.Type] = evalTypeOut.collectAll[nodes.Type]
 
+  def astIn: Iterator[nodes.AnnotationParameterAssign] = node._astIn.cast[nodes.AnnotationParameterAssign]
+
+  def astOut: Iterator[nodes.Literal] = node._astOut.cast[nodes.Literal]
+
+  def evalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.cast[nodes.Type]
 }
 
 final class AccessNeighborsForArrayInitializerTraversal(val traversal: Iterator[nodes.ArrayInitializer]) extends AnyVal {
+  def astIn: Iterator[nodes.AnnotationParameterAssign] = traversal.flatMap(_.astIn)
 
-  /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
-    */
-  def _annotationParameterAssignViaAstIn: Iterator[nodes.AnnotationParameterAssign] =
-    traversal.flatMap(_._annotationParameterAssignViaAstIn)
+  def astOut: Iterator[nodes.Literal] = traversal.flatMap(_.astOut)
 
-  /** Traverse to LITERAL via AST OUT edge.
-    */
-  def _literalViaAstOut: Iterator[nodes.Literal] = traversal.flatMap(_._literalViaAstOut)
-
-  /** Traverse to TYPE via EVAL_TYPE OUT edge.
-    */
-  def _typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_._typeViaEvalTypeOut)
-
+  def evalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_.evalTypeOut)
 }

@@ -7,30 +7,32 @@ final class AccessNeighborsForComment(val node: nodes.Comment) extends AnyVal {
 
   /** Traverse to COMMENT via SOURCE_FILE IN edge.
     */
-  def _commentViaSourceFileIn: Iterator[nodes.Comment] = node._sourceFileIn.iterator.collectAll[nodes.Comment]
+  def commentViaSourceFileIn: Iterator[nodes.Comment] = sourceFileIn.collectAll[nodes.Comment]
 
   /** Traverse to COMMENT via SOURCE_FILE OUT edge.
     */
-  def file: Iterator[nodes.Comment] = node._sourceFileOut.iterator.collectAll[nodes.Comment]
+  @deprecated("please use file instead")
+  def commentViaSourceFileOut: Iterator[nodes.Comment] = file
+
+  /** Traverse to COMMENT via SOURCE_FILE OUT edge.
+    */
+  def file: Iterator[nodes.Comment] = sourceFileOut.collectAll[nodes.Comment]
 
   /** Traverse to FILE via AST IN edge.
     */
-  def _fileViaAstIn: Iterator[nodes.File] = node._astIn.iterator.collectAll[nodes.File]
+  def fileViaAstIn: Iterator[nodes.File] = astIn.collectAll[nodes.File]
 
+  def astIn: Iterator[nodes.File] = node._astIn.cast[nodes.File]
+
+  def sourceFileIn: Iterator[nodes.Comment] = node._sourceFileIn.cast[nodes.Comment]
+
+  def sourceFileOut: Iterator[nodes.Comment] = node._sourceFileOut.cast[nodes.Comment]
 }
 
 final class AccessNeighborsForCommentTraversal(val traversal: Iterator[nodes.Comment]) extends AnyVal {
+  def astIn: Iterator[nodes.File] = traversal.flatMap(_.astIn)
 
-  /** Traverse to COMMENT via SOURCE_FILE IN edge.
-    */
-  def _commentViaSourceFileIn: Iterator[nodes.Comment] = traversal.flatMap(_._commentViaSourceFileIn)
+  def sourceFileIn: Iterator[nodes.Comment] = traversal.flatMap(_.sourceFileIn)
 
-  /** Traverse to COMMENT via SOURCE_FILE OUT edge.
-    */
-  def file: Iterator[nodes.Comment] = traversal.flatMap(_.file)
-
-  /** Traverse to FILE via AST IN edge.
-    */
-  def _fileViaAstIn: Iterator[nodes.File] = traversal.flatMap(_._fileViaAstIn)
-
+  def sourceFileOut: Iterator[nodes.Comment] = traversal.flatMap(_.sourceFileOut)
 }
