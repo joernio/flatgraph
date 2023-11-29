@@ -668,6 +668,8 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V1_1       : 0: [0, 1]
         |""".stripMargin
     testSerialization(g)
+    // If you overwrite the same property on the same node multiple times within the same diffgraph, 
+    // then the latest update overwrites all the previous ones
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
