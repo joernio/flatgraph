@@ -668,6 +668,24 @@ class GraphTests extends AnyWordSpec with Matchers {
         |   V1_1       : 0: [0, 1]
         |""".stripMargin
     testSerialization(g)
+    // If you overwrite the same property on the same node multiple times within the same diffgraph, 
+    // then the latest update overwrites all the previous ones
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        .removeNode(V0_2.storedRef.get)
+        ._setNodeProperty(V1_1.storedRef.get, 0, 2.toShort::3.toShort :: Nil)
+        ._setNodeProperty(V1_1.storedRef.get, 0, 4.toShort::5.toShort :: Nil)
+        ._setNodeProperty(V1_1.storedRef.get, 0, 6.toShort :: Nil)
+    )
+    debugDump(g) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+        |   V0_0       : 1: [<deleted V0_2>, V0_0]
+        |   V0_1       : 1: [null]
+        |Node kind 1. (eid, nEdgesOut, nEdgesIn):
+        |   V1_1       : 0: [6]
+        |""".stripMargin
   }
 
   "Support custom domain classes for detached nodes" in {
