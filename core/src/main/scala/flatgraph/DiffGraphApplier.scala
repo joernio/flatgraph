@@ -613,8 +613,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
   private def dedupBy[T, S](buff: mutable.ArrayBuffer[T], by: T => S): Unit = {
     var outIdx = 0
     var idx    = 0
-    while (idx < buff.length - 1) {
-      if (by(buff(idx)) == by(buff(idx + 1))) {
+    while (idx < buff.length) {
+      if (idx < buff.length - 1 && by(buff(idx)) == by(buff(idx + 1))) {
         buff(outIdx) = buff(idx)
         idx += 1
       } else {
