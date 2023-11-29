@@ -41,19 +41,16 @@ class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends A
   private val propertiesCount = schema.getNumberOfProperties
   private var closed          = false
 
-  private[flatgraph] val nodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
+  private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
+  private[flatgraph] def nodeCountByKind(kind:Int):Int = nodesArray(kind).length
+
   private[flatgraph] val properties                  = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val inverseIndices              = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val nodesArray: Array[Array[GNode]] = makeNodesArray()
   private[flatgraph] val neighbors: Array[AnyRef]        = makeNeighbors()
 
-  private[flatgraph] def nodeCount(kind: Int): Int = {
-    assert(kind >= 0 && kind < nodeCountByKind.length, s"invalid nodeKind=$kind; valid values are 0..${nodeCountByKind.length - 1}")
-    nodeCountByKind(kind)
-  }
-
   def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
-    if (nodesArray(nodeKind).length == nodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
+    if (nodeCountByKind(nodeKind) == livingNodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
     else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
 

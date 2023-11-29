@@ -46,12 +46,12 @@ object Serialization {
     for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
       val nodeLabel = g.schema.getNodeLabel(nodeKind)
       val deletions = g
-        ._nodes(nodeKind)
+        .nodesArray(nodeKind)
         .collect {
           case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
         }
         .toArray
-      val size = g.nodeCount(nodeKind)
+      val size = g.nodeCountByKind(nodeKind)
       nodes.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
     }
     for {
@@ -66,7 +66,7 @@ object Serialization {
         val edgeItem  = new Manifest.EdgeItem(nodeLabel, edgeLabel, direction.encoding, null, null, null)
         edges.addOne(edgeItem)
         edgeItem.qty =
-          encodeAny(deltaEncode(g.nodeCount(nodeKind), g.neighbors(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
+          encodeAny(deltaEncode(g.nodeCountByKind(nodeKind), g.neighbors(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
         edgeItem.neighbors = encodeAny(g.neighbors(pos + 1), filePtr, stringPool, fileChannel)
         edgeItem.property = encodeAny(g.neighbors(pos + 2), filePtr, stringPool, fileChannel)
       }
@@ -82,7 +82,7 @@ object Serialization {
         val propertyItem  = new Manifest.PropertyItem(nodeLabel, propertyLabel, null, null)
         properties.addOne(propertyItem)
         propertyItem.qty =
-          encodeAny(deltaEncode(g.nodeCount(nodeKind), g.properties(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
+          encodeAny(deltaEncode(g.nodeCountByKind(nodeKind), g.properties(pos).asInstanceOf[Array[Int]]), filePtr, stringPool, fileChannel)
         propertyItem.property = encodeAny(g.properties(pos + 1), filePtr, stringPool, fileChannel)
       }
     }
@@ -126,7 +126,7 @@ object Serialization {
       val res = new Array[Int](padTo + 1)
       assert(offsets.length == 0 || offsets(0) == 0)
       var idx   = 0
-      val until = math.min(offsets.length, padTo)
+      val until = math.min(offsets.length - 1, padTo)
       while (idx < until) {
         res(idx) = offsets(idx + 1) - offsets(idx)
         idx += 1
