@@ -165,7 +165,7 @@ object LoadingAndMemoryBenchmarks {
     val touch2 = measure {
       touchGraph(cpgBox.result.asInstanceOf[flatgraph.Graph])
     }
-    val nodecount = cpgBox.result.asInstanceOf[flatgraph.Graph].nodeCountByKind.sum
+    val nodecount = cpgBox.result.asInstanceOf[flatgraph.Graph].livingNodeCountByKind.sum
     val filesize  = new java.io.File("./cpg.fg").length()
     val (nnodeKinds, npropKinds, nEdgeKinds) = Some(cpgBox.result.asInstanceOf[flatgraph.Graph].schema).map { s =>
       (s.getNumberOfNodeKinds, s.getNumberOfProperties, s.getNumberOfEdgeKinds)

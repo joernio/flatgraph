@@ -74,7 +74,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
             already
           case None =>
             val nodekind = detached.nodeKind
-            val seqId    = graph.nodeCount(nodekind) + Option(newNodes(nodekind)).map { _.size }.getOrElse(0)
+            val seqId    = graph.nodeCountByKind(nodekind) + Option(newNodes(nodekind)).map { _.size }.getOrElse(0)
             val res      = graph.schema.makeNode(graph, nodekind, seqId)
             detached.storedRef = Some(res)
             insert(newNodes, detached, nodekind)
@@ -210,6 +210,9 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
   }
 
   private def deleteNodes(): Unit = {
+    for (del <- delNodes) {
+      graph.livingNodeCountByKind(del.nodeKind) -= 1
+    }
     val replacements = new Array[AnyRef](graph.neighbors.length)
 
     def getReplacementLengths(nodeKind: Int, direction: Direction, edgeKind: Int): Array[Int] = {
@@ -291,7 +294,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       if (replacements(pos) != null) {
         val newQty = replacements(pos).asInstanceOf[Array[Int]]
         lenToRan(newQty)
-        val newNeighbors = new Array[GNode](get(newQty, graph.nodeCount(nodeKind)))
+        val newNeighbors = new Array[GNode](get(newQty, graph.nodeCountByKind(nodeKind)))
         val modNeighbors =
           (if (replacements(pos + 1) != null) replacements(pos + 1) else graph.neighbors(pos + 1))
             .asInstanceOf[Array[GNode]]
@@ -384,7 +387,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       return
     }
     graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
-    graph.nodeCountByKind(nodeKind) += newNodes(nodeKind).size
+    graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
   }
 
   private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
@@ -420,7 +423,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
     deletions.sortInPlaceBy(numberForEdgeComparison)
     dedupBy(deletions, numberForEdgeComparison)
-    val nodeCount    = graph.nodeCount(nodeKind)
+    val nodeCount    = graph.nodeCountByKind(nodeKind)
     val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
 
@@ -496,7 +499,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       s"something went wrong while adding edges - values for debugging: nodeKind=$nodeKind; edgeKind=$edgeKind"
     )
 
-    val nodeCount    = graph.nodeCount(nodeKind)
+    val nodeCount    = graph.livingNodeCountByKind(nodeKind)
     val oldQty       = Option(graph.neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
     val oldNeighbors = Option(graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
     val newQty       = new Array[Int](nodeCount + 1)
@@ -554,7 +557,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       graph.inverseIndices.set(pos, null)
       setPropertyPositions.sortInPlaceBy(_.node.seq())
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
-      val nodeCount = graph.nodeCount(nodeKind)
+      val nodeCount = graph.livingNodeCountByKind(nodeKind)
 
       val setPropertyValues = graph.schema.allocateNodeProperty(nodeKind, propertyKind, propertyBuf.size)
       copyToArray(propertyBuf, setPropertyValues)

@@ -42,8 +42,8 @@ object Deserialization {
             if (!AccessHelpers.isDeleted(node)) AccessHelpers.markDeleted(nodes(del))
             else throw new RuntimeException()
           }
-          g.nodeCountByKind(nodeKind) = nodes.length - nodeItem.deletions.length
-        } else g.nodeCountByKind(nodeKind) = nodes.length
+          g.livingNodeCountByKind(nodeKind) = nodes.length - nodeItem.deletions.length
+        } else g.livingNodeCountByKind(nodeKind) = nodes.length
       }
 
       val edgeKinds = mutable.HashMap[(String, String), Short]()
