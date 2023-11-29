@@ -210,7 +210,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
   }
 
   private def deleteNodes(): Unit = {
-    for(del <- delNodes){
+    for (del <- delNodes) {
       graph.livingNodeCountByKind(del.nodeKind) -= 1
     }
     val replacements = new Array[AnyRef](graph.neighbors.length)
