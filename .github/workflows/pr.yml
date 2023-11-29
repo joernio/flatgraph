@@ -19,8 +19,7 @@ jobs:
             ~/.coursier
           key: ${{ runner.os }}-sbt-${{ hashfiles('**/build.sbt') }}
       - name: scalafmtCheck and tests
-        #fixme reenable once sbt scalafmt is compatible again with sbt scalafmtCheck
-        #run: sbt scalafmtCheck Test/scalafmtCheck test
+        run: sbt scalafmtCheck Test/scalafmtCheck test
       - name: Generate domain classes and verify everything is committed
         run: |
           ./generateDomainClasses.sh

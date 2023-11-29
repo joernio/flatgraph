@@ -1,6 +1,11 @@
 # flatgraph
 Successor of [overflowdb](https://github.com/ShiftLeftSecurity/overflowdb), and formerlly known as overflowdbv2...
 
+Code formatting is maintained via
+```
+sbt scalafmt Test/scalafmt
+```
+
 ## Core Features
 - [x] Access nodes and neighbors
 - [x] Add nodes and edges
