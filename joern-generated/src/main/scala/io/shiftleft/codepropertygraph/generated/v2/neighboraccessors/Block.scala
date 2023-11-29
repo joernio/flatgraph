@@ -258,10 +258,6 @@ final class AccessNeighborsForBlock(val node: nodes.Block) extends AnyVal {
     */
   def literalViaReachingDefOut: Iterator[nodes.Literal] = reachingDefOut.collectAll[nodes.Literal]
 
-  /** Traverse to LOCAL via AST OUT edge.
-    */
-  def localViaAstOut: Iterator[nodes.Local] = astOut.collectAll[nodes.Local]
-
   /** Traverse to METHOD via AST IN edge.
     */
   def methodViaAstIn: nodes.Method = {

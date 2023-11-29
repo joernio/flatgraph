@@ -3,7 +3,7 @@ ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := "3.3.1"
 publish / skip := true
 
-val cpgVersion = "1.4.30"
+val cpgVersion = "1.4.30+1-819e3f9b"
 val joernVersion = "2.0.157"
 val slf4jVersion = "2.0.7"
 

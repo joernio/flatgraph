@@ -5,10 +5,6 @@ import io.shiftleft.codepropertygraph.generated.v2.Language.*
 
 final class AccessNeighborsForLocal(val node: nodes.Local) extends AnyVal {
 
-  /** Traverse to BLOCK via AST IN edge.
-    */
-  def blockViaAstIn: Iterator[nodes.Block] = astIn.collectAll[nodes.Block]
-
   /** Traverse to CLOSURE_BINDING via CAPTURED_BY OUT edge.
     */
   def closureBindingViaCapturedByOut: Iterator[nodes.ClosureBinding] = capturedByOut.collectAll[nodes.ClosureBinding]
