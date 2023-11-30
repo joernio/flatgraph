@@ -10,12 +10,6 @@ import overflowdb.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
 
-object DomainClassesGeneratorCpg {
-  def main(args: Array[String]): Unit = {
-    new DomainClassesGenerator(io.shiftleft.codepropertygraph.schema.CpgSchema.instance).main(args)
-  }
-}
-
 class DomainClassesGenerator(schema: Schema) {
   def main(args: Array[String]): Unit = {
     if (args.length < 1) {
