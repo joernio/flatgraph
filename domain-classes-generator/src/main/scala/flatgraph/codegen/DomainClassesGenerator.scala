@@ -25,7 +25,7 @@ class DomainClassesGenerator(schema: Schema) {
   }
 
   def run(outputDir: Path): Seq[Path] = {
-    val basePackage = schema.basePackage + ".v2"
+    val basePackage = schema.basePackage
 
     val outputDir0 = {
       val outputDirRoot = os.Path(outputDir.toAbsolutePath)
@@ -464,7 +464,7 @@ class DomainClassesGenerator(schema: Schema) {
       val nodeSource = {
         s"""package $basePackage.nodes
              |
-             |import io.shiftleft.codepropertygraph.generated.v2.Language.*
+             |import io.shiftleft.codepropertygraph.generated.Language.*
              |import scala.collection.immutable.{IndexedSeq, ArraySeq}
              |
              |$erasedMarkerType
@@ -827,7 +827,7 @@ class DomainClassesGenerator(schema: Schema) {
       val file = outputDir / s"$className.java"
       os.write(
         file,
-        s"""package ${schema.basePackage}.v2;
+        s"""package ${schema.basePackage};
            |
            |import java.util.HashSet;
            |import java.util.Set;
@@ -892,7 +892,7 @@ class DomainClassesGenerator(schema: Schema) {
     val file = outputDir / "PropertyKeys.scala"
     os.write(
       file,
-      s"""package ${schema.basePackage}.v2
+      s"""package ${schema.basePackage}
          |
          |import flatgraph.PropertyKey
          |
@@ -1116,7 +1116,7 @@ class DomainClassesGenerator(schema: Schema) {
       .mkString("\n")
 
     s"""
-       |package ${schema.basePackage}.v2.nodes
+       |package ${schema.basePackage}.nodes
        |
        |extension (iterator: Iterator[StoredNode]) {
        |  $neighborSteps
