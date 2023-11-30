@@ -38,8 +38,8 @@ class CompileTests extends AnyWordSpec with Matchers {
       val _: Call & StaticType[IsStaticEMT] = isStaticIter.next()
 
       // edge accessors
-      iter.next._blockViaArgumentOut
-      iter._blockViaArgumentOut
+      iter.next.blockViaArgumentOut
+      iter.blockViaArgumentOut
       iter.next.referencedMember
       iter.referencedMember
     }
@@ -88,8 +88,8 @@ class CompileTests extends AnyWordSpec with Matchers {
 
       // edge accessors
       import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
-      iter.next._blockViaCfgIn
-      iter._blockViaCfgIn
+      iter.next.blockViaCfgIn
+      iter.blockViaCfgIn
     }
 
   }

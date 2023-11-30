@@ -7,14 +7,16 @@ final class AccessNeighborsForJumpLabel(val node: nodes.JumpLabel) extends AnyVa
 
   /** Traverse to CONTROL_STRUCTURE via AST IN edge.
     */
-  def _controlStructureViaAstIn: Iterator[nodes.ControlStructure] = node._astIn.iterator.collectAll[nodes.ControlStructure]
+  def controlStructureViaAstIn: Iterator[nodes.ControlStructure] = astIn.collectAll[nodes.ControlStructure]
 
+  def astIn: Iterator[nodes.ControlStructure] = node._astIn.cast[nodes.ControlStructure]
 }
 
 final class AccessNeighborsForJumpLabelTraversal(val traversal: Iterator[nodes.JumpLabel]) extends AnyVal {
 
   /** Traverse to CONTROL_STRUCTURE via AST IN edge.
     */
-  def _controlStructureViaAstIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_._controlStructureViaAstIn)
+  def controlStructureViaAstIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaAstIn)
 
+  def astIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.astIn)
 }

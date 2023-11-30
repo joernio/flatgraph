@@ -7,89 +7,88 @@ final class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends
 
   /** Traverse to BLOCK via CDG IN edge.
     */
-  def _blockViaCdgIn: Iterator[nodes.Block] = node._cdgIn.iterator.collectAll[nodes.Block]
+  def blockViaCdgIn: Iterator[nodes.Block] = cdgIn.collectAll[nodes.Block]
 
   /** Traverse to BLOCK via DOMINATE IN edge.
     */
-  def _blockViaDominateIn: Iterator[nodes.Block] = node._dominateIn.iterator.collectAll[nodes.Block]
+  def blockViaDominateIn: Iterator[nodes.Block] = dominateIn.collectAll[nodes.Block]
 
   /** Traverse to BLOCK via POST_DOMINATE OUT edge.
     */
-  def _blockViaPostDominateOut: Iterator[nodes.Block] = node._postDominateOut.iterator.collectAll[nodes.Block]
+  def blockViaPostDominateOut: Iterator[nodes.Block] = postDominateOut.collectAll[nodes.Block]
 
   /** Traverse to CALL via CDG IN edge.
     */
-  def _callViaCdgIn: Iterator[nodes.Call] = node._cdgIn.iterator.collectAll[nodes.Call]
+  def callViaCdgIn: Iterator[nodes.Call] = cdgIn.collectAll[nodes.Call]
 
   /** Traverse to CALL via DOMINATE IN edge.
     */
-  def _callViaDominateIn: Iterator[nodes.Call] = node._dominateIn.iterator.collectAll[nodes.Call]
+  def callViaDominateIn: Iterator[nodes.Call] = dominateIn.collectAll[nodes.Call]
 
   /** Traverse to CALL via POST_DOMINATE OUT edge.
     */
-  def _callViaPostDominateOut: Iterator[nodes.Call] = node._postDominateOut.iterator.collectAll[nodes.Call]
+  def callViaPostDominateOut: Iterator[nodes.Call] = postDominateOut.collectAll[nodes.Call]
 
   /** Traverse to CONTROL_STRUCTURE via CDG IN edge.
     */
-  def _controlStructureViaCdgIn: Iterator[nodes.ControlStructure] = node._cdgIn.iterator.collectAll[nodes.ControlStructure]
+  def controlStructureViaCdgIn: Iterator[nodes.ControlStructure] = cdgIn.collectAll[nodes.ControlStructure]
 
   /** Traverse to CONTROL_STRUCTURE via DOMINATE IN edge.
     */
-  def _controlStructureViaDominateIn: Iterator[nodes.ControlStructure] = node._dominateIn.iterator.collectAll[nodes.ControlStructure]
+  def controlStructureViaDominateIn: Iterator[nodes.ControlStructure] = dominateIn.collectAll[nodes.ControlStructure]
 
   /** Traverse to CONTROL_STRUCTURE via POST_DOMINATE OUT edge.
     */
-  def _controlStructureViaPostDominateOut: Iterator[nodes.ControlStructure] =
-    node._postDominateOut.iterator.collectAll[nodes.ControlStructure]
+  def controlStructureViaPostDominateOut: Iterator[nodes.ControlStructure] = postDominateOut.collectAll[nodes.ControlStructure]
 
   /** Traverse to FIELD_IDENTIFIER via CDG IN edge.
     */
-  def _fieldIdentifierViaCdgIn: Iterator[nodes.FieldIdentifier] = node._cdgIn.iterator.collectAll[nodes.FieldIdentifier]
+  def fieldIdentifierViaCdgIn: Iterator[nodes.FieldIdentifier] = cdgIn.collectAll[nodes.FieldIdentifier]
 
   /** Traverse to FIELD_IDENTIFIER via DOMINATE IN edge.
     */
-  def _fieldIdentifierViaDominateIn: Iterator[nodes.FieldIdentifier] = node._dominateIn.iterator.collectAll[nodes.FieldIdentifier]
+  def fieldIdentifierViaDominateIn: Iterator[nodes.FieldIdentifier] = dominateIn.collectAll[nodes.FieldIdentifier]
 
   /** Traverse to FIELD_IDENTIFIER via POST_DOMINATE OUT edge.
     */
-  def _fieldIdentifierViaPostDominateOut: Iterator[nodes.FieldIdentifier] = node._postDominateOut.iterator.collectAll[nodes.FieldIdentifier]
+  def fieldIdentifierViaPostDominateOut: Iterator[nodes.FieldIdentifier] = postDominateOut.collectAll[nodes.FieldIdentifier]
 
   /** Traverse to IDENTIFIER via CDG IN edge.
     */
-  def _identifierViaCdgIn: Iterator[nodes.Identifier] = node._cdgIn.iterator.collectAll[nodes.Identifier]
+  def identifierViaCdgIn: Iterator[nodes.Identifier] = cdgIn.collectAll[nodes.Identifier]
 
   /** Traverse to IDENTIFIER via DOMINATE IN edge.
     */
-  def _identifierViaDominateIn: Iterator[nodes.Identifier] = node._dominateIn.iterator.collectAll[nodes.Identifier]
+  def identifierViaDominateIn: Iterator[nodes.Identifier] = dominateIn.collectAll[nodes.Identifier]
 
   /** Traverse to IDENTIFIER via POST_DOMINATE OUT edge.
     */
-  def _identifierViaPostDominateOut: Iterator[nodes.Identifier] = node._postDominateOut.iterator.collectAll[nodes.Identifier]
+  def identifierViaPostDominateOut: Iterator[nodes.Identifier] = postDominateOut.collectAll[nodes.Identifier]
 
   /** Traverse to JUMP_TARGET via CDG IN edge.
     */
-  def _jumpTargetViaCdgIn: Iterator[nodes.JumpTarget] = node._cdgIn.iterator.collectAll[nodes.JumpTarget]
+  def jumpTargetViaCdgIn: Iterator[nodes.JumpTarget] = cdgIn.collectAll[nodes.JumpTarget]
 
   /** Traverse to JUMP_TARGET via POST_DOMINATE OUT edge.
     */
-  def _jumpTargetViaPostDominateOut: Iterator[nodes.JumpTarget] = node._postDominateOut.iterator.collectAll[nodes.JumpTarget]
+  def jumpTargetViaPostDominateOut: Iterator[nodes.JumpTarget] = postDominateOut.collectAll[nodes.JumpTarget]
 
   /** Traverse to LITERAL via CDG IN edge.
     */
-  def _literalViaCdgIn: Iterator[nodes.Literal] = node._cdgIn.iterator.collectAll[nodes.Literal]
+  def literalViaCdgIn: Iterator[nodes.Literal] = cdgIn.collectAll[nodes.Literal]
 
   /** Traverse to LITERAL via DOMINATE IN edge.
     */
-  def _literalViaDominateIn: Iterator[nodes.Literal] = node._dominateIn.iterator.collectAll[nodes.Literal]
+  def literalViaDominateIn: Iterator[nodes.Literal] = dominateIn.collectAll[nodes.Literal]
 
   /** Traverse to LITERAL via POST_DOMINATE OUT edge.
     */
-  def _literalViaPostDominateOut: Iterator[nodes.Literal] = node._postDominateOut.iterator.collectAll[nodes.Literal]
+  def literalViaPostDominateOut: Iterator[nodes.Literal] = postDominateOut.collectAll[nodes.Literal]
 
   /** Traverse to METHOD via AST IN edge.
     */
-  def _methodViaAstIn: nodes.Method = {
-    try { node._astIn.iterator.collectAll[nodes.Method].next() }
+  def methodViaAstIn: nodes.Method = {
+    try { astIn.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
         throw new flatgraph.SchemaViolationException(
@@ -101,226 +100,266 @@ final class AccessNeighborsForMethodReturn(val node: nodes.MethodReturn) extends
 
   /** Traverse to METHOD via DOMINATE IN edge.
     */
-  def _methodViaDominateIn: Iterator[nodes.Method] = node._dominateIn.iterator.collectAll[nodes.Method]
+  def methodViaDominateIn: Iterator[nodes.Method] = dominateIn.collectAll[nodes.Method]
 
   /** Traverse to METHOD via POST_DOMINATE OUT edge.
     */
-  def _methodViaPostDominateOut: Iterator[nodes.Method] = node._postDominateOut.iterator.collectAll[nodes.Method]
+  def methodViaPostDominateOut: Iterator[nodes.Method] = postDominateOut.collectAll[nodes.Method]
 
   /** Traverse to METHOD_REF via CDG IN edge.
     */
-  def _methodRefViaCdgIn: Iterator[nodes.MethodRef] = node._cdgIn.iterator.collectAll[nodes.MethodRef]
+  def methodRefViaCdgIn: Iterator[nodes.MethodRef] = cdgIn.collectAll[nodes.MethodRef]
 
   /** Traverse to METHOD_REF via DOMINATE IN edge.
     */
-  def _methodRefViaDominateIn: Iterator[nodes.MethodRef] = node._dominateIn.iterator.collectAll[nodes.MethodRef]
+  def methodRefViaDominateIn: Iterator[nodes.MethodRef] = dominateIn.collectAll[nodes.MethodRef]
 
   /** Traverse to METHOD_REF via POST_DOMINATE OUT edge.
     */
-  def _methodRefViaPostDominateOut: Iterator[nodes.MethodRef] = node._postDominateOut.iterator.collectAll[nodes.MethodRef]
+  def methodRefViaPostDominateOut: Iterator[nodes.MethodRef] = postDominateOut.collectAll[nodes.MethodRef]
 
   /** Traverse to RETURN via CFG IN edge.
     */
-  def toReturn: Iterator[nodes.Return] = node._cfgIn.iterator.collectAll[nodes.Return]
+  @deprecated("please use toReturn instead")
+  def returnViaCfgIn: Iterator[nodes.Return] = toReturn
+
+  /** Traverse to RETURN via CFG IN edge.
+    */
+  def toReturn: Iterator[nodes.Return] = cfgIn.collectAll[nodes.Return]
 
   /** Traverse to RETURN via DOMINATE IN edge.
     */
-  def _returnViaDominateIn: Iterator[nodes.Return] = node._dominateIn.iterator.collectAll[nodes.Return]
+  def returnViaDominateIn: Iterator[nodes.Return] = dominateIn.collectAll[nodes.Return]
 
   /** Traverse to RETURN via POST_DOMINATE OUT edge.
     */
-  def _returnViaPostDominateOut: Iterator[nodes.Return] = node._postDominateOut.iterator.collectAll[nodes.Return]
+  def returnViaPostDominateOut: Iterator[nodes.Return] = postDominateOut.collectAll[nodes.Return]
 
   /** Traverse to RETURN via REACHING_DEF IN edge.
     */
-  def _returnViaReachingDefIn: Iterator[nodes.Return] = node._reachingDefIn.iterator.collectAll[nodes.Return]
+  def returnViaReachingDefIn: Iterator[nodes.Return] = reachingDefIn.collectAll[nodes.Return]
 
   /** Traverse to TAG via TAGGED_BY OUT edge.
     */
-  def _tagViaTaggedByOut: Iterator[nodes.Tag] = node._taggedByOut.iterator.collectAll[nodes.Tag]
+  def tagViaTaggedByOut: Iterator[nodes.Tag] = taggedByOut.collectAll[nodes.Tag]
 
   /** Traverse to TYPE via EVAL_TYPE OUT edge.
     */
-  def _typeViaEvalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.iterator.collectAll[nodes.Type]
+  def typeViaEvalTypeOut: Iterator[nodes.Type] = evalTypeOut.collectAll[nodes.Type]
 
   /** Traverse to TYPE_REF via CDG IN edge.
     */
-  def _typeRefViaCdgIn: Iterator[nodes.TypeRef] = node._cdgIn.iterator.collectAll[nodes.TypeRef]
+  def typeRefViaCdgIn: Iterator[nodes.TypeRef] = cdgIn.collectAll[nodes.TypeRef]
 
   /** Traverse to TYPE_REF via DOMINATE IN edge.
     */
-  def _typeRefViaDominateIn: Iterator[nodes.TypeRef] = node._dominateIn.iterator.collectAll[nodes.TypeRef]
+  def typeRefViaDominateIn: Iterator[nodes.TypeRef] = dominateIn.collectAll[nodes.TypeRef]
 
   /** Traverse to TYPE_REF via POST_DOMINATE OUT edge.
     */
-  def _typeRefViaPostDominateOut: Iterator[nodes.TypeRef] = node._postDominateOut.iterator.collectAll[nodes.TypeRef]
+  def typeRefViaPostDominateOut: Iterator[nodes.TypeRef] = postDominateOut.collectAll[nodes.TypeRef]
 
   /** Traverse to UNKNOWN via CDG IN edge.
     */
-  def _unknownViaCdgIn: Iterator[nodes.Unknown] = node._cdgIn.iterator.collectAll[nodes.Unknown]
+  def unknownViaCdgIn: Iterator[nodes.Unknown] = cdgIn.collectAll[nodes.Unknown]
 
   /** Traverse to UNKNOWN via DOMINATE IN edge.
     */
-  def _unknownViaDominateIn: Iterator[nodes.Unknown] = node._dominateIn.iterator.collectAll[nodes.Unknown]
+  def unknownViaDominateIn: Iterator[nodes.Unknown] = dominateIn.collectAll[nodes.Unknown]
 
   /** Traverse to UNKNOWN via POST_DOMINATE OUT edge.
     */
-  def _unknownViaPostDominateOut: Iterator[nodes.Unknown] = node._postDominateOut.iterator.collectAll[nodes.Unknown]
+  def unknownViaPostDominateOut: Iterator[nodes.Unknown] = postDominateOut.collectAll[nodes.Unknown]
 
+  def astIn: Iterator[nodes.Method] = node._astIn.cast[nodes.Method]
+
+  def cdgIn: Iterator[nodes.CfgNode] = node._cdgIn.cast[nodes.CfgNode]
+
+  def cfgIn: Iterator[nodes.Return] = node._cfgIn.cast[nodes.Return]
+
+  def dominateIn: Iterator[nodes.CfgNode] = node._dominateIn.cast[nodes.CfgNode]
+
+  def evalTypeOut: Iterator[nodes.Type] = node._evalTypeOut.cast[nodes.Type]
+
+  def postDominateOut: Iterator[nodes.CfgNode] = node._postDominateOut.cast[nodes.CfgNode]
+
+  def reachingDefIn: Iterator[nodes.Return] = node._reachingDefIn.cast[nodes.Return]
+
+  def taggedByOut: Iterator[nodes.Tag] = node._taggedByOut.cast[nodes.Tag]
 }
 
 final class AccessNeighborsForMethodReturnTraversal(val traversal: Iterator[nodes.MethodReturn]) extends AnyVal {
 
   /** Traverse to BLOCK via CDG IN edge.
     */
-  def _blockViaCdgIn: Iterator[nodes.Block] = traversal.flatMap(_._blockViaCdgIn)
+  def blockViaCdgIn: Iterator[nodes.Block] = traversal.flatMap(_.blockViaCdgIn)
 
   /** Traverse to BLOCK via DOMINATE IN edge.
     */
-  def _blockViaDominateIn: Iterator[nodes.Block] = traversal.flatMap(_._blockViaDominateIn)
+  def blockViaDominateIn: Iterator[nodes.Block] = traversal.flatMap(_.blockViaDominateIn)
 
   /** Traverse to BLOCK via POST_DOMINATE OUT edge.
     */
-  def _blockViaPostDominateOut: Iterator[nodes.Block] = traversal.flatMap(_._blockViaPostDominateOut)
+  def blockViaPostDominateOut: Iterator[nodes.Block] = traversal.flatMap(_.blockViaPostDominateOut)
 
   /** Traverse to CALL via CDG IN edge.
     */
-  def _callViaCdgIn: Iterator[nodes.Call] = traversal.flatMap(_._callViaCdgIn)
+  def callViaCdgIn: Iterator[nodes.Call] = traversal.flatMap(_.callViaCdgIn)
 
   /** Traverse to CALL via DOMINATE IN edge.
     */
-  def _callViaDominateIn: Iterator[nodes.Call] = traversal.flatMap(_._callViaDominateIn)
+  def callViaDominateIn: Iterator[nodes.Call] = traversal.flatMap(_.callViaDominateIn)
 
   /** Traverse to CALL via POST_DOMINATE OUT edge.
     */
-  def _callViaPostDominateOut: Iterator[nodes.Call] = traversal.flatMap(_._callViaPostDominateOut)
+  def callViaPostDominateOut: Iterator[nodes.Call] = traversal.flatMap(_.callViaPostDominateOut)
 
   /** Traverse to CONTROL_STRUCTURE via CDG IN edge.
     */
-  def _controlStructureViaCdgIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_._controlStructureViaCdgIn)
+  def controlStructureViaCdgIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaCdgIn)
 
   /** Traverse to CONTROL_STRUCTURE via DOMINATE IN edge.
     */
-  def _controlStructureViaDominateIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_._controlStructureViaDominateIn)
+  def controlStructureViaDominateIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaDominateIn)
 
   /** Traverse to CONTROL_STRUCTURE via POST_DOMINATE OUT edge.
     */
-  def _controlStructureViaPostDominateOut: Iterator[nodes.ControlStructure] = traversal.flatMap(_._controlStructureViaPostDominateOut)
+  def controlStructureViaPostDominateOut: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaPostDominateOut)
 
   /** Traverse to FIELD_IDENTIFIER via CDG IN edge.
     */
-  def _fieldIdentifierViaCdgIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_._fieldIdentifierViaCdgIn)
+  def fieldIdentifierViaCdgIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaCdgIn)
 
   /** Traverse to FIELD_IDENTIFIER via DOMINATE IN edge.
     */
-  def _fieldIdentifierViaDominateIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_._fieldIdentifierViaDominateIn)
+  def fieldIdentifierViaDominateIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaDominateIn)
 
   /** Traverse to FIELD_IDENTIFIER via POST_DOMINATE OUT edge.
     */
-  def _fieldIdentifierViaPostDominateOut: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_._fieldIdentifierViaPostDominateOut)
+  def fieldIdentifierViaPostDominateOut: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaPostDominateOut)
 
   /** Traverse to IDENTIFIER via CDG IN edge.
     */
-  def _identifierViaCdgIn: Iterator[nodes.Identifier] = traversal.flatMap(_._identifierViaCdgIn)
+  def identifierViaCdgIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaCdgIn)
 
   /** Traverse to IDENTIFIER via DOMINATE IN edge.
     */
-  def _identifierViaDominateIn: Iterator[nodes.Identifier] = traversal.flatMap(_._identifierViaDominateIn)
+  def identifierViaDominateIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaDominateIn)
 
   /** Traverse to IDENTIFIER via POST_DOMINATE OUT edge.
     */
-  def _identifierViaPostDominateOut: Iterator[nodes.Identifier] = traversal.flatMap(_._identifierViaPostDominateOut)
+  def identifierViaPostDominateOut: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaPostDominateOut)
 
   /** Traverse to JUMP_TARGET via CDG IN edge.
     */
-  def _jumpTargetViaCdgIn: Iterator[nodes.JumpTarget] = traversal.flatMap(_._jumpTargetViaCdgIn)
+  def jumpTargetViaCdgIn: Iterator[nodes.JumpTarget] = traversal.flatMap(_.jumpTargetViaCdgIn)
 
   /** Traverse to JUMP_TARGET via POST_DOMINATE OUT edge.
     */
-  def _jumpTargetViaPostDominateOut: Iterator[nodes.JumpTarget] = traversal.flatMap(_._jumpTargetViaPostDominateOut)
+  def jumpTargetViaPostDominateOut: Iterator[nodes.JumpTarget] = traversal.flatMap(_.jumpTargetViaPostDominateOut)
 
   /** Traverse to LITERAL via CDG IN edge.
     */
-  def _literalViaCdgIn: Iterator[nodes.Literal] = traversal.flatMap(_._literalViaCdgIn)
+  def literalViaCdgIn: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaCdgIn)
 
   /** Traverse to LITERAL via DOMINATE IN edge.
     */
-  def _literalViaDominateIn: Iterator[nodes.Literal] = traversal.flatMap(_._literalViaDominateIn)
+  def literalViaDominateIn: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaDominateIn)
 
   /** Traverse to LITERAL via POST_DOMINATE OUT edge.
     */
-  def _literalViaPostDominateOut: Iterator[nodes.Literal] = traversal.flatMap(_._literalViaPostDominateOut)
+  def literalViaPostDominateOut: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaPostDominateOut)
 
   /** Traverse to METHOD via AST IN edge.
     */
-  def _methodViaAstIn: Iterator[nodes.Method] = traversal.map(_._methodViaAstIn)
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.map(_.methodViaAstIn)
 
   /** Traverse to METHOD via DOMINATE IN edge.
     */
-  def _methodViaDominateIn: Iterator[nodes.Method] = traversal.flatMap(_._methodViaDominateIn)
+  def methodViaDominateIn: Iterator[nodes.Method] = traversal.flatMap(_.methodViaDominateIn)
 
   /** Traverse to METHOD via POST_DOMINATE OUT edge.
     */
-  def _methodViaPostDominateOut: Iterator[nodes.Method] = traversal.flatMap(_._methodViaPostDominateOut)
+  def methodViaPostDominateOut: Iterator[nodes.Method] = traversal.flatMap(_.methodViaPostDominateOut)
 
   /** Traverse to METHOD_REF via CDG IN edge.
     */
-  def _methodRefViaCdgIn: Iterator[nodes.MethodRef] = traversal.flatMap(_._methodRefViaCdgIn)
+  def methodRefViaCdgIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaCdgIn)
 
   /** Traverse to METHOD_REF via DOMINATE IN edge.
     */
-  def _methodRefViaDominateIn: Iterator[nodes.MethodRef] = traversal.flatMap(_._methodRefViaDominateIn)
+  def methodRefViaDominateIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaDominateIn)
 
   /** Traverse to METHOD_REF via POST_DOMINATE OUT edge.
     */
-  def _methodRefViaPostDominateOut: Iterator[nodes.MethodRef] = traversal.flatMap(_._methodRefViaPostDominateOut)
+  def methodRefViaPostDominateOut: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaPostDominateOut)
 
   /** Traverse to RETURN via CFG IN edge.
     */
   def toReturn: Iterator[nodes.Return] = traversal.flatMap(_.toReturn)
 
+  /** Traverse to RETURN via CFG IN edge.
+    */
+  @deprecated("please use toReturn instead")
+  def returnViaCfgIn: Iterator[nodes.Return] = traversal.flatMap(_.returnViaCfgIn)
+
   /** Traverse to RETURN via DOMINATE IN edge.
     */
-  def _returnViaDominateIn: Iterator[nodes.Return] = traversal.flatMap(_._returnViaDominateIn)
+  def returnViaDominateIn: Iterator[nodes.Return] = traversal.flatMap(_.returnViaDominateIn)
 
   /** Traverse to RETURN via POST_DOMINATE OUT edge.
     */
-  def _returnViaPostDominateOut: Iterator[nodes.Return] = traversal.flatMap(_._returnViaPostDominateOut)
+  def returnViaPostDominateOut: Iterator[nodes.Return] = traversal.flatMap(_.returnViaPostDominateOut)
 
   /** Traverse to RETURN via REACHING_DEF IN edge.
     */
-  def _returnViaReachingDefIn: Iterator[nodes.Return] = traversal.flatMap(_._returnViaReachingDefIn)
+  def returnViaReachingDefIn: Iterator[nodes.Return] = traversal.flatMap(_.returnViaReachingDefIn)
 
   /** Traverse to TAG via TAGGED_BY OUT edge.
     */
-  def _tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_._tagViaTaggedByOut)
+  def tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.tagViaTaggedByOut)
 
   /** Traverse to TYPE via EVAL_TYPE OUT edge.
     */
-  def _typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_._typeViaEvalTypeOut)
+  def typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_.typeViaEvalTypeOut)
 
   /** Traverse to TYPE_REF via CDG IN edge.
     */
-  def _typeRefViaCdgIn: Iterator[nodes.TypeRef] = traversal.flatMap(_._typeRefViaCdgIn)
+  def typeRefViaCdgIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaCdgIn)
 
   /** Traverse to TYPE_REF via DOMINATE IN edge.
     */
-  def _typeRefViaDominateIn: Iterator[nodes.TypeRef] = traversal.flatMap(_._typeRefViaDominateIn)
+  def typeRefViaDominateIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaDominateIn)
 
   /** Traverse to TYPE_REF via POST_DOMINATE OUT edge.
     */
-  def _typeRefViaPostDominateOut: Iterator[nodes.TypeRef] = traversal.flatMap(_._typeRefViaPostDominateOut)
+  def typeRefViaPostDominateOut: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaPostDominateOut)
 
   /** Traverse to UNKNOWN via CDG IN edge.
     */
-  def _unknownViaCdgIn: Iterator[nodes.Unknown] = traversal.flatMap(_._unknownViaCdgIn)
+  def unknownViaCdgIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaCdgIn)
 
   /** Traverse to UNKNOWN via DOMINATE IN edge.
     */
-  def _unknownViaDominateIn: Iterator[nodes.Unknown] = traversal.flatMap(_._unknownViaDominateIn)
+  def unknownViaDominateIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaDominateIn)
 
   /** Traverse to UNKNOWN via POST_DOMINATE OUT edge.
     */
-  def _unknownViaPostDominateOut: Iterator[nodes.Unknown] = traversal.flatMap(_._unknownViaPostDominateOut)
+  def unknownViaPostDominateOut: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaPostDominateOut)
 
+  def astIn: Iterator[nodes.Method] = traversal.flatMap(_.astIn)
+
+  def cdgIn: Iterator[nodes.CfgNode] = traversal.flatMap(_.cdgIn)
+
+  def cfgIn: Iterator[nodes.Return] = traversal.flatMap(_.cfgIn)
+
+  def dominateIn: Iterator[nodes.CfgNode] = traversal.flatMap(_.dominateIn)
+
+  def evalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_.evalTypeOut)
+
+  def postDominateOut: Iterator[nodes.CfgNode] = traversal.flatMap(_.postDominateOut)
+
+  def reachingDefIn: Iterator[nodes.Return] = traversal.flatMap(_.reachingDefIn)
+
+  def taggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.taggedByOut)
 }

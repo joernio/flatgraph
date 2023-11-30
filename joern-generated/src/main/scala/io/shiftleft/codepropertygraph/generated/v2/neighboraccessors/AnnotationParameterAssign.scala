@@ -7,46 +7,52 @@ final class AccessNeighborsForAnnotationParameterAssign(val node: nodes.Annotati
 
   /** Traverse to ANNOTATION via AST IN edge.
     */
-  def _annotationViaAstIn: Iterator[nodes.Annotation] = node._astIn.iterator.collectAll[nodes.Annotation]
+  def annotationViaAstIn: Iterator[nodes.Annotation] = astIn.collectAll[nodes.Annotation]
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */
-  def _annotationViaAstOut: Iterator[nodes.Annotation] = node._astOut.iterator.collectAll[nodes.Annotation]
+  def annotationViaAstOut: Iterator[nodes.Annotation] = astOut.collectAll[nodes.Annotation]
 
   /** Traverse to ANNOTATION_LITERAL via AST OUT edge.
     */
-  def _annotationLiteralViaAstOut: Iterator[nodes.AnnotationLiteral] = node._astOut.iterator.collectAll[nodes.AnnotationLiteral]
+  def annotationLiteralViaAstOut: Iterator[nodes.AnnotationLiteral] = astOut.collectAll[nodes.AnnotationLiteral]
 
   /** Traverse to ANNOTATION_PARAMETER via AST OUT edge.
     */
-  def _annotationParameterViaAstOut: Iterator[nodes.AnnotationParameter] = node._astOut.iterator.collectAll[nodes.AnnotationParameter]
+  def annotationParameterViaAstOut: Iterator[nodes.AnnotationParameter] = astOut.collectAll[nodes.AnnotationParameter]
 
   /** Traverse to ARRAY_INITIALIZER via AST OUT edge.
     */
-  def _arrayInitializerViaAstOut: Iterator[nodes.ArrayInitializer] = node._astOut.iterator.collectAll[nodes.ArrayInitializer]
+  def arrayInitializerViaAstOut: Iterator[nodes.ArrayInitializer] = astOut.collectAll[nodes.ArrayInitializer]
 
+  def astIn: Iterator[nodes.Annotation] = node._astIn.cast[nodes.Annotation]
+
+  def astOut: Iterator[nodes.AstNode] = node._astOut.cast[nodes.AstNode]
 }
 
 final class AccessNeighborsForAnnotationParameterAssignTraversal(val traversal: Iterator[nodes.AnnotationParameterAssign]) extends AnyVal {
 
   /** Traverse to ANNOTATION via AST IN edge.
     */
-  def _annotationViaAstIn: Iterator[nodes.Annotation] = traversal.flatMap(_._annotationViaAstIn)
+  def annotationViaAstIn: Iterator[nodes.Annotation] = traversal.flatMap(_.annotationViaAstIn)
 
   /** Traverse to ANNOTATION via AST OUT edge.
     */
-  def _annotationViaAstOut: Iterator[nodes.Annotation] = traversal.flatMap(_._annotationViaAstOut)
+  def annotationViaAstOut: Iterator[nodes.Annotation] = traversal.flatMap(_.annotationViaAstOut)
 
   /** Traverse to ANNOTATION_LITERAL via AST OUT edge.
     */
-  def _annotationLiteralViaAstOut: Iterator[nodes.AnnotationLiteral] = traversal.flatMap(_._annotationLiteralViaAstOut)
+  def annotationLiteralViaAstOut: Iterator[nodes.AnnotationLiteral] = traversal.flatMap(_.annotationLiteralViaAstOut)
 
   /** Traverse to ANNOTATION_PARAMETER via AST OUT edge.
     */
-  def _annotationParameterViaAstOut: Iterator[nodes.AnnotationParameter] = traversal.flatMap(_._annotationParameterViaAstOut)
+  def annotationParameterViaAstOut: Iterator[nodes.AnnotationParameter] = traversal.flatMap(_.annotationParameterViaAstOut)
 
   /** Traverse to ARRAY_INITIALIZER via AST OUT edge.
     */
-  def _arrayInitializerViaAstOut: Iterator[nodes.ArrayInitializer] = traversal.flatMap(_._arrayInitializerViaAstOut)
+  def arrayInitializerViaAstOut: Iterator[nodes.ArrayInitializer] = traversal.flatMap(_.arrayInitializerViaAstOut)
 
+  def astIn: Iterator[nodes.Annotation] = traversal.flatMap(_.astIn)
+
+  def astOut: Iterator[nodes.AstNode] = traversal.flatMap(_.astOut)
 }

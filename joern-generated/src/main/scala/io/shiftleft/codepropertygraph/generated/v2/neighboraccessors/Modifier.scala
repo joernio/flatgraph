@@ -7,16 +7,16 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
 
   /** Traverse to CONTROL_STRUCTURE via AST IN edge.
     */
-  def _controlStructureViaAstIn: Iterator[nodes.ControlStructure] = node._astIn.iterator.collectAll[nodes.ControlStructure]
+  def controlStructureViaAstIn: Iterator[nodes.ControlStructure] = astIn.collectAll[nodes.ControlStructure]
 
   /** Traverse to MEMBER via AST IN edge.
     */
-  def _memberViaAstIn: Iterator[nodes.Member] = node._astIn.iterator.collectAll[nodes.Member]
+  def memberViaAstIn: Iterator[nodes.Member] = astIn.collectAll[nodes.Member]
 
   /** Traverse to METHOD via AST IN edge.
     */
-  def _methodViaAstIn: nodes.Method = {
-    try { node._astIn.iterator.collectAll[nodes.Method].next() }
+  def methodViaAstIn: nodes.Method = {
+    try { astIn.collectAll[nodes.Method].next() }
     catch {
       case e: java.util.NoSuchElementException =>
         throw new flatgraph.SchemaViolationException(
@@ -28,8 +28,8 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
 
   /** Traverse to TYPE_DECL via AST IN edge.
     */
-  def _typeDeclViaAstIn: nodes.TypeDecl = {
-    try { node._astIn.iterator.collectAll[nodes.TypeDecl].next() }
+  def typeDeclViaAstIn: nodes.TypeDecl = {
+    try { astIn.collectAll[nodes.TypeDecl].next() }
     catch {
       case e: java.util.NoSuchElementException =>
         throw new flatgraph.SchemaViolationException(
@@ -41,30 +41,32 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
 
   /** Traverse to UNKNOWN via AST IN edge.
     */
-  def _unknownViaAstIn: Iterator[nodes.Unknown] = node._astIn.iterator.collectAll[nodes.Unknown]
+  def unknownViaAstIn: Iterator[nodes.Unknown] = astIn.collectAll[nodes.Unknown]
 
+  def astIn: Iterator[nodes.AstNode] = node._astIn.cast[nodes.AstNode]
 }
 
 final class AccessNeighborsForModifierTraversal(val traversal: Iterator[nodes.Modifier]) extends AnyVal {
 
   /** Traverse to CONTROL_STRUCTURE via AST IN edge.
     */
-  def _controlStructureViaAstIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_._controlStructureViaAstIn)
+  def controlStructureViaAstIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaAstIn)
 
   /** Traverse to MEMBER via AST IN edge.
     */
-  def _memberViaAstIn: Iterator[nodes.Member] = traversal.flatMap(_._memberViaAstIn)
+  def memberViaAstIn: Iterator[nodes.Member] = traversal.flatMap(_.memberViaAstIn)
 
   /** Traverse to METHOD via AST IN edge.
     */
-  def _methodViaAstIn: Iterator[nodes.Method] = traversal.map(_._methodViaAstIn)
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.map(_.methodViaAstIn)
 
   /** Traverse to TYPE_DECL via AST IN edge.
     */
-  def _typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.map(_._typeDeclViaAstIn)
+  def typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.map(_.typeDeclViaAstIn)
 
   /** Traverse to UNKNOWN via AST IN edge.
     */
-  def _unknownViaAstIn: Iterator[nodes.Unknown] = traversal.flatMap(_._unknownViaAstIn)
+  def unknownViaAstIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaAstIn)
 
+  def astIn: Iterator[nodes.AstNode] = traversal.flatMap(_.astIn)
 }
