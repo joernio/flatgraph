@@ -511,75 +511,73 @@ class DomainClassesGenerator(schema: Schema) {
       os.write(nodesRootDir / s"${nodeType.className}.scala", nodeSource)
     }
 
-    val schemaFile =
+    val schemaFile = {
+      val nodeLabelsSrc = nodeKindByNodeType.toList
+        .sortBy { case (_, kind) => kind }
+        .map { case (nodeType, _) => s"\"${nodeType.name}\"" }
+        .mkString(", ")
+      val edgePropertyAllocatorsSrc = edgeTypes.zipWithIndex.map { case (edge, idx) =>
+        edge.properties.headOption match {
+          case Some(p) if p.cardinality == Cardinality.ZeroOrOne => ???
+          case Some(p) =>
+            s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[?]].default)}) /* label = ${edge.name}, id = $idx */"
+          case None => "size => null"
+        }
+      }.mkString(", ")
+      val edgeFactoriesSrc = edgeTypes.map { e => s"(s, d, subseq, p) => new edges.${e.className}(s, d, subseq, p)" }.mkString(", ")
+      val nodeFactoriesSrc = nodeTypes.map { node => s"(g, seq) => new nodes.${node.className}(g, seq)" }.mkString(", ")
+      val nodePropertyAllocatorsSrc = (relevantProperties.map { p =>
+        s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
+      }.iterator ++ containedNames.map { _ => "size => new Array[flatgraph.GNode](size)" }).mkString(", ")
+      val nodePropertyByLabelSrc = containedIndexByName.toList
+          .sortBy { case (name, idx) => (idx, name) }
+          .map { case (name, idx) => s".updated(\"$name\", ${relevantProperties.size + idx})" }
+          .mkString
+      val containedNodesAsPropertyCases = nodeTypes
+        .flatMap(nt => nt.containedNodes.map((nt, _)))
+        .map { case (node, contained) =>
+          val propertyKind = relevantProperties.length + containedIndexByName(contained.localName)
+          s"    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
+        }
+        .toList
+        .sorted
+        .mkString("\n")
       s"""package $basePackage
          |import $basePackage.nodes
          |import $basePackage.edges
          |
          |object GraphSchema extends flatgraph.Schema {
-         |  val nodeLabels = Array(${nodeKindByNodeType.iterator.toList
-          .sortBy { case (_, kind) => kind }
-          .map { case (nodeType, _) => s"\"${nodeType.name}\"" }
-          .mkString(", ")})
+         |  val nodeLabels = Array($nodeLabelsSrc)
          |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
          |  val edgeLabels = Array(${edgeTypes.map { e => s"\"${e.name}\"" }.mkString(",  ")})
          |  val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
-         |  val edgePropertyAllocators: Array[Int => Array[?]] = Array(${edgeTypes.zipWithIndex
-          .map { case (edge, idx) =>
-            edge.properties.headOption match {
-              case Some(p) if p.cardinality == Cardinality.ZeroOrOne => ???
-              case Some(p) =>
-                s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[?]].default)}) /* label = ${edge.name}, id = $idx */"
-              case None => "size => null"
-            }
-          }
-          .mkString(", ")})
-         |  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array(${nodeTypes
-          .map { node => s"(g, seq) => new nodes.${node.className}(g, seq)" }
-          .mkString(", ")})
-         |  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array(${edgeTypes
-          .map { e => s"(s, d, subseq, p) => new edges.${e.className}(s, d, subseq, p)" }
-          .mkString(", ")})
-         |  val nodePropertyAllocators: Array[Int => Array[?]] = Array(${(relevantProperties.map { p =>
-          s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
-        }.iterator ++ containedNames.map { _ => "size => new Array[flatgraph.GNode](size)" }).mkString(", ")})
+         |  val edgePropertyAllocators: Array[Int => Array[?]] = Array($edgePropertyAllocatorsSrc)
+         |  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array($nodeFactoriesSrc)
+         |  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array($edgeFactoriesSrc)
+         |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
-         |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap${containedIndexByName.toList
-          .sortBy { case (name, idx) => (idx, name) }
-          .map { case (name, idx) => s".updated(\"$name\", ${relevantProperties.size + idx})" }
-          .mkString}
+         |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
          |
-         | override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
-         | override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
-         | override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
-         | override def getNodeKindByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-         | override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-         | override def getEdgeKindByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-         | override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String =
+         |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
+         |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
+         |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
+         |  override def getNodeKindByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+         |  override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
+         |  override def getEdgeKindByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+         |  override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
          |    if(propertyKind < ${relevantProperties.length}) normalNodePropertyNames(propertyKind)
-         |${nodeTypes
-          .flatMap { nt =>
-            nt.containedNodes.map {
-              (nt, _)
-            }
-          }
-          .map { case (node, contained) =>
-            s"    else if(propertyKind == ${relevantProperties.length + containedIndexByName(
-                contained.localName
-              )} && nodeKind == ${nodeKindByNodeType(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
-          }
-          .toList
-          .sorted
-          .mkString("\n")}
+         |    $containedNodesAsPropertyCases
          |    else null
+         |  }
          |
-         | override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-         | override def getNumberOfProperties: Int = ${relevantProperties.size + containedNames.size}
-         | override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
-         | override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
-         | override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
-         | override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
+         |  override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+         |  override def getNumberOfProperties: Int = ${relevantProperties.size + containedNames.size}
+         |  override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
+         |  override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
+         |  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
+         |  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
          |}""".stripMargin
+    }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
 
     // Accessors and traversals: start

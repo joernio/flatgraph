@@ -4,6 +4,7 @@ ThisBuild / scalaVersion := "3.3.1"
 publish / skip := true
 
 val slf4jVersion = "2.0.7"
+val scala2_12 = "2.12.18"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
@@ -27,14 +28,17 @@ lazy val domainClassesGenerator = project
   .in(file("domain-classes-generator"))
   .settings(
     name := "domain-classes-generator",
+    // scalaVersion := scala2_12, // since we consume it from an sbt plugin
+    scalacOptions := scalacOptionsFor2_12,
     libraryDependencies ++= Seq(
       "org.slf4j"          % "slf4j-simple" % slf4jVersion % Optional,
       "org.apache.commons" % "commons-text" % "1.10.0",
       "com.lihaoyi"       %% "os-lib"       % "0.9.1",
       "com.github.scopt"  %% "scopt"        % "4.1.0",
       ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
-    )
+    ),
   )
+
 
 lazy val odbConvert = project
   .in(file("odb-convert"))
@@ -78,6 +82,13 @@ ThisBuild / scalacOptions ++= Seq(
   "--release", "8",
   "-language:implicitConversions"
 )
+
+val scalacOptionsFor2_12 = Seq(
+  "-deprecation",
+  "-feature",
+  "-language:implicitConversions"
+)
+
 
 ThisBuild / compile / javacOptions ++= Seq(
   "-g", // debug symbols
