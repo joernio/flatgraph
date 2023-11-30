@@ -37,6 +37,31 @@ final class AccessNeighborsForClosureBinding(val node: nodes.ClosureBinding) ext
 }
 
 final class AccessNeighborsForClosureBindingTraversal(val traversal: Iterator[nodes.ClosureBinding]) extends AnyVal {
+
+  /** Traverse to LOCAL via CAPTURED_BY IN edge.
+    */
+  def localViaCapturedByIn: Iterator[nodes.Local] = traversal.flatMap(_.localViaCapturedByIn)
+
+  /** Traverse to LOCAL via REF OUT edge.
+    */
+  def localViaRefOut: Iterator[nodes.Local] = traversal.flatMap(_.localViaRefOut)
+
+  /** Traverse to METHOD_PARAMETER_IN via CAPTURED_BY IN edge.
+    */
+  def methodParameterInViaCapturedByIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.methodParameterInViaCapturedByIn)
+
+  /** Traverse to METHOD_PARAMETER_IN via REF OUT edge.
+    */
+  def methodParameterInViaRefOut: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.methodParameterInViaRefOut)
+
+  /** Traverse to METHOD_REF via CAPTURE IN edge.
+    */
+  def methodRefViaCaptureIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaCaptureIn)
+
+  /** Traverse to TYPE_REF via CAPTURE IN edge.
+    */
+  def typeRefViaCaptureIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaCaptureIn)
+
   def captureIn: Iterator[nodes.Expression] = traversal.flatMap(_.captureIn)
 
   def capturedByIn: Iterator[nodes.AstNode] = traversal.flatMap(_.capturedByIn)

@@ -35,6 +35,27 @@ final class AccessNeighborsForNamespaceBlock(val node: nodes.NamespaceBlock) ext
 }
 
 final class AccessNeighborsForNamespaceBlockTraversal(val traversal: Iterator[nodes.NamespaceBlock]) extends AnyVal {
+
+  /** Traverse to FILE via AST IN edge.
+    */
+  def fileViaAstIn: Iterator[nodes.File] = traversal.flatMap(_.fileViaAstIn)
+
+  /** Traverse to FILE via SOURCE_FILE OUT edge.
+    */
+  def fileViaSourceFileOut: Iterator[nodes.File] = traversal.flatMap(_.fileViaSourceFileOut)
+
+  /** Traverse to METHOD via AST OUT edge.
+    */
+  def methodViaAstOut: Iterator[nodes.Method] = traversal.flatMap(_.methodViaAstOut)
+
+  /** Traverse to NAMESPACE via REF OUT edge.
+    */
+  def namespaceViaRefOut: Iterator[nodes.Namespace] = traversal.flatMap(_.namespaceViaRefOut)
+
+  /** Traverse to TYPE_DECL via AST OUT edge.
+    */
+  def typeDeclViaAstOut: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaAstOut)
+
   def astIn: Iterator[nodes.File] = traversal.flatMap(_.astIn)
 
   def astOut: Iterator[nodes.AstNode] = traversal.flatMap(_.astOut)

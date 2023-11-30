@@ -109,6 +109,89 @@ final class AccessNeighborsForTypeDecl(val node: nodes.TypeDecl) extends AnyVal 
 }
 
 final class AccessNeighborsForTypeDeclTraversal(val traversal: Iterator[nodes.TypeDecl]) extends AnyVal {
+
+  /** Traverse to ANNOTATION via AST OUT edge.
+    */
+  def annotationViaAstOut: Iterator[nodes.Annotation] = traversal.flatMap(_.annotationViaAstOut)
+
+  /** Traverse to BINDING via BINDS OUT edge.
+    */
+  def bindingViaBindsOut: Iterator[nodes.Binding] = traversal.flatMap(_.bindingViaBindsOut)
+
+  /** Traverse to FILE via CONTAINS IN edge.
+    */
+  def fileViaContainsIn: Iterator[nodes.File] = traversal.flatMap(_.fileViaContainsIn)
+
+  /** Traverse to FILE via SOURCE_FILE OUT edge.
+    */
+  def fileViaSourceFileOut: Iterator[nodes.File] = traversal.flatMap(_.fileViaSourceFileOut)
+
+  /** Traverse to IMPORT via AST OUT edge.
+    */
+  def importViaAstOut: Iterator[nodes.Import] = traversal.flatMap(_.importViaAstOut)
+
+  /** Traverse to MEMBER via AST OUT edge.
+    */
+  def memberViaAstOut: Iterator[nodes.Member] = traversal.flatMap(_.memberViaAstOut)
+
+  /** Traverse to METHOD via AST IN edge.
+    */
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.flatMap(_.methodViaAstIn)
+
+  /** Traverse to METHOD via AST OUT edge.
+    */
+  def methodViaAstOut: Iterator[nodes.Method] = traversal.flatMap(_.methodViaAstOut)
+
+  /** Traverse to METHOD via CONTAINS OUT edge.
+    */
+  def methodViaContainsOut: Iterator[nodes.Method] = traversal.flatMap(_.methodViaContainsOut)
+
+  /** Traverse to MODIFIER via AST OUT edge.
+    */
+  def modifierViaAstOut: Iterator[nodes.Modifier] = traversal.flatMap(_.modifierViaAstOut)
+
+  /** Traverse to NAMESPACE_BLOCK via AST IN edge.
+    */
+  def namespaceBlock: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_.namespaceBlock)
+
+  /** Traverse to NAMESPACE_BLOCK via AST IN edge.
+    */
+  @deprecated("please use namespaceBlock instead")
+  def namespaceBlockViaAstIn: Iterator[nodes.NamespaceBlock] = traversal.flatMap(_.namespaceBlockViaAstIn)
+
+  /** Traverse to TAG via TAGGED_BY OUT edge.
+    */
+  def tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.tagViaTaggedByOut)
+
+  /** Traverse to TYPE via ALIAS_OF OUT edge.
+    */
+  def aliasedType: Iterator[nodes.Type] = traversal.flatMap(_.aliasedType)
+
+  /** Traverse to TYPE via ALIAS_OF OUT edge.
+    */
+  @deprecated("please use aliasedType instead")
+  def typeViaAliasOfOut: Iterator[nodes.Type] = traversal.flatMap(_.typeViaAliasOfOut)
+
+  /** Traverse to TYPE via INHERITS_FROM OUT edge.
+    */
+  def typeViaInheritsFromOut: Iterator[nodes.Type] = traversal.flatMap(_.typeViaInheritsFromOut)
+
+  /** Traverse to TYPE via REF IN edge.
+    */
+  def typeViaRefIn: Iterator[nodes.Type] = traversal.flatMap(_.typeViaRefIn)
+
+  /** Traverse to TYPE_DECL via AST IN edge.
+    */
+  def typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaAstIn)
+
+  /** Traverse to TYPE_DECL via AST OUT edge.
+    */
+  def typeDeclViaAstOut: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaAstOut)
+
+  /** Traverse to TYPE_PARAMETER via AST OUT edge.
+    */
+  def typeParameterViaAstOut: Iterator[nodes.TypeParameter] = traversal.flatMap(_.typeParameterViaAstOut)
+
   def aliasOfOut: Iterator[nodes.Type] = traversal.flatMap(_.aliasOfOut)
 
   def astIn: Iterator[nodes.AstNode] = traversal.flatMap(_.astIn)

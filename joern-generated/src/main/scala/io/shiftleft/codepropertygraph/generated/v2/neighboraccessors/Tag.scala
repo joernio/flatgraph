@@ -103,6 +103,99 @@ final class AccessNeighborsForTag(val node: nodes.Tag) extends AnyVal {
 }
 
 final class AccessNeighborsForTagTraversal(val traversal: Iterator[nodes.Tag]) extends AnyVal {
+
+  /** Traverse to BLOCK via TAGGED_BY IN edge.
+    */
+  def blockViaTaggedByIn: Iterator[nodes.Block] = traversal.flatMap(_.blockViaTaggedByIn)
+
+  /** Traverse to CALL via TAGGED_BY IN edge.
+    */
+  def callViaTaggedByIn: Iterator[nodes.Call] = traversal.flatMap(_.callViaTaggedByIn)
+
+  /** Traverse to CONTROL_STRUCTURE via TAGGED_BY IN edge.
+    */
+  def controlStructureViaTaggedByIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaTaggedByIn)
+
+  /** Traverse to FIELD_IDENTIFIER via TAGGED_BY IN edge.
+    */
+  def fieldIdentifierViaTaggedByIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaTaggedByIn)
+
+  /** Traverse to FILE via TAGGED_BY IN edge.
+    */
+  def fileViaTaggedByIn: Iterator[nodes.File] = traversal.flatMap(_.fileViaTaggedByIn)
+
+  /** Traverse to IDENTIFIER via TAGGED_BY IN edge.
+    */
+  def identifierViaTaggedByIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaTaggedByIn)
+
+  /** Traverse to IMPORT via TAGGED_BY IN edge.
+    */
+  def importViaTaggedByIn: Iterator[nodes.Import] = traversal.flatMap(_.importViaTaggedByIn)
+
+  /** Traverse to JUMP_TARGET via TAGGED_BY IN edge.
+    */
+  def jumpTargetViaTaggedByIn: Iterator[nodes.JumpTarget] = traversal.flatMap(_.jumpTargetViaTaggedByIn)
+
+  /** Traverse to LITERAL via TAGGED_BY IN edge.
+    */
+  def literalViaTaggedByIn: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaTaggedByIn)
+
+  /** Traverse to LOCAL via TAGGED_BY IN edge.
+    */
+  def localViaTaggedByIn: Iterator[nodes.Local] = traversal.flatMap(_.localViaTaggedByIn)
+
+  /** Traverse to MEMBER via TAGGED_BY IN edge.
+    */
+  def memberViaTaggedByIn: Iterator[nodes.Member] = traversal.flatMap(_.memberViaTaggedByIn)
+
+  /** Traverse to METHOD via TAGGED_BY IN edge.
+    */
+  def methodViaTaggedByIn: Iterator[nodes.Method] = traversal.flatMap(_.methodViaTaggedByIn)
+
+  /** Traverse to METHOD_PARAMETER_IN via TAGGED_BY IN edge.
+    */
+  def methodParameterInViaTaggedByIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.methodParameterInViaTaggedByIn)
+
+  /** Traverse to METHOD_PARAMETER_OUT via TAGGED_BY IN edge.
+    */
+  def methodParameterOutViaTaggedByIn: Iterator[nodes.MethodParameterOut] = traversal.flatMap(_.methodParameterOutViaTaggedByIn)
+
+  /** Traverse to METHOD_REF via TAGGED_BY IN edge.
+    */
+  def methodRefViaTaggedByIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaTaggedByIn)
+
+  /** Traverse to METHOD_RETURN via TAGGED_BY IN edge.
+    */
+  def methodReturnViaTaggedByIn: Iterator[nodes.MethodReturn] = traversal.flatMap(_.methodReturnViaTaggedByIn)
+
+  /** Traverse to RETURN via TAGGED_BY IN edge.
+    */
+  def returnViaTaggedByIn: Iterator[nodes.Return] = traversal.flatMap(_.returnViaTaggedByIn)
+
+  /** Traverse to TAG via TAGGED_BY IN edge.
+    */
+  def tagViaTaggedByIn: Iterator[nodes.Tag] = traversal.flatMap(_.tagViaTaggedByIn)
+
+  /** Traverse to TAG via TAGGED_BY OUT edge.
+    */
+  def tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.tagViaTaggedByOut)
+
+  /** Traverse to TEMPLATE_DOM via TAGGED_BY IN edge.
+    */
+  def templateDomViaTaggedByIn: Iterator[nodes.TemplateDom] = traversal.flatMap(_.templateDomViaTaggedByIn)
+
+  /** Traverse to TYPE_DECL via TAGGED_BY IN edge.
+    */
+  def typeDeclViaTaggedByIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaTaggedByIn)
+
+  /** Traverse to TYPE_REF via TAGGED_BY IN edge.
+    */
+  def typeRefViaTaggedByIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaTaggedByIn)
+
+  /** Traverse to UNKNOWN via TAGGED_BY IN edge.
+    */
+  def unknownViaTaggedByIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaTaggedByIn)
+
   def taggedByIn: Iterator[nodes.StoredNode] = traversal.flatMap(_.taggedByIn)
 
   def taggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.taggedByOut)

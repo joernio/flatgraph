@@ -131,6 +131,95 @@ final class AccessNeighborsForMethodParameterIn(val node: nodes.MethodParameterI
 }
 
 final class AccessNeighborsForMethodParameterInTraversal(val traversal: Iterator[nodes.MethodParameterIn]) extends AnyVal {
+
+  /** Traverse to ANNOTATION via AST OUT edge.
+    */
+  def annotationViaAstOut: Iterator[nodes.Annotation] = traversal.flatMap(_.annotationViaAstOut)
+
+  /** Traverse to CALL via REACHING_DEF OUT edge.
+    */
+  def callViaReachingDefOut: Iterator[nodes.Call] = traversal.flatMap(_.callViaReachingDefOut)
+
+  /** Traverse to CLOSURE_BINDING via CAPTURED_BY OUT edge.
+    */
+  def closureBindingViaCapturedByOut: Iterator[nodes.ClosureBinding] = traversal.flatMap(_.closureBindingViaCapturedByOut)
+
+  /** Traverse to CLOSURE_BINDING via REF IN edge.
+    */
+  def closureBindingViaRefIn: Iterator[nodes.ClosureBinding] = traversal.flatMap(_.closureBindingViaRefIn)
+
+  /** Traverse to IDENTIFIER via REACHING_DEF OUT edge.
+    */
+  def identifierViaReachingDefOut: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaReachingDefOut)
+
+  /** Traverse to LITERAL via REACHING_DEF OUT edge.
+    */
+  def literalViaReachingDefOut: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaReachingDefOut)
+
+  /** Traverse to METHOD via REACHING_DEF IN edge.
+    */
+  def methodViaReachingDefIn: Iterator[nodes.Method] = traversal.flatMap(_.methodViaReachingDefIn)
+
+  /** Traverse to METHOD_PARAMETER_OUT via REACHING_DEF OUT edge.
+    */
+  def methodParameterOutViaReachingDefOut: Iterator[nodes.MethodParameterOut] = traversal.flatMap(_.methodParameterOutViaReachingDefOut)
+
+  /** Traverse to METHOD_REF via REACHING_DEF OUT edge.
+    */
+  def methodRefViaReachingDefOut: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaReachingDefOut)
+
+  /** Traverse to RETURN via REACHING_DEF OUT edge.
+    */
+  def returnViaReachingDefOut: Iterator[nodes.Return] = traversal.flatMap(_.returnViaReachingDefOut)
+
+  /** Traverse to TAG via TAGGED_BY OUT edge.
+    */
+  def tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.tagViaTaggedByOut)
+
+  /** Traverse to TYPE_REF via REACHING_DEF OUT edge.
+    */
+  def typeRefViaReachingDefOut: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaReachingDefOut)
+
+  /** Traverse to UNKNOWN via AST OUT edge.
+    */
+  def unknownViaAstOut: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaAstOut)
+
+  /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
+    */
+  def referencingIdentifiers: Iterator[nodes.Identifier] = traversal.flatMap(_.referencingIdentifiers)
+
+  /** Places (identifier) where this parameter is being referenced Traverse to IDENTIFIER via REF IN edge.
+    */
+  @deprecated("please use referencingIdentifiers instead")
+  def identifierViaRefIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaRefIn)
+
+  /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
+    */
+  def asOutput: Iterator[nodes.MethodParameterOut] = traversal.flatMap(_.asOutput)
+
+  /** Traverse to corresponding formal output parameter Traverse to METHOD_PARAMETER_OUT via PARAMETER_LINK OUT edge.
+    */
+  @deprecated("please use asOutput instead")
+  def methodParameterOutViaParameterLinkOut: Iterator[nodes.MethodParameterOut] = traversal.flatMap(_.methodParameterOutViaParameterLinkOut)
+
+  /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
+    */
+  def method: Iterator[nodes.Method] = traversal.map(_.method)
+
+  /** Traverse to method associated with this formal parameter Traverse to METHOD via AST IN edge.
+    */
+  @deprecated("please use method instead")
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.map(_.methodViaAstIn)
+
+  /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
+    */
+  def typ: Iterator[nodes.Type] = traversal.map(_.typ)
+
+  /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
+    */
+  @deprecated("please use typ instead")
+  def typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.map(_.typeViaEvalTypeOut)
+
   def astIn: Iterator[nodes.Method] = traversal.flatMap(_.astIn)
 
   def astOut: Iterator[nodes.Expression] = traversal.flatMap(_.astOut)

@@ -32,6 +32,19 @@ final class AccessNeighborsForTypeParameter(val node: nodes.TypeParameter) exten
 }
 
 final class AccessNeighborsForTypeParameterTraversal(val traversal: Iterator[nodes.TypeParameter]) extends AnyVal {
+
+  /** Traverse to METHOD via AST IN edge.
+    */
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.map(_.methodViaAstIn)
+
+  /** Traverse to TYPE_ARGUMENT via BINDS_TO IN edge.
+    */
+  def typeArgumentViaBindsToIn: Iterator[nodes.TypeArgument] = traversal.flatMap(_.typeArgumentViaBindsToIn)
+
+  /** Traverse to TYPE_DECL via AST IN edge.
+    */
+  def typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaAstIn)
+
   def astIn: Iterator[nodes.AstNode] = traversal.flatMap(_.astIn)
 
   def bindsToIn: Iterator[nodes.TypeArgument] = traversal.flatMap(_.bindsToIn)

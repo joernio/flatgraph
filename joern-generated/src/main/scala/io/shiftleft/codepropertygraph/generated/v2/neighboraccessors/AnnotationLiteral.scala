@@ -13,5 +13,10 @@ final class AccessNeighborsForAnnotationLiteral(val node: nodes.AnnotationLitera
 }
 
 final class AccessNeighborsForAnnotationLiteralTraversal(val traversal: Iterator[nodes.AnnotationLiteral]) extends AnyVal {
+
+  /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
+    */
+  def annotationParameterAssignViaAstIn: Iterator[nodes.AnnotationParameterAssign] = traversal.flatMap(_.annotationParameterAssignViaAstIn)
+
   def astIn: Iterator[nodes.AnnotationParameterAssign] = traversal.flatMap(_.astIn)
 }

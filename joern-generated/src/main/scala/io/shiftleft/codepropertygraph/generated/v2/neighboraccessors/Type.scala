@@ -105,6 +105,93 @@ final class AccessNeighborsForType(val node: nodes.Type) extends AnyVal {
 }
 
 final class AccessNeighborsForTypeTraversal(val traversal: Iterator[nodes.Type]) extends AnyVal {
+
+  /** Traverse to ARRAY_INITIALIZER via EVAL_TYPE IN edge.
+    */
+  def arrayInitializerViaEvalTypeIn: Iterator[nodes.ArrayInitializer] = traversal.flatMap(_.arrayInitializerViaEvalTypeIn)
+
+  /** Traverse to BLOCK via EVAL_TYPE IN edge.
+    */
+  def blockViaEvalTypeIn: Iterator[nodes.Block] = traversal.flatMap(_.blockViaEvalTypeIn)
+
+  /** Traverse to CALL via EVAL_TYPE IN edge.
+    */
+  def callViaEvalTypeIn: Iterator[nodes.Call] = traversal.flatMap(_.callViaEvalTypeIn)
+
+  /** Traverse to CONTROL_STRUCTURE via EVAL_TYPE IN edge.
+    */
+  def controlStructureViaEvalTypeIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaEvalTypeIn)
+
+  /** Traverse to IDENTIFIER via EVAL_TYPE IN edge.
+    */
+  def identifierViaEvalTypeIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaEvalTypeIn)
+
+  /** Traverse to LITERAL via EVAL_TYPE IN edge.
+    */
+  def literalViaEvalTypeIn: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaEvalTypeIn)
+
+  /** Traverse to LOCAL via EVAL_TYPE IN edge.
+    */
+  def localViaEvalTypeIn: Iterator[nodes.Local] = traversal.flatMap(_.localViaEvalTypeIn)
+
+  /** Traverse to MEMBER via EVAL_TYPE IN edge.
+    */
+  def memberViaEvalTypeIn: Iterator[nodes.Member] = traversal.flatMap(_.memberViaEvalTypeIn)
+
+  /** Traverse to METHOD_PARAMETER_IN via EVAL_TYPE IN edge.
+    */
+  def methodParameterInViaEvalTypeIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.methodParameterInViaEvalTypeIn)
+
+  /** Traverse to METHOD_PARAMETER_OUT via EVAL_TYPE IN edge.
+    */
+  def methodParameterOutViaEvalTypeIn: Iterator[nodes.MethodParameterOut] = traversal.flatMap(_.methodParameterOutViaEvalTypeIn)
+
+  /** Traverse to METHOD_REF via EVAL_TYPE IN edge.
+    */
+  def methodRefViaEvalTypeIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaEvalTypeIn)
+
+  /** Traverse to METHOD_RETURN via EVAL_TYPE IN edge.
+    */
+  def methodReturnViaEvalTypeIn: Iterator[nodes.MethodReturn] = traversal.flatMap(_.methodReturnViaEvalTypeIn)
+
+  /** Traverse to TYPE_ARGUMENT via AST OUT edge.
+    */
+  def typeArgumentViaAstOut: Iterator[nodes.TypeArgument] = traversal.flatMap(_.typeArgumentViaAstOut)
+
+  /** Traverse to TYPE_ARGUMENT via REF IN edge.
+    */
+  def typeArgumentViaRefIn: Iterator[nodes.TypeArgument] = traversal.flatMap(_.typeArgumentViaRefIn)
+
+  /** Traverse to TYPE_DECL via INHERITS_FROM IN edge.
+    */
+  def typeDeclViaInheritsFromIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaInheritsFromIn)
+
+  /** Traverse to TYPE_REF via EVAL_TYPE IN edge.
+    */
+  def typeRefViaEvalTypeIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaEvalTypeIn)
+
+  /** Traverse to UNKNOWN via EVAL_TYPE IN edge.
+    */
+  def unknownViaEvalTypeIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaEvalTypeIn)
+
+  /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
+    */
+  def aliasTypeDecl: Iterator[nodes.TypeDecl] = traversal.flatMap(_.aliasTypeDecl)
+
+  /** Direct alias type declarations. Traverse to TYPE_DECL via ALIAS_OF IN edge.
+    */
+  @deprecated("please use aliasTypeDecl instead")
+  def typeDeclViaAliasOfIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaAliasOfIn)
+
+  /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
+    */
+  def referencedTypeDecl: Iterator[nodes.TypeDecl] = traversal.flatMap(_.referencedTypeDecl)
+
+  /** Type declaration which is referenced by this type. Traverse to TYPE_DECL via REF OUT edge.
+    */
+  @deprecated("please use referencedTypeDecl instead")
+  def typeDeclViaRefOut: Iterator[nodes.TypeDecl] = traversal.flatMap(_.typeDeclViaRefOut)
+
   def aliasOfIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.aliasOfIn)
 
   def astOut: Iterator[nodes.TypeArgument] = traversal.flatMap(_.astOut)

@@ -25,6 +25,19 @@ final class AccessNeighborsForArrayInitializer(val node: nodes.ArrayInitializer)
 }
 
 final class AccessNeighborsForArrayInitializerTraversal(val traversal: Iterator[nodes.ArrayInitializer]) extends AnyVal {
+
+  /** Traverse to ANNOTATION_PARAMETER_ASSIGN via AST IN edge.
+    */
+  def annotationParameterAssignViaAstIn: Iterator[nodes.AnnotationParameterAssign] = traversal.flatMap(_.annotationParameterAssignViaAstIn)
+
+  /** Traverse to LITERAL via AST OUT edge.
+    */
+  def literalViaAstOut: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaAstOut)
+
+  /** Traverse to TYPE via EVAL_TYPE OUT edge.
+    */
+  def typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_.typeViaEvalTypeOut)
+
   def astIn: Iterator[nodes.AnnotationParameterAssign] = traversal.flatMap(_.astIn)
 
   def astOut: Iterator[nodes.Literal] = traversal.flatMap(_.astOut)

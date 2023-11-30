@@ -47,5 +47,26 @@ final class AccessNeighborsForModifier(val node: nodes.Modifier) extends AnyVal 
 }
 
 final class AccessNeighborsForModifierTraversal(val traversal: Iterator[nodes.Modifier]) extends AnyVal {
+
+  /** Traverse to CONTROL_STRUCTURE via AST IN edge.
+    */
+  def controlStructureViaAstIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaAstIn)
+
+  /** Traverse to MEMBER via AST IN edge.
+    */
+  def memberViaAstIn: Iterator[nodes.Member] = traversal.flatMap(_.memberViaAstIn)
+
+  /** Traverse to METHOD via AST IN edge.
+    */
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.map(_.methodViaAstIn)
+
+  /** Traverse to TYPE_DECL via AST IN edge.
+    */
+  def typeDeclViaAstIn: Iterator[nodes.TypeDecl] = traversal.map(_.typeDeclViaAstIn)
+
+  /** Traverse to UNKNOWN via AST IN edge.
+    */
+  def unknownViaAstIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaAstIn)
+
   def astIn: Iterator[nodes.AstNode] = traversal.flatMap(_.astIn)
 }

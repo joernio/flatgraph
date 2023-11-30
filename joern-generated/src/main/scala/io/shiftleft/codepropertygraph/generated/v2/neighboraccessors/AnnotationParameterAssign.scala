@@ -31,6 +31,27 @@ final class AccessNeighborsForAnnotationParameterAssign(val node: nodes.Annotati
 }
 
 final class AccessNeighborsForAnnotationParameterAssignTraversal(val traversal: Iterator[nodes.AnnotationParameterAssign]) extends AnyVal {
+
+  /** Traverse to ANNOTATION via AST IN edge.
+    */
+  def annotationViaAstIn: Iterator[nodes.Annotation] = traversal.flatMap(_.annotationViaAstIn)
+
+  /** Traverse to ANNOTATION via AST OUT edge.
+    */
+  def annotationViaAstOut: Iterator[nodes.Annotation] = traversal.flatMap(_.annotationViaAstOut)
+
+  /** Traverse to ANNOTATION_LITERAL via AST OUT edge.
+    */
+  def annotationLiteralViaAstOut: Iterator[nodes.AnnotationLiteral] = traversal.flatMap(_.annotationLiteralViaAstOut)
+
+  /** Traverse to ANNOTATION_PARAMETER via AST OUT edge.
+    */
+  def annotationParameterViaAstOut: Iterator[nodes.AnnotationParameter] = traversal.flatMap(_.annotationParameterViaAstOut)
+
+  /** Traverse to ARRAY_INITIALIZER via AST OUT edge.
+    */
+  def arrayInitializerViaAstOut: Iterator[nodes.ArrayInitializer] = traversal.flatMap(_.arrayInitializerViaAstOut)
+
   def astIn: Iterator[nodes.Annotation] = traversal.flatMap(_.astIn)
 
   def astOut: Iterator[nodes.AstNode] = traversal.flatMap(_.astOut)

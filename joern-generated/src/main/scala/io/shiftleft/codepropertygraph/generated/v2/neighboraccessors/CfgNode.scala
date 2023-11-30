@@ -53,5 +53,50 @@ final class AccessNeighborsForCfgNode(val node: nodes.CfgNode) extends AnyVal {
 }
 
 final class AccessNeighborsForCfgNodeTraversal(val traversal: Iterator[nodes.CfgNode]) extends AnyVal {
+
+  /** Traverse to BLOCK via CFG IN edge.
+    */
+  def blockViaCfgIn: Iterator[nodes.Block] = traversal.flatMap(_.blockViaCfgIn)
+
+  /** Traverse to CALL via CFG IN edge.
+    */
+  def callViaCfgIn: Iterator[nodes.Call] = traversal.flatMap(_.callViaCfgIn)
+
+  /** Traverse to CONTROL_STRUCTURE via CFG IN edge.
+    */
+  def controlStructureViaCfgIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaCfgIn)
+
+  /** Traverse to FIELD_IDENTIFIER via CFG IN edge.
+    */
+  def fieldIdentifierViaCfgIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaCfgIn)
+
+  /** Traverse to IDENTIFIER via CFG IN edge.
+    */
+  def identifierViaCfgIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaCfgIn)
+
+  /** Traverse to JUMP_TARGET via CFG IN edge.
+    */
+  def jumpTargetViaCfgIn: Iterator[nodes.JumpTarget] = traversal.flatMap(_.jumpTargetViaCfgIn)
+
+  /** Traverse to LITERAL via CFG IN edge.
+    */
+  def literalViaCfgIn: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaCfgIn)
+
+  /** Traverse to METHOD via CFG IN edge.
+    */
+  def methodViaCfgIn: Iterator[nodes.Method] = traversal.flatMap(_.methodViaCfgIn)
+
+  /** Traverse to METHOD_REF via CFG IN edge.
+    */
+  def methodRefViaCfgIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaCfgIn)
+
+  /** Traverse to TYPE_REF via CFG IN edge.
+    */
+  def typeRefViaCfgIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaCfgIn)
+
+  /** Traverse to UNKNOWN via CFG IN edge.
+    */
+  def unknownViaCfgIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaCfgIn)
+
   def cfgIn: Iterator[nodes.CfgNode] = traversal.flatMap(_.cfgIn)
 }

@@ -1015,25 +1015,27 @@ class DomainClassesGenerator(schema: Schema) {
             s"def ${context.edgeAccessorName}: Iterator[nodes.${context.commonNeighborClassName}] = traversal.flatMap(_.${context.edgeAccessorName})"
           )
 
-          context.neighborContexts.foreach { case NeighborContext(adjacentNode, scaladoc, defaultMethodName, customStepName) =>
-            val mapOrFlatMap = if (adjacentNode.cardinality == EdgeType.Cardinality.One) "map" else "flatMap"
-            def methodImpl(name: String) =
-              s"def $name: Iterator[nodes.${adjacentNode.neighbor.className}] = traversal.$mapOrFlatMap(_.$name)"
-            customStepName match {
-              case None =>
-                s"""$scaladoc
+          context.neighborContexts
+            .map { case NeighborContext(adjacentNode, scaladoc, defaultMethodName, customStepName) =>
+              val mapOrFlatMap = if (adjacentNode.cardinality == EdgeType.Cardinality.One) "map" else "flatMap"
+              def methodImpl(name: String) =
+                s"def $name: Iterator[nodes.${adjacentNode.neighbor.className}] = traversal.$mapOrFlatMap(_.$name)"
+              customStepName match {
+                case None =>
+                  s"""$scaladoc
                    |${methodImpl(defaultMethodName)}
                    |""".stripMargin
-              case Some(customStepName) =>
-                s"""$scaladoc
+                case Some(customStepName) =>
+                  s"""$scaladoc
                    |${methodImpl(customStepName)}
                    |
                    |$scaladoc
-                   |@deprecated("please use $customStepName instead"
+                   |@deprecated("please use $customStepName instead")
                    |${methodImpl(defaultMethodName)}
                    |""".stripMargin
+              }
             }
-          }
+            .foreach(stepImplementations.addOne)
         }
 
         if (stepImplementations.result().isEmpty) {

@@ -127,6 +127,106 @@ final class AccessNeighborsForMethodParameterOut(val node: nodes.MethodParameter
 }
 
 final class AccessNeighborsForMethodParameterOutTraversal(val traversal: Iterator[nodes.MethodParameterOut]) extends AnyVal {
+
+  /** Traverse to BLOCK via REACHING_DEF IN edge.
+    */
+  def blockViaReachingDefIn: Iterator[nodes.Block] = traversal.flatMap(_.blockViaReachingDefIn)
+
+  /** Traverse to CALL via REACHING_DEF IN edge.
+    */
+  def callViaReachingDefIn: Iterator[nodes.Call] = traversal.flatMap(_.callViaReachingDefIn)
+
+  /** Traverse to CALL via REACHING_DEF OUT edge.
+    */
+  def callViaReachingDefOut: Iterator[nodes.Call] = traversal.flatMap(_.callViaReachingDefOut)
+
+  /** Traverse to CONTROL_STRUCTURE via REACHING_DEF IN edge.
+    */
+  def controlStructureViaReachingDefIn: Iterator[nodes.ControlStructure] = traversal.flatMap(_.controlStructureViaReachingDefIn)
+
+  /** Traverse to IDENTIFIER via REACHING_DEF IN edge.
+    */
+  def identifierViaReachingDefIn: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaReachingDefIn)
+
+  /** Traverse to IDENTIFIER via REACHING_DEF OUT edge.
+    */
+  def identifierViaReachingDefOut: Iterator[nodes.Identifier] = traversal.flatMap(_.identifierViaReachingDefOut)
+
+  /** Traverse to LITERAL via REACHING_DEF IN edge.
+    */
+  def literalViaReachingDefIn: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaReachingDefIn)
+
+  /** Traverse to LITERAL via REACHING_DEF OUT edge.
+    */
+  def literalViaReachingDefOut: Iterator[nodes.Literal] = traversal.flatMap(_.literalViaReachingDefOut)
+
+  /** Traverse to METHOD via AST IN edge.
+    */
+  def method: Iterator[nodes.Method] = traversal.map(_.method)
+
+  /** Traverse to METHOD via AST IN edge.
+    */
+  @deprecated("please use method instead")
+  def methodViaAstIn: Iterator[nodes.Method] = traversal.map(_.methodViaAstIn)
+
+  /** Traverse to METHOD via REACHING_DEF IN edge.
+    */
+  def methodViaReachingDefIn: Iterator[nodes.Method] = traversal.flatMap(_.methodViaReachingDefIn)
+
+  /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
+    */
+  def asInput: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.asInput)
+
+  /** Traverse to METHOD_PARAMETER_IN via PARAMETER_LINK IN edge.
+    */
+  @deprecated("please use asInput instead")
+  def methodParameterInViaParameterLinkIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.methodParameterInViaParameterLinkIn)
+
+  /** Traverse to METHOD_PARAMETER_IN via REACHING_DEF IN edge.
+    */
+  def methodParameterInViaReachingDefIn: Iterator[nodes.MethodParameterIn] = traversal.flatMap(_.methodParameterInViaReachingDefIn)
+
+  /** Traverse to METHOD_REF via REACHING_DEF IN edge.
+    */
+  def methodRefViaReachingDefIn: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaReachingDefIn)
+
+  /** Traverse to METHOD_REF via REACHING_DEF OUT edge.
+    */
+  def methodRefViaReachingDefOut: Iterator[nodes.MethodRef] = traversal.flatMap(_.methodRefViaReachingDefOut)
+
+  /** Traverse to RETURN via REACHING_DEF IN edge.
+    */
+  def returnViaReachingDefIn: Iterator[nodes.Return] = traversal.flatMap(_.returnViaReachingDefIn)
+
+  /** Traverse to RETURN via REACHING_DEF OUT edge.
+    */
+  def returnViaReachingDefOut: Iterator[nodes.Return] = traversal.flatMap(_.returnViaReachingDefOut)
+
+  /** Traverse to TAG via TAGGED_BY OUT edge.
+    */
+  def tagViaTaggedByOut: Iterator[nodes.Tag] = traversal.flatMap(_.tagViaTaggedByOut)
+
+  /** Traverse to TYPE_REF via REACHING_DEF IN edge.
+    */
+  def typeRefViaReachingDefIn: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaReachingDefIn)
+
+  /** Traverse to TYPE_REF via REACHING_DEF OUT edge.
+    */
+  def typeRefViaReachingDefOut: Iterator[nodes.TypeRef] = traversal.flatMap(_.typeRefViaReachingDefOut)
+
+  /** Traverse to UNKNOWN via REACHING_DEF IN edge.
+    */
+  def unknownViaReachingDefIn: Iterator[nodes.Unknown] = traversal.flatMap(_.unknownViaReachingDefIn)
+
+  /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
+    */
+  def typ: Iterator[nodes.Type] = traversal.flatMap(_.typ)
+
+  /** Traverse to parameter type Traverse to TYPE via EVAL_TYPE OUT edge.
+    */
+  @deprecated("please use typ instead")
+  def typeViaEvalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_.typeViaEvalTypeOut)
+
   def astIn: Iterator[nodes.Method] = traversal.flatMap(_.astIn)
 
   def evalTypeOut: Iterator[nodes.Type] = traversal.flatMap(_.evalTypeOut)

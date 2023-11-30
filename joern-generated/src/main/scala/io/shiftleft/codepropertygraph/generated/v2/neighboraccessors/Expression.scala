@@ -25,6 +25,19 @@ final class AccessNeighborsForExpression(val node: nodes.Expression) extends Any
 }
 
 final class AccessNeighborsForExpressionTraversal(val traversal: Iterator[nodes.Expression]) extends AnyVal {
+
+  /** Traverse to TEMPLATE_DOM via ARGUMENT OUT edge.
+    */
+  def templateDomViaArgumentOut: Iterator[nodes.TemplateDom] = traversal.flatMap(_.templateDomViaArgumentOut)
+
+  /** Traverse to TEMPLATE_DOM via AST IN edge.
+    */
+  def templateDomViaAstIn: Iterator[nodes.TemplateDom] = traversal.flatMap(_.templateDomViaAstIn)
+
+  /** Traverse to TEMPLATE_DOM via REACHING_DEF IN edge.
+    */
+  def templateDomViaReachingDefIn: Iterator[nodes.TemplateDom] = traversal.flatMap(_.templateDomViaReachingDefIn)
+
   def argumentOut: Iterator[nodes.TemplateDom] = traversal.flatMap(_.argumentOut)
 
   def astIn: Iterator[nodes.TemplateDom] = traversal.flatMap(_.astIn)

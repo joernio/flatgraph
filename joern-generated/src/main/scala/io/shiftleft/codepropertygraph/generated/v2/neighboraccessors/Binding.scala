@@ -47,6 +47,25 @@ final class AccessNeighborsForBinding(val node: nodes.Binding) extends AnyVal {
 }
 
 final class AccessNeighborsForBindingTraversal(val traversal: Iterator[nodes.Binding]) extends AnyVal {
+
+  /** Traverse to METHOD via REF OUT edge.
+    */
+  def boundMethod: Iterator[nodes.Method] = traversal.map(_.boundMethod)
+
+  /** Traverse to METHOD via REF OUT edge.
+    */
+  @deprecated("please use boundMethod instead")
+  def methodViaRefOut: Iterator[nodes.Method] = traversal.map(_.methodViaRefOut)
+
+  /** Traverse to TYPE_DECL via BINDS IN edge.
+    */
+  def bindingTypeDecl: Iterator[nodes.TypeDecl] = traversal.map(_.bindingTypeDecl)
+
+  /** Traverse to TYPE_DECL via BINDS IN edge.
+    */
+  @deprecated("please use bindingTypeDecl instead")
+  def typeDeclViaBindsIn: Iterator[nodes.TypeDecl] = traversal.map(_.typeDeclViaBindsIn)
+
   def bindsIn: Iterator[nodes.TypeDecl] = traversal.flatMap(_.bindsIn)
 
   def refOut: Iterator[nodes.Method] = traversal.flatMap(_.refOut)
