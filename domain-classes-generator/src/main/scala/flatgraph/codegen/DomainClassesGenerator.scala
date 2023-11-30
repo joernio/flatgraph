@@ -1,26 +1,30 @@
 package flatgraph.codegen
 
+import java.nio.file.Path
+
 import flatgraph.codegen.CodeSnippets.FilterSteps
-import overflowdb.codegen.CodeGen.ConstantContext
-
-import java.nio.file.{Path, Paths}
-import overflowdb.codegen.Helpers
-import overflowdb.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
-import overflowdb.schema.Property.{Cardinality, Default, ValueType}
-
+import flatgraph.codegen.Helpers
+import flatgraph.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 import scala.collection.mutable
 
 class DomainClassesGenerator(schema: Schema) {
-  def main(args: Array[String]): Unit = {
-    if (args.length < 1) {
-      System.err.println("usage: CodeGen <outputDir>")
-      System.exit(1)
-    }
-    val outputDir = Paths.get(args(0))
-    run(outputDir)
+  import DomainClassesGenerator.ConstantContext
+  private var enableScalafmt = true
+  private var scalafmtConfig: Option[Path] = None
+
+  def disableScalafmt: this.type = {
+    enableScalafmt = false
+    this
   }
 
-  def run(outputDir: Path): Unit = {
+  /** replace entire default scalafmt config (from Formatter.defaultScalafmtConfig) with custom config */
+  def withScalafmtConfig(path: Path): this.type = {
+    this.scalafmtConfig = Option(path)
+    this
+  }
+
+  def run(outputDir: Path): Seq[Path] = {
     val basePackage = schema.basePackage + ".v2"
 
     val outputDir0 = {
@@ -798,6 +802,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     writeConstants(outputDir0, schema, KindContexts(nodeKindByNodeType, edgeKindByEdgeType, propertyKindByProperty))
     // end `run`
+    os.walk(outputDir0).map(_.toNIO)
   }
 
   private def writeConstants(outputDir: os.Path, schema: Schema, kindContexts: KindContexts): Seq[os.Path] = {
@@ -1256,4 +1261,8 @@ class DomainClassesGenerator(schema: Schema) {
 
   }
 
+}
+
+object DomainClassesGenerator {
+  case class ConstantContext(name: String, source: String, documentation: Option[String])
 }

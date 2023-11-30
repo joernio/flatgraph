@@ -25,15 +25,14 @@ lazy val core = project
 
 lazy val domainClassesGenerator = project
   .in(file("domain-classes-generator"))
-  .dependsOn(core)
   .settings(
     name := "domain-classes-generator",
     libraryDependencies ++= Seq(
-      // TODO take out 'overflowdb-codegen' dependency and make the schema (and reused functionality from the codegen) part of this build
-      "io.shiftleft"      %% "overflowdb-codegen" % "2.105",
-      "org.slf4j"          % "slf4j-simple"       % slf4jVersion % Optional,
-      "org.apache.commons" % "commons-text"       % "1.10.0",
-      "com.lihaoyi"       %% "os-lib"             % "0.9.1",
+      "org.slf4j"          % "slf4j-simple" % slf4jVersion % Optional,
+      "org.apache.commons" % "commons-text" % "1.10.0",
+      "com.lihaoyi"       %% "os-lib"       % "0.9.1",
+      "com.github.scopt"  %% "scopt"        % "4.1.0",
+      ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
     )
   )
 
