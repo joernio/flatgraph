@@ -1,7 +1,6 @@
 package flatgraph.schema
 
-import flatgraph.codegen.DefaultNodeTypes
-import flatgraph.codegen.Helpers._
+import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.Default
 
 import scala.collection.mutable
@@ -48,7 +47,6 @@ abstract class AbstractNodeType(val name: String, val comment: Option[String], v
 
   /** all node types that extend this node */
   def subtypes(allNodes: Set[AbstractNodeType]): Set[AbstractNodeType]
-
 
   private var _starterName: Option[String] = Some(camelCase(name))
 
@@ -303,10 +301,7 @@ object Constant {
     new Constant[A](name, value, valueType, stringToOption(comment), schemaInfo)
 }
 
-case class NeighborInfoForEdge(edge: EdgeType, nodeInfos: Seq[NeighborInfoForNode], offsetPosition: Int) {
-  lazy val deriveNeighborNodeType: Option[AbstractNodeType] =
-    deriveCommonRootType(nodeInfos.map(_.neighborNode).toSet)
-}
+case class NeighborInfoForEdge(edge: EdgeType, nodeInfos: Seq[NeighborInfoForNode], offsetPosition: Int)
 
 case class NeighborInfoForNode(
   neighborNode: AbstractNodeType,
@@ -331,9 +326,6 @@ case class NeighborInfoForNode(
       case EdgeType.Cardinality.One => 2
     }.head
   }
-
-  lazy val returnType: String =
-    fullScalaType(neighborNode, consolidatedCardinality)
 
 }
 

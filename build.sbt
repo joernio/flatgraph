@@ -10,7 +10,7 @@ val scala2_12 = "2.12.18"
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
   * internal repositories. */
 lazy val root = (project in file("."))
-  .aggregate(core, domainClassesGenerator, sbtPlugin, odbConvert)
+  .aggregate(core, schema, domainClassesGenerator, sbtPlugin, odbConvert)
 
 lazy val core = project
   .in(file("core"))
@@ -25,8 +25,17 @@ lazy val core = project
     )
   )
 
+lazy val schema = project
+  .in(file("schema"))
+  .settings(
+    name := "schema",
+    scalaVersion := scala2_12, // since we consume it from an sbt plugin
+    scalacOptions := scalacOptionsFor2_12,
+  )
+
 lazy val domainClassesGenerator = project
   .in(file("domain-classes-generator"))
+  .dependsOn(schema)
   .settings(
     name := "domain-classes-generator",
     scalaVersion := scala2_12, // since we consume it from an sbt plugin
@@ -62,6 +71,8 @@ lazy val odbConvert = project
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )
+
+
 
 // TODO bring back as a separate subproject which isn't included in project list by default
 // lazy val benchmarks = project

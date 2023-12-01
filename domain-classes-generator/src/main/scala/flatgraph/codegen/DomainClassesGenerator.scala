@@ -3,7 +3,9 @@ package flatgraph.codegen
 import java.nio.file.Path
 
 import flatgraph.codegen.CodeSnippets.FilterSteps
+import flatgraph.codegen.Helpers._
 import flatgraph.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 import scala.collection.mutable
 
@@ -79,8 +81,8 @@ class DomainClassesGenerator(schema: Schema) {
     // format: off
     val edgeAccess = edgeTypes.map { et =>
       s"""
-       |final def _${Helpers.camelCase(et.name)}Out: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
-       |final def _${Helpers.camelCase(et.name)}In: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |final def _${camelCase(et.name)}Out: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |final def _${camelCase(et.name)}In: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
        |""".stripMargin
     }.mkString("\n")
     // format: on
@@ -152,7 +154,7 @@ class DomainClassesGenerator(schema: Schema) {
         val newNodeDefs: Seq[String] = {
           for {
             property <- newProperties
-            pname = Helpers.camelCase(property.name)
+            pname = camelCase(property.name)
             ptyp  = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
           } yield property.cardinality match {
             case Cardinality.List =>
@@ -216,11 +218,11 @@ class DomainClassesGenerator(schema: Schema) {
           p.cardinality match {
             case _: Cardinality.One[?] =>
               s"""{
-                 |  def ${Helpers.camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
+                 |  def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
                  |}""".stripMargin
             case Cardinality.ZeroOrOne =>
               s"""{
-                 |  def ${Helpers.camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
+                 |  def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
                  |}""".stripMargin
             case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
           }
@@ -271,7 +273,7 @@ class DomainClassesGenerator(schema: Schema) {
       val productElements = mutable.ArrayBuffer.empty[String]
 
       for (p <- nodeType.properties) {
-        val pname = Helpers.camelCase(p.name)
+        val pname = camelCase(p.name)
         productElements.addOne(pname)
         val ptyp = unpackTypeUnboxed(p.valueType, false, false)
         p.cardinality match {
@@ -355,7 +357,7 @@ class DomainClassesGenerator(schema: Schema) {
       val propertyNames = nodeType.properties
         .map(_.name)
         .map { name =>
-          val camelCase = Helpers.camelCaseCaps(name)
+          val camelCase = camelCaseCaps(name)
           s"""val $camelCase = $basePackage.PropertyNames.$name"""
         }
         .mkString("\n")
@@ -592,7 +594,7 @@ class DomainClassesGenerator(schema: Schema) {
     val baseConvertTrav                    = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
     for (p <- relevantProperties) {
-      val funName = Helpers.camelCase(p.name)
+      val funName = camelCase(p.name)
       accessorsForConcreteStoredNodes.addOne(
         s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
@@ -627,7 +629,7 @@ class DomainClassesGenerator(schema: Schema) {
         else { "New" + baseType.className }
         val accessors = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
-          val funName = Helpers.camelCase(p.name)
+          val funName = camelCase(p.name)
           accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
           | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
           | case newNode: nodes.${newName} => newNode.${funName}
@@ -733,13 +735,13 @@ class DomainClassesGenerator(schema: Schema) {
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
       s"""def ${sanitizeReservedNames(
-          Helpers.camelCase(typ.name)
+          camelCase(typ.name)
         )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
     }.toList
     val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
-      s"""def ${sanitizeReservedNames(Helpers.camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
+      s"""def ${sanitizeReservedNames(camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
           .filter { _.extendzRecursively.contains(baseType) }
-          .map { t => "this." + sanitizeReservedNames(Helpers.camelCase(t.name)) }
+          .map { t => "this." + sanitizeReservedNames(camelCase(t.name)) }
           .mkString(", ")}).flatten"""
     }.toList
     val domainShortName = schema.domainShortName
@@ -882,7 +884,7 @@ class DomainClassesGenerator(schema: Schema) {
             s"""flatgraph.MultiPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
         }
         s"""$documentation
-           |val ${Helpers.camelCaseCaps(property.name)} = $propertyKeyConstantImpl
+           |val ${camelCaseCaps(property.name)} = $propertyKeyConstantImpl
            |""".stripMargin
       }
     }.mkString("\n\n")
@@ -911,7 +913,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     case class NeighborContext(adjacentNode: AdjacentNode, scaladoc: String, defaultMethodName: String, customStepName: Option[String])
     case class NeighborContextsByEdge(direction: Direction.Value, edge: EdgeType, neighborContexts: Seq[NeighborContext]) {
-      lazy val edgeAccessorName = Helpers.camelCase(edge.name + "_" + direction)
+      lazy val edgeAccessorName = camelCase(edge.name + "_" + direction)
 
       /** common root type across neighbors via this edge */
       lazy val commonNeighborClassName =
@@ -937,7 +939,7 @@ class DomainClassesGenerator(schema: Schema) {
               val neighborContexts = adjacentNodes.map { adjacentNode =>
                 val scaladoc = s"""/** ${adjacentNode.customStepDoc.getOrElse("")}
                                 | * Traverse to ${adjacentNode.neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
-                val defaultMethodName = Helpers.camelCase(s"${adjacentNode.neighbor.name}_Via_${edge.name}_$direction")
+                val defaultMethodName = camelCase(s"${adjacentNode.neighbor.name}_Via_${edge.name}_$direction")
                 NeighborContext(adjacentNode, scaladoc, defaultMethodName, adjacentNode.customStepName)
               }
               NeighborContextsByEdge(direction, edge, neighborContexts)
@@ -994,7 +996,7 @@ class DomainClassesGenerator(schema: Schema) {
         if (stepImplementations.result().isEmpty) {
           ""
         } else {
-          val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
+          val className = camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}")
           conversions.addOne(s"""implicit def accessNeighborsFor${nodeType.className}(node: nodes.${nodeType.className}): $className =
                |  new $className(node)""".stripMargin)
           s"""final class $className(val node: nodes.${nodeType.className}) extends AnyVal {
@@ -1037,7 +1039,7 @@ class DomainClassesGenerator(schema: Schema) {
         if (stepImplementations.result().isEmpty) {
           ""
         } else {
-          val className = Helpers.camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traversal")
+          val className = camelCaseCaps(s"Access_Neighbors_For_${nodeType.name}_Traversal")
           conversions.addOne(
             s"""implicit def accessNeighborsFor${nodeType.className}Traversal(traversal: IterableOnce[nodes.${nodeType.className}]): $className =
                |  new $className(traversal.iterator)""".stripMargin
@@ -1104,7 +1106,7 @@ class DomainClassesGenerator(schema: Schema) {
   def generateRootTypesTraversals(schema: Schema): String = {
     val neighborSteps = schema.edgeTypes
       .map { edgeType =>
-        val stepNameBase = s"_${Helpers.camelCase(edgeType.name)}"
+        val stepNameBase = s"_${camelCase(edgeType.name)}"
         s"""
          |final def ${stepNameBase}Out: Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}Out)
          |final def ${stepNameBase}In:  Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}In)
@@ -1122,7 +1124,7 @@ class DomainClassesGenerator(schema: Schema) {
   }
 
   def generatePropertyTraversals(property: Property[?], propertyId: Int): String = {
-    val nameCamelCase = Helpers.camelCase(property.name)
+    val nameCamelCase = camelCase(property.name)
     val baseType      = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
     val cardinality   = property.cardinality
 

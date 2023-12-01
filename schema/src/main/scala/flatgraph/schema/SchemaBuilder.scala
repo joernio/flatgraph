@@ -1,6 +1,6 @@
 package flatgraph.schema
 
-import flatgraph.codegen.Helpers._
+import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.ValueType
 
 import scala.collection.mutable

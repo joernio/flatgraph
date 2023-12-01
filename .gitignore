@@ -10,6 +10,7 @@
 /codescience-generated/target/
 /benchmarks/target/
 /core/target/
+/schema/target/
 /sbt-flatgraph/target/
 /cpg.bin
 /cpg.bin.tmp

@@ -3,20 +3,10 @@ package flatgraph.codegen
 import java.lang.System.lineSeparator
 import flatgraph.algorithm.LowestCommonAncestors
 import flatgraph.schema._
+import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.ValueType
 
 import scala.annotation.tailrec
-
-object DefaultNodeTypes {
-  /** root type for all nodes */
-  val AbstractNodeName = "ABSTRACT_NODE"
-  val AbstractNodeClassname = "AbstractNode"
-
-  val StoredNodeName = "STORED_NODE"
-  val StoredNodeClassname = "StoredNode"
-
-  lazy val AllClassNames = Set(AbstractNodeClassname, StoredNodeClassname)
-}
 
 object Helpers {
 
@@ -26,11 +16,6 @@ object Helpers {
 
   def quote(string: String): String =
     s""""$string""""
-
-  def stringToOption(s: String): Option[String] = s.trim match {
-    case "" => None
-    case nonEmptyString => Some(nonEmptyString)
-  }
 
   def typeFor[A](property: Property[A]): String = {
     val isMandatory = property.isMandatory
@@ -78,20 +63,6 @@ object Helpers {
 
   def isNodeBaseTrait(baseTraits: Seq[NodeBaseType], nodeName: String): Boolean =
     nodeName == DefaultNodeTypes.AbstractNodeName || baseTraits.map(_.name).contains(nodeName)
-
-  def camelCaseCaps(snakeCase: String): String = camelCase(snakeCase).capitalize
-
-  def camelCase(snakeCase: String): String = {
-    val corrected = // correcting for internal keys, like "_KEY" -> drop leading underscore
-      if (snakeCase.startsWith("_")) snakeCase.drop(1)
-      else snakeCase
-
-    val elements: Seq[String] = corrected.split("_").map(_.toLowerCase).toList match {
-      case head :: tail => head :: tail.map(_.capitalize)
-      case Nil          => Nil
-    }
-    elements.mkString
-  }
 
   /**
    * Converts from camelCase to snake_case
