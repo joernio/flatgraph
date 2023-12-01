@@ -9,7 +9,8 @@ val scala2_12 = "2.12.18"
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
   * internal repositories. */
-lazy val root = (project in file(".")).aggregate(core, domainClassesGenerator, odbConvert)
+lazy val root = (project in file("."))
+  .aggregate(core, domainClassesGenerator, sbtPlugin, odbConvert)
 
 lazy val core = project
   .in(file("core"))
@@ -39,6 +40,16 @@ lazy val domainClassesGenerator = project
     ),
   )
 
+lazy val sbtPlugin = project
+  .in(file("sbt-flatgraph"))
+  .dependsOn(domainClassesGenerator)
+  .enablePlugins(SbtPlugin)
+  .settings(
+    name := "sbt-flatgraph",
+    scalaVersion := scala2_12,
+    scalacOptions := scalacOptionsFor2_12,
+    addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2"),
+  )
 
 lazy val odbConvert = project
   .in(file("odb-convert"))
