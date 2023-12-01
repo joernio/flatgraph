@@ -12,16 +12,20 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
 
   object autoImport {
     val generateDomainClasses = taskKey[File]("regenerates domain classes for the given schema; return value is the output root directory")
-    val generateDomainClassesCheck = taskKey[Unit]("Fails if domain classes are not generated with the latest versions. Analogous to `scalafmtCheck`, i.e. run this on PRs.")
-    val outputDir = settingKey[File]("target directory for the generated domain classes, e.g. `Projects.domainClasses/scalaSource`")
+    val generateDomainClassesCheck = taskKey[Unit](
+      "Fails if domain classes are not generated with the latest versions. Analogous to `scalafmtCheck`, i.e. run this on PRs."
+    )
+    val outputDir       = settingKey[File]("target directory for the generated domain classes, e.g. `Projects.domainClasses/scalaSource`")
     val classWithSchema = settingKey[String]("class with schema field, e.g. `org.example.MyDomain$`")
-    val fieldName = settingKey[String]("(static) field name for schema within the specified `classWithSchema` with schema field, e.g. `org.example.MyDomain$`")
+    val fieldName = settingKey[String](
+      "(static) field name for schema within the specified `classWithSchema` with schema field, e.g. `org.example.MyDomain$`"
+    )
     val disableFormatting = settingKey[Boolean]("disable automatic scalafmt invocation")
 
     lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
-      generateDomainClasses := generateDomainClassesTask.value,
-      generateDomainClassesCheck := generateDomainClassesCheckTask.value,
-      generateDomainClasses/disableFormatting := false,
+      generateDomainClasses                     := generateDomainClassesTask.value,
+      generateDomainClassesCheck                := generateDomainClassesCheckTask.value,
+      generateDomainClasses / disableFormatting := false
     )
   }
   import autoImport._
@@ -36,25 +40,25 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
 
   lazy val generateDomainClassesTask = {
     Def.taskDyn {
-      val classWithSchemaValue = (generateDomainClasses/classWithSchema).value
-      val fieldNameValue = (generateDomainClasses/fieldName).value
-      val outputDirValue = (generateDomainClasses/outputDir).value
+      val classWithSchemaValue = (generateDomainClasses / classWithSchema).value
+      val fieldNameValue       = (generateDomainClasses / fieldName).value
+      val outputDirValue       = (generateDomainClasses / outputDir).value
 
       val disableFormattingParamMaybe =
-        if ((generateDomainClasses/disableFormatting).value) "--noformat"
+        if ((generateDomainClasses / disableFormatting).value) "--noformat"
         else ""
 
       val scalafmtConfigFileMaybe = {
-        val file = (generateDomainClasses/scalafmtConfig).value
+        val file = (generateDomainClasses / scalafmtConfig).value
         if (file.exists) s"--scalafmtConfig=$file"
         else ""
       }
 
       val schemaAndDependenciesHashFile = target.value / "flatgraph-schema-and-dependencies.md5"
-      val dependenciesFile = target.value / "dependenciesCP.txt" // includes codegen version!
+      val dependenciesFile              = target.value / "dependenciesCP.txt" // includes codegen version!
       IO.write(dependenciesFile, dependencyClasspath.value.mkString(System.lineSeparator))
       lazy val currentSchemaAndDependenciesHash =
-        FileUtils.md5(sourceDirectory.value, baseDirectory.value/"build.sbt", dependenciesFile)
+        FileUtils.md5(sourceDirectory.value, baseDirectory.value / "build.sbt", dependenciesFile)
       lazy val lastSchemaAndDependenciesHash: Option[String] =
         Try(IO.read(schemaAndDependenciesHashFile)).toOption
 
@@ -69,9 +73,11 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
         Def.task { outputDirValue }
       } else {
         Def.task {
-          (Compile/runMain).toTask(
-            s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$outputDirValue $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
-          ).value
+          (Compile / runMain)
+            .toTask(
+              s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$outputDirValue $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
+            )
+            .value
           IO.write(schemaAndDependenciesHashFile, currentSchemaAndDependenciesHash)
           outputDirValue
         }
@@ -82,33 +88,36 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
   lazy val generateDomainClassesCheckTask = {
     Def.taskDyn {
       streams.value.log.info("generateDomainClassesCheck: running codegen for comparison")
-      val classWithSchemaValue = (generateDomainClasses/classWithSchema).value
-      val fieldNameValue = (generateDomainClasses/fieldName).value
-      val outputDirValue = (generateDomainClasses/outputDir).value
-      val tempOutputDir = target.value / "generate-domain-classes-check"
+      val classWithSchemaValue = (generateDomainClasses / classWithSchema).value
+      val fieldNameValue       = (generateDomainClasses / fieldName).value
+      val outputDirValue       = (generateDomainClasses / outputDir).value
+      val tempOutputDir        = target.value / "generate-domain-classes-check"
 
       val disableFormattingParamMaybe =
-        if ((generateDomainClasses/disableFormatting).value) "--noformat"
+        if ((generateDomainClasses / disableFormatting).value) "--noformat"
         else ""
 
       val scalafmtConfigFileMaybe = {
-        val file = (generateDomainClasses/scalafmtConfig).value
+        val file = (generateDomainClasses / scalafmtConfig).value
         if (file.exists) s"--scalafmtConfig=$file"
         else ""
       }
 
       Def.task {
-        (Compile/runMain).toTask(
-          s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$tempOutputDir $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
-        ).value
+        (Compile / runMain)
+          .toTask(
+            s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$tempOutputDir $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
+          )
+          .value
 
         val generatedSourcesIdentical = FileUtils.md5(outputDirValue) == FileUtils.md5(tempOutputDir)
         if (!generatedSourcesIdentical) {
-          throw new MessageOnlyException("there are differences in the generated and the existing sources, please run `generateDomainClasses` to fix this")
+          throw new MessageOnlyException(
+            "there are differences in the generated and the existing sources, please run `generateDomainClasses` to fix this"
+          )
         }
       }
     }
   }
-
 
 }

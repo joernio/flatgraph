@@ -6,27 +6,28 @@ import java.nio.file.{Files, Path}
 /** Generates proto definitions for a given domain-specific schema. */
 class ProtoGen(schema: Schema) {
   import Helpers._
-  val basePackage = schema.basePackage
+  val basePackage  = schema.basePackage
   val edgesPackage = s"$basePackage.nodes"
 
   def run(outputDir: Path): Path = {
-    val protoOpts = schema.protoOptions.getOrElse(
-      throw new AssertionError("schema doesn't have any proto options configured"))
+    val protoOpts = schema.protoOptions.getOrElse(throw new AssertionError("schema doesn't have any proto options configured"))
 
     val enumsFromConstants: String = schema.constantsByCategory
-      .collect { case (categoryName, entries) if entries.exists(_.protoId.isDefined) =>
-        val categoryNameSingular = singularize(categoryName)
-        /* user can provide 'uncommon' enum mappings, if the enum should be called differently than just the category */
-        val protoEnumName = protoOpts.uncommonProtoEnumNameMappings.get(categoryName).getOrElse(categoryName)
-        val unknownEntry = snakeCase(categoryNameSingular).toUpperCase
+      .collect {
+        case (categoryName, entries) if entries.exists(_.protoId.isDefined) =>
+          val categoryNameSingular = singularize(categoryName)
+          /* user can provide 'uncommon' enum mappings, if the enum should be called differently than just the category */
+          val protoEnumName = protoOpts.uncommonProtoEnumNameMappings.get(categoryName).getOrElse(categoryName)
+          val unknownEntry  = snakeCase(categoryNameSingular).toUpperCase
 
-        s"""enum $protoEnumName {
+          s"""enum $protoEnumName {
            |  UNKNOWN_$unknownEntry = 0;
            |
            |  ${protoDefs(entries.map(enumEntryMaybe))}
            |}
            |""".stripMargin
-      }.mkString("\n")
+      }
+      .mkString("\n")
 
     val protoDef =
       s"""syntax = "proto3";
@@ -218,12 +219,16 @@ class ProtoGen(schema: Schema) {
   }
 
   private def protoDefs(enumCases: Seq[EnumEntryMaybe]): String = {
-    enumCases.filter(_.protoId.isDefined).sortBy(_.protoId.get).map { enumCase =>
-      val comment = enumCase.comment.map(comment => s"/* $comment */").getOrElse("")
-      s"""  $comment
+    enumCases
+      .filter(_.protoId.isDefined)
+      .sortBy(_.protoId.get)
+      .map { enumCase =>
+        val comment = enumCase.comment.map(comment => s"/* $comment */").getOrElse("")
+        s"""  $comment
          |  ${enumCase.name} = ${enumCase.protoId.get};
          |""".stripMargin
-    }.mkString("\n")
+      }
+      .mkString("\n")
   }
 
   private def enumEntryMaybe(constant: Constant[_]): EnumEntryMaybe =

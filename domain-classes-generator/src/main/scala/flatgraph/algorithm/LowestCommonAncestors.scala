@@ -1,11 +1,9 @@
 package flatgraph.algorithm
 
-/**
-  * Find the lowest common ancestor(s)
+/** Find the lowest common ancestor(s)
   *
-  * 1) for each relevant node, find their recursive parents
-  * 2) create the intersection of all of those sets
-  * 3) the LCA are those nodes, that do not have any children in that set
+  * 1) for each relevant node, find their recursive parents 2) create the intersection of all of those sets 3) the LCA are those nodes, that
+  * do not have any children in that set
   *
   * based on https://www.baeldung.com/cs/lowest-common-ancestor-acyclic-graph
   */
@@ -21,9 +19,8 @@ object LowestCommonAncestors {
       nodes
     } else {
       val (head, tail) = (nodes.head, nodes.tail)
-      val parentsIntersection = tail.foldLeft(parentsRecursive(head)) {
-        case (res, next) =>
-          res.intersect(parentsRecursive(next))
+      val parentsIntersection = tail.foldLeft(parentsRecursive(head)) { case (res, next) =>
+        res.intersect(parentsRecursive(next))
       }
 
       parentsIntersection.filter { node =>

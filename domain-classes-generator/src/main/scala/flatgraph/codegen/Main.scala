@@ -10,7 +10,8 @@ object Main {
     fieldName: String,
     outputDir: Path,
     disableScalafmt: Boolean = false,
-    scalafmtConfig: Option[Path] = None)
+    scalafmtConfig: Option[Path] = None
+  )
 
   def main(args: Array[String]) = {
     val builder = OParser.builder[Config]
@@ -36,7 +37,7 @@ object Main {
         opt[Path]("scalafmtConfig")
           .valueName(".scalafmt")
           .action((x, c) => c.copy(scalafmtConfig = Option(x)))
-          .text("path to scalafmt config file (e.g. .scalafmt)"),
+          .text("path to scalafmt config file (e.g. .scalafmt)")
       )
     }
 
@@ -45,12 +46,15 @@ object Main {
     def execute(config: Config): Seq[Path] = config match {
       case Config(classWithSchema, fieldName, outputDir, disableScalafmt, scalafmtConfig) =>
         val classLoader = getClass.getClassLoader
-        val clazz = classLoader.loadClass(classWithSchema)
-        val field = clazz.getDeclaredField(fieldName)
-        assert(field.getType == classOf[Schema], s"field $fieldName in class `$classWithSchema` must be of type `flatgraph.schema.Schema`, but actually is of type `${field.getType}`")
+        val clazz       = classLoader.loadClass(classWithSchema)
+        val field       = clazz.getDeclaredField(fieldName)
+        assert(
+          field.getType == classOf[Schema],
+          s"field $fieldName in class `$classWithSchema` must be of type `flatgraph.schema.Schema`, but actually is of type `${field.getType}`"
+        )
         field.setAccessible(true)
         val companionObject = clazz.getField("MODULE$").get(null)
-        val schema = field.get(companionObject).asInstanceOf[Schema]
+        val schema          = field.get(companionObject).asInstanceOf[Schema]
 
         val codegen = new DomainClassesGenerator(schema)
         if (disableScalafmt) codegen.disableScalafmt
@@ -59,4 +63,3 @@ object Main {
     }
   }
 }
-

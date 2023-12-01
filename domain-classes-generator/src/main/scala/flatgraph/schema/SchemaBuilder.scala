@@ -5,37 +5,33 @@ import flatgraph.schema.Property.ValueType
 
 import scala.collection.mutable
 
-class SchemaBuilder(domainShortName: String, 
-                    basePackage: String, 
-                    additionalTraversalsPackages: Seq[String] = Seq.empty) {
-  val properties = mutable.ListBuffer.empty[Property[_]]
-  val nodeBaseTypes = mutable.ListBuffer.empty[NodeBaseType]
-  val nodeTypes = mutable.ListBuffer.empty[NodeType]
-  val edgeTypes = mutable.ListBuffer.empty[EdgeType]
-  val constantsByCategory = mutable.Map.empty[String, Seq[Constant[_]]]
-  var protoOptions: Option[ProtoOptions] = None
+class SchemaBuilder(domainShortName: String, basePackage: String, additionalTraversalsPackages: Seq[String] = Seq.empty) {
+  val properties                                               = mutable.ListBuffer.empty[Property[_]]
+  val nodeBaseTypes                                            = mutable.ListBuffer.empty[NodeBaseType]
+  val nodeTypes                                                = mutable.ListBuffer.empty[NodeType]
+  val edgeTypes                                                = mutable.ListBuffer.empty[EdgeType]
+  val constantsByCategory                                      = mutable.Map.empty[String, Seq[Constant[_]]]
+  var protoOptions: Option[ProtoOptions]                       = None
   val noWarnList: mutable.Set[(AbstractNodeType, Property[_])] = mutable.Set.empty
 
   /** root node trait for all nodes - use if you want to be explicitly unspecific */
   lazy val anyNode: AnyNodeType = new AnyNodeType
 
-  def addProperty[A](name: String, valueType: ValueType[A], comment: String = "")(
-    implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): Property[A] = {
+  def addProperty[A](name: String, valueType: ValueType[A], comment: String = "")(implicit
+    schemaInfo: SchemaInfo = SchemaInfo.Unknown
+  ): Property[A] = {
     val property = new Property[A](name, valueType, stringToOption(comment), schemaInfo)
     properties.append(property)
     property
   }
 
-  def addNodeBaseType(name: String, comment: String = "")(
-    implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): NodeBaseType =
+  def addNodeBaseType(name: String, comment: String = "")(implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): NodeBaseType =
     addAndReturn(nodeBaseTypes, new NodeBaseType(name, stringToOption(comment), schemaInfo))
 
-  def addEdgeType(name: String, comment: String = "")(
-    implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): EdgeType =
+  def addEdgeType(name: String, comment: String = "")(implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): EdgeType =
     addAndReturn(edgeTypes, new EdgeType(name, stringToOption(comment), schemaInfo))
 
-  def addNodeType(name: String, comment: String = "")(
-    implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): NodeType =
+  def addNodeType(name: String, comment: String = "")(implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): NodeType =
     addAndReturn(nodeTypes, new NodeType(name, stringToOption(comment), schemaInfo))
 
   def addConstants(category: String, constants: Constant[_]*): Seq[Constant[_]] = {
@@ -66,7 +62,7 @@ class SchemaBuilder(domainShortName: String,
       edgeTypes.sortBy(_.name.toLowerCase).toSeq,
       constantsByCategory.toMap,
       protoOptions,
-      noWarnList.toSet,
+      noWarnList.toSet
     )
     verifyProtoIdsUnique(schema)
     schema
@@ -76,12 +72,12 @@ class SchemaBuilder(domainShortName: String,
   def verifyProtoIdsUnique(schema: Schema): Unit = {
     def ensureNoDuplicateProtoIds(categoryName: String, elements: Iterable[HasOptionalProtoId]): Unit = {
       val elementsWithProtoId = elements.filter(_.protoId.isDefined)
-      val duplicates = elementsWithProtoId.groupBy(_.protoId.get).filter(_._2.size > 1)
+      val duplicates          = elementsWithProtoId.groupBy(_.protoId.get).filter(_._2.size > 1)
       if (duplicates.nonEmpty) {
         throw new AssertionError(
           s"proto ids must be unique across all schema elements, however we found the following " +
             s"duplicates in $categoryName:\n" +
-            duplicates.map { case (protoId , elements) => s"$protoId -> ${elements.mkString(",")}"}.mkString
+            duplicates.map { case (protoId, elements) => s"$protoId -> ${elements.mkString(",")}" }.mkString
         )
       }
     }

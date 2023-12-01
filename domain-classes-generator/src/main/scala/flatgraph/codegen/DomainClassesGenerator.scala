@@ -11,7 +11,7 @@ import scala.collection.mutable
 
 class DomainClassesGenerator(schema: Schema) {
   import DomainClassesGenerator.ConstantContext
-  private var enableScalafmt = true
+  private var enableScalafmt               = true
   private var scalafmtConfig: Option[Path] = None
 
   def disableScalafmt: this.type = {
@@ -517,14 +517,16 @@ class DomainClassesGenerator(schema: Schema) {
         .sortBy { case (_, kind) => kind }
         .map { case (nodeType, _) => s""""${nodeType.name}"""" }
         .mkString(", ")
-      val edgePropertyAllocatorsSrc = edgeTypes.zipWithIndex.map { case (edge, idx) =>
-        edge.properties.headOption match {
-          case Some(p) if p.cardinality == Cardinality.ZeroOrOne => ???
-          case Some(p) =>
-            s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[?]].default)}) /* label = ${edge.name}, id = $idx */"
-          case None => "size => null"
+      val edgePropertyAllocatorsSrc = edgeTypes.zipWithIndex
+        .map { case (edge, idx) =>
+          edge.properties.headOption match {
+            case Some(p) if p.cardinality == Cardinality.ZeroOrOne => ???
+            case Some(p) =>
+              s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[?]].default)}) /* label = ${edge.name}, id = $idx */"
+            case None => "size => null"
+          }
         }
-      }.mkString(", ")
+        .mkString(", ")
       val edgeFactoriesSrc = edgeTypes.map { e => s"(s, d, subseq, p) => new edges.${e.className}(s, d, subseq, p)" }.mkString(", ")
       val nodeFactoriesSrc = nodeTypes.map { node => s"(g, seq) => new nodes.${node.className}(g, seq)" }.mkString(", ")
       val nodePropertyAllocatorsSrc = (relevantProperties.map { p =>
@@ -538,7 +540,9 @@ class DomainClassesGenerator(schema: Schema) {
         .flatMap(nt => nt.containedNodes.map((nt, _)))
         .map { case (node, contained) =>
           val propertyKind = relevantProperties.length + containedIndexByName(contained.localName)
-          s"""    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(node)}) "${contained.localName}" /*on node ${node.name}*/"""
+          s"""    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(
+              node
+            )}) "${contained.localName}" /*on node ${node.name}*/"""
         }
         .toList
         .sorted
@@ -1163,15 +1167,15 @@ class DomainClassesGenerator(schema: Schema) {
   def unpackDefault(typ: ValueType[?], default: Default[?]): String = {
     import org.apache.commons.text.StringEscapeUtils.escapeJava
     typ match {
-      case ValueType.Boolean                                            => s"${default.value}: Boolean"
-      case ValueType.String if default.value == null                    => "null: String"
-      case ValueType.String                                             => s""""${escapeJava(default.value.asInstanceOf[String])}": String"""
-      case ValueType.Byte                                               => s"${default.value}.toByte"
-      case ValueType.Short                                              => s"${default.value}.toShort"
-      case ValueType.Int                                                => s"${default.value}: Int"
-      case ValueType.Long                                               => s"${default.value}L: Long"
-      case ValueType.Float if default.value.asInstanceOf[Float].isNaN   => "Float.NaN"
-      case ValueType.Float                                              => s"${default.value}f: Float"
+      case ValueType.Boolean                                          => s"${default.value}: Boolean"
+      case ValueType.String if default.value == null                  => "null: String"
+      case ValueType.String                                           => s""""${escapeJava(default.value.asInstanceOf[String])}": String"""
+      case ValueType.Byte                                             => s"${default.value}.toByte"
+      case ValueType.Short                                            => s"${default.value}.toShort"
+      case ValueType.Int                                              => s"${default.value}: Int"
+      case ValueType.Long                                             => s"${default.value}L: Long"
+      case ValueType.Float if default.value.asInstanceOf[Float].isNaN => "Float.NaN"
+      case ValueType.Float                                            => s"${default.value}f: Float"
       case ValueType.Double if default.value.asInstanceOf[Double].isNaN => "Double.NaN"
       case ValueType.Double                                             => s"${default.value}d: Double"
       case _                                                            => ???
@@ -1261,7 +1265,7 @@ class DomainClassesGenerator(schema: Schema) {
 
   /** Useful string extensions to avoid Scala version incompatible interpolations.
     */
-  implicit class StringHelper (s: String) {
+  implicit class StringHelper(s: String) {
     def quote: String = s""""$s""""
   }
 

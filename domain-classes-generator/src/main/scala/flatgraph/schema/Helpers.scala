@@ -3,7 +3,7 @@ package flatgraph.schema
 object Helpers {
 
   def stringToOption(s: String): Option[String] = s.trim match {
-    case "" => None
+    case ""             => None
     case nonEmptyString => Some(nonEmptyString)
   }
 
@@ -14,7 +14,7 @@ object Helpers {
 
     val elements: Seq[String] = corrected.split("_").map(_.toLowerCase).toList match {
       case head :: tail => head :: tail.map(_.capitalize)
-      case Nil => Nil
+      case Nil          => Nil
     }
     elements.mkString
   }
