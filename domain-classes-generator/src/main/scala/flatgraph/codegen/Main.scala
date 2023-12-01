@@ -49,7 +49,8 @@ object Main {
         val field = clazz.getDeclaredField(fieldName)
         assert(field.getType == classOf[Schema], s"field $fieldName in class `$classWithSchema` must be of type `flatgraph.schema.Schema`, but actually is of type `${field.getType}`")
         field.setAccessible(true)
-        val schema = field.get(clazz).asInstanceOf[Schema]
+        val companionObject = clazz.getField("MODULE$").get(null)
+        val schema = field.get(companionObject).asInstanceOf[Schema]
 
         val codegen = new DomainClassesGenerator(schema)
         if (disableScalafmt) codegen.disableScalafmt
