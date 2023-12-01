@@ -70,7 +70,6 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       } else {
         Def.task {
           (Compile/runMain).toTask(
-            // TODO adapt - bring back main style codegen like before
             s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$outputDirValue $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
           ).value
           IO.write(schemaAndDependenciesHashFile, currentSchemaAndDependenciesHash)
