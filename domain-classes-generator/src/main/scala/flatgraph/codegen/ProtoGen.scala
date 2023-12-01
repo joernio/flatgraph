@@ -240,5 +240,3 @@ class ProtoGen(schema: Schema) {
 
   case class EnumEntryMaybe(protoId: Option[Int], name: String, comment: Option[String])
 }
-
-
