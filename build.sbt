@@ -28,7 +28,7 @@ lazy val domainClassesGenerator = project
   .in(file("domain-classes-generator"))
   .settings(
     name := "domain-classes-generator",
-    // scalaVersion := scala2_12, // since we consume it from an sbt plugin
+    scalaVersion := scala2_12, // since we consume it from an sbt plugin
     scalacOptions := scalacOptionsFor2_12,
     libraryDependencies ++= Seq(
       "org.slf4j"          % "slf4j-simple" % slf4jVersion % Optional,

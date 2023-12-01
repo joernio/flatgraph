@@ -3,7 +3,6 @@ package flatgraph.codegen
 import java.nio.file.Path
 
 import flatgraph.codegen.CodeSnippets.FilterSteps
-import flatgraph.codegen.Helpers
 import flatgraph.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 import scala.collection.mutable
@@ -57,7 +56,7 @@ class DomainClassesGenerator(schema: Schema) {
       schema.allNodeTypes.map { nodeType =>
         nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
       }.toMap
-    val newPropsAtNodeList = newPropertiesByNodeType.view.mapValues(_.toList.sortBy(_.name))
+    val newPropsAtNodeList = newPropertiesByNodeType.mapValues(_.toList.sortBy(_.name))
     val newExtendzMap = schema.allNodeTypes.map { nodeType =>
       nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
@@ -514,7 +513,7 @@ class DomainClassesGenerator(schema: Schema) {
     val schemaFile = {
       val nodeLabelsSrc = nodeKindByNodeType.toList
         .sortBy { case (_, kind) => kind }
-        .map { case (nodeType, _) => s"\"${nodeType.name}\"" }
+        .map { case (nodeType, _) => s""""${nodeType.name}"""" }
         .mkString(", ")
       val edgePropertyAllocatorsSrc = edgeTypes.zipWithIndex.map { case (edge, idx) =>
         edge.properties.headOption match {
@@ -530,14 +529,14 @@ class DomainClassesGenerator(schema: Schema) {
         s"size => new Array[${unpackTypeUnboxed(p.valueType, true, raised = true)}](size)"
       }.iterator ++ containedNames.map { _ => "size => new Array[flatgraph.GNode](size)" }).mkString(", ")
       val nodePropertyByLabelSrc = containedIndexByName.toList
-          .sortBy { case (name, idx) => (idx, name) }
-          .map { case (name, idx) => s".updated(\"$name\", ${relevantProperties.size + idx})" }
-          .mkString
+        .sortBy { case (name, idx) => (idx, name) }
+        .map { case (name, idx) => s""".updated("$name", ${relevantProperties.size + idx})""" }
+        .mkString
       val containedNodesAsPropertyCases = nodeTypes
         .flatMap(nt => nt.containedNodes.map((nt, _)))
         .map { case (node, contained) =>
           val propertyKind = relevantProperties.length + containedIndexByName(contained.localName)
-          s"    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(node)}) \"${contained.localName}\" /*on node ${node.name}*/"
+          s"""    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(node)}) "${contained.localName}" /*on node ${node.name}*/"""
         }
         .toList
         .sorted
@@ -549,13 +548,13 @@ class DomainClassesGenerator(schema: Schema) {
          |object GraphSchema extends flatgraph.Schema {
          |  val nodeLabels = Array($nodeLabelsSrc)
          |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
-         |  val edgeLabels = Array(${edgeTypes.map { e => s"\"${e.name}\"" }.mkString(",  ")})
+         |  val edgeLabels = Array(${edgeTypes.map { e => s""""${e.name}"""" }.mkString(",  ")})
          |  val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
          |  val edgePropertyAllocators: Array[Int => Array[?]] = Array($edgePropertyAllocatorsSrc)
          |  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array($nodeFactoriesSrc)
          |  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array($edgeFactoriesSrc)
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
-         |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s"\"${p.name}\"" }.mkString(", ")})
+         |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
          |
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
@@ -934,7 +933,7 @@ class DomainClassesGenerator(schema: Schema) {
             .edges(direction)
             .filterNot(adjacentNode => inheritedNeighbors.contains((adjacentNode.viaEdge, adjacentNode.neighbor)))
             .groupBy(_.viaEdge)
-            .map { (edge, adjacentNodes) =>
+            .map { case (edge, adjacentNodes) =>
               val neighborContexts = adjacentNodes.map { adjacentNode =>
                 val scaladoc = s"""/** ${adjacentNode.customStepDoc.getOrElse("")}
                                 | * Traverse to ${adjacentNode.neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
@@ -1158,7 +1157,7 @@ class DomainClassesGenerator(schema: Schema) {
     typ match {
       case ValueType.Boolean                                            => s"${default.value}: Boolean"
       case ValueType.String if default.value == null                    => "null: String"
-      case ValueType.String                                             => s"\"${escapeJava(default.value.asInstanceOf[String])}\": String"
+      case ValueType.String                                             => s""""${escapeJava(default.value.asInstanceOf[String])}": String"""
       case ValueType.Byte                                               => s"${default.value}.toByte"
       case ValueType.Short                                              => s"${default.value}.toShort"
       case ValueType.Int                                                => s"${default.value}: Int"
@@ -1254,9 +1253,25 @@ class DomainClassesGenerator(schema: Schema) {
 
   /** Useful string extensions to avoid Scala version incompatible interpolations.
     */
-  extension (s: String) {
+  implicit class StringHelper (s: String) {
     def quote: String = s""""$s""""
+  }
 
+  /** for scala3 api compat */
+  implicit class ArrayBufferCompat[A](buffer: mutable.ArrayBuffer[A]) {
+    def addOne(element: A): mutable.ArrayBuffer[A] =
+      buffer += element
+  }
+
+  /** for scala3 api compat */
+  implicit class BuilderCompat[A, To](buffer: mutable.Builder[A, To]) {
+    def addOne(element: A): mutable.Builder[A, To] =
+      buffer += element
+
+    def addAll(elements: Iterable[A]): mutable.Builder[A, To] = {
+      elements.foreach(buffer.+=)
+      buffer
+    }
   }
 
 }
