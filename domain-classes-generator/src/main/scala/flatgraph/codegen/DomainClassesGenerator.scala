@@ -801,7 +801,13 @@ class DomainClassesGenerator(schema: Schema) {
 
     writeConstants(outputDir0, schema, KindContexts(nodeKindByNodeType, edgeKindByEdgeType, propertyKindByProperty))
     // end `run`
-    os.walk(outputDir0).map(_.toNIO)
+
+    val results = os.walk(outputDir0)
+    if (enableScalafmt) {
+      val scalaSources = results.filter(_.ext == "scala").map(_.toNIO)
+      Formatter.run(scalaSources, scalafmtConfig)
+    }
+    results.map(_.toNIO)
   }
 
   private def writeConstants(outputDir: os.Path, schema: Schema, kindContexts: KindContexts): Seq[os.Path] = {

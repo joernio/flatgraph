@@ -5,8 +5,8 @@ import org.scalafmt.interfaces.Scalafmt
 
 object Formatter {
   val defaultScalafmtConfig = """
-      |version=3.4.3
-      |runner.dialect=scala213
+      |version=3.7.11
+      |runner.dialect=scala3
       |align.preset=some
       |maxColumn=120
       |""".stripMargin
@@ -24,7 +24,7 @@ object Formatter {
       val osPath = os.Path(file.toFile)
       val originalSource = os.read(osPath)
       val formattedSource = scalafmtSession.format(file, originalSource)
-      os.write(osPath, formattedSource)
+      os.write.over(osPath, formattedSource)
     }
   }
 
