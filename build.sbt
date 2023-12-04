@@ -56,7 +56,7 @@ lazy val odbConvert = project
   .settings(
     name := "odb-convert",
     libraryDependencies ++= Seq(
-      "io.shiftleft" % "overflowdb-core" % "1.169",
+      "io.shiftleft" % "overflowdb-core" % "1.181",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )
