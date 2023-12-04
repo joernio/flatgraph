@@ -758,9 +758,9 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory.
          |   * `Graph.close` will serialise graph to that given file (and override whatever was there before), unless you
-         |   * specify `deserializeOnClose = false`. */
-         |  def withStorage(storagePath: java.nio.file.Path, deserializeOnClose: Boolean = true): $domainShortName = {
-         |    val graph = flatgraph.Graph.withStorage(GraphSchema, storagePath, deserializeOnClose)
+         |   * specify `persistOnClose = false`. */
+         |  def withStorage(storagePath: java.nio.file.Path, persistOnClose: Boolean = true): $domainShortName = {
+         |    val graph = flatgraph.Graph.withStorage(GraphSchema, storagePath, persistOnClose)
          |    new $domainShortName(graph)
          |  }
          |

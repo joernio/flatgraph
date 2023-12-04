@@ -12,7 +12,7 @@ import java.nio.{ByteBuffer, ByteOrder}
 import scala.collection.mutable
 
 object Deserialization {
-  def readGraph(storagePath: Path, schemaMaybe: Option[Schema], deserializeOnClose: Boolean = true): Graph = {
+  def readGraph(storagePath: Path, schemaMaybe: Option[Schema], persistOnClose: Boolean = true): Graph = {
     val fileChannel = new java.io.RandomAccessFile(storagePath.toFile, "r").getChannel
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
@@ -20,7 +20,7 @@ object Deserialization {
       val pool     = readPool(manifest, fileChannel)
       val schema   = schemaMaybe.getOrElse(freeSchemaFromManifest(manifest))
       val storagePathMaybe =
-        if (deserializeOnClose) Option(storagePath)
+        if (persistOnClose) Option(storagePath)
         else None
       val g         = new Graph(schema, storagePathMaybe)
       val nodekinds = mutable.HashMap[String, Short]()

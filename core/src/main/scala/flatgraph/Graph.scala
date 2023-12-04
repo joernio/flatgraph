@@ -19,15 +19,15 @@ object Graph {
   val logger = LoggerFactory.getLogger(classOf[Graph])
 
   /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
-    * serialise graph to that given file (and override whatever was there before), unless you specify `deserializeOnClose = false`.
+    * serialise graph to that given file (and override whatever was there before), unless you specify `persistOnClose = false`.
     */
-  def withStorage(schema: Schema, storagePath: Path, deserializeOnClose: Boolean = true): Graph = {
+  def withStorage(schema: Schema, storagePath: Path, persistOnClose: Boolean = true): Graph = {
     if (Files.exists(storagePath) && Files.size(storagePath) > 0) {
       println(s"initialising from existing storage ($storagePath)")
-      Deserialization.readGraph(storagePath, Option(schema), deserializeOnClose)
+      Deserialization.readGraph(storagePath, Option(schema), persistOnClose)
     } else {
       val storagePathMaybe =
-        if (deserializeOnClose) Option(storagePath)
+        if (persistOnClose) Option(storagePath)
         else None
       Graph(schema, storagePathMaybe)
     }
