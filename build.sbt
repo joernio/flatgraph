@@ -56,31 +56,56 @@ lazy val odbConvert = project
   .settings(
     name := "odb-convert",
     libraryDependencies ++= Seq(
-      "io.shiftleft" % "overflowdb-core" % "1.181",
+      "io.shiftleft" %% "overflowdb-core" % "1.181",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )
 
 
+/** temporarily we still want to keep the generated files for the cpg domain in here,
+  * in order to be able to quickly see the differences in the generated files if we
+  * change the codegen
+  * n.b. relies on a manually published version of cpg-schema based on the `michael/flatgraph` branch
+  *
+  * https://github.com/ShiftLeftSecurity/overflowdbv2/pull/137#pullrequestreview-1761992014
+  */
+lazy val domainClassesGeneratorJoern = project
+  .in(file("domain-classes-generator-joern"))
+  .dependsOn(domainClassesGenerator)
+  .settings(
+    name := "domain-classes-generator-joern",
+    scalaVersion := scala2_12,
+    scalacOptions := scalacOptionsFor2_12,
+    publish / skip := true,
+    libraryDependencies += "com.michaelpollmeier" %% "codepropertygraph-schema" % "1.4.32+25-1e56e611"
+  )
 
-// TODO bring back as a separate subproject which isn't included in project list by default
-// lazy val benchmarks = project
-//   .in(file("benchmarks"))
-//   .dependsOn(joernGenerated)
-//   .enablePlugins(JavaAppPackaging, JmhPlugin)
-//   .settings(
-//     name := "benchmarks",
-//     //Jmh / compile := (Jmh / compile)
-//     //Jmh / run     := (Jmh / run).dependsOn(Jmh / compile).evaluated
-//     libraryDependencies ++= Seq(
-//       "io.joern"       %% "semanticcpg"              % "2.0.157",
-//       "com.jerolba"     % "jmnemohistosyne"          % "0.2.3",
-//       "org.openjdk.jol" % "jol-core"                 % "0.17",
-//       "org.slf4j"       % "slf4j-simple"             % slf4jVersion % Optional,
-//       "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.36",
-//       "org.openjdk.jmh" % "jmh-core"                 % "1.36",
-//     )
-//   )
+lazy val joernGenerated = project
+  .in(file("joern-generated"))
+  .dependsOn(core)
+  .settings(
+    name := "joern-generated",
+    publish / skip := true
+  )
+
+lazy val benchmarks = project
+  .in(file("benchmarks"))
+  .dependsOn(joernGenerated)
+  .enablePlugins(JavaAppPackaging, JmhPlugin)
+  .settings(
+    name := "benchmarks",
+    //Jmh / compile := (Jmh / compile)
+    //Jmh / run     := (Jmh / run).dependsOn(Jmh / compile).evaluated
+    libraryDependencies ++= Seq(
+      "io.joern"       %% "semanticcpg"              % "2.0.157",
+      "com.jerolba"     % "jmnemohistosyne"          % "0.2.3",
+      "org.openjdk.jol" % "jol-core"                 % "0.17",
+      "org.slf4j"       % "slf4j-simple"             % slf4jVersion % Optional,
+      "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.36",
+      "org.openjdk.jmh" % "jmh-core"                 % "1.36",
+    ),
+    publish / skip := true
+  )
 
 ThisBuild / libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
