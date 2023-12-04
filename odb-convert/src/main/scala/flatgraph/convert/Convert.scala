@@ -1,12 +1,13 @@
 package flatgraph.convert
 
 import flatgraph.{Edge, storage}
-import flatgraph.storage.{Keys, Serialization, Manifest, StorageType}
+import flatgraph.storage.{Keys, Manifest, Serialization, StorageType}
 import org.msgpack.core.MessagePack
 import overflowdb.storage.{OdbStorage, ValueTypes}
 
-import java.io.ByteArrayOutputStream
+import java.io.{ByteArrayOutputStream, File}
 import java.nio.charset.StandardCharsets
+import java.nio.file.{Path, Paths}
 import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
@@ -18,13 +19,14 @@ object Convert {
       System.err.println("Usage: convert [inputfile] [outputfile]")
       System.err.println("Error: missing input and/or output file - exiting.")
     } else {
-      val inputFile  = args(0)
-      val outputFile = args(1)
-      val storage =
-        overflowdb.storage.OdbStorage.createWithSpecificLocation(new java.io.File(inputFile), new overflowdb.util.StringInterner)
-      val (nodes, strings) = readOdb(storage)
-      writeData(outputFile, nodes, strings)
+      apply(overflowDbFile = Paths.get(args(0)), outputFile = Paths.get(args(1)))
     }
+  }
+
+  def apply(overflowDbFile: Path, outputFile: Path): Unit = {
+    val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(overflowDbFile.toFile, new overflowdb.util.StringInterner)
+    val (nodes, strings) = readOdb(storage)
+    writeData(outputFile.toFile, nodes, strings)
   }
 
   class NodeRefTmp(val legacyId: Long) {
@@ -69,7 +71,7 @@ object Convert {
     }
   }
 
-  def writeData(filename: String, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
+  def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
     val filePtr     = new AtomicLong(16)
     val fileChannel = new java.io.RandomAccessFile(filename, "rw").getChannel
     try {
