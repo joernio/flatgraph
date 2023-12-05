@@ -141,7 +141,7 @@ object Convert {
       fileChannel.truncate(pos)
 
       // tmp debug
-      println(manifestObj.render(indent = 4))
+      // println(manifestObj.render(indent = 4))
 
     } finally { fileChannel.close() }
   }
