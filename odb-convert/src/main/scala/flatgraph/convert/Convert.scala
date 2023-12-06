@@ -29,20 +29,21 @@ object Convert {
     writeData(outputFile.toFile, nodes, strings)
   }
 
-  class NodeRefTmp(val legacyId: Long) {
+  private class NodeRefTmp(val legacyId: Long) {
     var newId: Long = -1L
   }
-  class StringRef(val idx: Int, val string: String)
 
-  object NodeStuff {
+  private class StringRef(val idx: Int, val string: String)
+
+  private object NodeStuff {
     val NODEPROPERTY        = "p"
     val NEIGHBOR_IN         = "i"
     val NEIGHBOR_OUT        = "o"
     val EDGEPROPERTY_SUFFIX = "x"
     val legacyId            = "legacyId"
-
   }
-  class NodeStuff(val label: String, val kind: Int) {
+
+  private class NodeStuff(val label: String, val kind: Int) {
     var nextId: Int = 0
     val quantities  = mutable.HashMap[(String, String), mutable.ArrayBuffer[Int]]()
     val values      = mutable.HashMap[(String, String), mutable.ArrayBuffer[Any]]()
@@ -71,7 +72,7 @@ object Convert {
     }
   }
 
-  def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
+  private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
     val filePtr     = new AtomicLong(16)
     val fileChannel = new java.io.RandomAccessFile(filename, "rw").getChannel
     try {
@@ -146,7 +147,7 @@ object Convert {
     } finally { fileChannel.close() }
   }
 
-  def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
+  private def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
     items.find { _ != null } match {
       case None             => (null, null)
       case Some(_: Boolean) => (storage.StorageType.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)
@@ -168,10 +169,9 @@ object Convert {
         )
       case Some(other) => throw new AssertionError(s"unexpected item found: $other of type ${other.getClass}")
     }
-
   }
 
-  def readOdb(storage: overflowdb.storage.OdbStorage): (Array[NodeStuff], Array[String]) = {
+  private def readOdb(storage: overflowdb.storage.OdbStorage): (Array[NodeStuff], Array[String]) = {
     val legacyIdToNewId = mutable.HashMap[Long, NodeRefTmp]()
     val stringInterner  = mutable.LinkedHashMap[String, StringRef]()
     val byLabel         = mutable.LinkedHashMap[String, NodeStuff]()
