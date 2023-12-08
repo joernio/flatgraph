@@ -10,6 +10,62 @@ object Schema {
   val UndefinedKind: Short = -1
 }
 
+object FormalQtyType {
+  sealed trait FormalQuantity
+
+  object QtyNone extends FormalQuantity
+
+  object QtyOne extends FormalQuantity
+
+  object QtyOption extends FormalQuantity
+
+  object QtyMulti extends FormalQuantity
+
+  sealed trait FormalType {
+    def allocate(n: Int): Array[_]
+  }
+
+  object NothingType extends FormalType {
+    def allocate(n: Int): Array[_] = null
+  }
+
+  object BoolType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Boolean](n)
+  }
+
+  object ByteType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Byte](n)
+  }
+
+  object ShortType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Short](n)
+  }
+
+  object IntType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Int](n)
+  }
+
+  object LongType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Long](n)
+  }
+
+  object FloatType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Float](n)
+  }
+
+  object DoubleType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[Double](n)
+  }
+
+  object StringType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[String](n)
+  }
+
+  object RefType extends FormalType {
+    override def allocate(n: Int): Array[_] = new Array[GNode](n)
+  }
+}
+
 abstract class Schema {
   def getNumberOfNodeKinds: Int
   def getNumberOfEdgeKinds: Int
@@ -42,34 +98,36 @@ abstract class Schema {
   def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge
 
   def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_]
-
-  def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_]
+  def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType
+  def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity
 }
 
 class FreeSchema(
   val nodeLabels: Array[String],
   val propertyLabels: Array[String],
-  val nodePropertyPrototypes: Array[AnyRef],
+  nodePropertyPrototypes: Array[AnyRef],
   val edgeLabels: Array[String],
-  val edgePropertyPrototypes: Array[AnyRef]
+  edgePropertyPrototypes: Array[AnyRef]
 ) extends Schema {
   val nodeMap = nodeLabels.zipWithIndex.toMap
   val propMap = propertyLabels.zipWithIndex.toMap
   val edgeMap = edgeLabels.zipWithIndex.toMap
-  private def similar(proto: AnyRef, size: Int): Array[_] = {
-    proto match {
-      case null              => null
-      case a: Array[Boolean] => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Boolean](size)
-      case a: Array[Byte]    => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Byte](size)
-      case a: Array[Short]   => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Short](size)
-      case a: Array[Int]     => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Int](size)
-      case a: Array[Long]    => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Long](size)
-      case a: Array[Float]   => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Float](size)
-      case a: Array[Double]  => if (a.length == 1) Array.fill(size)(a(0)) else new Array[Double](size)
-      case a: Array[String]  => if (a.length == 1) Array.fill(size)(a(0)) else new Array[String](size)
-      case a: Array[GNode]   => if (a.length == 1) Array.fill(size)(a(0)) else new Array[GNode](size)
-      case _                 => ???
-    }
+
+  val edgePropertyTypes: Array[FormalQtyType.FormalType] = edgePropertyPrototypes.map(fromPrototype)
+  val nodePropertyTypes: Array[FormalQtyType.FormalType] = nodePropertyPrototypes.map(fromPrototype)
+
+  private def fromPrototype(prototype: AnyRef): FormalQtyType.FormalType = prototype match {
+    case null              => FormalQtyType.NothingType
+    case a: Array[Boolean] => FormalQtyType.BoolType
+    case a: Array[Byte]    => FormalQtyType.ByteType
+    case a: Array[Short]   => FormalQtyType.ShortType
+    case a: Array[Int]     => FormalQtyType.IntType
+    case a: Array[Long]    => FormalQtyType.LongType
+    case a: Array[Float]   => FormalQtyType.FloatType
+    case a: Array[Double]  => FormalQtyType.DoubleType
+    case a: Array[String]  => FormalQtyType.StringType
+    case a: Array[GNode]   => FormalQtyType.RefType
+    case _                 => ???
   }
   override def getNumberOfNodeKinds: Int                                  = nodeLabels.length
   override def getNumberOfEdgeKinds: Int                                  = edgeLabels.length
@@ -83,8 +141,15 @@ class FreeSchema(
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
     new Edge(src, dst, edgeKind, subSeq, property)
+
+  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyTypes(propertyKind)
   override def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_] =
-    similar(edgePropertyPrototypes(edgeKind), size)
-  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[_] =
-    similar(nodePropertyPrototypes(propertyKind), size)
+    edgePropertyTypes(edgeKind).allocate(size)
+
+  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity =
+    getNodePropertyFormalType(nodeKind, propertyKind) match {
+      case FormalQtyType.NothingType => FormalQtyType.QtyNone
+      case _                         => FormalQtyType.QtyMulti
+    }
+
 }
