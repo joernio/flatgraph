@@ -39,30 +39,6 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
     sack.toSet shouldBe Set(l1, r1)
   }
 
-  ".sideEffectPF step should support PartialFunction and not fail for undefined cases" in {
-    ???
-//    val sack = mutable.ListBuffer.empty[GNode]
-//
-//    center.start.out
-//      .sideEffectPF {
-//        case node if node.property(Thing.Properties.Name).startsWith("L") =>
-//          sack.addOne(node)
-//      }
-//      .out
-//      .toSetMutable shouldBe Set(l2, r2)
-//
-//    sack.toSet shouldBe Set(l1)
-  }
-
-  "domain overview" in {
-    ???
-//    simpleDomain.all
-//      .property(Thing.Properties.Name)
-//      .toSetMutable shouldBe Set("L3", "L2", "L1", "Center", "R1", "R2", "R3", "R4", "R5")
-//    centerTrav.next().name shouldBe "Center"
-//    simpleDomain.all.label.toSetMutable shouldBe Set(Thing.Label)
-  }
-
   ".dedup step" should {
     "remove duplicates" in {
       Iterator(1, 2, 1, 3).dedup.l shouldBe List(1, 2, 3)
@@ -93,93 +69,10 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
     }
   }
 
-  "hasNext check doesn't change contents of traversal" when {
-    "path tracking is not enabled" in {
-      ???
-//      val trav = centerTrav.followedBy.followedBy
-//      trav.hasNext shouldBe true
-//      trav.toSetMutable shouldBe Set(l2, r2)
-    }
-
-    "path tracking is enabled" in {
-      ???
-//      val trav1 = centerTrav.enablePathTracking.followedBy.followedBy
-//      val trav2 = centerTrav.enablePathTracking.followedBy.followedBy.path
-//      trav1.hasNext shouldBe true
-//      trav2.hasNext shouldBe true
-//      trav1.toSetMutable shouldBe Set(l2, r2)
-//      trav2.toSetMutable shouldBe Set(
-//        Seq(center, l1, l2),
-//        Seq(center, r1, r2)
-//      )
-    }
-  }
-
-  ".cast step should cast all elements to given type" in {
-    ???
-//    val traversal: Iterator[GNode] = center.start.out.out
-//    val results: Seq[Thing] = traversal.cast[Thing].l
-//    results shouldBe Seq(l2, r2)
-  }
-
-  ".collectAll step should collect (and cast) all elements of the given type" in {
-    ???
-//    val graph = GratefulDead.newGraph
-//    val song = graph.addNode(Song.Label)
-//    val artist1 = graph.addNode(Artist.Label)
-//    val artist2 = graph.addNode(Artist.Label)
-//
-//    val traversal: Iterator[Artist] = graph.V().asScala.collectAll[Artist]
-//    traversal.l shouldBe Seq(artist1, artist2)
-  }
-
-  ".union step allows to aggregate multiple steps into one traversal" in {
-    ???
-//    def unionTrav = Iterator.single(center).out.union(_.out, _.in)
-//    unionTrav.toSet shouldBe Set(l2, center, r2)
-//    unionTrav.l.sortBy(_.property(Thing.Properties.Name)) shouldBe List(center, center, l2, r2)
-
-    // ensure that types are being preserved...
-//    val verifyIsNodeTraversal: Iterator[GNode] = unionTrav
-//    val verifyIsThingTraversal: Iterator[Thing] = Iterator.single(center).union(_.followedBy, _.followedBy)
-  }
 
   ".sort steps should order" in {
     Iterator(1, 3, 2).sorted shouldBe Seq(1, 2, 3)
     Iterator("aa", "aaa", "a").sortBy(_.length) shouldBe Seq("a", "aa", "aaa")
-  }
-
-  "string filter steps" in {
-    ???
-//    val graph = SimpleDomain.newGraph
-//    val Name = Thing.PropertyNames.Name
-//
-//    graph.addNode(Thing.Label, Name, "regular name")
-//    graph.addNode(
-//      Thing.Label,
-//      Name,
-//      """multi line name
-//        |line two
-//        |""".stripMargin
-//    )
-//
-//    graph.V.has(Thing.Properties.Name.where(P.matches(".*"))).size shouldBe 2
-//    graph.V.has(Thing.Properties.Name.where(P.matches(".*", ".*"))).size shouldBe 2
-//    SimpleDomain.traversal(graph).things.name(".*").size shouldBe 2
-//    SimpleDomain.traversal(graph).things.name(".*", ".*").size shouldBe 2
-  }
-
-  "number filter steps" in {
-    ???
-//    def oneToFour = Iterator(1, 2, 3, 4)
-//    oneToFour.greaterThanEqual(3).l shouldBe Seq(3, 4)
-//    oneToFour.greaterThan(3).l shouldBe Seq(4)
-//    oneToFour.lessThanEqual(3).l shouldBe Seq(1, 2, 3)
-//    oneToFour.lessThan(3).l shouldBe Seq(1, 2)
-//    oneToFour.equiv(3).l shouldBe Seq(3)
-//    oneToFour.between(2, 4).l shouldBe Seq(2, 3)
-//    oneToFour.inside(1, 4).l shouldBe Seq(2, 3)
-//    oneToFour.outside(2, 3).l shouldBe Seq(1, 4)
   }
 
   "`is` filter step" in {
