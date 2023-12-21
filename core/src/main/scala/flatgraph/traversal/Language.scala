@@ -1,5 +1,6 @@
 package flatgraph.traversal
 
+import flatgraph.help.{Doc, DocSearchPackages, TraversalHelp}
 import flatgraph.{Accessors, Edge, GNode, MultiPropertyKey, OptionalPropertyKey, PropertyKey, Schema, SinglePropertyKey}
 
 import scala.collection.immutable.ArraySeq
@@ -8,7 +9,9 @@ import scala.reflect.ClassTag
 
 object Language extends Language
 
-trait Language {
+trait Language extends GenericLanguage with NodeLanguage
+
+trait GenericLanguage {
 
   implicit def iterableOnceToIterator[A](iterableOnce: IterableOnce[A]): Iterator[A] =
     iterableOnce.iterator
@@ -16,16 +19,16 @@ trait Language {
   extension [A](iterator: Iterator[A]) {
 
     /** Execute the traversal and convert the result to a list - shorthand for `toList` */
-    // TODO reimplement @Doc(info = "Execute the traversal and convert the result to a list - shorthand for `toList`")
+    @Doc(info = "Execute the traversal and convert the result to a list - shorthand for `toList`")
     def l: List[A] = iterator.toList
 
     /** group elements and count how often they appear */
-    // TODO reimplement @Doc(info = "group elements and count how often they appear")
+    @Doc(info = "group elements and count how often they appear")
     def groupCount[B >: A]: Map[B, Int] =
       groupCount(identity[A])
 
     /** group elements by a given transformation function and count how often the results appear */
-    // TODO reimplement @Doc(info = "group elements by a given transformation function and count how often the results appear")
+    @Doc(info = "group elements by a given transformation function and count how often the results appear")
     def groupCount[B](by: A => B): Map[B, Int] = {
       val counts = mutable.Map.empty[B, Int].withDefaultValue(0)
       iterator.foreach { a =>
@@ -49,7 +52,7 @@ trait Language {
     def toSetImmutable[B >: A]: Set[B] = iterator.toSet
 
     /** Execute the traversal without returning anything */
-    // TODO reimplement @Doc(info = "Execute the traversal without returning anything")
+    @Doc(info = "Execute the traversal without returning anything")
     def iterate(): Unit =
       while (iterator.hasNext) iterator.next()
 
@@ -75,7 +78,7 @@ trait Language {
       * @see
       *   {{{collectAll}}} as a safe alternative
       */
-    // TODO reimplement  @Doc(info = "casts all elements to given type")
+    @Doc(info = "casts all elements to given type")
     def cast[B]: Iterator[B] =
       iterator.asInstanceOf[Iterator[B]]
 
@@ -85,23 +88,23 @@ trait Language {
       iterator.filter(ev.runtimeClass.isInstance).asInstanceOf[Iterator[B]]
 
     /** Deduplicate elements of this traversal - a.k.a. distinct, unique, ... */
-    // TODO reimplement  @Doc(info = "deduplicate elements of this traversal - a.k.a. distinct, unique, ...")
+    @Doc(info = "deduplicate elements of this traversal - a.k.a. distinct, unique, ...")
     def dedup: Iterator[A] =
       iterator.distinct
 
     /** deduplicate elements of this traversal by a given function */
-    // TODO reimplement  @Doc(info = "deduplicate elements of this traversal by a given function")
+    @Doc(info = "deduplicate elements of this traversal by a given function")
     def dedupBy(fun: A => Any): Iterator[A] =
       iterator.distinctBy(fun)
 
     /** sort elements by their natural order */
-    // TODO reimplement  @Doc(info = "sort elements by their natural order")
+    @Doc(info = "sort elements by their natural order")
     def sorted[B >: A](implicit ord: Ordering[B]): Seq[B] = {
       (iterator.to(ArraySeq.untagged): ArraySeq[B]).sorted
     }
 
     /** sort elements by the value of the given transformation function */
-    // TODO reimplement  @Doc(info = "sort elements by the value of the given transformation function")
+    @Doc(info = "sort elements by the value of the given transformation function")
     def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Seq[A] =
       iterator.to(ArraySeq.untagged).sortBy(f)
 
@@ -109,31 +112,31 @@ trait Language {
       * Note that this works independently of tab completion and implicit conversions in scope - it will simply list all documented steps in
       * the classpath
       */
-    // TODO reimplement  @Doc(info = "print help/documentation based on the current elementType `A`.")
-//    def help[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
-//      new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
+    @Doc(info = "print help/documentation based on the current elementType `A`.")
+    def help[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
+      new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
 
-    // TODO reimplement  @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
-//    def helpVerbose[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
-//      new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = true)
+    @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
+    def helpVerbose[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
+      new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = true)
 
     /** filters out everything that is _not_ the given value */
-    // TODO reimplement @Doc(info = "filters out everything that is _not_ the given value")
+    @Doc(info = "filters out everything that is _not_ the given value")
     def is[B >: A](value: B): Iterator[A] =
       iterator.filter(_ == value)
 
     /** filters out all elements that are _not_ in the provided set */
-    // TODO reimplement @Doc(info = "filters out all elements that are _not_ in the provided set")
+    @Doc(info = "filters out all elements that are _not_ in the provided set")
     def within[B >: A](values: Set[B]): Iterator[A] =
       iterator.filter(values.contains)
 
     /** filters out all elements that _are_ in the provided set */
-    // TODO reimplement @Doc(info = "filters out all elements that _are_ in the provided set")
+    @Doc(info = "filters out all elements that _are_ in the provided set")
     def without[B >: A](values: Set[B]): Iterator[A] =
       iterator.filterNot(values.contains)
 
     /** perform side effect without changing the contents of the traversal */
-    // TODO reimplement @Doc(info = "perform side effect without changing the contents of the traversal")
+    @Doc(info = "perform side effect without changing the contents of the traversal")
     def sideEffect(fun: A => _): Iterator[A] =
       iterator match {
         // TODO bring back PathAwareTraversal?
@@ -147,26 +150,26 @@ trait Language {
     /** perform side effect without changing the contents of the traversal will only apply the partialFunction if it is defined for the
       * given input - analogous to `collect`
       */
-    // TODO reimplement @Doc(info = "perform side effect without changing the contents of the traversal")
+    @Doc(info = "perform side effect without changing the contents of the traversal")
     def sideEffectPF(pf: PartialFunction[A, _]): Iterator[A] =
       sideEffect(pf.lift)
 
     /** only preserves elements if the provided traversal has at least one result */
-    // TODO reimplement @Doc(info = "only preserves elements if the provided traversal has at least one result")
+    @Doc(info = "only preserves elements if the provided traversal has at least one result")
     def where(trav: Iterator[A] => Iterator[_]): Iterator[A] =
       iterator.filter { (a: A) =>
         trav(Iterator.single(a)).hasNext
       }
 
     /** only preserves elements if the provided traversal does _not_ have any results */
-    // TODO reimplement @Doc(info = "only preserves elements if the provided traversal does _not_ have any results")
+    @Doc(info = "only preserves elements if the provided traversal does _not_ have any results")
     def whereNot(trav: Iterator[A] => Iterator[_]): Iterator[A] =
       iterator.filter { (a: A) =>
         !trav(Iterator.single(a)).hasNext
       }
 
     /** only preserves elements if the provided traversal does _not_ have any results - alias for whereNot */
-    // TODO reimplement @Doc(info = "only preserves elements if the provided traversal does _not_ have any results - alias for whereNot")
+    @Doc(info = "only preserves elements if the provided traversal does _not_ have any results - alias for whereNot")
     def not(trav: Iterator[A] => Iterator[_]): Iterator[A] =
       whereNot(trav)
 
@@ -176,7 +179,7 @@ trait Language {
       * @example
       *   {{{.or(_.label("someLabel"), _.has("someProperty"))}}}
       */
-    // TODO reimplement @Doc(info = "only preserves elements for which _at least one of_ the given traversals has at least one result")
+    @Doc(info = "only preserves elements for which _at least one of_ the given traversals has at least one result")
     def or(traversals: (Iterator[A] => Iterator[_])*): Iterator[A] = {
       iterator.filter { (a: A) =>
         traversals.exists { trav =>
@@ -191,7 +194,7 @@ trait Language {
       * @example
       *   {{{.and(_.label("someLabel"), _.has("someProperty"))}}}
       */
-    // TODO reimplement @Doc(info = "only preserves elements for which _all of_ the given traversals have at least one result")
+    @Doc(info = "only preserves elements for which _all of_ the given traversals have at least one result")
     def and(traversals: (Iterator[A] => Iterator[_])*): Iterator[A] = {
       iterator.filter { (a: A) =>
         traversals.forall { trav =>
@@ -207,7 +210,7 @@ trait Language {
       * @example
       *   {{{.union(_.out, _.in)}}}
       */
-    // TODO reimplement @Doc(info = "union/sum/aggregate/join given traversals from the current point")
+    @Doc(info = "union/sum/aggregate/join given traversals from the current point")
     def union[B](traversals: (Iterator[A] => Iterator[B])*): Iterator[B] = iterator match {
       // TODO bring back PathAwareTraversal?
 //      case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal._union(traversals: _*)
@@ -240,7 +243,7 @@ trait Language {
       * @see
       *   LogicalStepsTests
       */
-    // TODO reimplement @Doc(info = "allows to implement conditional semantics: if, if/else, if/elseif, if/elseif/else, ...")
+    @Doc(info = "allows to implement conditional semantics: if, if/else, if/elseif, if/elseif/else, ...")
     def choose[BranchOn >: Null, NewEnd](
       on: Iterator[A] => Iterator[BranchOn]
     )(options: PartialFunction[BranchOn, Iterator[A] => Iterator[NewEnd]]): Iterator[NewEnd] = iterator match {
@@ -255,7 +258,7 @@ trait Language {
         }
     }
 
-    // TODO reimplement @Doc(info = "evaluates the provided traversals in order and returns the first traversal that emits at least one element" )
+    @Doc(info = "evaluates the provided traversals in order and returns the first traversal that emits at least one element" )
     def coalesce[NewEnd](options: (Iterator[A] => Iterator[NewEnd])*): Iterator[NewEnd] = iterator match {
       // TODO bring back PathAwareTraversal?
 //      case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal._coalesce(options: _*)
@@ -270,7 +273,7 @@ trait Language {
         }
     }
 
-    // TODO reimplement @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
+    // @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
     // TODO bring back PathAwareTraversal?
 //    def enablePathTracking: PathAwareTraversal[A] =
 //      iterator match {
@@ -278,7 +281,7 @@ trait Language {
 //        case _ => new PathAwareTraversal[A](iterator.map { a => (a, Vector.empty) })
 //      }
 
-    // TODO reimplement @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
+    // @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
 //    def discardPathTracking: Iterator[A] =
 //      iterator match {
 //        case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal.wrapped.map { _._1 }
@@ -295,7 +298,7 @@ trait Language {
       *   }}}
       *   TODO would be nice to preserve the types of the elements, at least if they have a common supertype
       */
-    // TODO reimplement @Doc(info = "retrieve entire path that has been traversed thus far")
+    @Doc(info = "retrieve entire path that has been traversed thus far")
     def path: Iterator[Vector[Any]] = iterator match {
       // TODO bring back PathAwareTraversal?
 //      case tracked: PathAwareTraversal[A] =>
@@ -366,9 +369,13 @@ trait Language {
       }
     }
   }
+}
+
+
+trait NodeLanguage {
+  import Language.*
 
   extension (node: GNode) {
-
     /** follow _all_ OUT edges to their adjacent nodes */
     def out: Iterator[GNode] =
       Accessors.getNeighborsOut(node)
@@ -446,8 +453,7 @@ trait Language {
     }
 
     /** traverse to the node label */
-    // TODO bring back doc/help etc
-    // @Doc(info = "Traverse to the node label")
+    @Doc(info = "Traverse to the node label")
     def label: Iterator[String] =
       traversal.map(_.label())
 
@@ -488,10 +494,12 @@ trait Language {
       traversal.flatMap(_.in)
 
     /** follow the given OUT edge(s) to their adjacent nodes */
+    @Doc("follow the given OUT edge(s) to their adjacent nodes")
     def out(edgeLabel: String): Iterator[GNode] =
       traversal.flatMap(_.out(edgeLabel))
 
     /** follow the given IN edge(s) to their adjacent nodes */
+    @Doc("follow the given IN edge(s) to their adjacent nodes")
     def in(edgeLabel: String): Iterator[GNode] =
       traversal.flatMap(_.in(edgeLabel))
 
@@ -511,6 +519,7 @@ trait Language {
     def inE(edgeLabel: String): Iterator[Edge] =
       traversal.flatMap(_.inE(edgeLabel))
 
+    @Doc("lookup a property value")
     def property[@specialized T](name: String): Iterator[T] =
       traversal.flatMap(_.propertyOption[T](name))
 
