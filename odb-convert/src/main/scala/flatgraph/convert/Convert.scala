@@ -1,12 +1,13 @@
 package flatgraph.convert
 
 import flatgraph.{Edge, storage}
-import flatgraph.storage.{Keys, Serialization, Manifest, StorageType}
+import flatgraph.storage.{Keys, Manifest, Serialization, StorageType}
 import org.msgpack.core.MessagePack
 import overflowdb.storage.{OdbStorage, ValueTypes}
 
-import java.io.ByteArrayOutputStream
+import java.io.{ByteArrayOutputStream, File}
 import java.nio.charset.StandardCharsets
+import java.nio.file.{Path, Paths}
 import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
@@ -18,29 +19,31 @@ object Convert {
       System.err.println("Usage: convert [inputfile] [outputfile]")
       System.err.println("Error: missing input and/or output file - exiting.")
     } else {
-      val inputFile  = args(0)
-      val outputFile = args(1)
-      val storage =
-        overflowdb.storage.OdbStorage.createWithSpecificLocation(new java.io.File(inputFile), new overflowdb.util.StringInterner)
-      val (nodes, strings) = readOdb(storage)
-      writeData(outputFile, nodes, strings)
+      apply(overflowDbFile = Paths.get(args(0)), outputFile = Paths.get(args(1)))
     }
   }
 
-  class NodeRefTmp(val legacyId: Long) {
+  def apply(overflowDbFile: Path, outputFile: Path): Unit = {
+    val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(overflowDbFile.toFile, new overflowdb.util.StringInterner)
+    val (nodes, strings) = readOdb(storage)
+    writeData(outputFile.toFile, nodes, strings)
+  }
+
+  private class NodeRefTmp(val legacyId: Long) {
     var newId: Long = -1L
   }
-  class StringRef(val idx: Int, val string: String)
 
-  object NodeStuff {
+  private class StringRef(val idx: Int, val string: String)
+
+  private object NodeStuff {
     val NODEPROPERTY        = "p"
     val NEIGHBOR_IN         = "i"
     val NEIGHBOR_OUT        = "o"
     val EDGEPROPERTY_SUFFIX = "x"
     val legacyId            = "legacyId"
-
   }
-  class NodeStuff(val label: String, val kind: Int) {
+
+  private class NodeStuff(val label: String, val kind: Int) {
     var nextId: Int = 0
     val quantities  = mutable.HashMap[(String, String), mutable.ArrayBuffer[Int]]()
     val values      = mutable.HashMap[(String, String), mutable.ArrayBuffer[Any]]()
@@ -69,7 +72,7 @@ object Convert {
     }
   }
 
-  def writeData(filename: String, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
+  private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
     val filePtr     = new AtomicLong(16)
     val fileChannel = new java.io.RandomAccessFile(filename, "rw").getChannel
     try {
@@ -139,12 +142,12 @@ object Convert {
       fileChannel.truncate(pos)
 
       // tmp debug
-      println(manifestObj.render(indent = 4))
+      // println(manifestObj.render(indent = 4))
 
     } finally { fileChannel.close() }
   }
 
-  def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
+  private def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
     items.find { _ != null } match {
       case None             => (null, null)
       case Some(_: Boolean) => (storage.StorageType.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)
@@ -166,10 +169,9 @@ object Convert {
         )
       case Some(other) => throw new AssertionError(s"unexpected item found: $other of type ${other.getClass}")
     }
-
   }
 
-  def readOdb(storage: overflowdb.storage.OdbStorage): (Array[NodeStuff], Array[String]) = {
+  private def readOdb(storage: overflowdb.storage.OdbStorage): (Array[NodeStuff], Array[String]) = {
     val legacyIdToNewId = mutable.HashMap[Long, NodeRefTmp]()
     val stringInterner  = mutable.LinkedHashMap[String, StringRef]()
     val byLabel         = mutable.LinkedHashMap[String, NodeStuff]()

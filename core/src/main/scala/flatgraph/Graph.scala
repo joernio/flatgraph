@@ -35,7 +35,7 @@ object Graph {
 
 }
 
-class Graph(val schema: Schema, storagePathMaybe: Option[Path] = None) extends AutoCloseable {
+class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) extends AutoCloseable {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
   private val propertiesCount = schema.getNumberOfProperties
