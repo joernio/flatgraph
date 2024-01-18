@@ -737,7 +737,7 @@ class DomainClassesGenerator(schema: Schema) {
     // domain object and starters: start
     // TODO: extract into separate method
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
-    val starters = mutable.ArrayBuffer[String]()
+    val starters              = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
       typ.starterName.foreach { starterName =>
         // starter for this concrete node type
@@ -752,11 +752,13 @@ class DomainClassesGenerator(schema: Schema) {
         typ.primaryKey.foreach { property =>
           // note: we cannot use our reverse index for property lookup here because the given key might be a regex
           val propertyNameCamelCase = camelCase(property.name)
-          val docText = s"Shorthand for $starterName.$propertyNameCamelCase"
+          val docText               = s"Shorthand for $starterName.$propertyNameCamelCase"
           starters.append(
             s"""// TODO reimplement help/doc... @overflowdb.traversal.help.Doc(info = "$docText")
                |/** $docText */
-               |def $starterName($propertyNameCamelCase: ${typeFor(property)}): Iterator[nodes.${typ.className}] = $starterName.$propertyNameCamelCase($propertyNameCamelCase)""".stripMargin
+               |def $starterName($propertyNameCamelCase: ${typeFor(
+                property
+              )}): Iterator[nodes.${typ.className}] = $starterName.$propertyNameCamelCase($propertyNameCamelCase)""".stripMargin
           )
         }
       }
@@ -764,16 +766,15 @@ class DomainClassesGenerator(schema: Schema) {
 
     schema.nodeBaseTypes.foreach { baseType =>
       baseType.starterName.foreach { starterName =>
-        val types = schema.nodeTypes.filter{_.extendzRecursively.contains(baseType)}
-        val docText = s"""All nodes of type ${baseType.className}, i.e. with label in ${types.map{_.name}.sorted.mkString(", ")}"""
-        val concreteSubTypeStarters = nodeTypes.collect { case typ if typ.extendzRecursively.contains(baseType) =>
-          "this." + sanitizeReservedNames(camelCase(typ.name))
+        val types   = schema.nodeTypes.filter { _.extendzRecursively.contains(baseType) }
+        val docText = s"""All nodes of type ${baseType.className}, i.e. with label in ${types.map { _.name }.sorted.mkString(", ")}"""
+        val concreteSubTypeStarters = nodeTypes.collect {
+          case typ if typ.extendzRecursively.contains(baseType) =>
+            "this." + sanitizeReservedNames(camelCase(typ.name))
         }
-        starters.append(
-          s"""// TODO reimplement help/doc... @overflowdb.traversal.help.Doc(info = "$docText")
+        starters.append(s"""// TODO reimplement help/doc... @overflowdb.traversal.help.Doc(info = "$docText")
               /** $docText */
-              def $starterName: Iterator[nodes.${baseType.className}] = Iterator(${concreteSubTypeStarters.mkString(", ")}).flatten"""
-        )
+              def $starterName: Iterator[nodes.${baseType.className}] = Iterator(${concreteSubTypeStarters.mkString(", ")}).flatten""")
       }
     }
 
