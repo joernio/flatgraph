@@ -6,7 +6,6 @@ import flatgraph.help.DocFinder.StepDoc
 
 import java.lang.annotation.Annotation as JAnnotation
 import org.reflections8.Reflections
-import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 /** Searches classpath for @Traversal|@TraversalSource and @Doc annotations (via reflection). Used for `.help` step.

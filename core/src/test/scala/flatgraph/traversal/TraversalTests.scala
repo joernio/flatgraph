@@ -2,8 +2,9 @@ package flatgraph.traversal
 
 import flatgraph.Implicits.start
 import flatgraph.GNode
+import flatgraph.help.DocSearchPackages
 import flatgraph.traversal.Language.*
-import flatgraph.traversal.testdomains.simple.ExampleGraphSetup
+import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -117,32 +118,36 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
     }
 
     "give a domain overview" in {
-      //    import SimpleDomain._ // for domain specific `DocSearchPackages`
-      //   list starter steps etc.
+      import flatgraph.traversal.testdomains.simple.SimpleDomain
 
-      ???
-//      val helpText = simpleDomain.help
-//      helpText should include(".things")
-//      helpText should include("all things")
+      val helpText = SimpleDomain.help
+      // should list starter steps etc.
+      helpText should include(".things")
+      helpText should include("all things")
     }
 
     "provide node-specific overview" when {
       "using simple domain" in {
-        ???
-//        val thingTraversal = SimpleDomain.traversal(SimpleDomain.newGraph).things
-//        val thingTraversalHelp = thingTraversal.help
-//        thingTraversalHelp should include("Available steps for Thing")
-//        thingTraversalHelp should include(".name")
-//        thingTraversalHelp should include(".name2") // step from helptest.SimpleDomainTraversal
-//
-//        val thingTraversalHelpVerbose = thingTraversal.helpVerbose
-//        thingTraversalHelpVerbose should include("ThingTraversal") // the Traversal classname
-//        thingTraversalHelpVerbose should include(".sideEffect") // step from Traversal
-//        thingTraversalHelpVerbose should include(".label") // step from ElementTraversal
-//        thingTraversalHelpVerbose should include(".out") // step from NodeTraversal
-//        thingTraversalHelpVerbose should include(
-//          "just like name, but in a different package"
-//        ) // step from helptest.SimpleDomainTraversal
+        implicit val docSearchPackages: DocSearchPackages = SimpleDomain.defaultDocSearchPackage
+        val thingTraversal = SimpleDomain.traversal(SimpleDomain.newGraph).things
+        val thingTraversalHelp = thingTraversal.help
+        // TODO remove
+//        val docSearchPackages = implicitly[DocSearchPackages]
+        println(docSearchPackages.apply())
+        println(thingTraversalHelp)
+        1 shouldBe 2
+
+        thingTraversalHelp should include(".name")
+        thingTraversalHelp should include(".name2") // step from helptest.SimpleDomainTraversal
+
+        val thingTraversalHelpVerbose = thingTraversal.helpVerbose
+        thingTraversalHelpVerbose should include("ThingTraversal") // the Traversal classname
+        thingTraversalHelpVerbose should include(".sideEffect") // step from Traversal
+        thingTraversalHelpVerbose should include(".label") // step from ElementTraversal
+        thingTraversalHelpVerbose should include(".out") // step from NodeTraversal
+        thingTraversalHelpVerbose should include(
+          "just like name, but in a different package"
+        ) // step from helptest.SimpleDomainTraversal
       }
 
       "using hierarchical domain" in {
@@ -163,18 +168,18 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
     "provides generic help" when {
       "using verbose mode" when {
+        "traversing non-nodes" in {
+          ???
+          //          val stringTraversal = Iterator.empty[String]
+          //          stringTraversal.helpVerbose should include(".sideEffect")
+          //          (stringTraversal.helpVerbose should not).include(".label")
+        }
+
         "traversing nodes" in {
           ???
 //          val thingTraversal: Iterator[Thing] = Iterator.empty
 //          thingTraversal.helpVerbose should include(".sideEffect")
 //          thingTraversal.helpVerbose should include(".label")
-        }
-
-        "traversing non-nodes" in {
-          ???
-//          val stringTraversal = Iterator.empty[String]
-//          stringTraversal.helpVerbose should include(".sideEffect")
-//          (stringTraversal.helpVerbose should not).include(".label")
         }
       }
     }

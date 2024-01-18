@@ -1,7 +1,6 @@
 package flatgraph.help
 
-/** defines where we should search for @Traversal/@TraversalSource/@Doc annotations
-  */
+/** defines where we should search for @Traversal/@TraversalSource/@Doc annotations */
 trait DocSearchPackages {
   def apply(): Seq[String]
 }
