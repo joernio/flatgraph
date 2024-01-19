@@ -131,11 +131,15 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
         implicit val docSearchPackages: DocSearchPackages = SimpleDomain.defaultDocSearchPackage
         val thingTraversal = SimpleDomain.traversal(SimpleDomain.newGraph).things
         val thingTraversalHelp = thingTraversal.help
-        // TODO remove
+        
+        // debug: we want to find `.name` and `.name2` and `.things` starter step!
+        // then move .name2 into a different package!
+        // ideas: search entire classpath? better not, in case there's multiple domains...
 //        val docSearchPackages = implicitly[DocSearchPackages]
         println(docSearchPackages.apply())
         println(thingTraversalHelp)
         1 shouldBe 2
+        // TODO remove debug block ^
 
         thingTraversalHelp should include(".name")
         thingTraversalHelp should include(".name2") // step from helptest.SimpleDomainTraversal
