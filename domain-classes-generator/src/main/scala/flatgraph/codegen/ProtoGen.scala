@@ -214,7 +214,7 @@ class ProtoGen(schema: Schema) {
 
     Files.createDirectories(outputDir)
     val outputFile = outputDir.resolve(s"${protoOpts.pkg}.proto")
-    os.write(os.Path(outputFile.toAbsolutePath), protoDef)
+    os.write.over(os.Path(outputFile.toAbsolutePath), protoDef)
     outputFile
   }
 
