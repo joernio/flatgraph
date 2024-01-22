@@ -1,7 +1,9 @@
 package flatgraph.traversal.testdomains.simple
 
-import flatgraph.*
-import flatgraph.help.{Doc, DocSearchPackages, TraversalHelp, TraversalSource}
+import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode, GenericDNode, Graph, TestSchema}
+import flatgraph.help.{Doc, DocSearchPackages, Traversal, TraversalHelp, TraversalSource}
+import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
+import flatgraph.traversal.Language.*
 
 /* simple example graph:
  * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
@@ -71,7 +73,8 @@ object SimpleDomain {
 class SimpleDomainTraversalSource(graph: Graph) {
 
   @Doc(info = "all things")
-  def things: Iterator[GNode] = graph.nodes("V0")
+  def things: Iterator[Thing] =
+    graph.nodes("V0").cast[Thing]
 }
 
 /** Example for domain specific extension steps that are defined in a different package. TraversalTests verifies that
@@ -79,15 +82,9 @@ class SimpleDomainTraversalSource(graph: Graph) {
  *
  * @param traversal
  */
-@help.Traversal(elementType = classOf[SimpleDomain.Thing])
+@Traversal(elementType = classOf[SimpleDomain.Thing])
 class SimpleDomainTraversal(val traversal: Iterator[SimpleDomain.Thing]) extends AnyVal {
-
 
   @Doc(info = "name of the Thing")
   def name: Iterator[String] = traversal.map(_.name)
-
-  // TODO move to different package (e.g. `helptest`)
-//  @Doc(info = "name2 (just like name, but in a different package...)")
-//  def name2: Iterator[String] = traversal.map(_.name)
-
 }

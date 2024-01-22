@@ -4,6 +4,7 @@ import flatgraph.Implicits.start
 import flatgraph.GNode
 import flatgraph.help.DocSearchPackages
 import flatgraph.traversal.Language.*
+import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
 import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -128,65 +129,27 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
     "provide node-specific overview" when {
       "using simple domain" in {
-        implicit val docSearchPackages: DocSearchPackages = SimpleDomain.defaultDocSearchPackage
         val thingTraversal = SimpleDomain.traversal(SimpleDomain.newGraph).things
         val thingTraversalHelp = thingTraversal.help
-        
-        // debug: we want to find `.name` and `.name2` and `.things` starter step!
-        // then move .name2 into a different package!
-        // ideas: search entire classpath? better not, in case there's multiple domains...
-//        val docSearchPackages = implicitly[DocSearchPackages]
-        println(docSearchPackages.apply())
-        println(thingTraversalHelp)
-        1 shouldBe 2
-        // TODO remove debug block ^
 
-        thingTraversalHelp should include(".name")
-        thingTraversalHelp should include(".name2") // step from helptest.SimpleDomainTraversal
+        thingTraversalHelp should include(".name") // step from `flatgraph.traversal.testdomains.simple.SimpleDomainTraversal`
+        thingTraversalHelp should include(".sideEffect") // step from Traversal
+        thingTraversalHelp should include(".label") // step from ElementTraversal
+        thingTraversalHelp should include(".out") // step from NodeTraversal
+
+        // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
+        thingTraversalHelp shouldNot include("$extension")
 
         val thingTraversalHelpVerbose = thingTraversal.helpVerbose
-        thingTraversalHelpVerbose should include("ThingTraversal") // the Traversal classname
-        thingTraversalHelpVerbose should include(".sideEffect") // step from Traversal
-        thingTraversalHelpVerbose should include(".label") // step from ElementTraversal
-        thingTraversalHelpVerbose should include(".out") // step from NodeTraversal
-        thingTraversalHelpVerbose should include(
-          "just like name, but in a different package"
-        ) // step from helptest.SimpleDomainTraversal
-      }
-
-      "using hierarchical domain" in {
-//        import overflowdb.traversal.testdomains.hierarchical._
-        ???
-//        Iterator.empty[Animal].help should include("species of the animal")
-//        Iterator.empty[Mammal].help should include("can this mammal swim?")
-//        Iterator.empty[Elephant].help should include("name of the elephant")
-//        Iterator.empty[Car].help should include("name of the car")
-
-        // elephant is a mammal (and therefor an animal)
-//        Iterator.empty[Elephant].canSwim // only verify that it compiles
-//        Iterator.empty[Elephant].species // only verify that it compiles
-//        Iterator.empty[Elephant].help should include("species of the animal")
-//        Iterator.empty[Elephant].help should include("can this mammal swim?")
+        thingTraversalHelpVerbose should include("name of the Thing")
+        thingTraversalHelpVerbose should include("testdomains.simple.SimpleDomainTraversal")
+        thingTraversalHelpVerbose should include("node label")
+        thingTraversalHelpVerbose should include("flatgraph.traversal.NodeLanguage")
+        thingTraversalHelpVerbose should include("result to a list")
+        thingTraversalHelpVerbose should include("flatgraph.traversal.GenericLanguage")
       }
     }
 
-    "provides generic help" when {
-      "using verbose mode" when {
-        "traversing non-nodes" in {
-          ???
-          //          val stringTraversal = Iterator.empty[String]
-          //          stringTraversal.helpVerbose should include(".sideEffect")
-          //          (stringTraversal.helpVerbose should not).include(".label")
-        }
-
-        "traversing nodes" in {
-          ???
-//          val thingTraversal: Iterator[Thing] = Iterator.empty
-//          thingTraversal.helpVerbose should include(".sideEffect")
-//          thingTraversal.helpVerbose should include(".label")
-        }
-      }
-    }
   }
 
 }

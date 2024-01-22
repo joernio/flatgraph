@@ -95,8 +95,12 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
   lazy val nodeStepDocs: Iterable[StepDoc] =
     findStepDocs(classOf[flatgraph.traversal.NodeLanguage])
 
-  protected def findStepDocs(traversal: Class[_]): Iterable[StepDoc] =
-    DocFinder.findDocumentedMethodsOf(traversal)
+  protected def findStepDocs(traversal: Class[_]): Iterable[StepDoc] = {
+    DocFinder
+      .findDocumentedMethodsOf(traversal)
+        // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
+      .filterNot(_.methodName.endsWith("$extension"))
+  }
 
   private def packageNamesToSearch: Seq[String] =
     searchPackages() :+ "flatgraph"
