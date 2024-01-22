@@ -737,11 +737,20 @@ class DomainClassesGenerator(schema: Schema) {
     // domain object and starters: start
     // TODO: extract into separate method
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
-    val starters              = mutable.ArrayBuffer[String]()
+    def docAnnotationMaybe(nodeType: AbstractNodeType) =
+      nodeType.comment.map(comment => s"""@flatgraph.help.Doc(info = "$comment")""").getOrElse("")
+    val starters = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
       typ.starterName.foreach { starterName =>
         // starter for this concrete node type
-        val docText = s"All nodes of type ${typ.className}, i.e. with label ${typ.name}"
+        val docText = {
+          val typCommentMaybe = typ.comment
+            .map { comment =>
+              s" and documentation: ${typ.comment}"
+            }
+            .getOrElse("")
+          s"All nodes of type ${typ.className}, i.e. with label ${typ.name} $typCommentMaybe"
+        }
         starters.append(
           s"""// TODO reimplement help/doc... @overflowdb.traversal.help.Doc(info = "$docText")
              |/** $docText */
@@ -785,6 +794,9 @@ class DomainClassesGenerator(schema: Schema) {
          |import Language.*
          |
          |object $domainShortName {
+         |  val defaultDocSearchPackage: flatgraph.help.DocSearchPackages = flatgraph.help.DocSearchPackages(getClass.getPackage.getName)
+         |  lazy val help = flatgraph.help.TraversalHelp(defaultDocSearchPackage).forTraversalSources
+         |
          |  def empty: $domainShortName = new $domainShortName(new flatgraph.Graph(GraphSchema))
          |
          |  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory.
@@ -805,7 +817,10 @@ class DomainClassesGenerator(schema: Schema) {
          |    _graph.close()
          |}
          |
+         |@flatgraph.help.TraversalSource
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) {
+         |
+         |  @flatgraph.help.Doc(info = "all nodes")
          |  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
          |
          |${starters.mkString("\n\n")}

@@ -1,6 +1,9 @@
 package flatgraph.traversal.testdomains.simple
 
-import flatgraph.*
+import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode, GenericDNode, Graph, TestSchema}
+import flatgraph.help.{Doc, DocSearchPackages, Traversal, TraversalHelp, TraversalSource}
+import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
+import flatgraph.traversal.Language.*
 
 /* simple example graph:
  * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
@@ -9,8 +12,7 @@ trait ExampleGraphSetup {
   // val nonExistingLabel = "this label does not exist"
   // val nonExistingPropertyKey = new PropertyKey[String]("this property key does not exist")
 
-  val schema = TestSchema.make(1, 1)
-  val graph  = new Graph(schema)
+  val graph  = SimpleDomain.newGraph
   val l3     = addNode()
   val l2     = addNode()
   val l1     = addNode()
@@ -48,4 +50,40 @@ trait ExampleGraphSetup {
     DiffGraphApplier.applyDiff(graph, DiffGraphBuilder(graph.schema).addNode(newNode))
     newNode.storedRef.get // that reference is set by DiffGraphApplier
   }
+}
+
+object SimpleDomain {
+  class Thing(graph: Graph, nodeKind: Short, seqId: Int) extends GNode(graph, nodeKind, seqId) {
+    def name: String = ???
+  }
+
+  val defaultDocSearchPackage: DocSearchPackages = DocSearchPackages(getClass.getPackage.getName)
+  lazy val help                                  = TraversalHelp(defaultDocSearchPackage).forTraversalSources
+
+  def newGraph: Graph = {
+    val schema = TestSchema.make(1, 1)
+    Graph(schema)
+  }
+
+  def traversal(graph: Graph) = new SimpleDomainTraversalSource(graph)
+}
+
+@TraversalSource
+class SimpleDomainTraversalSource(graph: Graph) {
+
+  @Doc(info = "all things")
+  def things: Iterator[Thing] =
+    graph.nodes("V0").cast[Thing]
+}
+
+/** Example for domain specific extension steps that are defined in a different package. TraversalTests verifies that the .help step finds
+  * the documentation as specified in @Doc
+  *
+  * @param traversal
+  */
+@Traversal(elementType = classOf[SimpleDomain.Thing])
+class SimpleDomainTraversal(val traversal: Iterator[SimpleDomain.Thing]) extends AnyVal {
+
+  @Doc(info = "name of the Thing")
+  def name: Iterator[String] = traversal.map(_.name)
 }
