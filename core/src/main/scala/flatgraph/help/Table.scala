@@ -9,9 +9,9 @@ case class Table(columnNames: Iterable[String], rows: Iterable[Iterable[String]]
 
   lazy val render: String = {
     Using.Manager { use =>
-      val charset = StandardCharsets.UTF_8
-      val baos = use(new ByteArrayOutputStream)
-      val ps = use(new PrintStream(baos, true, charset.name))
+      val charset     = StandardCharsets.UTF_8
+      val baos        = use(new ByteArrayOutputStream)
+      val ps          = use(new PrintStream(baos, true, charset.name))
       val rowsAsArray = rows.map(_.map(_ + " ").toArray.asInstanceOf[Array[Object]]).toArray
       new TextTable(columnNames.toArray, rowsAsArray).printTable(ps, 0)
       new String(baos.toByteArray, charset)

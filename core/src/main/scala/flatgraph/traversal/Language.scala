@@ -258,7 +258,7 @@ trait GenericLanguage {
         }
     }
 
-    @Doc(info = "evaluates the provided traversals in order and returns the first traversal that emits at least one element" )
+    @Doc(info = "evaluates the provided traversals in order and returns the first traversal that emits at least one element")
     def coalesce[NewEnd](options: (Iterator[A] => Iterator[NewEnd])*): Iterator[NewEnd] = iterator match {
       // TODO bring back PathAwareTraversal?
 //      case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal._coalesce(options: _*)
@@ -371,11 +371,11 @@ trait GenericLanguage {
   }
 }
 
-
 trait NodeLanguage {
   import Language.*
 
   extension (node: GNode) {
+
     /** follow _all_ OUT edges to their adjacent nodes */
     def out: Iterator[GNode] =
       Accessors.getNeighborsOut(node)

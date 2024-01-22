@@ -739,14 +739,16 @@ class DomainClassesGenerator(schema: Schema) {
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     def docAnnotationMaybe(nodeType: AbstractNodeType) =
       nodeType.comment.map(comment => s"""@flatgraph.help.Doc(info = "$comment")""").getOrElse("")
-    val starters              = mutable.ArrayBuffer[String]()
+    val starters = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
       typ.starterName.foreach { starterName =>
         // starter for this concrete node type
         val docText = {
-          val typCommentMaybe = typ.comment.map { comment =>
-            s" and documentation: ${typ.comment}"
-          }.getOrElse("")
+          val typCommentMaybe = typ.comment
+            .map { comment =>
+              s" and documentation: ${typ.comment}"
+            }
+            .getOrElse("")
           s"All nodes of type ${typ.className}, i.e. with label ${typ.name} $typCommentMaybe"
         }
         starters.append(

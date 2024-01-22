@@ -12,7 +12,7 @@ trait ExampleGraphSetup {
   // val nonExistingLabel = "this label does not exist"
   // val nonExistingPropertyKey = new PropertyKey[String]("this property key does not exist")
 
-  val graph = SimpleDomain.newGraph
+  val graph  = SimpleDomain.newGraph
   val l3     = addNode()
   val l2     = addNode()
   val l1     = addNode()
@@ -52,14 +52,13 @@ trait ExampleGraphSetup {
   }
 }
 
-
 object SimpleDomain {
   class Thing(graph: Graph, nodeKind: Short, seqId: Int) extends GNode(graph, nodeKind, seqId) {
     def name: String = ???
   }
 
   val defaultDocSearchPackage: DocSearchPackages = DocSearchPackages(getClass.getPackage.getName)
-  lazy val help = TraversalHelp(defaultDocSearchPackage).forTraversalSources
+  lazy val help                                  = TraversalHelp(defaultDocSearchPackage).forTraversalSources
 
   def newGraph: Graph = {
     val schema = TestSchema.make(1, 1)
@@ -77,11 +76,11 @@ class SimpleDomainTraversalSource(graph: Graph) {
     graph.nodes("V0").cast[Thing]
 }
 
-/** Example for domain specific extension steps that are defined in a different package. TraversalTests verifies that
- * the .help step finds the documentation as specified in @Doc
- *
- * @param traversal
- */
+/** Example for domain specific extension steps that are defined in a different package. TraversalTests verifies that the .help step finds
+  * the documentation as specified in @Doc
+  *
+  * @param traversal
+  */
 @Traversal(elementType = classOf[SimpleDomain.Thing])
 class SimpleDomainTraversal(val traversal: Iterator[SimpleDomain.Thing]) extends AnyVal {
 

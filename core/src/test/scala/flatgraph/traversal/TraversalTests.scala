@@ -50,7 +50,7 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
     "allow method only based on hashCode - to ensure the traversal doesn't hold onto elements after they've been consumed" in {
       // when run with -Xmx128m we can hold ~7 of these at a time
       def infiniteTraversalWithLargeElements = new Iterator[Any] {
-        var i = 0
+        var i       = 0
         def hasNext = true
         def next(): Any = {
           val arr = Array.ofDim[Long](2048, 1024)
@@ -61,8 +61,7 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
         }
       }
 
-      /** using dedup by hash comparison, we can traverse over these elements - already consumed elements are garbage
-        * collected
+      /** using dedup by hash comparison, we can traverse over these elements - already consumed elements are garbage collected
         */
       val traversal = infiniteTraversalWithLargeElements.dedupBy(_.hashCode)
       0.to(128).foreach { i =>
@@ -70,7 +69,6 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
       }
     }
   }
-
 
   ".sort steps should order" in {
     Iterator(1, 3, 2).sorted shouldBe Seq(1, 2, 3)
@@ -115,7 +113,7 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
       helpTextVerbose should include(".property")
       helpTextVerbose should include(".cast")
       helpTextVerbose should include("""flatgraph.traversal.GenericLanguage""") // should contain the location of the step definition...
-      helpTextVerbose should include("""flatgraph.traversal.NodeLanguage""") // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.NodeLanguage""")    // should contain the location of the step definition...
     }
 
     "give a domain overview" in {
@@ -129,13 +127,13 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
     "provide node-specific overview" when {
       "using simple domain" in {
-        val thingTraversal = SimpleDomain.traversal(SimpleDomain.newGraph).things
+        val thingTraversal     = SimpleDomain.traversal(SimpleDomain.newGraph).things
         val thingTraversalHelp = thingTraversal.help
 
-        thingTraversalHelp should include(".name") // step from `flatgraph.traversal.testdomains.simple.SimpleDomainTraversal`
+        thingTraversalHelp should include(".name")       // step from `flatgraph.traversal.testdomains.simple.SimpleDomainTraversal`
         thingTraversalHelp should include(".sideEffect") // step from Traversal
-        thingTraversalHelp should include(".label") // step from ElementTraversal
-        thingTraversalHelp should include(".out") // step from NodeTraversal
+        thingTraversalHelp should include(".label")      // step from ElementTraversal
+        thingTraversalHelp should include(".out")        // step from NodeTraversal
 
         // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
         thingTraversalHelp shouldNot include("$extension")
