@@ -38,7 +38,7 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
     }
 
     val table = Table(
-      columnNames = if (verbose) ColumnNamesVerbose else ColumnNames,
+      columnNames = if (verbose) ColumnNames :+ "implemented in" else ColumnNames,
       rows = stepDocs.sortBy(_.methodName).map { stepDoc =>
         val baseColumns = List(s".${stepDoc.methodName}", stepDoc.doc.info)
         if (verbose) baseColumns :+ stepDoc.traversalClassName
@@ -51,7 +51,7 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
          |""".stripMargin
   }
 
-  lazy val forTraversalSources: String = {
+  def forTraversalSources(verbose: Boolean): String = {
     val stepDocs = for {
       packageName <- packageNamesToSearch
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.TraversalSource])
@@ -59,9 +59,11 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
     } yield stepDoc
 
     val table = Table(
-      columnNames = ColumnNames,
+      columnNames = if (verbose) ColumnNames :+ "more details" else ColumnNames,
       rows = stepDocs.distinct.sortBy(_.methodName).map { stepDoc =>
-        List(s".${stepDoc.methodName}", stepDoc.doc.info)
+        val baseColumns = List(s".${stepDoc.methodName}", stepDoc.doc.info)
+        if (verbose) baseColumns :+ stepDoc.doc.longInfo
+        else baseColumns
       }
     )
 
@@ -107,5 +109,4 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
 
 object TraversalHelp {
   private val ColumnNames        = Array("step", "description")
-  private val ColumnNamesVerbose = ColumnNames :+ "implemented in"
 }
