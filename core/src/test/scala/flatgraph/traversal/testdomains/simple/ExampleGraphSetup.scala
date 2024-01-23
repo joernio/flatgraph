@@ -58,7 +58,8 @@ object SimpleDomain {
   }
 
   val defaultDocSearchPackage: DocSearchPackages = DocSearchPackages(getClass.getPackage.getName)
-  lazy val help                                  = TraversalHelp(defaultDocSearchPackage).forTraversalSources
+  lazy val help                                  = TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = false)
+  lazy val helpVerbose                           = TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = true)
 
   def newGraph: Graph = {
     val schema = TestSchema.make(1, 1)
