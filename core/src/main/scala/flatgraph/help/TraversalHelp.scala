@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters.*
   * @param searchPackages:
   *   The base packages that we scan for - we're not scanning the entire classpath
   */
-class TraversalHelp(searchPackages: DocSearchPackages) {
+class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
   import TraversalHelp._
 
   def forElementSpecificSteps(elementClass: Class[_], verbose: Boolean): String = {
@@ -53,7 +53,7 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
 
   def forTraversalSources(verbose: Boolean): String = {
     val stepDocs = for {
-      packageName <- packageNamesToSearch
+      packageName <- packageNamesToSearch()
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.TraversalSource])
       stepDoc     <- findStepDocs(traversal)
     } yield stepDoc
@@ -77,7 +77,7 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
     */
   lazy val stepDocsByElementType: Map[Class[_], List[StepDoc]] = {
     for {
-      packageName <- packageNamesToSearch
+      packageName <- packageNamesToSearch()
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.Traversal])
       annotation  <- Option(traversal.getAnnotation(classOf[help.Traversal])).iterator
       stepDoc     <- findStepDocs(traversal)
@@ -103,14 +103,6 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
       .filterNot(_.methodName.endsWith("$extension"))
   }
 
-  private def packageNamesToSearch: Seq[String] =
-    searchPackages() :+ "flatgraph"
-
-  private def shorten(s: String, maxLength: Int): String = {
-    val continuation = "...".take(maxLength)
-    if (s.length <= maxLength) s
-    else s.take(maxLength - continuation.length) + continuation
-  }
 }
 
 object TraversalHelp {
