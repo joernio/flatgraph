@@ -790,8 +790,10 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |object $domainShortName {
          |  val defaultDocSearchPackage: flatgraph.help.DocSearchPackages = flatgraph.help.DocSearchPackages(getClass.getPackage.getName)
-         |  lazy val help = flatgraph.help.TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = false)
-         |  lazy val helpVerbose = flatgraph.help.TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = true)
+         |  def help(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = false)
+         |  def helpVerbose(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = true)
          |
          |  def empty: $domainShortName = new $domainShortName(new flatgraph.Graph(GraphSchema))
          |
@@ -808,8 +810,11 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |class $domainShortName(private val _graph: flatgraph.Graph = new flatgraph.Graph(GraphSchema)) extends AutoCloseable {
          |  def graph: flatgraph.Graph = _graph
-         |  lazy val help = $domainShortName.help
-         |  lazy val helpVerbose = $domainShortName.helpVerbose
+         |
+         |  def help(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    $domainShortName.help(searchPackageNames)
+         |  def helpVerbose(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    $domainShortName.helpVerbose(searchPackageNames)
          |
          |  override def close(): Unit =
          |    _graph.close()
