@@ -7,8 +7,8 @@ trait DocSearchPackages {
 
 object DocSearchPackages {
 
-  /** default implicit, for domains that don't have custom steps: no additional packages to search */
-  implicit val defaultDocSearchPackage: DocSearchPackages = () => Nil
+  /** don't scan anywhere other than flatgraph.traversal */
+  val noAdditionalPackages: DocSearchPackages = () => Nil
 
   def apply(searchPackages: String*): DocSearchPackages =
     () => searchPackages
