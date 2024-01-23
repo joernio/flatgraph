@@ -737,11 +737,11 @@ class DomainClassesGenerator(schema: Schema) {
     // domain object and starters: start
     // TODO: extract into separate method
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
-    val starters = mutable.ArrayBuffer[String]()
+    val starters              = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
       typ.starterName.foreach { starterName =>
         // starter for this concrete node type
-        val docTextInfo = s"All nodes of type ${typ.className}, i.e. with label ${typ.name}".trim
+        val docTextInfo    = s"All nodes of type ${typ.className}, i.e. with label ${typ.name}".trim
         val docTextVerbose = typ.comment.getOrElse("")
         starters.append(
           s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
@@ -769,15 +769,14 @@ class DomainClassesGenerator(schema: Schema) {
 
     schema.nodeBaseTypes.foreach { baseType =>
       baseType.starterName.foreach { starterName =>
-        val docTextInfo = s"All nodes of type ${baseType.className}"
-        val subTypes = schema.nodeTypes.filter(_.extendzRecursively.contains(baseType)).map(_.name).sorted.mkString(", ")
+        val docTextInfo    = s"All nodes of type ${baseType.className}"
+        val subTypes       = schema.nodeTypes.filter(_.extendzRecursively.contains(baseType)).map(_.name).sorted.mkString(", ")
         val docTextVerbose = s"""${baseType.comment.getOrElse("")}; Subtypes: $subTypes"""
         val concreteSubTypeStarters = nodeTypes.collect {
           case typ if typ.extendzRecursively.contains(baseType) =>
             "this." + sanitizeReservedNames(camelCase(typ.name))
         }
-        starters.append(
-          s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
+        starters.append(s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
              |/** $docTextInfo
              | *  $docTextVerbose
              | */
