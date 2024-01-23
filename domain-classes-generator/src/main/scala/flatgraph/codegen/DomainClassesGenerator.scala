@@ -737,21 +737,17 @@ class DomainClassesGenerator(schema: Schema) {
     // domain object and starters: start
     // TODO: extract into separate method
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
-    def docAnnotationMaybe(nodeType: AbstractNodeType) =
-      nodeType.comment.map(comment => s"""@flatgraph.help.Doc(info = "$comment")""").getOrElse("")
     val starters = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
       typ.starterName.foreach { starterName =>
         // starter for this concrete node type
-        val docText = {
-          val typCommentMaybe = typ.comment
-            .map(comment => s"and documentation: $comment")
-            .getOrElse("")
-          s"All nodes of type ${typ.className}, i.e. with label ${typ.name} $typCommentMaybe".trim
-        }
+        val docTextInfo = s"All nodes of type ${typ.className}, i.e. with label ${typ.name}".trim
+        val docTextVerbose = typ.comment.getOrElse("")
         starters.append(
-          s"""@flatgraph.help.Doc(info = \"\"\"$docText\"\"\")
-             |/** $docText */
+          s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
+             |/** $docTextInfo
+             | *  $docTextVerbose
+             | */
              |def $starterName: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]""".stripMargin
         )
 
@@ -773,15 +769,18 @@ class DomainClassesGenerator(schema: Schema) {
 
     schema.nodeBaseTypes.foreach { baseType =>
       baseType.starterName.foreach { starterName =>
-        val types   = schema.nodeTypes.filter { _.extendzRecursively.contains(baseType) }
-        val docText = s"""All nodes of type ${baseType.className} (i.e. with label in ${types.map { _.name }.sorted.mkString(", ")})"""
+        val docTextInfo = s"All nodes of type ${baseType.className}"
+        val subTypes = schema.nodeTypes.filter(_.extendzRecursively.contains(baseType)).map(_.name).sorted.mkString(", ")
+        val docTextVerbose = s"""${baseType.comment.getOrElse("")}; Subtypes: $subTypes"""
         val concreteSubTypeStarters = nodeTypes.collect {
           case typ if typ.extendzRecursively.contains(baseType) =>
             "this." + sanitizeReservedNames(camelCase(typ.name))
         }
         starters.append(
-          s"""@flatgraph.help.Doc(info = "$docText")
-             |/** $docText */
+          s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
+             |/** $docTextInfo
+             | *  $docTextVerbose
+             | */
              |def $starterName: Iterator[nodes.${baseType.className}] = Iterator(${concreteSubTypeStarters.mkString(", ")}).flatten
              |""".stripMargin)
       }
