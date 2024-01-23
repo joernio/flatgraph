@@ -741,13 +741,10 @@ class DomainClassesGenerator(schema: Schema) {
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
       typ.starterName.foreach { starterName =>
         // starter for this concrete node type
-        val docTextInfo    = s"All nodes of type ${typ.className}, i.e. with label ${typ.name}".trim
-        val docTextVerbose = typ.comment.getOrElse("")
+        val comment = typ.comment.getOrElse("").trim
         starters.append(
-          s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
-             |/** $docTextInfo
-             | *  $docTextVerbose
-             | */
+          s"""@flatgraph.help.Doc(info = \"\"\"$comment\"\"\")
+             |/** $comment */
              |def $starterName: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]""".stripMargin
         )
 
@@ -757,8 +754,7 @@ class DomainClassesGenerator(schema: Schema) {
           val propertyNameCamelCase = camelCase(property.name)
           val docText               = s"Shorthand for $starterName.$propertyNameCamelCase"
           starters.append(
-            s"""@flatgraph.help.Doc(info = "$docText")
-               |/** $docText */
+            s"""/** $docText */
                |def $starterName($propertyNameCamelCase: ${typeFor(
                 property
               )}): Iterator[nodes.${typ.className}] = $starterName.$propertyNameCamelCase($propertyNameCamelCase)""".stripMargin
@@ -769,9 +765,9 @@ class DomainClassesGenerator(schema: Schema) {
 
     schema.nodeBaseTypes.foreach { baseType =>
       baseType.starterName.foreach { starterName =>
-        val docTextInfo    = s"All nodes of type ${baseType.className}"
+        val docTextInfo    = baseType.comment.getOrElse("").trim
         val subTypes       = schema.nodeTypes.filter(_.extendzRecursively.contains(baseType)).map(_.name).sorted.mkString(", ")
-        val docTextVerbose = s"""${baseType.comment.getOrElse("")}; Subtypes: $subTypes"""
+        val docTextVerbose = s"""subtypes: $subTypes"""
         val concreteSubTypeStarters = nodeTypes.collect {
           case typ if typ.extendzRecursively.contains(baseType) =>
             "this." + sanitizeReservedNames(camelCase(typ.name))

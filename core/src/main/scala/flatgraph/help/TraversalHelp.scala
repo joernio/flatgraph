@@ -105,6 +105,12 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
 
   private def packageNamesToSearch: Seq[String] =
     searchPackages() :+ "flatgraph"
+
+  private def shorten(s: String, maxLength: Int): String = {
+    val continuation = "...".take(maxLength)
+    if (s.length <= maxLength) s
+    else s.take(maxLength - continuation.length) + continuation
+  }
 }
 
 object TraversalHelp {
