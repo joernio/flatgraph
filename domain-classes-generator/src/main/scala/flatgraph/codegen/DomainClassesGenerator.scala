@@ -743,8 +743,8 @@ class DomainClassesGenerator(schema: Schema) {
         // starter for this concrete node type
         val comment = typ.comment.getOrElse("").trim
         starters.append(
-          s"""@flatgraph.help.Doc(info = \"\"\"$comment\"\"\")
-             |/** $comment */
+          s"""/** $comment */
+             |@flatgraph.help.Doc(info = \"\"\"$comment\"\"\")
              |def $starterName: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]""".stripMargin
         )
 
@@ -772,10 +772,11 @@ class DomainClassesGenerator(schema: Schema) {
           case typ if typ.extendzRecursively.contains(baseType) =>
             "this." + sanitizeReservedNames(camelCase(typ.name))
         }
-        starters.append(s"""@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
+        starters.append(s"""
              |/** $docTextInfo
              | *  $docTextVerbose
              | */
+             |@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
              |def $starterName: Iterator[nodes.${baseType.className}] = Iterator(${concreteSubTypeStarters.mkString(", ")}).flatten
              |""".stripMargin)
       }
