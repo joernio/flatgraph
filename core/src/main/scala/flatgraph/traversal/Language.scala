@@ -114,8 +114,7 @@ trait GenericLanguage {
       * the classpath
       */
     @Doc(info = "print help/documentation based on the current elementType `A`.")
-    @implicitNotFound(
-      """If you're using flatgraph purely without a schema and associated generated domain classes, you can
+    @implicitNotFound("""If you're using flatgraph purely without a schema and associated generated domain classes, you can
         |start with `given DocSearchPackages = DocSearchPackages.default`.
         |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
         |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
@@ -124,8 +123,7 @@ trait GenericLanguage {
       new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
 
     @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
-    @implicitNotFound(
-      """If you're using flatgraph purely without a schema and associated generated domain classes, you can
+    @implicitNotFound("""If you're using flatgraph purely without a schema and associated generated domain classes, you can
         |start with `given DocSearchPackages = DocSearchPackages.default`.
         |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
         |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`

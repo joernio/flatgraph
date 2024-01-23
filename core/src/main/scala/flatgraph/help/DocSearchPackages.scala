@@ -13,7 +13,7 @@ trait DocSearchPackages {
 object DocSearchPackages {
 
   /** don't scan anywhere other than flatgraph */
-  val default: DocSearchPackages = () =>  List("flatgraph")
+  val default: DocSearchPackages = () => List("flatgraph")
 
   def apply(searchPackages: String*): DocSearchPackages =
     () => searchPackages
