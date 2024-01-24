@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters.*
   * @param searchPackages:
   *   The base packages that we scan for - we're not scanning the entire classpath
   */
-class TraversalHelp(searchPackages: DocSearchPackages) {
+class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
   import TraversalHelp._
 
   def forElementSpecificSteps(elementClass: Class[_], verbose: Boolean): String = {
@@ -38,10 +38,10 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
     }
 
     val table = Table(
-      columnNames = if (verbose) ColumnNamesVerbose else ColumnNames,
+      columnNames = if (verbose) ColumnNames ++ Seq("implemented in", "more details") else ColumnNames,
       rows = stepDocs.sortBy(_.methodName).map { stepDoc =>
         val baseColumns = List(s".${stepDoc.methodName}", stepDoc.doc.info)
-        if (verbose) baseColumns :+ stepDoc.traversalClassName
+        if (verbose) baseColumns ++ Seq(stepDoc.traversalClassName, stepDoc.doc.longInfo)
         else baseColumns
       }
     )
@@ -51,17 +51,19 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
          |""".stripMargin
   }
 
-  lazy val forTraversalSources: String = {
+  def forTraversalSources(verbose: Boolean): String = {
     val stepDocs = for {
-      packageName <- packageNamesToSearch
+      packageName <- packageNamesToSearch()
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.TraversalSource])
       stepDoc     <- findStepDocs(traversal)
     } yield stepDoc
 
     val table = Table(
-      columnNames = ColumnNames,
+      columnNames = if (verbose) ColumnNames :+ "more details" else ColumnNames,
       rows = stepDocs.distinct.sortBy(_.methodName).map { stepDoc =>
-        List(s".${stepDoc.methodName}", stepDoc.doc.info)
+        val baseColumns = List(s".${stepDoc.methodName}", stepDoc.doc.info)
+        if (verbose) baseColumns :+ stepDoc.doc.longInfo
+        else baseColumns
       }
     )
 
@@ -75,7 +77,7 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
     */
   lazy val stepDocsByElementType: Map[Class[_], List[StepDoc]] = {
     for {
-      packageName <- packageNamesToSearch
+      packageName <- packageNamesToSearch()
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.Traversal])
       annotation  <- Option(traversal.getAnnotation(classOf[help.Traversal])).iterator
       stepDoc     <- findStepDocs(traversal)
@@ -101,11 +103,8 @@ class TraversalHelp(searchPackages: DocSearchPackages) {
       .filterNot(_.methodName.endsWith("$extension"))
   }
 
-  private def packageNamesToSearch: Seq[String] =
-    searchPackages() :+ "flatgraph"
 }
 
 object TraversalHelp {
-  private val ColumnNames        = Array("step", "description")
-  private val ColumnNamesVerbose = ColumnNames :+ "implemented in"
+  private val ColumnNames = Array("step", "description")
 }

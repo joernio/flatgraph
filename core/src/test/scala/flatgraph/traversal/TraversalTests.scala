@@ -87,6 +87,8 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
   }
 
   ".help step" should {
+    // a specific domain would provide it's own DocSearchPackage implementation, to specify where we're supposed to scan for @Doc annotations
+    given DocSearchPackages = DocSearchPackages.default
     "generic help for `int`" in {
       val helpText = Iterator(1, 2, 3, 4).help
       helpText should include(".cast")
