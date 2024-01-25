@@ -11,17 +11,17 @@ import scala.reflect.ClassTag
 object Language extends Language
 
 trait Language {
-  implicit def iterableOnceToIterator[A](iterableOnce: IterableOnce[A]): Iterator[A] =
-    iterableOnce.iterator
+  implicit def iterableOnceToIterator[A](iter: IterableOnce[A]): Iterator[A] =
+    iter.iterator
 
-  implicit def iteratorToGenericSteps[A](iterator: Iterator[A]): GenericSteps[A] =
-    new GenericSteps[A](iterator)
+  implicit def iteratorToGenericSteps[A](iter: IterableOnce[A]): GenericSteps[A] =
+    new GenericSteps[A](iter.iterator)
 
   implicit def gNodeToNodeMethods(node: GNode): NodeMethods =
     new NodeMethods(node)
 
-  implicit def iteratorToNodeSteps[A <: GNode](iterator: Iterator[A]): NodeSteps[A] =
-    new NodeSteps[A](iterator)
+  implicit def iteratorToNodeSteps[A <: GNode](iter: IterableOnce[A]): NodeSteps[A] =
+    new NodeSteps[A](iter.iterator)
 }
 
 @Traversal(elementType = classOf[AnyRef])
@@ -114,7 +114,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     iterator.asInstanceOf[Iterator[B]]
 
   /** collects all elements of the given class (beware of type-erasure) */
-  // TODO reimplement   @Doc(info = "collects all elements of the provided class (beware of type-erasure)")
+  @Doc(info = "collects all elements of the provided class (beware of type-erasure)")
   def collectAll[B](implicit ev: ClassTag[B]): Iterator[B] =
     iterator.filter(ev.runtimeClass.isInstance).asInstanceOf[Iterator[B]]
 
@@ -369,8 +369,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     * @see
     *   RepeatTraversalTests for more detail and examples for all of the above.
     */
-  // @Doc(info = "repeat the given traversal")
-  // TODO bring back repeat step
+  @Doc(info = "repeat the given traversal")
   def repeat[B >: A](
     repeatTraversal: Iterator[A] => Iterator[B]
   )(implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _): Iterator[B] = {
