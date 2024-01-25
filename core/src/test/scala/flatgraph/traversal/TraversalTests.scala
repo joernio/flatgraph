@@ -99,7 +99,7 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
       val helpTextVerbose = Iterator(1, 2, 3, 4).helpVerbose
       helpTextVerbose should include(".cast")
       helpTextVerbose should include(".whereNot")
-      helpTextVerbose should include("""flatgraph.traversal.GenericLanguage""") // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.GenericSteps""") // should contain the location of the step definition...
     }
 
     "help for nodes" in {
@@ -114,8 +114,8 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
       helpTextVerbose should include(".label")
       helpTextVerbose should include(".property")
       helpTextVerbose should include(".cast")
-      helpTextVerbose should include("""flatgraph.traversal.GenericLanguage""") // should contain the location of the step definition...
-      helpTextVerbose should include("""flatgraph.traversal.NodeLanguage""")    // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.GenericSteps""") // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.NodeSteps""")    // should contain the location of the step definition...
     }
 
     "give a domain overview" in {
@@ -144,9 +144,9 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
         thingTraversalHelpVerbose should include("name of the Thing")
         thingTraversalHelpVerbose should include("testdomains.simple.SimpleDomainTraversal")
         thingTraversalHelpVerbose should include("node label")
-        thingTraversalHelpVerbose should include("flatgraph.traversal.NodeLanguage")
+        thingTraversalHelpVerbose should include("flatgraph.traversal.NodeSteps")
         thingTraversalHelpVerbose should include("result to a list")
-        thingTraversalHelpVerbose should include("flatgraph.traversal.GenericLanguage")
+        thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSteps")
       }
     }
 

@@ -91,10 +91,10 @@ class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
     new Reflections(packageName).getTypesAnnotatedWith(annotationClass).asScala.iterator
 
   lazy val genericStepDocs: Iterable[StepDoc] =
-    findStepDocs(classOf[flatgraph.traversal.GenericLanguage])
+    findStepDocs(classOf[flatgraph.traversal.GenericSteps[_]])
 
   lazy val nodeStepDocs: Iterable[StepDoc] =
-    findStepDocs(classOf[flatgraph.traversal.NodeLanguage])
+    findStepDocs(classOf[flatgraph.traversal.NodeSteps[_]])
 
   protected def findStepDocs(traversal: Class[_]): Iterable[StepDoc] = {
     DocFinder
