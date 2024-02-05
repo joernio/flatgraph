@@ -832,34 +832,3 @@ class GraphTests extends AnyWordSpec with Matchers {
   }
 }
 
-object TestSchema {
-  def make(
-    nKinds: Int,
-    nEdgeKinds: Int,
-    nProperties: Int = 0,
-    edgePropertyPrototypes: Array[AnyRef] = null,
-    nodePropertyPrototypes: Array[AnyRef] = null
-  ): Schema = {
-    new FreeSchema(
-      nodeLabels = Range(0, nKinds).map { id => s"V${id}" }.toArray,
-      edgeLabels = Range(0, nEdgeKinds).map { id => s"${id}" }.toArray,
-      propertyLabels = Range(0, nProperties).map { id => s"${id}" }.toArray,
-      edgePropertyPrototypes = if (edgePropertyPrototypes != null) edgePropertyPrototypes else new Array[AnyRef](nEdgeKinds),
-      nodePropertyPrototypes = if (nodePropertyPrototypes != null) nodePropertyPrototypes else new Array[AnyRef](nProperties)
-    )
-  }
-
-  def testSerialization(graph: Graph): Unit = {
-    val orig = debugDump(graph)
-    withTemporaryFile(s"flatgraph-${getClass.getSimpleName}", "fg") { storagePath =>
-      Serialization.writeGraph(graph, storagePath)
-      val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
-      val newdump      = debugDump(deserialized)
-      //    if (newdump != orig) {
-      //      1 + 1 // for easier breakpoints
-      //    }
-      orig shouldBe newdump
-    }
-  }
-
-}

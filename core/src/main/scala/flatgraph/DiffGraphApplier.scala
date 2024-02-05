@@ -23,7 +23,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
   val delEdges          = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
   val setEdgeProperties = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
   val deferred          = new mutable.ArrayDeque[DNode]()
-  val delNodes          = mutable.ArrayBuffer[GNode]()
+  val delNodes          = new mutable.ArrayBuffer[GNode]()
   val setNodeProperties = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
 
   object NewNodeInterface extends BatchedUpdateInterface {
@@ -176,32 +176,38 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
   private def applyUpdate(): Unit = {
     splitUpdate()
-    // order: 1. remove edges, 2. add nodes, 3. delete nodes, 4. add edges
+    
+    // set edge properties
     for {
       nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
       edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
       direction <- Edge.Direction.values
     } setEdgeProperty(nodeKind, direction, edgeKind)
 
+    // remove edges
     for {
       nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
       edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
       direction <- Edge.Direction.values
     } deleteEdges(nodeKind, direction, edgeKind)
 
+    // add nodes
     for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds))
       addNodes(nodeKind)
 
+    // delete nodes
     if (delNodes.nonEmpty) {
       deleteNodes()
     }
 
+    // add edges
     for {
       nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
       edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
       direction <- Direction.values
     } addEdges(nodeKind, direction, edgeKind)
 
+    // set node properties
     for {
       nodeKind     <- Range(0, graph.schema.getNumberOfNodeKinds)
       propertyKind <- Range(0, graph.schema.getNumberOfProperties)
