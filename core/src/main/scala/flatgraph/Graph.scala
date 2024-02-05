@@ -63,7 +63,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     labels.iterator.flatMap(nodes)
 
   def allNodes: Iterator[GNode] =
-    nodesArray.iterator.flatMap(_.iterator).filterNot(AccessHelpers.isDeleted)
+    Range(0, schema.getNumberOfNodeKinds).iterator.flatMap(_nodes)
 
   /** Lookup nodes with a given property value (via index). N.b. currently only supported for String properties. Context: MultiDictIndex
     * requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.
