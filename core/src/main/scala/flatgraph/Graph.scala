@@ -42,6 +42,8 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private var closed          = false
 
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
+
+  /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
   private[flatgraph] def nodeCountByKind(kind: Int): Int   = nodesArray(kind).length
 
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
@@ -61,7 +63,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     labels.iterator.flatMap(nodes)
 
   def allNodes: Iterator[GNode] =
-    nodesArray.iterator.flatMap(_.iterator)
+    nodesArray.iterator.flatMap(_.iterator).filterNot(AccessHelpers.isDeleted)
 
   /** Lookup nodes with a given property value (via index). N.b. currently only supported for String properties. Context: MultiDictIndex
     * requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.

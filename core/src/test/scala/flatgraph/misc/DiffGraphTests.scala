@@ -25,8 +25,9 @@ class DiffGraphTests extends AnyWordSpec with Matchers {
     // it shouldn't matter (and especially not error) if we remove the same node twice
     diff1.removeNode(gNode)
     DiffGraphApplier.applyDiff(graph, diff1)
-    val xxxx = graph.allNodes.toSeq
     graph.allNodes.size shouldBe 0
+    graph.livingNodeCountByKind(0) shouldBe 0
+    graph.nodes(schema.getNodeLabel(0)).size shouldBe 0
   }
 
   "edge addition and removal" in {
@@ -37,7 +38,7 @@ class DiffGraphTests extends AnyWordSpec with Matchers {
     // two nodes, one edge
     val diff0 = new DiffGraphBuilder(schema)
     val V0_0  = new GenericDNode(0)
-    val V0_1  = new GenericDNode(1)
+    val V0_1  = new GenericDNode(0)
     diff0._addEdge(V0_0, V0_1, 0)
     DiffGraphApplier.applyDiff(graph, diff0)
     graph.allNodes.size shouldBe 2
