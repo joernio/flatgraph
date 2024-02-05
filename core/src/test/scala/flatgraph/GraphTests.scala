@@ -831,4 +831,3 @@ class GraphTests extends AnyWordSpec with Matchers {
     g.nodesWithProperty("undefined", "foo").l shouldBe Nil
   }
 }
-

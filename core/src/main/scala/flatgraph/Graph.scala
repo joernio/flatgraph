@@ -44,7 +44,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
   /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
-  private[flatgraph] def nodeCountByKind(kind: Int): Int   = nodesArray(kind).length
+  private[flatgraph] def nodeCountByKind(kind: Int): Int = nodesArray(kind).length
 
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val inverseIndices = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)

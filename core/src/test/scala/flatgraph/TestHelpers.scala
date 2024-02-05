@@ -24,12 +24,12 @@ object TestHelpers {
 
 object TestSchema {
   def make(
-            nodeKinds: Int,
-            edgeKinds: Int,
-            properties: Int = 0,
-            edgePropertyPrototypes: Array[AnyRef] = null,
-            nodePropertyPrototypes: Array[AnyRef] = null
-          ): Schema = {
+    nodeKinds: Int,
+    edgeKinds: Int,
+    properties: Int = 0,
+    edgePropertyPrototypes: Array[AnyRef] = null,
+    nodePropertyPrototypes: Array[AnyRef] = null
+  ): Schema = {
     new FreeSchema(
       nodeLabels = Range(0, nodeKinds).map { id => s"V${id}" }.toArray,
       edgeLabels = Range(0, edgeKinds).map { id => s"${id}" }.toArray,
