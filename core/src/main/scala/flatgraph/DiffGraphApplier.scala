@@ -73,11 +73,14 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
             assert(already.graph == graph, "expected a different graph instance")
             already
           case None =>
-            val nodekind = detached.nodeKind
-            val seqId    = graph.nodeCountByKind(nodekind) + Option(newNodes(nodekind)).map { _.size }.getOrElse(0)
-            val res      = graph.schema.makeNode(graph, nodekind, seqId)
+            val nodeKind = detached.nodeKind
+            assert (nodeKind < graph.schema.getNumberOfNodeKinds,
+              s"given nodeKind=$nodeKind does not fit into the graph schema, which only supports node kinds [0..${graph.schema.getNumberOfNodeKinds - 1}] (inclusive range)")
+
+            val seqId    = graph.nodeCountByKind(nodeKind) + Option(newNodes(nodeKind)).map { _.size }.getOrElse(0)
+            val res      = graph.schema.makeNode(graph, nodeKind, seqId)
             detached.storedRef = Some(res)
-            insert(newNodes, detached, nodekind)
+            insert(newNodes, detached, nodeKind)
             deferred.append(detached)
             res
         }
