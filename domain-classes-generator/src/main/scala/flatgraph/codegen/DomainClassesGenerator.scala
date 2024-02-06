@@ -784,23 +784,78 @@ class DomainClassesGenerator(schema: Schema) {
     // domain object and starters: start
     // TODO: extract into separate method
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
-    val concreteStarters = nodeTypes.iterator.zipWithIndex.map { case (typ, idx) =>
-      s"""def ${sanitizeReservedNames(
-          camelCase(typ.name)
-        )}: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]"""
-    }.toList
-    val baseStarters = schema.nodeBaseTypes.iterator.map { baseType =>
-      s"""def ${sanitizeReservedNames(camelCase(baseType.name))}: Iterator[nodes.${baseType.className}] = Iterator(${nodeTypes
-          .filter { _.extendzRecursively.contains(baseType) }
-          .map { t => "this." + sanitizeReservedNames(camelCase(t.name)) }
-          .mkString(", ")}).flatten"""
-    }.toList
+    val starters              = mutable.ArrayBuffer[String]()
+    nodeTypes.zipWithIndex.collect { case (typ, idx) =>
+      typ.starterName.foreach { starterName =>
+        // starter for this concrete node type
+        val comment = typ.comment.getOrElse("").trim
+        starters.append(
+          s"""/** $comment */
+             |@flatgraph.help.Doc(info = \"\"\"$comment\"\"\")
+             |def $starterName: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]""".stripMargin
+        )
+
+        // starter for primary key property (if defined) of this concrete node type
+        typ.primaryKey.foreach { property =>
+          // note: we cannot use our reverse index for property lookup here because the given key might be a regex
+          val propertyNameCamelCase = camelCase(property.name)
+          val docText               = s"Shorthand for $starterName.$propertyNameCamelCase"
+          starters.append(
+            s"""/** $docText */
+               |def $starterName($propertyNameCamelCase: ${typeFor(
+                property
+              )}): Iterator[nodes.${typ.className}] = $starterName.$propertyNameCamelCase($propertyNameCamelCase)""".stripMargin
+          )
+        }
+      }
+    }
+
+    schema.nodeBaseTypes.foreach { baseType =>
+      baseType.starterName.foreach { starterName =>
+        val docTextInfo    = baseType.comment.getOrElse("").trim
+        val subTypes       = schema.nodeTypes.filter(_.extendzRecursively.contains(baseType)).map(_.name).sorted.mkString(", ")
+        val docTextVerbose = s"""subtypes: $subTypes"""
+        val concreteSubTypeStarters = nodeTypes.collect {
+          case typ if typ.extendzRecursively.contains(baseType) =>
+            "this." + sanitizeReservedNames(camelCase(typ.name))
+        }
+        starters.append(s"""
+             |/** $docTextInfo
+             | *  $docTextVerbose
+             | */
+             |@flatgraph.help.Doc(info = \"\"\"$docTextInfo\"\"\", longInfo = \"\"\"$docTextVerbose\"\"\")
+             |def $starterName: Iterator[nodes.${baseType.className}] = Iterator(${concreteSubTypeStarters.mkString(", ")}).flatten
+             |""".stripMargin)
+      }
+    }
+
     val domainShortName = schema.domainShortName
     val domainMain =
       s"""package $basePackage
          |import flatgraph.DiffGraphBuilder
+         |import Language.*
          |
          |object $domainShortName {
+         |  val defaultDocSearchPackage = flatgraph.help.DocSearchPackages.default.withAdditionalPackage(getClass.getPackage.getName)
+         |
+         |@scala.annotation.implicitNotFound(
+         |  \"\"\"If you're using flatgraph purely without a schema and associated generated domain classes, you can
+         |    |start with `given DocSearchPackages = DocSearchPackages.default`.
+         |    |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
+         |    |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
+         |    |\"\"\".stripMargin)
+         |  def help(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = false)
+         |
+         |@scala.annotation.implicitNotFound(
+         |  \"\"\"If you're using flatgraph purely without a schema and associated generated domain classes, you can
+         |    |start with `given DocSearchPackages = DocSearchPackages.default`.
+         |    |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
+         |    |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
+         |    |\"\"\".stripMargin)
+         |  def helpVerbose(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = true)
+         |
          |  def empty: $domainShortName = new $domainShortName(new flatgraph.Graph(GraphSchema))
          |
          |  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory.
@@ -817,16 +872,22 @@ class DomainClassesGenerator(schema: Schema) {
          |class $domainShortName(private val _graph: flatgraph.Graph = new flatgraph.Graph(GraphSchema)) extends AutoCloseable {
          |  def graph: flatgraph.Graph = _graph
          |
+         |  def help(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    $domainShortName.help(searchPackageNames)
+         |  def helpVerbose(implicit searchPackageNames: flatgraph.help.DocSearchPackages) =
+         |    $domainShortName.helpVerbose(searchPackageNames)
+         |
          |  override def close(): Unit =
          |    _graph.close()
          |}
          |
+         |@flatgraph.help.TraversalSource
          |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) {
+         |
+         |  @flatgraph.help.Doc(info = "all nodes")
          |  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
          |
-         |${concreteStarters.mkString("\n")}
-         |
-         |${baseStarters.mkString("\n")}
+         |${starters.mkString("\n\n")}
          |}
          |""".stripMargin
     os.write(outputDir0 / s"$domainShortName.scala", domainMain)
