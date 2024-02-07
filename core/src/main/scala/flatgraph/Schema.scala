@@ -32,35 +32,63 @@ object FormalQtyType {
   object BoolType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Boolean](n)
   }
+  case class BoolTypeWithDefault(b: Boolean) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+  }
 
   object ByteType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Byte](n)
+  }
+
+  case class ByteTypeWithDefault(b: Byte) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
   }
 
   object ShortType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Short](n)
   }
 
+  case class ShortTypeWithDefault(b: Short) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+  }
+
   object IntType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Int](n)
   }
 
+  case class IntTypeWithDefault(b: Int) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+  }
   object LongType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Long](n)
+  }
+
+  case class LongTypeWithDefault(b: Long) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
   }
 
   object FloatType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Float](n)
   }
 
+  case class FloatTypeWithDefault(b: Float) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+  }
   object DoubleType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[Double](n)
+  }
+
+  case class DoubleTypeWithDefault(b: Double) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
   }
 
   object StringType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[String](n)
   }
 
+  case class StringTypeWithDefault(b: String) extends FormalType {
+    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+  }
   object RefType extends FormalType {
     override def allocate(n: Int): Array[_] = new Array[GNode](n)
   }
@@ -107,7 +135,8 @@ class FreeSchema(
   val propertyLabels: Array[String],
   nodePropertyPrototypes: Array[AnyRef],
   val edgeLabels: Array[String],
-  edgePropertyPrototypes: Array[AnyRef]
+  edgePropertyPrototypes: Array[AnyRef],
+  formalqtys: Array[FormalQtyType.FormalQuantity] = null
 ) extends Schema {
   val nodeMap = nodeLabels.zipWithIndex.toMap
   val propMap = propertyLabels.zipWithIndex.toMap
@@ -118,14 +147,14 @@ class FreeSchema(
 
   private def fromPrototype(prototype: AnyRef): FormalQtyType.FormalType = prototype match {
     case null              => FormalQtyType.NothingType
-    case a: Array[Boolean] => FormalQtyType.BoolType
-    case a: Array[Byte]    => FormalQtyType.ByteType
-    case a: Array[Short]   => FormalQtyType.ShortType
-    case a: Array[Int]     => FormalQtyType.IntType
-    case a: Array[Long]    => FormalQtyType.LongType
-    case a: Array[Float]   => FormalQtyType.FloatType
-    case a: Array[Double]  => FormalQtyType.DoubleType
-    case a: Array[String]  => FormalQtyType.StringType
+    case a: Array[Boolean] => if (a.length == 0) FormalQtyType.BoolType else FormalQtyType.BoolTypeWithDefault(a(0))
+    case a: Array[Byte]    => if (a.length == 0) FormalQtyType.ByteType else FormalQtyType.ByteTypeWithDefault(a(0))
+    case a: Array[Short]   => if (a.length == 0) FormalQtyType.ShortType else FormalQtyType.ShortTypeWithDefault(a(0))
+    case a: Array[Int]     => if (a.length == 0) FormalQtyType.IntType else FormalQtyType.IntTypeWithDefault(a(0))
+    case a: Array[Long]    => if (a.length == 0) FormalQtyType.LongType else FormalQtyType.LongTypeWithDefault(a(0))
+    case a: Array[Float]   => if (a.length == 0) FormalQtyType.FloatType else FormalQtyType.FloatTypeWithDefault(a(0))
+    case a: Array[Double]  => if (a.length == 0) FormalQtyType.DoubleType else FormalQtyType.DoubleTypeWithDefault(a(0))
+    case a: Array[String]  => if (a.length == 0) FormalQtyType.StringType else FormalQtyType.StringTypeWithDefault(a(0))
     case a: Array[GNode]   => FormalQtyType.RefType
     case _                 => ???
   }
@@ -147,9 +176,10 @@ class FreeSchema(
     edgePropertyTypes(edgeKind).allocate(size)
 
   override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity =
-    getNodePropertyFormalType(nodeKind, propertyKind) match {
+    if (formalqtys == null) getNodePropertyFormalType(nodeKind, propertyKind) match {
       case FormalQtyType.NothingType => FormalQtyType.QtyNone
       case _                         => FormalQtyType.QtyMulti
     }
+    else formalqtys(propertyOffsetArrayIndex(nodeKind, propertyKind))
 
 }

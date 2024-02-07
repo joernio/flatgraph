@@ -551,9 +551,9 @@ class DomainClassesGenerator(schema: Schema) {
 
       val nodePropertyDescriptors = new Array[String]((relevantProperties.length + containedNames.length) * nodeTypes.length * 2)
       for (idx <- Range(0, nodePropertyDescriptors.length)) {
-        nodePropertyDescriptors(idx) = if idx & 0x01 == 0 then "\"FormalQtyType.NothingType\"" else "\"FormalQtyType.QtyNone\""
+        nodePropertyDescriptors(idx) = if ((idx & 1) == 0) "\"FormalQtyType.NothingType\"" else "\"FormalQtyType.QtyNone\""
       }
-      for ((node, nodekind) <- nodeTypes.zipWithIndex) {
+      for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
         for (p <- node.properties) {
           val propertyKind = propertyKindByProperty(p)
           val typ =

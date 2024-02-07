@@ -569,6 +569,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     g.neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(V0_0).addNode(V0_1)._addEdge(V0_0, V0_1, 0)._addEdge(V0_0, V0_1, 0))
     g.neighbors(2).asInstanceOf[DefaultValue].default.getClass.getName shouldBe "java.lang.Short"
+    g.neighbors(2).asInstanceOf[DefaultValue].default shouldBe (-1).toShort
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
@@ -609,8 +610,15 @@ class GraphTests extends AnyWordSpec with Matchers {
   }
 
   "support node properties" in {
-    val schema = TestSchema.make(2, 0, 2, nodePropertyPrototypes = Array(new Array[Short](0), new Array[GNode](0)))
-    val g      = new Graph(schema)
+    val schema = TestSchema.make(
+      2,
+      0,
+      2,
+      nodePropertyPrototypes = Array(new Array[Short](0), new Array[GNode](0)),
+      formalQtys =
+        Array(FormalQtyType.QtyOption, null, FormalQtyType.QtyMulti, null, FormalQtyType.QtyMulti, null, FormalQtyType.QtyMulti, null)
+    )
+    val g = new Graph(schema)
 
     val V0_0 = new GenericDNode(0)
     val V0_1 = new GenericDNode(0)
@@ -677,15 +685,25 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V1_1.storedRef.get, 0, 2.toShort :: 3.toShort :: Nil)
         ._setNodeProperty(V1_1.storedRef.get, 0, 4.toShort :: 5.toShort :: Nil)
         ._setNodeProperty(V1_1.storedRef.get, 0, 6.toShort :: Nil)
+        ._setNodeProperty(V0_1.storedRef.get, 0, 6.toShort :: Nil)
     )
+    println(debugDump(g))
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
         |   V0_0       : 1: [<deleted V0_2>, V0_0]
-        |   V0_1       : 1: [null]
+        |   V0_1       : 0: [6], 1: [null]
         |Node kind 1. (eid, nEdgesOut, nEdgesIn):
         |   V1_1       : 0: [6]
         |""".stripMargin
+    // lets check the legacy accessors. Optional property
+    Accessors.getNodePropertyOptionCompat(V0_0.storedRef.get, 0) shouldBe None
+    Accessors.getNodePropertyOptionCompat(V0_1.storedRef.get, 0) shouldBe Some(6.toShort)
+    // lets check the legacy accessors. Multi property
+    Accessors.getNodePropertyOptionCompat(V0_1.storedRef.get, 1) shouldBe Some(IndexedSeq(null))
+    Accessors.getNodePropertyOptionCompat(V1_1.storedRef.get, 0) shouldBe Some(IndexedSeq(6.toShort))
+    Accessors.getNodePropertyOptionCompat(V1_1.storedRef.get, 1) shouldBe Some(IndexedSeq())
+
   }
 
   "Support custom domain classes for detached nodes" in {

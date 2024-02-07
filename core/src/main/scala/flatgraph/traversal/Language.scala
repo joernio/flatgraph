@@ -423,6 +423,11 @@ class NodeMethods(node: GNode) extends AnyVal {
   def inE(edgeLabel: String): Iterator[Edge] =
     Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
+  // the "property" accessors have somewhat special behavior. They don't throw if the property is not present,
+  // and they distinguish whether the property formally exists on the node-type as multi-valued thing.
+  // the static info from the propertyKey is ignored.
+  // this semantics may or may not be desireable -- but it is what odbv1 does, and these are compat anyway.
+  // fixme here
   def property[@specialized ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType]): CompleteType = {
     propertyKey match {
       case SinglePropertyKey(kind, name, default) =>
@@ -433,7 +438,7 @@ class NodeMethods(node: GNode) extends AnyVal {
         Accessors.getNodePropertyMulti(node.graph, node.nodeKind, kind, node.seq())
     }
   }
-
+  // fixme here
   def propertyOption[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType]): Option[ValueType] =
     Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
 
@@ -442,7 +447,7 @@ class NodeMethods(node: GNode) extends AnyVal {
       case Schema.UndefinedKind =>
         None
       case propertyKind =>
-        Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKind, node.seq())
+        Accessors.getNodePropertyOptionCompat(node, propertyKind).asInstanceOf[Option[ValueType]]
     }
   }
 

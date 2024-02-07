@@ -28,14 +28,16 @@ object TestSchema {
     edgeKinds: Int,
     properties: Int = 0,
     edgePropertyPrototypes: Array[AnyRef] = null,
-    nodePropertyPrototypes: Array[AnyRef] = null
+    nodePropertyPrototypes: Array[AnyRef] = null,
+    formalQtys: Array[FormalQtyType.FormalQuantity] = null
   ): Schema = {
     new FreeSchema(
       nodeLabels = Range(0, nodeKinds).map { id => s"V${id}" }.toArray,
       edgeLabels = Range(0, edgeKinds).map { id => s"${id}" }.toArray,
       propertyLabels = Range(0, properties).map { id => s"${id}" }.toArray,
       edgePropertyPrototypes = if (edgePropertyPrototypes != null) edgePropertyPrototypes else new Array[AnyRef](edgeKinds),
-      nodePropertyPrototypes = if (nodePropertyPrototypes != null) nodePropertyPrototypes else new Array[AnyRef](properties)
+      nodePropertyPrototypes = if (nodePropertyPrototypes != null) nodePropertyPrototypes else new Array[AnyRef](properties),
+      formalQtys
     )
   }
 

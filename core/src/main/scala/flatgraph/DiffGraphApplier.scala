@@ -571,13 +571,14 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       val nodeCount = graph.livingNodeCountByKind(nodeKind)
 
       val setPropertyValues = graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
-      if(setPropertyValues == null) throw new SchemaViolationException("Unsupported property on node")
+      if (setPropertyValues == null) throw new SchemaViolationException("Unsupported property on node")
       copyToArray(propertyBuf, setPropertyValues)
 
       val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
-      val oldProperty = Option(graph.properties(pos + 1)).getOrElse(graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0)).asInstanceOf[Array[_]]
+      val oldProperty = Option(graph.properties(pos + 1))
+        .getOrElse(graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
+        .asInstanceOf[Array[_]]
       if oldProperty == null then throw new SchemaViolationException("Unsupported property on node")
-
 
       val newQty      = new Array[Int](nodeCount + 1)
       val newProperty = graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size)
