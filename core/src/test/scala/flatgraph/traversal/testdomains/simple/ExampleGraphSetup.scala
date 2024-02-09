@@ -1,5 +1,6 @@
 package flatgraph.traversal.testdomains.simple
 
+import flatgraph.help.Table.AvailableWidthProvider
 import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode, GenericDNode, Graph, TestSchema}
 import flatgraph.help.{Doc, DocSearchPackages, Traversal, TraversalHelp, TraversalSource}
 import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
@@ -58,8 +59,10 @@ object SimpleDomain {
   }
 
   val defaultDocSearchPackage: DocSearchPackages = DocSearchPackages(getClass.getPackage.getName)
-  lazy val help                                  = TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = false)
-  lazy val helpVerbose                           = TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = true)
+  def help(using AvailableWidthProvider) =
+    TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = false)
+  def helpVerbose(using AvailableWidthProvider) = 
+    TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = true)
 
   def newGraph: Graph = {
     val schema = TestSchema.make(1, 1)

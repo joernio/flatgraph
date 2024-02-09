@@ -2,7 +2,8 @@ package flatgraph.traversal
 
 import flatgraph.Implicits.start
 import flatgraph.GNode
-import flatgraph.help.DocSearchPackages
+import flatgraph.help.{DocSearchPackages, Table}
+import flatgraph.help.Table.AvailableWidthProvider
 import flatgraph.traversal.Language.*
 import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
 import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
@@ -89,6 +90,8 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
   ".help step" should {
     // a specific domain would provide it's own DocSearchPackage implementation, to specify where we're supposed to scan for @Doc annotations
     given DocSearchPackages = DocSearchPackages.default
+    given AvailableWidthProvider = new Table.ConstantWidth(100)
+
     "generic help for `int`" in {
       val helpText = Iterator(1, 2, 3, 4).help
       helpText should include(".cast")
