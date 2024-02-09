@@ -89,7 +89,7 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
   ".help step" should {
     // a specific domain would provide it's own DocSearchPackage implementation, to specify where we're supposed to scan for @Doc annotations
-    given DocSearchPackages = DocSearchPackages.default
+    given DocSearchPackages      = DocSearchPackages.default
     given AvailableWidthProvider = new Table.ConstantWidth(120)
 
     "generic help for `int`" in {
@@ -118,7 +118,7 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
       helpTextVerbose should include(".property")
       helpTextVerbose should include(".cast")
       helpTextVerbose should include("""flatgraph.traversal.GenericSt""") // should contain the location of the step definition...
-      helpTextVerbose should include("""flatgraph.traversal.NodeSteps""")    // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.NodeSteps""") // should contain the location of the step definition...
     }
 
     "give a domain overview" in {

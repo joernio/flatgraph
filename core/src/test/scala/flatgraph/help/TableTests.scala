@@ -7,13 +7,7 @@ import flatgraph.help.Table.AvailableWidthProvider
 class TableTests extends AnyWordSpec {
 
   "render a nice generic table" in {
-    val table = Table(
-      Seq("column a", "column b"),
-      Seq(
-        Seq("abc 1", "bde 1"),
-        Seq("abc 2", "bde 2")
-      )
-    )
+    val table = Table(Seq("column a", "column b"), Seq(Seq("abc 1", "bde 1"), Seq("abc 2", "bde 2")))
 
     implicit val availableWidthProvider: AvailableWidthProvider = new Table.ConstantWidth(100)
     table.render.trim shouldBe
@@ -38,7 +32,7 @@ class TableTests extends AnyWordSpec {
       )
     )
 
-    var currentTerminalWidth = 80 // think "looking up current value from an actual terminal"
+    var currentTerminalWidth                                    = 80 // think "looking up current value from an actual terminal"
     implicit val availableWidthProvider: AvailableWidthProvider = () => currentTerminalWidth
 
     table.render.trim shouldBe

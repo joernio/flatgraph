@@ -61,7 +61,7 @@ object SimpleDomain {
   val defaultDocSearchPackage: DocSearchPackages = DocSearchPackages(getClass.getPackage.getName)
   def help(using AvailableWidthProvider) =
     TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = false)
-  def helpVerbose(using AvailableWidthProvider) = 
+  def helpVerbose(using AvailableWidthProvider) =
     TraversalHelp(defaultDocSearchPackage).forTraversalSources(verbose = true)
 
   def newGraph: Graph = {

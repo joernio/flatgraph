@@ -41,7 +41,8 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   def help[B >: A](implicit
     elementType: ClassTag[B],
     searchPackages: DocSearchPackages,
-    availableWidthProvider: AvailableWidthProvider): String =
+    availableWidthProvider: AvailableWidthProvider
+  ): String =
     new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
 
   @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
@@ -53,7 +54,8 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   def helpVerbose[B >: A](implicit
     elementType: ClassTag[B],
     searchPackages: DocSearchPackages,
-    availableWidthProvider: AvailableWidthProvider): String =
+    availableWidthProvider: AvailableWidthProvider
+  ): String =
     new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = true)
 
   /** Execute the traversal and convert the result to a list - shorthand for `toList` */
