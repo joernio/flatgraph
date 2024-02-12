@@ -2,7 +2,8 @@ package flatgraph.traversal
 
 import flatgraph.Implicits.start
 import flatgraph.GNode
-import flatgraph.help.DocSearchPackages
+import flatgraph.help.{DocSearchPackages, Table}
+import flatgraph.help.Table.AvailableWidthProvider
 import flatgraph.traversal.Language.*
 import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
 import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
@@ -88,18 +89,20 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
   ".help step" should {
     // a specific domain would provide it's own DocSearchPackage implementation, to specify where we're supposed to scan for @Doc annotations
-    given DocSearchPackages = DocSearchPackages.default
+    given DocSearchPackages      = DocSearchPackages.default
+    given AvailableWidthProvider = new Table.ConstantWidth(120)
+
     "generic help for `int`" in {
       val helpText = Iterator(1, 2, 3, 4).help
       helpText should include(".cast")
       helpText should include("casts all elements to given type")
       helpText should include(".whereNot")
-      helpText should include(" only preserves elements if the provided traversal does _not_ have any results")
+      helpText should include("only preserves elements if the provided traversal does")
 
       val helpTextVerbose = Iterator(1, 2, 3, 4).helpVerbose
       helpTextVerbose should include(".cast")
       helpTextVerbose should include(".whereNot")
-      helpTextVerbose should include("""flatgraph.traversal.GenericSteps""") // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.GenericSt""") // should contain the location of the step definition...
     }
 
     "help for nodes" in {
@@ -114,8 +117,8 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
       helpTextVerbose should include(".label")
       helpTextVerbose should include(".property")
       helpTextVerbose should include(".cast")
-      helpTextVerbose should include("""flatgraph.traversal.GenericSteps""") // should contain the location of the step definition...
-      helpTextVerbose should include("""flatgraph.traversal.NodeSteps""")    // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.GenericSt""") // should contain the location of the step definition...
+      helpTextVerbose should include("""flatgraph.traversal.NodeSteps""") // should contain the location of the step definition...
     }
 
     "give a domain overview" in {
@@ -142,11 +145,11 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
         val thingTraversalHelpVerbose = thingTraversal.helpVerbose
         thingTraversalHelpVerbose should include("name of the Thing")
-        thingTraversalHelpVerbose should include("testdomains.simple.SimpleDomainTraversal")
+        thingTraversalHelpVerbose should include("simple.SimpleDomainTravers")
         thingTraversalHelpVerbose should include("node label")
         thingTraversalHelpVerbose should include("flatgraph.traversal.NodeSteps")
         thingTraversalHelpVerbose should include("result to a list")
-        thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSteps")
+        thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSt")
       }
     }
 
