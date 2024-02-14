@@ -551,27 +551,27 @@ class DomainClassesGenerator(schema: Schema) {
 
       val nodePropertyDescriptors = new Array[String]((relevantProperties.length + containedNames.length) * nodeTypes.length * 2)
       for (idx <- Range(0, nodePropertyDescriptors.length)) {
-        nodePropertyDescriptors(idx) = if ((idx & 1) == 0) "\"FormalQtyType.NothingType\"" else "\"FormalQtyType.QtyNone\""
+        nodePropertyDescriptors(idx) = if ((idx & 1) == 0) "FormalQtyType.NothingType" else "FormalQtyType.QtyNone"
       }
       for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
         for (p <- node.properties) {
           val propertyKind = propertyKindByProperty(p)
           val typ =
             p.valueType match {
-              case ValueType.Boolean => "\"FormalQtyType.BoolType\""
-              case ValueType.Byte    => "\"FormalQtyType.ByteType\""
-              case ValueType.Short   => "\"FormalQtyType.ShortType\""
-              case ValueType.Int     => "\"FormalQtyType.IntType\""
-              case ValueType.Long    => "\"FormalQtyType.LongType\""
-              case ValueType.Float   => "\"FormalQtyType.FloatType\""
-              case ValueType.Double  => "\"FormalQtyType.DoubleType\""
-              case ValueType.String  => "\"FormalQtyType.StringType\""
+              case ValueType.Boolean => "FormalQtyType.BoolType"
+              case ValueType.Byte    => "FormalQtyType.ByteType"
+              case ValueType.Short   => "FormalQtyType.ShortType"
+              case ValueType.Int     => "FormalQtyType.IntType"
+              case ValueType.Long    => "FormalQtyType.LongType"
+              case ValueType.Float   => "FormalQtyType.FloatType"
+              case ValueType.Double  => "FormalQtyType.DoubleType"
+              case ValueType.String  => "FormalQtyType.StringType"
               case _                 => ???
             }
           val qty = p.cardinality match {
-            case Cardinality.ZeroOrOne => "\"FormalQtyType.QtyOption\""
-            case Cardinality.List      => "\"FormalQtyType.QtyMulti\""
-            case _: Cardinality.One[?] => "\"FormalQtyType.QtyOne\""
+            case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
+            case Cardinality.List      => "FormalQtyType.QtyMulti"
+            case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
           }
           val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
           nodePropertyDescriptors(pos) = typ + s" /*node = ${node.name} property = ${p.name}*/"
@@ -579,11 +579,11 @@ class DomainClassesGenerator(schema: Schema) {
         }
         for (c <- node.containedNodes) {
           val propertyKind = relevantProperties.length + containedIndexByName(c.localName)
-          val typ          = "\"FormalQtyType.RefType\""
+          val typ          = "FormalQtyType.RefType"
           val qty = c.cardinality match {
-            case Cardinality.ZeroOrOne => "\"FormalQtyType.QtyOption\""
-            case Cardinality.List      => "\"FormalQtyType.QtyMulti\""
-            case _: Cardinality.One[?] => "\"FormalQtyType.QtyOne\""
+            case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
+            case Cardinality.List      => "FormalQtyType.QtyMulti"
+            case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
           }
           val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
           nodePropertyDescriptors(pos) = typ + s" /*node = ${node.name} property = ${c.localName}*/"
@@ -594,7 +594,7 @@ class DomainClassesGenerator(schema: Schema) {
       s"""package $basePackage
          |import $basePackage.nodes
          |import $basePackage.edges
-         |import flatgraph.Schema.FormalQtyType
+         |import flatgraph.FormalQtyType
          |
          |object GraphSchema extends flatgraph.Schema {
          |  val nodeLabels = Array($nodeLabelsSrc)
