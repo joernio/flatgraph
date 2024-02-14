@@ -3,6 +3,7 @@ package flatgraph.help
 import flatgraph.GNode
 import flatgraph.help
 import flatgraph.help.DocFinder.StepDoc
+import flatgraph.help.Table.AvailableWidthProvider
 
 import java.lang.annotation.Annotation as JAnnotation
 import org.reflections8.Reflections
@@ -21,7 +22,7 @@ import scala.jdk.CollectionConverters.*
 class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
   import TraversalHelp._
 
-  def forElementSpecificSteps(elementClass: Class[_], verbose: Boolean): String = {
+  def forElementSpecificSteps(elementClass: Class[_], verbose: Boolean)(implicit availableWidthProvider: AvailableWidthProvider): String = {
     val isNode = classOf[GNode].isAssignableFrom(elementClass)
 
     val stepDocs = {
@@ -51,7 +52,7 @@ class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
          |""".stripMargin
   }
 
-  def forTraversalSources(verbose: Boolean): String = {
+  def forTraversalSources(verbose: Boolean)(implicit availableWidthProvider: AvailableWidthProvider): String = {
     val stepDocs = for {
       packageName <- packageNamesToSearch()
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.TraversalSource])
@@ -106,5 +107,5 @@ class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
 }
 
 object TraversalHelp {
-  private val ColumnNames = Array("step", "description")
+  private val ColumnNames = Seq("step", "description")
 }

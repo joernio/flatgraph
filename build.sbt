@@ -22,7 +22,7 @@ lazy val core = project
       "org.slf4j" % "slf4j-api" % slf4jVersion,
 
       // for doc/help
-      "com.massisframework" % "j-text-utils" % "0.3.4",
+      "de.vandermeer" % "asciitable" % "0.3.2",
       "net.oneandone.reflections8" % "reflections8" % "0.11.7",
     )
   )

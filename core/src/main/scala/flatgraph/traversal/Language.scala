@@ -1,6 +1,7 @@
 package flatgraph.traversal
 
 import flatgraph.help.{Doc, DocSearchPackages, Traversal, TraversalHelp}
+import flatgraph.help.Table.AvailableWidthProvider
 import flatgraph.{Accessors, Edge, GNode, MultiPropertyKey, OptionalPropertyKey, PropertyKey, Schema, SinglePropertyKey}
 
 import scala.annotation.implicitNotFound
@@ -37,7 +38,11 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
       |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
       |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
       |""".stripMargin)
-  def help[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
+  def help[B >: A](implicit
+    elementType: ClassTag[B],
+    searchPackages: DocSearchPackages,
+    availableWidthProvider: AvailableWidthProvider
+  ): String =
     new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
 
   @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
@@ -46,7 +51,11 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
       |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
       |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
       |""".stripMargin)
-  def helpVerbose[B >: A](implicit elementType: ClassTag[B], searchPackages: DocSearchPackages): String =
+  def helpVerbose[B >: A](implicit
+    elementType: ClassTag[B],
+    searchPackages: DocSearchPackages,
+    availableWidthProvider: AvailableWidthProvider
+  ): String =
     new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = true)
 
   /** Execute the traversal and convert the result to a list - shorthand for `toList` */

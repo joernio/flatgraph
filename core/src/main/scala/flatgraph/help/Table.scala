@@ -1,21 +1,49 @@
 package flatgraph.help
 
-import dnl.utils.text.table.TextTable
-import java.io.{ByteArrayOutputStream, PrintStream}
-import java.nio.charset.StandardCharsets
-import scala.util.Using
+import de.vandermeer.asciitable.{AsciiTable, CWC_LongestLine}
+import de.vandermeer.asciithemes.TA_GridThemes
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment
+import Table.*
 
-case class Table(columnNames: Iterable[String], rows: Iterable[Iterable[String]]) {
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
-  lazy val render: String = {
-    Using.Manager { use =>
-      val charset     = StandardCharsets.UTF_8
-      val baos        = use(new ByteArrayOutputStream)
-      val ps          = use(new PrintStream(baos, true, charset.name))
-      val rowsAsArray = rows.map(_.map(_ + " ").toArray.asInstanceOf[Array[Object]]).toArray
-      new TextTable(columnNames.toArray, rowsAsArray).printTable(ps, 0)
-      new String(baos.toByteArray, charset)
-    }.get
+case class Table(columnNames: Seq[String], rows: Seq[Row]) {
+
+  def render(implicit availableWidthProvider: AvailableWidthProvider): String = {
+    if (columnNames.isEmpty && rows.isEmpty) {
+      ""
+    } else {
+      val table = new AsciiTable()
+      table.addRule()
+      table.addRow(columnNames.asJava)
+      table.addRule()
+      if (rows.nonEmpty) {
+        rows.map(_.asJava).foreach(table.addRow)
+      }
+      table.addRule()
+      table.getContext.setGridTheme(TA_GridThemes.FULL)
+      table.setTextAlignment(TextAlignment.LEFT)
+
+      val renderingWidth        = math.max(availableWidthProvider.apply(), 60)
+      val minWidth              = 5
+      val maxWidth              = renderingWidth - minWidth
+      val columnWidthCalculator = new CWC_LongestLine().add(minWidth, maxWidth)
+      table.getRenderer.setCWC(columnWidthCalculator)
+
+      // some terminal emulators (e.g. on github actions CI) report to have a width of 0...
+      // that doesn't work for rendering a table, so we compensate by using a minimum width
+      table.render(renderingWidth)
+    }
+  }
+}
+
+object Table {
+  type Row = Seq[String]
+
+  trait AvailableWidthProvider extends (() => Int)
+
+  class ConstantWidth(width: Int) extends AvailableWidthProvider {
+    override def apply() = width
   }
 
 }
