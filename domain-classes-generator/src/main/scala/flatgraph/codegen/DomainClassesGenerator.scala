@@ -627,7 +627,6 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
          |  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
          |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
-         |  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
          |}""".stripMargin
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)

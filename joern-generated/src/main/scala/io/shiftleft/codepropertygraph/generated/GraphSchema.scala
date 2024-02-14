@@ -5532,6 +5532,4 @@ object GraphSchema extends flatgraph.Schema {
   override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity =
     nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind))
       .asInstanceOf[FormalQtyType.FormalQuantity]
-  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] =
-    nodePropertyAllocators(propertyKind)(size)
 }
