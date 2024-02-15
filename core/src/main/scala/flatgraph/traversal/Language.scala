@@ -432,26 +432,23 @@ class NodeMethods(node: GNode) extends AnyVal {
   def inE(edgeLabel: String): Iterator[Edge] =
     Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
-  def property[@specialized ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType]): CompleteType = {
-    propertyKey match {
-      case SinglePropertyKey(kind, name, default) =>
-        Accessors.getNodePropertySingle(node.graph, node.nodeKind, kind, node.seq(), default)
-      case OptionalPropertyKey(kind, name) =>
-        Accessors.getNodePropertyOption(node.graph, node.nodeKind, kind, node.seq())
-      case MultiPropertyKey(kind, name) =>
-        Accessors.getNodePropertyMulti(node.graph, node.nodeKind, kind, node.seq())
-    }
+  // the "property" accessors have somewhat special behavior. They don't throw if the property is not present,
+  // and they distinguish whether the property formally exists on the node-type as multi-valued thing.
+  // the static info from the propertyKey is ignored.
+  // this semantics may or may not be desireable -- but it is what odbv1 does, and these are compat anyway.
+  // we don't really want to specialize here -- otherwise we can get nonsense like `null.asInstanceOf[Double]`
+  def property[ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType]): CompleteType = {
+    Accessors.getNodePropertyOptionCompat(node, propertyKey.kind).orNull.asInstanceOf[CompleteType]
   }
-
-  def propertyOption[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType]): Option[ValueType] =
+  def propertyOption[ValueType](propertyKey: SinglePropertyKey[ValueType]): Option[ValueType] =
     Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
 
-  def propertyOption[@specialized ValueType](name: String): Option[ValueType] = {
+  def propertyOption[ValueType](name: String): Option[ValueType] = {
     node.graph.schema.getPropertyKindByName(name) match {
       case Schema.UndefinedKind =>
         None
       case propertyKind =>
-        Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKind, node.seq())
+        Accessors.getNodePropertyOptionCompat(node, propertyKind).asInstanceOf[Option[ValueType]]
     }
   }
 

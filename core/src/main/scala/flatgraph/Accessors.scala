@@ -139,6 +139,19 @@ object Accessors {
     Some(vals(qty(seq)))
   }
 
+  def getNodePropertyOptionCompat(node: GNode, propertyKind: Int): Option[Object] = {
+    val graph    = node.graph
+    val schema   = graph.schema
+    val seq      = node.seq()
+    val nodeKind = node.nodeKind.toInt
+    val res      = getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq)
+    schema.getNodePropertyFormalQuantity(nodeKind, propertyKind) match {
+      case FormalQtyType.QtyNone                          => None
+      case FormalQtyType.QtyOne | FormalQtyType.QtyOption => getNodePropertyOption[Object](graph, nodeKind, propertyKind, seq)
+      case FormalQtyType.QtyMulti                         => Some(getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq))
+    }
+  }
+
   def getNodePropertyMulti[@specialized T](graph: Graph, nodeKind: Int, propertyKind: Int, seq: Int): ISeq[T] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val qty = graph.properties(pos).asInstanceOf[Array[Int]]

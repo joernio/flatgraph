@@ -547,9 +547,53 @@ class DomainClassesGenerator(schema: Schema) {
         .toList
         .sorted
         .mkString("\n")
+
+      val nodePropertyDescriptors = new Array[String]((relevantProperties.length + containedNames.length) * nodeTypes.length * 2)
+      for (idx <- Range(0, nodePropertyDescriptors.length)) {
+        nodePropertyDescriptors(idx) = if ((idx & 1) == 0) "FormalQtyType.NothingType" else "FormalQtyType.QtyNone"
+      }
+      for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
+        for (p <- node.properties) {
+          val propertyKind = propertyKindByProperty(p)
+          val typ =
+            p.valueType match {
+              case ValueType.Boolean => "FormalQtyType.BoolType"
+              case ValueType.Byte    => "FormalQtyType.ByteType"
+              case ValueType.Short   => "FormalQtyType.ShortType"
+              case ValueType.Int     => "FormalQtyType.IntType"
+              case ValueType.Long    => "FormalQtyType.LongType"
+              case ValueType.Float   => "FormalQtyType.FloatType"
+              case ValueType.Double  => "FormalQtyType.DoubleType"
+              case ValueType.String  => "FormalQtyType.StringType"
+              case _                 => ???
+            }
+          val qty = p.cardinality match {
+            case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
+            case Cardinality.List      => "FormalQtyType.QtyMulti"
+            case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
+          }
+          val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
+          nodePropertyDescriptors(pos) = typ + s" /*node = ${node.name} property = ${p.name}*/"
+          nodePropertyDescriptors(pos + 1) = qty
+        }
+        for (c <- node.containedNodes) {
+          val propertyKind = relevantProperties.length + containedIndexByName(c.localName)
+          val typ          = "FormalQtyType.RefType"
+          val qty = c.cardinality match {
+            case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
+            case Cardinality.List      => "FormalQtyType.QtyMulti"
+            case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
+          }
+          val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
+          nodePropertyDescriptors(pos) = typ + s" /*node = ${node.name} property = ${c.localName}*/"
+          nodePropertyDescriptors(pos + 1) = qty
+        }
+      }
+
       s"""package $basePackage
          |import $basePackage.nodes
          |import $basePackage.edges
+         |import flatgraph.FormalQtyType
          |
          |object GraphSchema extends flatgraph.Schema {
          |  val nodeLabels = Array($nodeLabelsSrc)
@@ -562,7 +606,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
-         |
+         |  val nodePropertyDescriptors: Array[AnyRef] = Array(${nodePropertyDescriptors.mkString(", ")} )
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
@@ -580,7 +624,8 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          |  override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
          |  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
-         |  override def allocateNodeProperty(nodeKind: Int, propertyKind: Int, size: Int): Array[?] = nodePropertyAllocators(propertyKind)(size)
+         |  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
+         |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
          |}""".stripMargin
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
