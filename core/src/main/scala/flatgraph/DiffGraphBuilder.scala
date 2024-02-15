@@ -1,8 +1,8 @@
 package flatgraph
 
 import DiffGraphBuilder.*
+import flatgraph.misc.Conversions.toShortSafely
 import scala.collection.mutable
-import misc.Misc.*
 
 class DiffGraphBuilder(schema: Schema) {
   var buffer = mutable.ArrayDeque[RawUpdate]()

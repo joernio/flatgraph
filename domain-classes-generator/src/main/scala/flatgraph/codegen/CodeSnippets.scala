@@ -9,10 +9,10 @@ object CodeSnippets {
          |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
          |  * */
          |def $nameCamelCase(pattern: $baseType): Iterator[NodeType] =
-         |  if(!Misc.isRegex(pattern)){
+         |  if(!flatgraph.misc.Regex.isRegex(pattern)){
          |    ${nameCamelCase}Exact(pattern)
          |  } else {
-         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    val matcher = flatgraph.misc.Regex.multilineMatcher(pattern)
          |    traversal.filter{item => matcher.reset(item.$nameCamelCase).matches}
          |  }
          |
@@ -20,7 +20,7 @@ object CodeSnippets {
          |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
          |  * */
          |def $nameCamelCase(patterns: $baseType*): Iterator[NodeType] = {
-         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |  val matchers = patterns.map(flatgraph.misc.Regex.multilineMatcher)
          |  traversal.filter{item => matchers.exists{_.reset(item.$nameCamelCase).matches}}
          | }
          |/**
@@ -46,10 +46,10 @@ object CodeSnippets {
          |  * Traverse to nodes where $nameCamelCase does not match the regular expression `value`.
          |  * */
          |def ${nameCamelCase}Not(pattern: $baseType): Iterator[NodeType] = {
-         |  if(!Misc.isRegex(pattern)){
+         |  if(!flatgraph.misc.Regex.isRegex(pattern)){
          |    traversal.filter{node => node.$nameCamelCase != pattern}
          |  } else {
-         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    val matcher = flatgraph.misc.Regex.multilineMatcher(pattern)
          |    traversal.filterNot{item => matcher.reset(item.$nameCamelCase).matches}
          |  }
          |}
@@ -58,7 +58,7 @@ object CodeSnippets {
          |  * Traverse to nodes where $nameCamelCase does not match any of the regular expressions in `values`.
          |  * */
          |def ${nameCamelCase}Not(patterns: $baseType*): Iterator[NodeType] = {
-         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |  val matchers = patterns.map(flatgraph.misc.Regex.multilineMatcher)
          |  traversal.filter{item => matchers.find{_.reset(item.$nameCamelCase).matches}.isEmpty}
          |}
          |""".stripMargin
@@ -69,10 +69,10 @@ object CodeSnippets {
          |  * Traverse to nodes where the $nameCamelCase matches the regular expression `value`
          |  * */
          |def $nameCamelCase(pattern: $baseType): Iterator[NodeType] = {
-         |  if(!Misc.isRegex(pattern)){
+         |  if(!flatgraph.misc.Regex.isRegex(pattern)){
          |    ${nameCamelCase}Exact(pattern)
          |  } else {
-         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    val matcher = flatgraph.misc.Regex.multilineMatcher(pattern)
          |    traversal.filter{ item =>  val tmp = item.${nameCamelCase}; tmp.isDefined && matcher.reset(tmp.get).matches}
          |  }
          |}
@@ -81,7 +81,7 @@ object CodeSnippets {
          |  * Traverse to nodes where the $nameCamelCase matches at least one of the regular expressions in `values`
          |  * */
          |def $nameCamelCase(patterns: $baseType*): Iterator[NodeType] = {
-         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |  val matchers = patterns.map(flatgraph.misc.Regex.multilineMatcher)
          |  traversal.filter{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
          | }
          |
@@ -108,10 +108,10 @@ object CodeSnippets {
          |  * Traverse to nodes where $nameCamelCase does not match the regular expression `value`.
          |  * */
          |def ${nameCamelCase}Not(pattern: $baseType): Iterator[NodeType] = {
-         |  if(!Misc.isRegex(pattern)){
+         |  if(!flatgraph.misc.Regex.isRegex(pattern)){
          |    traversal.filter{node => node.$nameCamelCase.isEmpty || node.${nameCamelCase}.get != pattern}
          |  } else {
-         |    val matcher = java.util.regex.Pattern.compile(pattern).matcher("")
+         |    val matcher = flatgraph.misc.Regex.multilineMatcher(pattern)
          |    traversal.filterNot{ item =>  val tmp = item.${nameCamelCase}; tmp.isDefined && matcher.reset(tmp.get).matches}
          |  }
          |}
@@ -120,7 +120,7 @@ object CodeSnippets {
          |  * Traverse to nodes where $nameCamelCase does not match any of the regular expressions in `values`.
          |  * */
          |def ${nameCamelCase}Not(patterns: $baseType*): Iterator[NodeType] = {
-         |  val matchers = patterns.map{java.util.regex.Pattern.compile(_).matcher("")}
+         |  val matchers = patterns.map(flatgraph.misc.Regex.multilineMatcher)
          |  traversal.filterNot{item => val tmp = item.${nameCamelCase}; tmp.isDefined && matchers.exists{_.reset(tmp.get).matches}}
          | }
          |""".stripMargin

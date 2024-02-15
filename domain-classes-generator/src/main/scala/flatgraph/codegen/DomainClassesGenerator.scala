@@ -762,7 +762,6 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |object Accessors {
          |  import $basePackage.accessors.Lang.*
-         |  import flatgraph.misc.Misc
          |
          |  /* accessors for concrete stored nodes start */
          |  ${accessorsForConcreteNodeTraversals.mkString("\n")}
