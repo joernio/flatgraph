@@ -547,7 +547,6 @@ class DomainClassesGenerator(schema: Schema) {
         .toList
         .sorted
         .mkString("\n")
-      // fixme
 
       val nodePropertyDescriptors = new Array[String]((relevantProperties.length + containedNames.length) * nodeTypes.length * 2)
       for (idx <- Range(0, nodePropertyDescriptors.length)) {
