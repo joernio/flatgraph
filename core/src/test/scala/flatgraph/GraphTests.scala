@@ -3,7 +3,8 @@ package flatgraph
 import flatgraph.TestHelpers.withTemporaryFile
 import flatgraph.TestSchema.{getClass, testSerialization}
 import flatgraph.misc.DebugDump.debugDump
-import flatgraph.storage.{Deserialization, Serialization}
+import flatgraph.storage.Deserialization
+import flatgraph.storage.Deserialization.DeserializationException
 import flatgraph.traversal.Language.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
@@ -847,5 +848,29 @@ class GraphTests extends AnyWordSpec with Matchers {
   "trying to lookup unknown properties should be handled gracefully" in {
     val g = Graph(schema)
     g.nodesWithProperty("undefined", "foo").l shouldBe Nil
+  }
+
+  "opening a broken graph file should be handled gracefully" when {
+    "file is empty" in {
+      withTemporaryFile(s"flatgraph-${getClass.getSimpleName}-", "fg") { storagePath =>
+        assertThrows[DeserializationException](Deserialization.readGraph(storagePath, None))
+      }
+    }
+
+    "file is too small (smaller than even the header)" in {
+      withTemporaryFile(s"flatgraph-${getClass.getSimpleName}-", "fg") { storagePath =>
+        val brokenHeader = new Array[Byte](storage.HeaderSize - 1)
+        Files.write(storagePath, brokenHeader)
+        assertThrows[DeserializationException](Deserialization.readGraph(storagePath, None))
+      }
+    }
+
+    "header is incorrect" in {
+      withTemporaryFile(s"flatgraph-${getClass.getSimpleName}-", "fg") { storagePath =>
+        val brokenHeader = new Array[Byte](storage.HeaderSize + 30)
+        Files.write(storagePath, brokenHeader)
+        assertThrows[DeserializationException](Deserialization.readGraph(storagePath, None))
+      }
+    }
   }
 }
