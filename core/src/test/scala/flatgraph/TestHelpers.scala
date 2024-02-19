@@ -42,15 +42,12 @@ object TestSchema {
   }
 
   def testSerialization(graph: Graph): Unit = {
-    val orig = debugDump(graph)
+    val originalDump = debugDump(graph)
     withTemporaryFile(s"flatgraph-${getClass.getSimpleName}", "fg") { storagePath =>
       Serialization.writeGraph(graph, storagePath)
       val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
-      val newdump      = debugDump(deserialized)
-      //    if (newdump != orig) {
-      //      1 + 1 // for easier breakpoints
-      //    }
-      orig shouldBe newdump
+      val newDump      = debugDump(deserialized)
+      originalDump shouldBe newDump
     }
   }
 

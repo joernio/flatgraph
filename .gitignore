@@ -10,6 +10,7 @@
 /codescience-generated/target/
 /benchmarks/target/
 /core/target/
+/formats/target/
 /schema/target/
 /domain-classes-generator*/target/
 /sbt-flatgraph/target/
