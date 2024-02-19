@@ -12,6 +12,7 @@ import java.nio.{ByteBuffer, ByteOrder}
 import scala.collection.mutable
 
 object Deserialization {
+
   def readGraph(storagePath: Path, schemaMaybe: Option[Schema], persistOnClose: Boolean = true): Graph = {
     val fileChannel = new java.io.RandomAccessFile(storagePath.toFile, "r").getChannel
     try {
@@ -135,14 +136,19 @@ object Deserialization {
   }
 
   private def readManifest(channel: FileChannel): GraphItem = {
-    val header    = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
+    if (channel.size() < HeaderSize)
+      throw new DeserializationException(s"corrupt file, expected at least $HeaderSize bytes, but only found ${channel.size()}")
+
+    val header    = ByteBuffer.allocate(HeaderSize).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
-    while (readBytes < 16) {
+    while (readBytes < HeaderSize) {
       readBytes += channel.read(header, readBytes)
     }
     header.flip()
 
-    if (header.getLong() != Keys.Header) throw new RuntimeException()
+    if (header.getLong() != Keys.Header)
+      throw new DeserializationException(s"expected header (`${Keys.Header}`), but found ${header.getLong}")
+
     val manifestOffset = header.getLong()
     val manifestSize   = channel.size() - manifestOffset
     val manifestBytes  = ByteBuffer.allocate(manifestSize.toInt)
@@ -263,4 +269,6 @@ object Deserialization {
         res
     }
   }
+
+  class DeserializationException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message, cause.orNull)
 }

@@ -37,4 +37,5 @@ package object storage {
     val Header             = 0xdeadbeefdeadbeefL
   }
 
+  val HeaderSize = 16
 }
