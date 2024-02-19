@@ -65,6 +65,9 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def allNodes: Iterator[GNode] =
     Range(0, schema.getNumberOfNodeKinds).iterator.flatMap(_nodes)
     
+  def nodeCount(label: String): Int =
+    livingNodeCountByKind(schema.getNodeKindByLabel(label))
+    
   def allEdges: Iterator[Edge] =
     allNodes.flatMap(Accessors.getEdgesOut)
 
