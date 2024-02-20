@@ -1,7 +1,7 @@
 package flatgraph.formats.dot
 
 import flatgraph.formats.{ExportResult, Exporter, iterableForList, resolveOutputFileSingle}
-import flatgraph.{Accessors, Edge, GNode, Graph}
+import flatgraph.{Accessors, Edge, GNode, Graph, Schema}
 
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.MapHasAsScala
@@ -18,7 +18,8 @@ import scala.util.Using
 object DotExporter extends Exporter {
   override def defaultFileExtension = "dot"
 
-  override def runExport(graph: Graph, outputFile: Path) = {
+
+  override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
     val outFile = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
     var nodeCount, edgeCount = 0
 
@@ -30,28 +31,28 @@ object DotExporter extends Exporter {
 
       writeLine("digraph {")
 
-      graph.allNodes.foreach { node =>
+      nodes.iterator.foreach { node =>
         nodeCount += 1
         val line = new StringBuffer()
           .append("  ")
           .append(node.id)
           .append(s"[label=${node.label} ")
-          .append(Accessors.getNodeProperties(graph.schema, node).iterator.map { case (key, value) => 
+          .append(Accessors.getNodeProperties(schema, node).iterator.map { case (key, value) =>
             s"$key=${encodePropertyValue(value)}"
           })
           .append("]")
         writeLine(line.toString)
       }
 
-      graph.allEdges.foreach { edge =>
+      edges.iterator.foreach { edge =>
         edgeCount += 1
         val line = new StringBuffer()
           .append(s"  ${edge.src.id()} -> ${edge.dst.id()} ")
           .append(s"[label=${edge.label} ")
-        
+
         if (edge.property != null)
           line.append(s"property=${encodePropertyValue(edge.property)}")
-        
+
         line.append("]")
         writeLine(line.toString)
       }
@@ -80,4 +81,5 @@ object DotExporter extends Exporter {
       case value => value.toString
     }
   }
+  
 }

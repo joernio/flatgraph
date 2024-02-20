@@ -22,21 +22,21 @@ object GraphMLExporter extends Exporter {
 
   override def defaultFileExtension = "xml"
 
-  override def runExport(graph: Graph, outputFile: Path) = {
+  override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
     val outFile = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
     val nodePropertyContextById = mutable.Map.empty[String, PropertyContext]
     val edgePropertyContextById = mutable.Map.empty[String, PropertyContext]
     val discardedListPropertyCount = new AtomicInteger(0)
 
-    val nodeEntries = graph.allNodes.map { node =>
+    val nodeEntries = nodes.iterator.map { node =>
       s"""<node id="${node.id}">
          |    <data key="$KeyForNodeLabel">${node.label}</data>
-         |    ${dataEntries("node", node.label(), Accessors.getNodeProperties(graph.schema, node), nodePropertyContextById, discardedListPropertyCount)}
+         |    ${dataEntries("node", node.label(), Accessors.getNodeProperties(schema, node), nodePropertyContextById, discardedListPropertyCount)}
          |</node>
          |""".stripMargin
     }.toSeq
 
-    val edgeEntries = graph.allEdges.iterator.map { edge =>
+    val edgeEntries = edges.iterator.map { edge =>
       val property = // edges can have 0 or 1 properties
         if (edge.property == null) Nil
         else List("property" -> edge.property)

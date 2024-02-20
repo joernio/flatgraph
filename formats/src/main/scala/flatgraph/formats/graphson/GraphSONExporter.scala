@@ -1,8 +1,8 @@
 package flatgraph.formats.graphson
 
-import flatgraph.formats._
-import flatgraph.formats.graphson.GraphSONProtocol._
-import flatgraph.{Graph, GNode}
+import flatgraph.formats.*
+import flatgraph.formats.graphson.GraphSONProtocol.*
+import flatgraph.{GNode, Graph, Schema}
 
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
@@ -16,7 +16,7 @@ object GraphSONExporter extends Exporter {
 
   override def defaultFileExtension = "json"
 
-  override def runExport(graph: Graph, outputFile: Path): ExportResult = {
+  override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[flatgraph.Edge], outputFile: Path) = {
     val outFile = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
     // OverflowDB only stores IDs on nodes. GraphSON requires IDs on properties and edges too
     // so we add them synthetically

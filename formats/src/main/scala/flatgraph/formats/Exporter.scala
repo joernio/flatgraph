@@ -1,13 +1,16 @@
 package flatgraph.formats
 
 import java.nio.file.{Path, Paths}
-import flatgraph.{Edge, Graph, GNode}
+import flatgraph.{Edge, GNode, Graph, Schema}
 
 trait Exporter {
 
   def defaultFileExtension: String
 
-  def runExport(graph: Graph, outputFile: Path): ExportResult
+  def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path): ExportResult
+
+  def runExport(graph: Graph, outputFile: Path): ExportResult =
+    runExport(graph.schema, graph.allNodes, graph.allEdges, outputFile)
 
   def runExport(graph: Graph, outputFile: String): ExportResult =
     runExport(graph, Paths.get(outputFile))

@@ -2,7 +2,7 @@ package flatgraph.formats.neo4jcsv
 
 import com.github.tototoshi.csv.*
 import flatgraph.formats.{ExportResult, Exporter, writeFile}
-import flatgraph.{Edge, Graph, GNode}
+import flatgraph.{Edge, GNode, Graph, Schema}
 
 import java.nio.file.Path
 import scala.collection.mutable
@@ -21,7 +21,7 @@ object Neo4jCsvExporter extends Exporter {
     * types. We will write columns for all declared properties, because we only know which ones are actually in use
     * *after* traversing all elements.
     */
-  override def runExport(graph: Graph, outputRootDirectory: Path) = {
+  override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
     // TODO reimplement
     ???
 //    val nodesByLabel = nodes.iterator.toSeq.groupBy(_.label).filter(_._2.nonEmpty)
