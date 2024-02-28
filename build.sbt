@@ -31,6 +31,8 @@ lazy val core = project
       // for doc/help
       "de.vandermeer" % "asciitable" % "0.3.2",
       "net.oneandone.reflections8" % "reflections8" % "0.11.7",
+
+      "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
     )
   )
 
@@ -170,6 +172,8 @@ ThisBuild / compile / javacOptions ++= Seq(
   "-g", // debug symbols
   "--release=8"
 )
+
+ThisBuild / Test / testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v")
 
 Global / cancelable           := true
 Global / onChangedBuildSource := ReloadOnSourceChanges
