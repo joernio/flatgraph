@@ -2,6 +2,7 @@ package flatgraph
 
 import flatgraph.TestHelpers.withTemporaryFile
 import flatgraph.misc.DebugDump.debugDump
+import flatgraph.misc.Conversions.toShortSafely
 import flatgraph.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers.shouldBe
 
@@ -10,7 +11,7 @@ import scala.util.Try
 
 object TestHelpers {
   def createTestNode(nodeKind: Int = 0, seqId: Int = 0): GNode =
-    GNode(null, 0, 0)
+    GNode(null, nodeKind.toShortSafely, seqId)
 
   val DummyTestNode = createTestNode()
 

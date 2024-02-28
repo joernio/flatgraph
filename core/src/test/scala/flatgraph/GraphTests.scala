@@ -1,7 +1,7 @@
 package flatgraph
 
 import flatgraph.TestHelpers.withTemporaryFile
-import flatgraph.TestSchema.{getClass, testSerialization}
+import flatgraph.TestSchema.testSerialization
 import flatgraph.misc.DebugDump.debugDump
 import flatgraph.storage.Deserialization
 import flatgraph.storage.Deserialization.DeserializationException
@@ -412,7 +412,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeNode(g.node(new KindAndSeq(0, 0)))
+        .removeNode(g.node(0, 0))
     )
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
