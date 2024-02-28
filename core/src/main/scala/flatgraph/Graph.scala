@@ -1,6 +1,7 @@
 package flatgraph
 
 import flatgraph.Edge.Direction
+import flatgraph.GNode.KindAndSeq
 import flatgraph.Graph.*
 import flatgraph.misc.{InitNodeIterator, InitNodeIteratorArray, InitNodeIteratorArrayFiltered}
 import flatgraph.storage.{Deserialization, Serialization}
@@ -62,11 +63,26 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def nodes(labels: String*): Iterator[GNode] =
     labels.iterator.flatMap(nodes)
 
+  /** Lookup node by id - note: this may return null or throw an exception if the referenced node doesn't exist */
+  def node(id: Long): GNode =
+    node(GNode.extractKind(id), GNode.extractSeq(id))
+
+  /** Lookup node by kind and seq - note: this may return null or throw an exception if the referenced node doesn't exist */
+  def node(kind: Int, seq: Int): GNode =
+    nodesArray(kind)(seq)
+
+  /** Lookup node by kindAndSeq - note: this may return null or throw an exception if the referenced node doesn't exist */
+  def node(kindAndSeq: KindAndSeq): GNode =
+    node(kindAndSeq.kind, kindAndSeq.seq)
+
   def allNodes: Iterator[GNode] =
     Range(0, schema.getNumberOfNodeKinds).iterator.flatMap(_nodes)
-    
+
   def nodeCount(label: String): Int =
     livingNodeCountByKind(schema.getNodeKindByLabel(label))
+
+  def nodeCount(): Int =
+    livingNodeCountByKind.sum
     
   def allEdges: Iterator[Edge] =
     allNodes.flatMap(Accessors.getEdgesOut)

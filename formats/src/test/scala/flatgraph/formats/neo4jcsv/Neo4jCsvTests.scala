@@ -7,14 +7,13 @@ import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
 import flatgraph.testdomains.simple.{FunkyList, SimpleDomain, TestEdge, TestNode}
 import flatgraph.traversal._
 import flatgraph.util.DiffTool
-import testutils.ProjectRoot
 
 import java.io.FileNotFoundException
 import java.nio.file.Paths
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, IteratorHasAsScala}
 
 class Neo4jCsvTests extends AnyWordSpec {
-  val subprojectRoot = ProjectRoot.relativise("formats")
+  val subprojectRoot = testutils.ProjectRoot.relativise("formats")
   val neo4jcsvRoot = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "Importer" should {

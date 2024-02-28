@@ -226,9 +226,9 @@ class GraphTests extends AnyWordSpec with Matchers {
 //      def sig(nodes: IndexedSeq[GNode]): String = if (nodes(0).seq < nodes(1).seq) "+" else "-"
       def sig(nodes: Iterator[GNode]): String = if (nodes.next().seq < nodes.next().seq) "+" else "-"
 
-      sig(Accessors.getNeighborsOut(g.nodesArray(0)(0), 0)) + sig(Accessors.getNeighborsIn(g.nodesArray(0)(1), 0)) + sig(
-        Accessors.getNeighborsIn(g.nodesArray(0)(2), 0)
-      ) + sig(Accessors.getNeighborsOut(g.nodesArray(0)(3), 0))
+      sig(Accessors.getNeighborsOut(g.node(0, 0), 0)) + sig(Accessors.getNeighborsIn(g.node(0, 1), 0)) + sig(
+        Accessors.getNeighborsIn(g.node(0, 2), 0)
+      ) + sig(Accessors.getNeighborsOut(g.node(0, 3), 0))
     }
 
     val badGraphDump =
@@ -302,7 +302,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(1))
+        .removeEdge(Accessors.getEdgesOut(g.node(0, 0), 0).toList(1))
     )
     debugDump(g) shouldBe expectation
 
@@ -311,7 +311,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(0))
+        .removeEdge(Accessors.getEdgesIn(g.node(0, 1), 0).toList(0))
     )
     debugDump(g) shouldBe expectation
 
@@ -321,8 +321,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(0))
-        .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(1))
+        .removeEdge(Accessors.getEdgesIn(g.node(0, 1), 0).toList(0))
+        .removeEdge(Accessors.getEdgesOut(g.node(0, 0), 0).toList(1))
     )
     debugDump(g) shouldBe expectation
     testSerialization(g)
@@ -353,7 +353,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(4))
+        .removeEdge(Accessors.getEdgesOut(g.node(0, 0), 0).toList(4))
     )
     debugDump(g) shouldBe expectation
 
@@ -361,13 +361,13 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(1), 0).toList(2))
+        .removeEdge(Accessors.getEdgesIn(g.node(0, 1), 0).toList(2))
     )
     debugDump(g) shouldBe expectation
   }
 
   "permit multiple edge deletion" in {
-    var g = mkGraph()
+    val g = mkGraph()
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
@@ -391,8 +391,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeEdge(Accessors.getEdgesOut(g.nodesArray(0)(0), 0).toList(4))
-        .removeEdge(Accessors.getEdgesIn(g.nodesArray(0)(2), 0).toList(1))
+        .removeEdge(Accessors.getEdgesOut(g.node(0, 0), 0).toList(4))
+        .removeEdge(Accessors.getEdgesIn(g.node(0, 2), 0).toList(1))
     )
     debugDump(g) shouldBe expectation
   }
@@ -412,7 +412,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeNode((g.nodesArray(0)(0)))
+        .removeNode(g.node(new KindAndSeq(0, 0)))
     )
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
@@ -426,7 +426,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeNode((g.nodesArray(0)(1)))
+        .removeNode(g.node(0, 1))
     )
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
@@ -443,8 +443,8 @@ class GraphTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(
       g,
       new DiffGraphBuilder(schema)
-        .removeNode((g.nodesArray(0)(2)))
-        .removeNode((g.nodesArray(0)(3)))
+        .removeNode(g.node(0, 2))
+        .removeNode(g.node(0, 3))
     )
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 4), total 4
