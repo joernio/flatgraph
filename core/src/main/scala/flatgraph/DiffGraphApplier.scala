@@ -412,7 +412,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
     }
     val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[_]]).asInstanceOf[mutable.ArraySeq[Any]]
     // this will fail if the edge doesn't support properties. todo: better error message
-    val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, 1)(0)
+    val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
     for (edgeRepr <- setEdgeProperties(pos)) {
       val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
       propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property

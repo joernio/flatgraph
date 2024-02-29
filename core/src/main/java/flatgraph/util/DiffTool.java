@@ -16,12 +16,7 @@ public class DiffTool {
     if (graph1.nodeCount() != graph2.nodeCount()) {
       diff.add(String.format("node count differs: graph1=%d, graph2=%d", graph1.nodeCount(), graph2.nodeCount()));
     }
-    int graph1EdgeCount = graph1.allEdges().size();
-    int graph2EdgeCount = graph2.allEdges().size();
-    if (graph1EdgeCount != graph2EdgeCount) {
-      diff.add(String.format("edge count differs: graph1=%d, graph2=%d", graph1EdgeCount, graph2EdgeCount));
-    }
-
+    
     SortedSet<Long> nodeIds = new TreeSet<>();
     graph1.allNodes().foreach(node -> nodeIds.add(node.id()));
     graph2.allNodes().foreach(node -> nodeIds.add(node.id()));
@@ -66,11 +61,7 @@ public class DiffTool {
   }
 
   private static void compareProperty(String key, Object value1, Object value2, List<String> diff, String context) {
-    if (value1 == null) {
-      diff.add(String.format("%s; property '%s' -> '%s' only exists in graph2", context, key, value2));
-    } else if (value2 == null) {
-      diff.add(String.format("%s; property '%s' -> '%s' only exists in graph1", context, key, value1));
-    } else { // both values are not null
+    if (value1 != null && value2 != null) {
       if (value1.getClass().isArray() && value2.getClass().isArray()) { // both values are arrays
         if (!arraysEqual(value1, value2)) {
           diff.add(String.format("%s; array property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
@@ -78,7 +69,11 @@ public class DiffTool {
       } else if (!value1.equals(value2)) { // not both values are arrays
         diff.add(String.format("%s; property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
       }
-    }
+    } else if (value1 == null && value2 != null) {
+      diff.add(String.format("%s; property '%s' -> '%s' only exists in graph2", context, key, value2));
+    } else if (value1 != null && value2 == null) {
+      diff.add(String.format("%s; property '%s' -> '%s' only exists in graph1", context, key, value1));
+    } 
   }
 
   /**
@@ -128,11 +123,7 @@ public class DiffTool {
         if (!edge1.label().equals(edge2.label()))
           diff.add(String.format("%s; different label for sorted edges; graph1=%s, graph2=%s ", context, edge1.label(), edge2.label()));
         else {
-          Object edge1Property = edge1.property();
-          Object edge2Property = edge2.property();
-          if (!edge1Property.equals(edge2Property)) {
-            compareProperty("EDGE_PROPERTY", edge1.property(), edge2.property(), diff, String.format("%s; edge label = %s", context, edge1.label()));
-          }
+          compareProperty("EDGE_PROPERTY", edge1.property(), edge2.property(), diff, String.format("%s; edge label = %s", context, edge1.label()));
         }
       }
     }
