@@ -1,16 +1,17 @@
 name := "flatgraph"
 ThisBuild / organization := "io.joern.flatgraph"
-ThisBuild / scalaVersion := "3.3.1"
+ThisBuild / scalaVersion := scala3
 publish / skip := true
 
 val slf4jVersion = "2.0.7"
+val scala3 = "3.3.1"
 val scala2_12 = "2.12.18"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
   * internal repositories. */
 lazy val root = (project in file("."))
-  .aggregate(core, domainClassesGenerator, sbtPlugin, odbConvert)
+  .aggregate(core, schema_3, schema_2_12, formats, domainClassesGenerator, sbtPlugin, odbConvert)
 
 lazy val core = project
   .in(file("core"))
@@ -27,8 +28,40 @@ lazy val core = project
     )
   )
 
+lazy val formats = project
+  .in(file("formats"))
+  .dependsOn(core)
+  .settings(
+    name := "formats",
+    libraryDependencies ++= Seq(
+      "com.github.tototoshi" %% "scala-csv" % "1.3.10",
+      "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+      "io.spray" %% "spray-json" % "1.3.6",
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
+    )
+  )
+
+lazy val schema_3 = project
+  .settings(
+    name := "schema",
+    scalaVersion := scala3,
+    sourceDirectory := baseDirectory.value / "../schema/src",
+    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.9.1",
+  )
+
+lazy val schema_2_12 = project
+  .settings(
+    name := "schema",
+    scalaVersion := scala2_12,
+    scalacOptions := scalacOptionsFor2_12,
+    sourceDirectory := baseDirectory.value / "../schema/src",
+    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.9.1",
+  )
+
 lazy val domainClassesGenerator = project
   .in(file("domain-classes-generator"))
+  .dependsOn(schema_2_12)
   .settings(
     name := "domain-classes-generator",
     scalaVersion := scala2_12, // since we consume it from an sbt plugin
@@ -36,7 +69,6 @@ lazy val domainClassesGenerator = project
     libraryDependencies ++= Seq(
       "org.slf4j"          % "slf4j-simple" % slf4jVersion % Optional,
       "org.apache.commons" % "commons-text" % "1.10.0",
-      "com.lihaoyi"       %% "os-lib"       % "0.9.1",
       "com.github.scopt"  %% "scopt"        % "4.1.0",
       ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
     ),

@@ -13,6 +13,7 @@
 /schema/target/
 /domain-classes-generator-joern/target/
 /sbt-flatgraph/target/
+/schema*/target/
 /cpg.bin
 /cpg.bin.tmp
 /cpg.fg
