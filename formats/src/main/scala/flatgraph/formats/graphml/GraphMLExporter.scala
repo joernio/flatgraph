@@ -31,7 +31,7 @@ object GraphMLExporter extends Exporter {
     val nodeEntries = nodes.iterator.map { node =>
       s"""<node id="${node.id}">
          |    <data key="$KeyForNodeLabel">${node.label}</data>
-         |    ${dataEntries("node", node.label(), Accessors.getNodeProperties(schema, node), nodePropertyContextById, discardedListPropertyCount)}
+         |    ${dataEntries("node", node.label(), Accessors.getNodeProperties(node), nodePropertyContextById, discardedListPropertyCount)}
          |</node>
          |""".stripMargin
     }.toSeq

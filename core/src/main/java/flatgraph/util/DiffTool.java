@@ -45,7 +45,7 @@ public class DiffTool {
 
   private static Map<String, Object> properties(GNode node) {
     Map<String, Object> properties = new HashMap<>();
-    CollectionConverters.asJava(Accessors.getNodeProperties(node.graph.schema(), node).iterator())
+    CollectionConverters.asJava(Accessors.getNodeProperties(node).iterator())
             .forEachRemaining(keyValue -> properties.put(keyValue._1, keyValue._2));
     return properties;
   }

@@ -1,16 +1,16 @@
 package flatgraph.formats.graphson
 
-import flatgraph.Graph
+import flatgraph.{DiffGraphApplier, Graph}
 import flatgraph.formats.Importer
-import flatgraph.formats.graphson.GraphSONProtocol._
-import spray.json._
+import flatgraph.misc.TestUtils.*
+import flatgraph.formats.graphson.GraphSONProtocol.*
+import spray.json.*
 
 import java.nio.file.Path
 import scala.io.Source.fromFile
 import scala.util.Using
 
-/** Imports OverflowDB graph to GraphSON 3.0
-  *
+/** Imports from GraphSON 3.0
   * https://tinkerpop.apache.org/docs/3.4.1/dev/io/#graphson-3d0
   */
 object GraphSONImporter extends Importer {
@@ -24,7 +24,10 @@ object GraphSONImporter extends Importer {
     }
   }
 
-  private def addNode(n: Vertex, graph: Graph): Unit = {
+  private def addNode(vertex: Vertex, graph: Graph): Unit = {
+//    graph.applyDiff(_.addNode())
+//    
+//    DiffGraphApplier()
     // TODO reimplement
     ???
 //    graph.addNode(n.id.`@value`, n.label, flattenProperties(n.properties, graph): _*)

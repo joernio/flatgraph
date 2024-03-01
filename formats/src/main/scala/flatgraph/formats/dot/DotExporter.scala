@@ -37,7 +37,7 @@ object DotExporter extends Exporter {
           .append("  ")
           .append(node.id)
           .append(s"[label=${node.label} ")
-          .append(Accessors.getNodeProperties(schema, node).iterator.map { case (key, value) =>
+          .append(Accessors.getNodeProperties(node).iterator.map { case (key, value) =>
             s"$key=${encodePropertyValue(value)}"
           }.mkString(" "))
           .append("]")

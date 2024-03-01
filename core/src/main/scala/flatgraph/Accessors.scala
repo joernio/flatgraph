@@ -160,7 +160,8 @@ object Accessors {
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
-  def getNodeProperties(schema: Schema, node: GNode): IterableOnce[(String, AnyRef)] = {
+  def getNodeProperties(node: GNode): IterableOnce[(String, AnyRef)] = {
+    val schema = node.graph.schema
     for {
       propertyKind <- Range(0, schema.getNumberOfProperties)
       property = Accessors.getNodeProperty(node, propertyKind)
