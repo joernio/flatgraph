@@ -2,7 +2,7 @@ package flatgraph.formats.graphson
 
 import flatgraph.{DiffGraphApplier, Graph}
 import flatgraph.formats.Importer
-import flatgraph.misc.TestUtils.*
+import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.formats.graphson.GraphSONProtocol.*
 import spray.json.*
 
