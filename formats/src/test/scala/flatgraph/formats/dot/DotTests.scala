@@ -2,23 +2,15 @@ package flatgraph.formats.dot
 
 import better.files.*
 import flatgraph.*
+import flatgraph.TestDomainSimple.*
+import flatgraph.TestDomainSimple.PropertyNames.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
 class DotTests extends AnyWordSpec {
 
   "Exporter should export valid dot" in {
-    val testNodeLabel = "testNode"
-    val testEdgeLabel = "testEdge"
-    val schema = new FreeSchema(
-      nodeLabels = Array(testNodeLabel),
-      edgeLabels = Array(testEdgeLabel),
-      propertyLabels = Array("StringProperty", "StringListProperty", "IntProperty", "IntListProperty"),
-      nodePropertyPrototypes = Array(Array.empty[String], Array.empty[String], Array.emptyIntArray, Array.emptyIntArray),
-      edgePropertyPrototypes = Array(Array.emptyLongArray),
-    )
-
-    val graph = new Graph(schema)
+    val graph = newGraphEmpty()
     val v0 = new GenericDNode(0)
     val v1 = new GenericDNode(0)
     val v2 = new GenericDNode(0)
@@ -30,12 +22,12 @@ class DotTests extends AnyWordSpec {
     DiffGraphApplier.applyDiff(
       graph,
       new DiffGraphBuilder(schema)
-        .setNodeProperty(v0.storedRef.get, "IntProperty", 11)
-        .setNodeProperty(v0.storedRef.get, "StringProperty", "<stringProp1>")
-        .setNodeProperty(v0.storedRef.get, "StringListProperty", List("stringListProp1a", "stringList\\Prop1b"))
-        .setNodeProperty(v0.storedRef.get, "IntListProperty", List(21, 31, 41))
-        .setNodeProperty(v1.storedRef.get, "StringProperty", """string"Prop2\""")
-        .setNodeProperty(v2.storedRef.get, "IntProperty", 13)
+        .setNodeProperty(v0.storedRef.get, IntProperty, 11)
+        .setNodeProperty(v0.storedRef.get, StringProperty, "<stringProp1>")
+        .setNodeProperty(v0.storedRef.get, StringListProperty, List("stringListProp1a", "stringList\\Prop1b"))
+        .setNodeProperty(v0.storedRef.get, IntListProperty, List(21, 31, 41))
+        .setNodeProperty(v1.storedRef.get, StringProperty, """string"Prop2\""")
+        .setNodeProperty(v2.storedRef.get, IntProperty, 13)
     )
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
