@@ -1,9 +1,10 @@
 package flatgraph.formats.graphson
 
-import flatgraph.{DiffGraphApplier, Graph}
 import flatgraph.formats.Importer
-import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.formats.graphson.GraphSONProtocol.*
+import flatgraph.misc.Conversions.toShortSafely
+import flatgraph.misc.TestUtils.applyDiff
+import flatgraph.{GenericDNode, Graph}
 import spray.json.*
 
 import java.nio.file.Path
@@ -25,16 +26,32 @@ object GraphSONImporter extends Importer {
   }
 
   private def addNode(vertex: Vertex, graph: Graph): Unit = {
-//    graph.applyDiff(_.addNode())
-//    
-//    DiffGraphApplier()
-    // TODO reimplement
-    ???
-//    graph.addNode(n.id.`@value`, n.label, flattenProperties(n.properties, graph): _*)
+    val schema = graph.schema
+
+    val dnode = new GenericDNode(schema.getNodeKindByLabel(vertex.label).toShortSafely)
+    // todo: store the graphson id as a node property: vertex.id
+    graph.applyDiff(_.addNode(dnode))
+    val gnode = dnode.storedRef.get
+
+    if (vertex.properties.nonEmpty) {
+      graph.applyDiff { builder =>
+        vertex.properties.foreach { case (name, property) =>
+          builder.setNodeProperty(gnode, name, extractPropertyValue(property))
+        }
+      }
+    }
+  }
+
+  private def extractPropertyValue(property: Property): Any = {
+    property.`@value` match {
+      case ListValue(value, _)   => value.map(_.`@value`)
+      case NodeIdValue(value, _) => ??? // graph.node(value) // TODO
+      case x                     => x.`@value`
+    }
   }
 
   private def flattenProperties(m: Map[String, Property], graph: Graph): Array[_] = {
-    // TODO reimplement
+    // TODO reimplement or drop
     ???
 //    m.view
 //      .mapValues { v =>
@@ -48,11 +65,11 @@ object GraphSONImporter extends Importer {
 //      .toArray
   }
 
-  private def addEdge(e: Edge, graph: Graph): Unit = {
-    // TODO reimplement
-    ???
-//    val src = graph.node(e.outV.`@value`)
-//    val tgt = graph.node(e.inV.`@value`)
+  private def addEdge(edge: Edge, graph: Graph): Unit = {
+    val src = graph.node(edge.outV.`@value`)
+    val tgt = graph.node(edge.inV.`@value`)
+    // TODO we need to store the ids from graphml in a graph property and look them up here
 //    src.addEdge(e.label, tgt, flattenProperties(e.properties, graph): _*)
+    ???
   }
 }
