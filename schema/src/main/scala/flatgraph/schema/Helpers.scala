@@ -34,6 +34,7 @@ object Helpers {
     go(Nil, camelCase.toList).mkString.toLowerCase
   }
 
+
   def camelCase(snakeCase: String): String = {
     val corrected = // correcting for internal keys, like "_KEY" -> drop leading underscore
       if (snakeCase.startsWith("_")) snakeCase.drop(1)

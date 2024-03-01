@@ -14,6 +14,7 @@
 /schema/target/
 /domain-classes-generator*/target/
 /sbt-flatgraph/target/
+/schema*/target/
 /cpg.bin
 /cpg.bin.tmp
 /cpg.fg
