@@ -10,8 +10,14 @@ val scala2_12 = "2.12.18"
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
   * internal repositories. */
-lazy val root = (project in file("."))
-  .aggregate(core, schema_3, schema_2_12, formats, domainClassesGenerator, sbtPlugin, odbConvert)
+lazy val root = (project in file(".")).aggregate(
+    core,
+    formats,
+    domainClassesGenerator_3,
+    domainClassesGenerator_2_12,
+    sbtPlugin,
+    odbConvert
+  )
 
 lazy val core = project
   .in(file("core"))
@@ -42,26 +48,8 @@ lazy val formats = project
     )
   )
 
-lazy val schema_3 = project
-  .settings(
-    name := "schema",
-    scalaVersion := scala3,
-    sourceDirectory := baseDirectory.value / "../schema/src",
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.9.1",
-  )
-
-lazy val schema_2_12 = project
-  .settings(
-    name := "schema",
-    scalaVersion := scala2_12,
-    scalacOptions := scalacOptionsFor2_12,
-    sourceDirectory := baseDirectory.value / "../schema/src",
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.9.1",
-  )
-
-lazy val domainClassesGenerator = project
-  .in(file("domain-classes-generator"))
-  .dependsOn(schema_2_12)
+lazy val domainClassesGenerator_3 = project
+  .in(file("domain-classes-generator_3"))
   .settings(
     name := "domain-classes-generator",
     sourceDirectory := baseDirectory.value / "../domain-classes-generator/src",
@@ -85,8 +73,8 @@ lazy val domainClassesGenerator_2_12 = project
       "org.slf4j"% "slf4j-simple" % slf4jVersion % Optional,
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "org.apache.commons" % "commons-text" % "1.10.0",
-      "com.github.scopt"  %% "scopt"        % "4.1.0",
-      ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "org.scalameta" %% "scalafmt-dynamic" % "3.7.17",
     ),
   )
 
