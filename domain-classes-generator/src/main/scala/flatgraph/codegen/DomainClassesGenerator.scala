@@ -540,9 +540,11 @@ class DomainClassesGenerator(schema: Schema) {
         .flatMap(nt => nt.containedNodes.map((nt, _)))
         .map { case (node, contained) =>
           val propertyKind = relevantProperties.length + containedIndexByName(contained.localName)
-          s"""    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(
+          s"""    else if(propertyKind == $propertyKind && nodeKind == ${
+            nodeKindByNodeType(
               node
-            )}) "${contained.localName}" /*on node ${node.name}*/"""
+            )
+          }) "${contained.localName}" /*on node ${node.name}*/"""
         }
         .toList
         .sorted
