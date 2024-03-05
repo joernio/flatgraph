@@ -12,7 +12,6 @@ val scala2_12 = "2.12.18"
   * internal repositories. */
 lazy val root = (project in file(".")).aggregate(
     core,
-    formats,
     domainClassesGenerator_3,
     domainClassesGenerator_2_12,
     sbtPlugin,
@@ -31,20 +30,6 @@ lazy val core = project
       // for doc/help
       "de.vandermeer" % "asciitable" % "0.3.2",
       "net.oneandone.reflections8" % "reflections8" % "0.11.7",
-    )
-  )
-
-lazy val formats = project
-  .in(file("formats"))
-  .dependsOn(core)
-  .settings(
-    name := "formats",
-    libraryDependencies ++= Seq(
-      "com.github.tototoshi" %% "scala-csv" % "1.3.10",
-      "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
-      "io.spray" %% "spray-json" % "1.3.6",
-      "com.github.scopt" %% "scopt" % "4.1.0",
-      "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
     )
   )
 
