@@ -23,6 +23,8 @@ jobs:
       - name: Generate domain classes and verify everything is committed
         run: |
           ./generateDomainClasses.sh
-          UNTRACKED_FILES=$(git status --porcelain 2>/dev/null| grep "^??" | wc -l)
-          echo $UNTRACKED_FILES untracked files
-          exit $UNTRACKED_FILES
+          UNTRACKED_FILES=$(git status --porcelain 2>/dev/null| grep "^??")
+          UNTRACKED_FILES_COUNT=$(echo $UNTRACKED_FILES | wc -l)
+          echo "$UNTRACKED_FILES_COUNT untracked files:"
+          echo $UNTRACKED_FILES
+          exit $UNTRACKED_FILES_COUNT
