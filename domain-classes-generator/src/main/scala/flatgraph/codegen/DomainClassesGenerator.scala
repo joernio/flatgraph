@@ -548,46 +548,57 @@ class DomainClassesGenerator(schema: Schema) {
         .sorted
         .mkString("\n")
 
-      val nodePropertyDescriptors = new Array[String]((relevantProperties.length + containedNames.length) * nodeTypes.length * 2)
-      for (idx <- Range(0, nodePropertyDescriptors.length)) {
-        nodePropertyDescriptors(idx) = if ((idx & 1) == 0) "FormalQtyType.NothingType" else "FormalQtyType.QtyNone"
-      }
-      for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
-        for (p <- node.properties) {
-          val propertyKind = propertyKindByProperty(p)
-          val typ =
-            p.valueType match {
-              case ValueType.Boolean => "FormalQtyType.BoolType"
-              case ValueType.Byte    => "FormalQtyType.ByteType"
-              case ValueType.Short   => "FormalQtyType.ShortType"
-              case ValueType.Int     => "FormalQtyType.IntType"
-              case ValueType.Long    => "FormalQtyType.LongType"
-              case ValueType.Float   => "FormalQtyType.FloatType"
-              case ValueType.Double  => "FormalQtyType.DoubleType"
-              case ValueType.String  => "FormalQtyType.StringType"
-              case _                 => ???
+      val nodePropertyDescriptorsSource = {
+        val sourceLines = Seq.newBuilder[String]
+        val length      = (relevantProperties.length + containedNames.length) * nodeTypes.length * 2
+        sourceLines.addOne(s"""{
+             |  val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType]($length)
+             |  for (idx <- Range(0, $length)) {
+             |    nodePropertyDescriptors(idx) =
+             |      if ((idx & 1) == 0) FormalQtyType.NothingType
+             |      else                FormalQtyType.QtyNone
+             |  }
+             |""".stripMargin)
+        for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
+          for (property <- node.properties) {
+            val propertyKind = propertyKindByProperty(property)
+            val typ =
+              property.valueType match {
+                case ValueType.Boolean => "FormalQtyType.BoolType"
+                case ValueType.Byte    => "FormalQtyType.ByteType"
+                case ValueType.Short   => "FormalQtyType.ShortType"
+                case ValueType.Int     => "FormalQtyType.IntType"
+                case ValueType.Long    => "FormalQtyType.LongType"
+                case ValueType.Float   => "FormalQtyType.FloatType"
+                case ValueType.Double  => "FormalQtyType.DoubleType"
+                case ValueType.String  => "FormalQtyType.StringType"
+                case _                 => ???
+              }
+            val qty = property.cardinality match {
+              case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
+              case Cardinality.List      => "FormalQtyType.QtyMulti"
+              case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
             }
-          val qty = p.cardinality match {
-            case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
-            case Cardinality.List      => "FormalQtyType.QtyMulti"
-            case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
+            val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
+            sourceLines.addOne(s"""  nodePropertyDescriptors($pos) = $typ // ${node.name}.${property.name}""")
+            sourceLines.addOne(s"""  nodePropertyDescriptors(${pos + 1}) = $qty""")
           }
-          val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
-          nodePropertyDescriptors(pos) = typ + s" /*node = ${node.name} property = ${p.name}*/"
-          nodePropertyDescriptors(pos + 1) = qty
-        }
-        for (c <- node.containedNodes) {
-          val propertyKind = relevantProperties.length + containedIndexByName(c.localName)
-          val typ          = "FormalQtyType.RefType"
-          val qty = c.cardinality match {
-            case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
-            case Cardinality.List      => "FormalQtyType.QtyMulti"
-            case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
+          for (containedNode <- node.containedNodes) {
+            val propertyKind = relevantProperties.length + containedIndexByName(containedNode.localName)
+            val typ          = "FormalQtyType.RefType"
+            val qty = containedNode.cardinality match {
+              case Cardinality.ZeroOrOne => "FormalQtyType.QtyOption"
+              case Cardinality.List      => "FormalQtyType.QtyMulti"
+              case _: Cardinality.One[?] => "FormalQtyType.QtyOne"
+            }
+            val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
+            sourceLines.addOne(s"""  nodePropertyDescriptors($pos) = $typ // ${node.name}.${containedNode.localName}""")
+            sourceLines.addOne(s"""  nodePropertyDescriptors(${pos + 1}) = $qty""")
           }
-          val pos = 2 * (nodeKind + nodeTypes.length * propertyKind)
-          nodePropertyDescriptors(pos) = typ + s" /*node = ${node.name} property = ${c.localName}*/"
-          nodePropertyDescriptors(pos + 1) = qty
         }
+        sourceLines.addOne("  nodePropertyDescriptors") // return statement
+        sourceLines.addOne("}")
+        sourceLines.result()
       }
 
       s"""package $basePackage
@@ -606,7 +617,8 @@ class DomainClassesGenerator(schema: Schema) {
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
-         |  val nodePropertyDescriptors: Array[AnyRef] = Array(${nodePropertyDescriptors.mkString(", ")} )
+         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource
+          .mkString("\n")}
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)

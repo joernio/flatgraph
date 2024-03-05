@@ -1,6 +1,6 @@
 package flatgraph.codegen
 
-import flatgraph.schema._
+import flatgraph.schema.{Constant, EdgeType, NodeType, Property, Schema}
 import java.nio.file.{Files, Path}
 
 /** Generates proto definitions for a given domain-specific schema. */

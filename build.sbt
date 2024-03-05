@@ -1,16 +1,22 @@
 name := "flatgraph"
 ThisBuild / organization := "io.joern.flatgraph"
-ThisBuild / scalaVersion := "3.3.1"
+ThisBuild / scalaVersion := scala3
 publish / skip := true
 
 val slf4jVersion = "2.0.7"
+val scala3 = "3.3.1"
 val scala2_12 = "2.12.18"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
   * internal repositories. */
-lazy val root = (project in file("."))
-  .aggregate(core, domainClassesGenerator, sbtPlugin, odbConvert)
+lazy val root = (project in file(".")).aggregate(
+    core,
+    domainClassesGenerator_3,
+    domainClassesGenerator_2_12,
+    sbtPlugin,
+    odbConvert
+  )
 
 lazy val core = project
   .in(file("core"))
@@ -27,24 +33,39 @@ lazy val core = project
     )
   )
 
-lazy val domainClassesGenerator = project
-  .in(file("domain-classes-generator"))
+lazy val domainClassesGenerator_3 = project
+  .in(file("domain-classes-generator_3"))
   .settings(
     name := "domain-classes-generator",
-    scalaVersion := scala2_12, // since we consume it from an sbt plugin
+    sourceDirectory := baseDirectory.value / "../domain-classes-generator/src",
+    libraryDependencies ++= Seq(
+      "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional,
+      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "org.apache.commons" % "commons-text" % "1.10.0",
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
+    ),
+  )
+
+lazy val domainClassesGenerator_2_12 = project
+  .in(file("domain-classes-generator_2.12"))
+  .settings(
+    name := "domain-classes-generator",
+    sourceDirectory := baseDirectory.value / "../domain-classes-generator/src",
+    scalaVersion := scala2_12,
     scalacOptions := scalacOptionsFor2_12,
     libraryDependencies ++= Seq(
-      "org.slf4j"          % "slf4j-simple" % slf4jVersion % Optional,
+      "org.slf4j"% "slf4j-simple" % slf4jVersion % Optional,
+      "com.lihaoyi" %% "os-lib" % "0.9.1",
       "org.apache.commons" % "commons-text" % "1.10.0",
-      "com.lihaoyi"       %% "os-lib"       % "0.9.1",
-      "com.github.scopt"  %% "scopt"        % "4.1.0",
-      ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "org.scalameta" %% "scalafmt-dynamic" % "3.7.17",
     ),
   )
 
 lazy val sbtPlugin = project
   .in(file("sbt-flatgraph"))
-  .dependsOn(domainClassesGenerator)
+  .dependsOn(domainClassesGenerator_2_12)
   .enablePlugins(SbtPlugin)
   .settings(
     name := "sbt-flatgraph",
@@ -75,7 +96,7 @@ lazy val odbConvert = project
   */
 lazy val domainClassesGeneratorJoern = project
   .in(file("domain-classes-generator-joern"))
-  .dependsOn(domainClassesGenerator)
+  .dependsOn(domainClassesGenerator_2_12)
   .settings(
     name := "domain-classes-generator-joern",
     scalaVersion := scala2_12,

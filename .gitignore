@@ -11,7 +11,7 @@
 /benchmarks/target/
 /core/target/
 /schema/target/
-/domain-classes-generator-joern/target/
+/domain-classes-generator*/target/
 /sbt-flatgraph/target/
 /cpg.bin
 /cpg.bin.tmp
