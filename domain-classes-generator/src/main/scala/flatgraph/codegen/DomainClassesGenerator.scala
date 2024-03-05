@@ -540,11 +540,9 @@ class DomainClassesGenerator(schema: Schema) {
         .flatMap(nt => nt.containedNodes.map((nt, _)))
         .map { case (node, contained) =>
           val propertyKind = relevantProperties.length + containedIndexByName(contained.localName)
-          s"""    else if(propertyKind == $propertyKind && nodeKind == ${
-            nodeKindByNodeType(
+          s"""    else if(propertyKind == $propertyKind && nodeKind == ${nodeKindByNodeType(
               node
-            )
-          }) "${contained.localName}" /*on node ${node.name}*/"""
+            )}) "${contained.localName}" /*on node ${node.name}*/"""
         }
         .toList
         .sorted
@@ -552,9 +550,8 @@ class DomainClassesGenerator(schema: Schema) {
 
       val nodePropertyDescriptorsSource = {
         val sourceLines = Seq.newBuilder[String]
-        val length = (relevantProperties.length + containedNames.length) * nodeTypes.length * 2
-        sourceLines.addOne(
-          s"""{
+        val length      = (relevantProperties.length + containedNames.length) * nodeTypes.length * 2
+        sourceLines.addOne(s"""{
              |  val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType]($length)
              |  for (idx <- Range(0, $length)) {
              |    nodePropertyDescriptors(idx) =
@@ -620,7 +617,8 @@ class DomainClassesGenerator(schema: Schema) {
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
-         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource.mkString("\n")}
+         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource
+          .mkString("\n")}
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
