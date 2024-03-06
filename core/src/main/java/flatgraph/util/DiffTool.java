@@ -3,6 +3,7 @@ package flatgraph.util;
 import flatgraph.*;
 import java.util.*;
 
+import scala.collection.IterableOnce;
 import scala.jdk.javaapi.CollectionConverters;
 
 public class DiffTool {
@@ -62,7 +63,11 @@ public class DiffTool {
 
   private static void compareProperty(String key, Object value1, Object value2, List<String> diff, String context) {
     if (value1 != null && value2 != null) {
-      if (value1.getClass().isArray() && value2.getClass().isArray()) { // both values are arrays
+      if (value1 instanceof IterableOnce<?> && value2 instanceof IterableOnce<?>) {
+        if (!iterablesEqual((IterableOnce<?>) value1, (IterableOnce<?>) value2)) {
+          diff.add(String.format("%s; IterableOnce property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
+        }
+      } else if (value1.getClass().isArray() && value2.getClass().isArray()) { // both values are arrays
         if (!arraysEqual(value1, value2)) {
           diff.add(String.format("%s; array property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
         }
@@ -74,6 +79,30 @@ public class DiffTool {
     } else if (value1 != null && value2 == null) {
       diff.add(String.format("%s; property '%s' -> '%s' only exists in graph1", context, key, value1));
     } 
+  }
+
+  private static boolean iterablesEqual(IterableOnce<?> values1, IterableOnce<?> values2) {
+    scala.collection.Iterator<?> iterator1 = values1.iterator();
+    scala.collection.Iterator<?> iterator2 = values2.iterator();
+    while (iterator1.hasNext() || iterator2.hasNext()) {
+      if ((iterator1.hasNext() && !iterator2.hasNext()) || (!iterator1.hasNext() && iterator2.hasNext()) ) {
+        // different sizes
+        return false;
+      }
+
+      Object value1 = iterator1.next();
+      Object value2 = iterator2.next();
+      if (value1 instanceof GNode && value2 instanceof GNode) {
+        // special equality handling for GNodes: we don't want to override GNode.equals, which by default should take 
+        // the graph into account by default - yet here we explicitly need to ignore it...
+        GNode node1 = (GNode) value1;
+        GNode node2 = (GNode) value2;
+        if ((node1.nodeKind != node2.nodeKind) || node1.seq() != node2.seq()) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**

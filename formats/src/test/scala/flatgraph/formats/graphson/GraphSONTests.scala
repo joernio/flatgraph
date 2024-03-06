@@ -3,13 +3,7 @@ package flatgraph.formats.graphson
 import better.files.File
 import flatgraph.GenericDNode
 import flatgraph.TestDomainSimple.*
-import flatgraph.TestDomainSimple.PropertyNames.{
-  ContainedTestNodeProperty,
-  IntListProperty,
-  IntProperty,
-  StringListProperty,
-  StringProperty
-}
+import flatgraph.TestDomainSimple.PropertyNames.{ContainedTestNodeProperty, IntProperty}
 import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
