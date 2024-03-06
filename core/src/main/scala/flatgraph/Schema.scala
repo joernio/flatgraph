@@ -182,7 +182,7 @@ class FreeSchema(
       case _                         => FormalQtyType.QtyMulti
     }
     else formalqtys(propertyOffsetArrayIndex(nodeKind, propertyKind))
-    
+
   override def getNodePropertyDefault(nodeKind: Int, propertyKind: Int): Any =
     null
 

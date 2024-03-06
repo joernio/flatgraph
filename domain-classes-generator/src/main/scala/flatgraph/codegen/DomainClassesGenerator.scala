@@ -604,8 +604,8 @@ class DomainClassesGenerator(schema: Schema) {
       val nodePropertyDefaultsImpl = {
         val cases = for {
           (node, nodeKind) <- nodeTypes.zipWithIndex
-          property <- node.properties
-          default <- property.default
+          property         <- node.properties
+          default          <- property.default
           propertyKind = propertyKindByProperty(property)
         } yield s"if (nodeKind == $nodeKind && propertyKind == $propertyKind) { ${Helpers.defaultValueImpl(default)} }"
 
@@ -615,6 +615,7 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin
       }
 
+      // format: off
       s"""package $basePackage
          |import $basePackage.nodes
          |import $basePackage.edges
@@ -653,6 +654,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
          |  $nodePropertyDefaultsImpl
          |}""".stripMargin
+      // format: on
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
 

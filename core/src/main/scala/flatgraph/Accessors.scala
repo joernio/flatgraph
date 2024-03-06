@@ -145,9 +145,9 @@ object Accessors {
     val seq      = node.seq()
     val nodeKind = node.nodeKind.toInt
     schema.getNodePropertyFormalQuantity(nodeKind, propertyKind) match {
-      case FormalQtyType.QtyNone => None
+      case FormalQtyType.QtyNone                          => None
       case FormalQtyType.QtyOne | FormalQtyType.QtyOption => getNodePropertyOption[Object](graph, nodeKind, propertyKind, seq)
-      case FormalQtyType.QtyMulti => Some(getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq))
+      case FormalQtyType.QtyMulti                         => Some(getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq))
     } match {
       case None =>
         val default = schema.getNodePropertyDefault(nodeKind = nodeKind, propertyKind = propertyKind)
