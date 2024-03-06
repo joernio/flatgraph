@@ -13,10 +13,10 @@ import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, 
 
 class Neo4jCsvTests extends AnyWordSpec {
   val subprojectRoot = testutils.ProjectRoot.relativise("formats")
-  val neo4jcsvRoot = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
+  val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "foo" in {
-    ??? //TODO
+    pending // TODO
   }
 
 //  "Importer" should {

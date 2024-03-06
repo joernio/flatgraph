@@ -14,12 +14,10 @@ object Neo4jCsvExporter extends Exporter {
 
   override def defaultFileExtension = "csv"
 
-  /** Exports OverflowDB Graph to neo4j csv files see
-    * https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import/
+  /** Exports OverflowDB Graph to neo4j csv files see https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import/
     *
-    * For both nodes and relationships, we first write the data file and to derive the property types from their runtime
-    * types. We will write columns for all declared properties, because we only know which ones are actually in use
-    * *after* traversing all elements.
+    * For both nodes and relationships, we first write the data file and to derive the property types from their runtime types. We will
+    * write columns for all declared properties, because we only know which ones are actually in use *after* traversing all elements.
     */
   override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
     // TODO reimplement
@@ -162,12 +160,12 @@ object Neo4jCsvExporter extends Exporter {
 //  }
 
   private case class EdgeFilesContext(
-      label: String,
-      headerFile: Path,
-      dataFile: Path,
-      cypherFile: Path,
-      dataFileWriter: CSVWriter,
-      columnDefinitions: ColumnDefinitions
+    label: String,
+    headerFile: Path,
+    dataFile: Path,
+    cypherFile: Path,
+    dataFileWriter: CSVWriter,
+    columnDefinitions: ColumnDefinitions
   )
 
   case class CountAndFiles(count: Int, files: Seq[Path]) {

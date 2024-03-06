@@ -18,7 +18,7 @@ object GraphMLImporter extends Importer {
     val doc = XML.loadFile(inputFiles.head.toFile)
 
     val keyEntries = doc \ "key"
-    val graphXml = doc \ "graph"
+    val graphXml   = doc \ "graph"
 
     { // nodes
       val nodePropertyContextById = parsePropertyEntries("node", keyEntries)
@@ -39,8 +39,8 @@ object GraphMLImporter extends Importer {
     keyEntries
       .filter(_ \@ "for" == forElementType)
       .map { node =>
-        val id = node \@ "id"
-        val name = node \@ "attr.name"
+        val id          = node \@ "id"
+        val name        = node \@ "attr.name"
         val graphmlType = node \@ "attr.type"
         (id, PropertyContext(name, Type.withName(graphmlType)))
       }
@@ -48,9 +48,9 @@ object GraphMLImporter extends Importer {
   }
 
   private def addNode(graph: Graph, node: scala.xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
-    val id = node \@ "id"
+    val id                    = node \@ "id"
     var label: Option[String] = None
-    val keyValuePairs = Seq.newBuilder[Any]
+    val keyValuePairs         = Seq.newBuilder[Any]
 
     for (entry <- node \ "data") {
       val value = entry.text
@@ -74,10 +74,10 @@ object GraphMLImporter extends Importer {
   }
 
   private def addEdge(graph: Graph, edge: scala.xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
-    val sourceId = edge \@ "source"
-    val targetId = edge \@ "target"
+    val sourceId              = edge \@ "source"
+    val targetId              = edge \@ "target"
     var label: Option[String] = None
-    val keyValuePairs = Seq.newBuilder[Any]
+    val keyValuePairs         = Seq.newBuilder[Any]
 
     for (entry <- edge \ "data") {
       val value = entry.text
@@ -106,7 +106,7 @@ object GraphMLImporter extends Importer {
   private def convertValue(stringValue: String, tpe: Type.Value, context: scala.xml.Node): Any = {
     tryConvertScalarValue(stringValue, tpe) match {
       case Success(value) => value
-      case Failure(e) => throw new AssertionError(s"unable to parse `$stringValue` of tpe=$tpe. context: $context", e)
+      case Failure(e)     => throw new AssertionError(s"unable to parse `$stringValue` of tpe=$tpe. context: $context", e)
     }
   }
 

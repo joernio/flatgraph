@@ -86,7 +86,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
 
   def nodeCount(): Int =
     livingNodeCountByKind.sum
-    
+
   def allEdges: Iterator[Edge] =
     allNodes.flatMap(Accessors.getEdgesOut)
 

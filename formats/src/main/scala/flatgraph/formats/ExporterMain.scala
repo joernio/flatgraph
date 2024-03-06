@@ -37,7 +37,7 @@ object ExporterMain {
           case Format.Dot      => DotExporter
         }
         logger.info(s"starting export of graph in $inputFile to storagePath=$outputFile in format=$format")
-        
+
         val ExportResult(nodeCount, edgeCount, files, additionalInfo) =
           Using.resource(Deserialization.readGraph(inputFile, schemaMaybe = None)) { graph =>
             exporter.runExport(graph, outputFile)

@@ -32,8 +32,8 @@ package object formats {
     case arr: Array[_]             => ArraySeq.unsafeWrapArray(arr)
   }
 
-  /** If given outputFile is a directory: export into a new file in that directory Otherwise: use the given outputFile
-    * as is, and create all parent directories (if not there already)
+  /** If given outputFile is a directory: export into a new file in that directory Otherwise: use the given outputFile as is, and create all
+    * parent directories (if not there already)
     */
   def resolveOutputFileSingle(outputFile: Path, defaultName: String): Path = {
     if (Files.exists(outputFile) && Files.isDirectory(outputFile)) {

@@ -8,8 +8,7 @@ import java.nio.file.Path
 import java.util
 import scala.util.Using
 
-/** Imports from neo4j csv files see
-  * https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import/
+/** Imports from neo4j csv files see https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import/
   */
 object Neo4jCsvImporter extends Importer {
   val Neo4jAdminDoc = "https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import"
@@ -61,10 +60,7 @@ object Neo4jCsvImporter extends Importer {
 
   private def groupInputFiles(inputFiles: Seq[Path]): Seq[HeaderAndDataFile] = {
     val nonCsvFiles = inputFiles.filterNot(_.getFileName.toString.endsWith(".csv"))
-    assert(
-      nonCsvFiles.isEmpty,
-      s"input files must all have `.csv` extension, which is not the case for ${nonCsvFiles.mkString(",")}"
-    )
+    assert(nonCsvFiles.isEmpty, s"input files must all have `.csv` extension, which is not the case for ${nonCsvFiles.mkString(",")}")
 
     val (headerFiles, dataFiles) = inputFiles.partition(_.getFileName.toString.endsWith(s"$HeaderFileSuffix.csv"))
     assert(
@@ -79,9 +75,7 @@ object Neo4jCsvImporter extends Importer {
           HeaderAndDataFile(parseHeaderFile(headerFile), dataFile)
         case None =>
           val inputFilenames = inputFiles.map(_.getFileName).mkString(", ")
-          throw new AssertionError(
-            s"body filename `$wantedBodyFilename` wanted, but not found in given input files: $inputFilenames"
-          )
+          throw new AssertionError(s"body filename `$wantedBodyFilename` wanted, but not found in given input files: $inputFilenames")
       }
     }
   }
@@ -98,7 +92,7 @@ object Neo4jCsvImporter extends Importer {
       headerReader.all().headOption.getOrElse(throw new AssertionError(s"header file $headerFile is empty"))
     }
 
-    val propertyDefs = Map.newBuilder[Int, ColumnDef]
+    val propertyDefs     = Map.newBuilder[Int, ColumnDef]
     var labelColumnFound = false
     // will figure out if this is a node or relationship file during parsing
     var fileType: Option[FileType.Value] = None
@@ -106,9 +100,7 @@ object Neo4jCsvImporter extends Importer {
       val propertyDef = entry match {
         case ColumnType.LabelMarker =>
           if (labelColumnFound)
-            throw new NotImplementedError(
-              s"multiple ${ColumnType.Label} columns found in $headerFile, which is not supported by flatgraph"
-            )
+            throw new NotImplementedError(s"multiple ${ColumnType.Label} columns found in $headerFile, which is not supported by flatgraph")
           labelColumnFound = true
           fileType = Option(FileType.Nodes)
           ColumnDef(None, ColumnType.Label)
@@ -123,18 +115,13 @@ object Neo4jCsvImporter extends Importer {
           ColumnDef(None, ColumnType.EndId)
         case propertyDef if propertyDef.contains(":") =>
           val name :: valueTpe0 :: Nil = propertyDef.split(':').toList
-          val isArray = propertyDef.endsWith(
-            ColumnType.ArrayMarker
-          ) // from the docs: "To define an array type, append [] to the type"
+          val isArray = propertyDef.endsWith(ColumnType.ArrayMarker) // from the docs: "To define an array type, append [] to the type"
           val valueTpe =
             if (isArray) valueTpe0.dropRight(2)
             else valueTpe0
           ColumnDef(Option(name), valueType = ColumnType.withName(valueTpe), isArray)
         case propertyName =>
-          ColumnDef(
-            Option(propertyName),
-            valueType = ColumnType.String
-          ) // if property is not annotated with `:someType`, default to String
+          ColumnDef(Option(propertyName), valueType = ColumnType.String) // if property is not annotated with `:someType`, default to String
       }
       propertyDefs.addOne((idx, propertyDef))
     }
@@ -165,14 +152,14 @@ object Neo4jCsvImporter extends Importer {
   }
 
   private def parseNodeRowData(
-      columnsRaw: Seq[String],
-      columnDefs: Map[Int, ColumnDef],
-      inputFile: Path,
-      lineNo: Int
+    columnsRaw: Seq[String],
+    columnDefs: Map[Int, ColumnDef],
+    inputFile: Path,
+    lineNo: Int
   ): ParsedNodeRowData = {
-    var id: Integer = null
+    var id: Integer   = null
     var label: String = null
-    val properties = Seq.newBuilder[ParsedProperty]
+    val properties    = Seq.newBuilder[ParsedProperty]
     columnsRaw.zipWithIndex.foreach { case (entry, idx) =>
       val columnDef = columnDefs.getOrElse(
         idx,
@@ -198,15 +185,15 @@ object Neo4jCsvImporter extends Importer {
   }
 
   private def parseEdgeRowData(
-      columnsRaw: Seq[String],
-      columnDefs: Map[Int, ColumnDef],
-      inputFile: Path,
-      lineNo: Int
+    columnsRaw: Seq[String],
+    columnDefs: Map[Int, ColumnDef],
+    inputFile: Path,
+    lineNo: Int
   ): ParsedEdgeRowData = {
     var startId: Integer = null
-    var endId: Integer = null
-    var label: String = null
-    val properties = Seq.newBuilder[ParsedProperty]
+    var endId: Integer   = null
+    var label: String    = null
+    val properties       = Seq.newBuilder[ParsedProperty]
     columnsRaw.zipWithIndex.foreach { case (entry, idx) =>
       val columnDef = columnDefs.getOrElse(
         idx,
@@ -235,15 +222,13 @@ object Neo4jCsvImporter extends Importer {
   }
 
   private def parseEntry(rawValue: String, columnDef: ColumnDef, inputFile: Path, lineNo: Int)(
-      handleColumn: PartialFunction[ColumnDef, _]
+    handleColumn: PartialFunction[ColumnDef, _]
   ): Unit = {
     try {
       handleColumn.applyOrElse(
         columnDef,
         { (_: ColumnDef) =>
-          throw new MatchError(
-            s"unhandled case $columnDef for rawValue=$rawValue in ${inputFile.getFileName} line $lineNo"
-          )
+          throw new MatchError(s"unhandled case $columnDef for rawValue=$rawValue in ${inputFile.getFileName} line $lineNo")
         }
       )
     } catch {
@@ -262,11 +247,7 @@ object Neo4jCsvImporter extends Importer {
     }
   }
 
-  private def parseArrayProperty(
-      rawValue: String,
-      name: String,
-      valueType: ColumnType.Value
-  ): Option[ParsedProperty] = {
+  private def parseArrayProperty(rawValue: String, name: String, valueType: ColumnType.Value): Option[ParsedProperty] = {
     val values = rawValue.split(';') // from the docs: "By default, array values are separated by ;"
     if (values.nonEmpty && values.head != "") { // csv parser always adds one empty string entry...
       val parsedValues = values.map(parsePropertyValue(_, valueType))

@@ -7,11 +7,11 @@ package object graphml {
 
   object Type extends Enumeration {
     val Boolean = Value("boolean")
-    val Int = Value("int")
-    val Long = Value("long")
-    val Float = Value("float")
-    val Double = Value("double")
-    val String = Value("string")
+    val Int     = Value("int")
+    val Long    = Value("long")
+    val Float   = Value("float")
+    val Double  = Value("double")
+    val String  = Value("string")
 
     def fromRuntimeClass(clazz: Class[_]): Type.Value = {
       if (clazz.isAssignableFrom(classOf[Boolean]) || clazz.isAssignableFrom(classOf[java.lang.Boolean]))
@@ -27,9 +27,7 @@ package object graphml {
       else if (clazz.isAssignableFrom(classOf[String]))
         Type.String
       else
-        throw new AssertionError(
-          s"unsupported runtime class `$clazz` - only ${Type.values.mkString("|")} are supported...}"
-        )
+        throw new AssertionError(s"unsupported runtime class `$clazz` - only ${Type.values.mkString("|")} are supported...}")
     }
   }
 

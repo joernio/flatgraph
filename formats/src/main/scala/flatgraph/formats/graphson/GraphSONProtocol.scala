@@ -9,35 +9,17 @@ object GraphSONProtocol extends DefaultJsonProtocol {
         case x: StringValue  => JsString(x.`@value`)
         case x: BooleanValue => JsBoolean(x.`@value`)
         case x: ListValue =>
-          JsObject(
-            "@value" -> JsArray(x.`@value`.map(write).toVector),
-            "@type" -> JsString(x.`@type`)
-          )
+          JsObject("@value" -> JsArray(x.`@value`.map(write).toVector), "@type" -> JsString(x.`@type`))
         case x: LongValue =>
-          JsObject(
-            "@value" -> JsNumber(x.`@value`),
-            "@type" -> JsString(x.`@type`)
-          )
+          JsObject("@value" -> JsNumber(x.`@value`), "@type" -> JsString(x.`@type`))
         case x: IntValue =>
-          JsObject(
-            "@value" -> JsNumber(x.`@value`),
-            "@type" -> JsString(x.`@type`)
-          )
+          JsObject("@value" -> JsNumber(x.`@value`), "@type" -> JsString(x.`@type`))
         case x: FloatValue =>
-          JsObject(
-            "@value" -> JsNumber(x.`@value`),
-            "@type" -> JsString(x.`@type`)
-          )
+          JsObject("@value" -> JsNumber(x.`@value`), "@type" -> JsString(x.`@type`))
         case x: DoubleValue =>
-          JsObject(
-            "@value" -> JsNumber(x.`@value`),
-            "@type" -> JsString(x.`@type`)
-          )
+          JsObject("@value" -> JsNumber(x.`@value`), "@type" -> JsString(x.`@type`))
         case x: NodeIdValue =>
-          JsObject(
-            "@value" -> JsNumber(x.`@value`),
-            "@type" -> JsString(x.`@type`)
-          )
+          JsObject("@value" -> JsNumber(x.`@value`), "@type" -> JsString(x.`@type`))
         case x => serializationError(s"unsupported propertyValue: $x")
       }
     }

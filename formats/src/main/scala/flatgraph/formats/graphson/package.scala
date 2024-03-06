@@ -9,13 +9,13 @@ package object graphson {
     // strings are simply in quotes and booleans are not
     // We use the following as placeholders
     val Boolean = GraphSONVal(1, "g:Boolean")
-    val String = GraphSONVal(2, "g:String")
-    val Int = GraphSONVal(3, "g:Int32")
-    val Long = GraphSONVal(4, "g:Int64")
-    val Float = GraphSONVal(5, "g:Float")
-    val Double = GraphSONVal(6, "g:Double")
-    val List = GraphSONVal(7, "g:List")
-    val NodeId = GraphSONVal(8, "g:VertexId")
+    val String  = GraphSONVal(2, "g:String")
+    val Int     = GraphSONVal(3, "g:Int32")
+    val Long    = GraphSONVal(4, "g:Int64")
+    val Float   = GraphSONVal(5, "g:Float")
+    val Double  = GraphSONVal(6, "g:Double")
+    val List    = GraphSONVal(7, "g:List")
+    val NodeId  = GraphSONVal(8, "g:VertexId")
 
     def fromRuntimeClass(clazz: Class[_]): Type.Value = {
       if (clazz.isAssignableFrom(classOf[Boolean]) || clazz.isAssignableFrom(classOf[java.lang.Boolean]))
@@ -33,9 +33,7 @@ package object graphson {
       else if (clazz.isAssignableFrom(classOf[List[_]]))
         Type.List
       else
-        throw new AssertionError(
-          s"unsupported runtime class `$clazz` - only ${Type.values.mkString("|")} are supported...}"
-        )
+        throw new AssertionError(s"unsupported runtime class `$clazz` - only ${Type.values.mkString("|")} are supported...}")
     }
 
     protected case class GraphSONVal(num: Int, typ: String) extends super.Val
@@ -49,14 +47,14 @@ package object graphson {
   case class Vertex(id: LongValue, label: String, properties: Map[String, Property], `@type`: String = "g:Vertex")
 
   case class Edge(
-      id: LongValue,
-      label: String,
-      inVLabel: String,
-      outVLabel: String,
-      inV: LongValue,
-      outV: LongValue,
-      properties: Map[String, Property],
-      `@type`: String = "g:Edge"
+    id: LongValue,
+    label: String,
+    inVLabel: String,
+    outVLabel: String,
+    inV: LongValue,
+    outV: LongValue,
+    properties: Map[String, Property],
+    `@type`: String = "g:Edge"
   )
 
   trait PropertyValue {
@@ -76,8 +74,7 @@ package object graphson {
 
   case class FloatValue(override val `@value`: Float, `@type`: String = Type.Float.typ) extends PropertyValue
 
-  case class ListValue(override val `@value`: Array[PropertyValue], `@type`: String = Type.List.typ)
-      extends PropertyValue
+  case class ListValue(override val `@value`: Array[PropertyValue], `@type`: String = Type.List.typ) extends PropertyValue
 
   case class NodeIdValue(override val `@value`: Long, `@type`: String = Type.NodeId.typ) extends PropertyValue
 

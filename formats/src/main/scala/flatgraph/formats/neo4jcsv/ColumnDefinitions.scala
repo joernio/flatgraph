@@ -7,11 +7,11 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.IterableHasAsScala
 
 sealed trait ColumnDef
-case class ScalarColumnDef(valueType: ColumnType.Value) extends ColumnDef
+case class ScalarColumnDef(valueType: ColumnType.Value)                                              extends ColumnDef
 case class ArrayColumnDef(valueType: Option[ColumnType.Value], iteratorAccessor: Any => Iterable[_]) extends ColumnDef
 
 class ColumnDefinitions(propertyNames: Iterable[String]) {
-  private val propertyNamesOrdered = propertyNames.toSeq.sorted
+  private val propertyNamesOrdered     = propertyNames.toSeq.sorted
   private val _columnDefByPropertyName = mutable.Map.empty[String, ColumnDef]
 
   def columnDefByPropertyName(name: String): Option[ColumnDef] = _columnDefByPropertyName.get(name)
@@ -45,8 +45,8 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     }
   }
 
-  /** for data file updates our internal `_columnDefByPropertyName` model with type information based on runtime values,
-    * so that we later have all metadata required for the header file
+  /** for data file updates our internal `_columnDefByPropertyName` model with type information based on runtime values, so that we later
+    * have all metadata required for the header file
     */
   def propertyValues(byNameAccessor: String => Option[_]): Seq[String] = {
     propertyNamesOrdered.map { propertyName =>
@@ -60,9 +60,9 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
             case ArrayColumnDef(_, iteratorAccessor) =>
               /** Array property value - separated by `;` according to the spec
                 *
-                * Note: if all instances of this array property type are empty, we will not have the valueType (because
-                * it's derived from the runtime class). At the same time, it doesn't matter for serialization, because
-                * the csv entry is always empty for all empty arrays.
+                * Note: if all instances of this array property type are empty, we will not have the valueType (because it's derived from
+                * the runtime class). At the same time, it doesn't matter for serialization, because the csv entry is always empty for all
+                * empty arrays.
                 */
               iteratorAccessor(value).mkString(";")
           }
@@ -70,9 +70,8 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     }
   }
 
-  /** for cypher file <rant> why does neo4j have 4 different ways to import a CSV, out of which only one works, and
-    * really the only help we get is a csv file reader, and we need to specify exactly how each column needs to be
-    * parsed and mapped...? </rant>
+  /** for cypher file <rant> why does neo4j have 4 different ways to import a CSV, out of which only one works, and really the only help we
+    * get is a csv file reader, and we need to specify exactly how each column needs to be parsed and mapped...? </rant>
     */
   def propertiesMappingsForCypher(startIndex: Int): Seq[String] = {
     var idx = startIndex - 1
@@ -100,8 +99,7 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     }
   }
 
-  /** optionally choose one of https://neo4j.com/docs/cypher-manual/current/functions/scalar/, depending on the
-    * columnType
+  /** optionally choose one of https://neo4j.com/docs/cypher-manual/current/functions/scalar/, depending on the columnType
     */
   private def cypherScalarConversionFunctionMaybe(columnType: ColumnType.Value): Option[String] = {
     columnType match {
@@ -115,8 +113,8 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     }
   }
 
-  /** optionally choose one of https://neo4j.com/docs/cypher-manual/current/functions/list/#functions-tobooleanlist,
-    * depending on the columnType
+  /** optionally choose one of https://neo4j.com/docs/cypher-manual/current/functions/list/#functions-tobooleanlist, depending on the
+    * columnType
     */
   private def cypherListConversionFunctionMaybe(columnType: ColumnType.Value): Option[String] = {
     columnType match {
@@ -132,8 +130,8 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     }
   }
 
-  /** derive property types based on the runtime class note: this ignores the edge case that there may be different
-    * runtime types for the same property
+  /** derive property types based on the runtime class note: this ignores the edge case that there may be different runtime types for the
+    * same property
     */
   private def deriveNeo4jType(value: Any): ColumnDef = {
     def deriveNeo4jTypeForArray(iteratorAccessor: Any => Iterable[_]): ArrayColumnDef = {

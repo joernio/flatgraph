@@ -9,8 +9,8 @@ import scala.util.Using
 
 /** Exports flatgraph to graphviz dot/gv file
   *
-  * Note: GraphML doesn't natively support list property types, so we fake it by encoding it as a `;` delimited string.
-  * If you import this into a different database, you'll need to parse that separately.
+  * Note: GraphML doesn't natively support list property types, so we fake it by encoding it as a `;` delimited string. If you import this
+  * into a different database, you'll need to parse that separately.
   *
   * https://en.wikipedia.org/wiki/DOT_(graph_description_language) https://www.graphviz.org/doc/info/lang.html
   * http://magjac.com/graphviz-visual-editor/ https://www.slideshare.net/albazo/graphiz-using-the-dot-language
@@ -18,9 +18,8 @@ import scala.util.Using
 object DotExporter extends Exporter {
   override def defaultFileExtension = "dot"
 
-
   override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
-    val outFile = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
+    val outFile              = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
     var nodeCount, edgeCount = 0
 
     Using.resource(Files.newBufferedWriter(outFile)) { writer =>
@@ -37,9 +36,15 @@ object DotExporter extends Exporter {
           .append("  ")
           .append(node.id)
           .append(s"[label=${node.label} ")
-          .append(Accessors.getNodeProperties(node).iterator.map { case (key, value) =>
-            s"$key=${encodePropertyValue(value)}"
-          }.mkString(" "))
+          .append(
+            Accessors
+              .getNodeProperties(node)
+              .iterator
+              .map { case (key, value) =>
+                s"$key=${encodePropertyValue(value)}"
+              }
+              .mkString(" ")
+          )
           .append("]")
         writeLine(line.toString)
       }
@@ -60,12 +65,7 @@ object DotExporter extends Exporter {
       writeLine("}")
     }
 
-    ExportResult(
-      nodeCount = nodeCount,
-      edgeCount = edgeCount,
-      files = Seq(outFile),
-      additionalInfo = None
-    )
+    ExportResult(nodeCount = nodeCount, edgeCount = edgeCount, files = Seq(outFile), additionalInfo = None)
   }
 
   private def encodePropertyValue(value: Any): String = {
@@ -73,7 +73,7 @@ object DotExporter extends Exporter {
       case value: String =>
         val escaped = value
           .replace("""\""", """\\""") // escape escape chars - this should come first
-          .replace("\"", "\\\"") // escape double quotes, because we use them to enclose strings
+          .replace("\"", "\\\"")      // escape double quotes, because we use them to enclose strings
         s"\"$escaped\""
       case list if iterableForList.isDefinedAt(list) =>
         val values = iterableForList(list).mkString(";")

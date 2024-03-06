@@ -12,7 +12,8 @@ import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
 class GraphMLTests extends AnyWordSpec {
 
   "import minified gratefuldead graph" in {
-    ??? // TODO
+    pending
+//    ??? // TODO
 //    val graph = GratefulDead.newGraph()
 //    graph.nodeCount() shouldBe 0
 //

@@ -12,7 +12,7 @@ class DiffToolTests extends AnyWordSpec {
 
   "detects zero changes for the same (identity) graph" in {
     val graph = makeSampleGraph()
-    val diff = DiffTool.compare(graph, graph)
+    val diff  = DiffTool.compare(graph, graph)
     withClue(s"$diff size") {
       diff.size() shouldBe 0
     }
@@ -21,7 +21,7 @@ class DiffToolTests extends AnyWordSpec {
   "detects zero changes for the same (equality) graph" in {
     val graph0 = makeSampleGraph()
     val graph1 = makeSampleGraph()
-    val diff = DiffTool.compare(graph0, graph1)
+    val diff   = DiffTool.compare(graph0, graph1)
     withClue(s"$diff size") {
       diff.size() shouldBe 0
     }
@@ -31,9 +31,9 @@ class DiffToolTests extends AnyWordSpec {
     val graph0 = makeSampleGraph()
     val graph1 = {
       val graph = makeSampleGraph()
-      val v0 = graph.node(0, 0)
-      val v1 = graph.node(0, 1)
-      val e = Accessors.getEdgesOut(v0).head
+      val v0    = graph.node(0, 0)
+      val v1    = graph.node(0, 1)
+      val e     = Accessors.getEdgesOut(v0).head
       DiffGraphApplier.applyDiff(
         graph,
         new DiffGraphBuilder(graph0.schema)
@@ -61,8 +61,8 @@ class DiffToolTests extends AnyWordSpec {
     val graph0 = makeSampleGraph()
     val graph1 = {
       val graph = makeSampleGraph()
-      val v0 = graph.node(0, 0)
-      val e = Accessors.getEdgesOut(v0).head
+      val v0    = graph.node(0, 0)
+      val e     = Accessors.getEdgesOut(v0).head
       DiffGraphApplier.applyDiff(graph, new DiffGraphBuilder(graph0.schema).removeEdge(e))
       graph
     }
@@ -78,7 +78,7 @@ class DiffToolTests extends AnyWordSpec {
     val graph0 = makeSampleGraph()
     val graph1 = {
       val graph = makeSampleGraph()
-      val v0 = graph.node(0, 0)
+      val v0    = graph.node(0, 0)
       DiffGraphApplier.applyDiff(graph, new DiffGraphBuilder(graph0.schema).removeNode(v0))
       graph
     }

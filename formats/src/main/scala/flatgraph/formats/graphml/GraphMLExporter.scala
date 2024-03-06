@@ -12,9 +12,9 @@ import scala.xml.{PrettyPrinter, XML}
 
 /** Exports OverflowDB Graph to GraphML
   *
-  * Warning: list properties are not natively supported by graphml... We initially built some support for those which
-  * deviated from the spec, but given that other tools don't support it, some refusing to import the remainder, we've
-  * dropped it. Now, lists are serialised to `;`-separated strings.
+  * Warning: list properties are not natively supported by graphml... We initially built some support for those which deviated from the
+  * spec, but given that other tools don't support it, some refusing to import the remainder, we've dropped it. Now, lists are serialised to
+  * `;`-separated strings.
   *
   * https://en.wikipedia.org/wiki/GraphML http://graphml.graphdrawing.org/primer/graphml-primer.html
   */
@@ -23,9 +23,9 @@ object GraphMLExporter extends Exporter {
   override def defaultFileExtension = "xml"
 
   override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
-    val outFile = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
-    val nodePropertyContextById = mutable.Map.empty[String, PropertyContext]
-    val edgePropertyContextById = mutable.Map.empty[String, PropertyContext]
+    val outFile                    = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
+    val nodePropertyContextById    = mutable.Map.empty[String, PropertyContext]
+    val edgePropertyContextById    = mutable.Map.empty[String, PropertyContext]
     val discardedListPropertyCount = new AtomicInteger(0)
 
     val nodeEntries = nodes.iterator.map { node =>
@@ -82,48 +82,43 @@ object GraphMLExporter extends Exporter {
           s"warning: discarded $count list properties (because they are not supported by the graphml spec)"
         }
 
-    ExportResult(
-      nodeCount = nodeEntries.size,
-      edgeCount = edgeEntries.size,
-      files = Seq(outFile),
-      additionalInfo
-    )
+    ExportResult(nodeCount = nodeEntries.size, edgeCount = edgeEntries.size, files = Seq(outFile), additionalInfo)
   }
 
-  /** warning: updates type information based on runtime instances (in mutable.Map `propertyTypeByName`) 
-   * warning2: updated the `discardedListPropertyCount` counter - if we need to discard any list properties, 
-   * display a warning to the user 
-   **/
+  /** warning: updates type information based on runtime instances (in mutable.Map `propertyTypeByName`) warning2: updated the
+    * `discardedListPropertyCount` counter - if we need to discard any list properties, display a warning to the user
+    */
   private def dataEntries(
-     prefix: String,
-     elementLabel: String,
-     properties: IterableOnce[(String, Any)],
-     propertyContextById: mutable.Map[String, PropertyContext],
-     discardedListPropertyCount: AtomicInteger
-   ): String = {
-    properties.iterator.map { case (propertyName, propertyValue) =>
-      if (isList(propertyValue.getClass)) {
-        discardedListPropertyCount.incrementAndGet()
-        "" // discard list properties
-      } else { // scalar value
-        val encodedPropertyName = s"${prefix}__${elementLabel}__$propertyName"
-        val graphMLTpe = Type.fromRuntimeClass(propertyValue.getClass)
+    prefix: String,
+    elementLabel: String,
+    properties: IterableOnce[(String, Any)],
+    propertyContextById: mutable.Map[String, PropertyContext],
+    discardedListPropertyCount: AtomicInteger
+  ): String = {
+    properties.iterator
+      .map { case (propertyName, propertyValue) =>
+        if (isList(propertyValue.getClass)) {
+          discardedListPropertyCount.incrementAndGet()
+          ""     // discard list properties
+        } else { // scalar value
+          val encodedPropertyName = s"${prefix}__${elementLabel}__$propertyName"
+          val graphMLTpe          = Type.fromRuntimeClass(propertyValue.getClass)
 
-        /* update type information based on runtime instances */
-        if (!propertyContextById.contains(encodedPropertyName)) {
-          propertyContextById.update(encodedPropertyName, PropertyContext(propertyName, graphMLTpe))
+          /* update type information based on runtime instances */
+          if (!propertyContextById.contains(encodedPropertyName)) {
+            propertyContextById.update(encodedPropertyName, PropertyContext(propertyName, graphMLTpe))
+          }
+          val xmlEncoded = xml.Utility.escape(propertyValue.toString)
+          s"""<data key="$encodedPropertyName">$xmlEncoded</data>"""
         }
-        val xmlEncoded = xml.Utility.escape(propertyValue.toString)
-        s"""<data key="$encodedPropertyName">$xmlEncoded</data>"""
       }
-    }
-    .mkString(lineSeparator)
+      .mkString(lineSeparator)
   }
-  
+
   private def xmlFormatInPlace(xmlFile: Path): Unit = {
-    val xml = XML.loadFile(xmlFile.toFile)
+    val xml           = XML.loadFile(xmlFile.toFile)
     val prettyPrinter = new PrettyPrinter(120, 2)
-    val formatted = prettyPrinter.format(xml)
+    val formatted     = prettyPrinter.format(xml)
     writeFile(xmlFile, formatted)
   }
 
