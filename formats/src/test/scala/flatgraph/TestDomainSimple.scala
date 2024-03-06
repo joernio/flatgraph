@@ -12,6 +12,7 @@ object TestDomainSimple {
     val StringListProperty = "StringListProperty"
     val IntProperty = "IntProperty"
     val IntListProperty = "IntListProperty"
+    val ContainedTestNodeProperty = "ContainedTestNodeProperty"
   }
   
   val schema = new FreeSchema(
@@ -21,8 +22,10 @@ object TestDomainSimple {
       PropertyNames.StringProperty, 
       PropertyNames.StringListProperty, 
       PropertyNames.IntProperty, 
-      PropertyNames.IntListProperty),
-    nodePropertyPrototypes = Array(Array.empty[String], Array.empty[String], Array.emptyIntArray, Array.emptyIntArray),
+      PropertyNames.IntListProperty,
+      PropertyNames.ContainedTestNodeProperty,
+    ),
+    nodePropertyPrototypes = Array(Array.empty[String], Array.empty[String], Array.emptyIntArray, Array.emptyIntArray, Array.empty[GNode]),
     edgePropertyPrototypes = Array(Array.emptyLongArray),
   )
   

@@ -1,14 +1,16 @@
 package flatgraph.formats.graphson
 
 import better.files.File
+import flatgraph.GenericDNode
 import flatgraph.TestDomainSimple.*
+import flatgraph.TestDomainSimple.PropertyNames.{ContainedTestNodeProperty, IntListProperty, IntProperty, StringListProperty, StringProperty}
+import flatgraph.misc.TestUtils.applyDiff
+import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-import flatgraph.util.DiffTool
 
 import java.lang.System.lineSeparator
-import java.nio.file.Paths
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class GraphSONTests extends AnyWordSpec {
 
@@ -36,28 +38,35 @@ class GraphSONTests extends AnyWordSpec {
   }
 
   "using 'contained node' property" in {
-    ???
-//      val graph = SimpleDomain.newGraph()
-//
-//      val node1 = graph.addNode(1, TestNode.LABEL)
-//      graph.addNode(2, TestNode.LABEL, TestNode.CONTAINED_TESTNODE_PROPERTY, node1, TestNode.INT_PROPERTY, 11)
-//
-//      File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
-//        val exportResult = GraphSONExporter.runExport(graph, exportRootDirectory.pathAsString)
-//        exportResult.nodeCount shouldBe 2
-//        val Seq(graphJsonFile) = exportResult.files
-//
-//        // import graphml into new graph, use difftool for round trip of conversion
-//        val reimported = SimpleDomain.newGraph()
-//        GraphSONImporter.runImport(reimported, graphJsonFile)
-//        val diff = DiffTool.compare(graph, reimported)
-//        val diffString = diff.asScala.mkString(lineSeparator)
-//        withClue(
-//          s"original graph contained two list properties, these should also be present in reimported graph $diffString $lineSeparator"
-//        ) {
-//          diff.size shouldBe 0
-//        }
-//      }
+    val graph = newGraphEmpty()
+    val v0New = new GenericDNode(0)
+    val v1New = new GenericDNode(0)
+
+    graph.applyDiff(_.addNode(v0New).addNode(v1New))
+    val v0 = v0New.storedRef.get
+    val v1 = v1New.storedRef.get
+
+    graph.applyDiff(_
+      .setNodeProperty(v1, ContainedTestNodeProperty, v0)
+      .setNodeProperty(v1, IntProperty, 11)
+    )
+
+    File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
+      val exportResult = GraphSONExporter.runExport(graph, exportRootDirectory.pathAsString)
+      exportResult.nodeCount shouldBe 2
+      val Seq(graphJsonFile) = exportResult.files
+
+      // import graphml into new graph, use difftool for round trip of conversion
+      val reimported = newGraphEmpty()
+      GraphSONImporter.runImport(reimported, graphJsonFile)
+      val diff = DiffTool.compare(graph, reimported)
+      val diffString = diff.asScala.mkString(lineSeparator)
+      withClue(
+        s"original graph contained two properties, these should also be present in reimported graph $diffString $lineSeparator"
+      ) {
+        diff.size shouldBe 0
+      }
+    }
   }
 
 }

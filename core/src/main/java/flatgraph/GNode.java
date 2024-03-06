@@ -55,6 +55,14 @@ public class GNode implements DNodeOrNode {
         return Objects.hash(graph, nodeKind, _seqId);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GNode gNode = (GNode) o;
+        return nodeKind == gNode.nodeKind && _seqId == gNode._seqId;
+    }
+
     /** Combines the (32 bit) integer values `nodeKind` and `seq` into one (64 bit) long `id`.
      * Reverse: `computeKindAndSeq` */
     public static long computeId(int nodeKind, int seq) {

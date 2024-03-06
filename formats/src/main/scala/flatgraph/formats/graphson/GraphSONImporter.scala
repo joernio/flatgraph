@@ -60,10 +60,17 @@ object GraphSONImporter extends Importer {
     graphsonNodeIdToGNode.get(graphsonNodeId).getOrElse(throw new ConversionException(s"node with id=$graphsonNodeId not found in graph"))
 
   private def extractPropertyValue(property: Property, graphsonNodeIdToGNode: Map[Long, GNode]): Any = {
+    def handleSingle(value: PropertyValue): Any = {
+      value match {
+        case NodeIdValue(value, _) => lookupGNode(value, graphsonNodeIdToGNode)
+        case value                 => value.`@value`
+      }
+    }
+
+    // handle list
     property.`@value` match {
-      case ListValue(value, _)   => value.map(_.`@value`)
-      case NodeIdValue(value, _) => lookupGNode(value, graphsonNodeIdToGNode)
-      case x                     => x.`@value`
+      case ListValue(values, _) => values.map(handleSingle)
+      case value                => handleSingle(value)
     }
   }
 
