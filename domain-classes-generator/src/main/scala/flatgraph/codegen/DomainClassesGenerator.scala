@@ -601,6 +601,20 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.result()
       }
 
+      val nodePropertyDefaultsImpl = {
+        val cases = for {
+          (node, nodeKind) <- nodeTypes.zipWithIndex
+          property <- node.properties
+          default <- property.default
+          propertyKind = propertyKindByProperty(property)
+        } yield s"if (nodeKind == $nodeKind && propertyKind == $propertyKind) { ${Helpers.defaultValueImpl(default)} }"
+
+        s"""override def getNodePropertyDefault(nodeKind: Int, propertyKind: Int): Any = {
+           |  ${cases.mkString("\nelse ")}
+           |  else null
+           |}""".stripMargin
+      }
+
       s"""package $basePackage
          |import $basePackage.nodes
          |import $basePackage.edges
@@ -617,8 +631,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
-         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource
-          .mkString("\n")}
+         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource.mkString("\n")}
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
@@ -638,6 +651,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
          |  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
          |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
+         |  $nodePropertyDefaultsImpl
          |}""".stripMargin
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)

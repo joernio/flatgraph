@@ -128,6 +128,7 @@ abstract class Schema {
   def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_]
   def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType
   def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity
+  def getNodePropertyDefault(nodeKind: Int, propertyKind: Int): Any
 }
 
 class FreeSchema(
@@ -181,5 +182,8 @@ class FreeSchema(
       case _                         => FormalQtyType.QtyMulti
     }
     else formalqtys(propertyOffsetArrayIndex(nodeKind, propertyKind))
+    
+  override def getNodePropertyDefault(nodeKind: Int, propertyKind: Int): Any =
+    null
 
 }
