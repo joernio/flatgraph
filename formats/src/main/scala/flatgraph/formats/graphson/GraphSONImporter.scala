@@ -2,12 +2,13 @@ package flatgraph.formats.graphson
 
 import flatgraph.formats.Importer
 import flatgraph.formats.graphson.GraphSONProtocol.*
+import flatgraph.misc.ConversionException
 import flatgraph.misc.Conversions.toShortSafely
-import flatgraph.misc.TestUtils.applyDiff
-import flatgraph.{GenericDNode, Graph}
+import flatgraph.*
 import spray.json.*
 
 import java.nio.file.Path
+import scala.collection.mutable
 import scala.io.Source.fromFile
 import scala.util.Using
 
@@ -20,56 +21,63 @@ object GraphSONImporter extends Importer {
     assert(inputFiles.size == 1, s"input must be exactly one file, but got ${inputFiles.size}")
     Using.resource(fromFile(inputFiles.head.toFile)) { source =>
       val graphSON = source.mkString.parseJson.convertTo[GraphSON]
-      graphSON.`@value`.vertices.foreach(n => addNode(n, graph))
-      graphSON.`@value`.edges.foreach(e => addEdge(e, graph))
-    }
-  }
 
-  private def addNode(vertex: Vertex, graph: Graph): Unit = {
-    val schema = graph.schema
+      val graphsonNodes = graphSON.`@value`.vertices
+      val graphsonNodeIdToGNode = addNodesRaw(graphsonNodes, graph)
 
-    val dnode = new GenericDNode(schema.getNodeKindByLabel(vertex.label).toShortSafely)
-    // todo: store the graphson id as a node property: vertex.id
-    graph.applyDiff(_.addNode(dnode))
-    val gnode = dnode.storedRef.get
-
-    if (vertex.properties.nonEmpty) {
-      graph.applyDiff { builder =>
-        vertex.properties.foreach { case (name, property) =>
-          builder.setNodeProperty(gnode, name, extractPropertyValue(property))
+      val diffGraph = new DiffGraphBuilder(graph.schema)
+      // add vertex properties
+      graphSON.`@value`.vertices.foreach { graphsonNode =>
+        val graphsonNodeId = graphsonNode.id.`@value`
+        lazy val gNode = lookupGNode(graphsonNodeId, graphsonNodeIdToGNode)
+        graphsonNode.properties.foreach { case (name, property) =>
+          diffGraph.setNodeProperty(gNode, name, extractPropertyValue(property, graphsonNodeIdToGNode))
         }
       }
+
+      graphSON.`@value`.edges.foreach { edge =>
+        val src = lookupGNode(edge.outV.`@value`, graphsonNodeIdToGNode)
+        val tgt = lookupGNode(edge.inV.`@value`, graphsonNodeIdToGNode)
+        diffGraph.addEdge(src, tgt, edge.label, flattenProperties(edge.properties, graphsonNodeIdToGNode))
+      }
+      DiffGraphApplier.applyDiff(graph, diffGraph)
     }
   }
 
-  private def extractPropertyValue(property: Property): Any = {
+  private def addNodesRaw(graphsonNodes: Seq[Vertex], graph: Graph): Map[Long, GNode] = {
+    val diffGraphForRawNodes = new DiffGraphBuilder(graph.schema)
+    val graphsonNodeIdToGNode = mutable.Map.empty[Long, GenericDNode]
+    graphsonNodes.foreach { graphsonNode =>
+      val newNode = new GenericDNode(graph.schema.getNodeKindByLabel(graphsonNode.label).toShortSafely)
+      diffGraphForRawNodes.addNode(newNode)
+      graphsonNodeIdToGNode.put(graphsonNode.id.`@value`, newNode)
+    }
+    DiffGraphApplier.applyDiff(graph, diffGraphForRawNodes)
+    graphsonNodeIdToGNode.view.mapValues(_.storedRef.get).toMap
+  }
+
+  private def lookupGNode(graphsonNodeId: Long, graphsonNodeIdToGNode: Map[Long, GNode]) =
+    graphsonNodeIdToGNode.get(graphsonNodeId).getOrElse(throw new ConversionException(s"node with id=$graphsonNodeId not found in graph"))
+
+  private def extractPropertyValue(property: Property, graphsonNodeIdToGNode: Map[Long, GNode]): Any = {
     property.`@value` match {
       case ListValue(value, _)   => value.map(_.`@value`)
-      case NodeIdValue(value, _) => ??? // graph.node(value) // TODO
+      case NodeIdValue(value, _) => lookupGNode(value, graphsonNodeIdToGNode)
       case x                     => x.`@value`
     }
   }
 
-  private def flattenProperties(m: Map[String, Property], graph: Graph): Array[_] = {
-    // TODO reimplement or drop
-    ???
-//    m.view
-//      .mapValues { v =>
-//        v.`@value` match {
-//          case ListValue(value, _)   => value.map(_.`@value`)
-//          case NodeIdValue(value, _) => graph.node(value)
-//          case x                     => x.`@value`
-//        }
-//      }
-//      .flatMap { case (k, v) => Seq(k, v) }
-//      .toArray
+  /** flatgraph can only store a single edge property - that however may be a list... */
+  private def flattenProperties(properties: Map[String, Property], graphsonNodeIdToGNode: Map[Long, GNode]): Any = {
+    properties.view.map(_._2.`@value`).map {
+      case ListValue(value, _) => value.map(_.`@value`)
+      case NodeIdValue(value, _) => lookupGNode(value, graphsonNodeIdToGNode)
+      case x => x.`@value`
+    }.toList match {
+      case Nil => null
+      case List(singleValue) => singleValue
+      case multipleValues => multipleValues
+    }
   }
 
-  private def addEdge(edge: Edge, graph: Graph): Unit = {
-    val src = graph.node(edge.outV.`@value`)
-    val tgt = graph.node(edge.inV.`@value`)
-    // TODO we need to store the ids from graphml in a graph property and look them up here
-//    src.addEdge(e.label, tgt, flattenProperties(e.properties, graph): _*)
-    ???
-  }
 }
