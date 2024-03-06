@@ -8,11 +8,6 @@ final class DefaultValue(val default: Any)
 
 object Schema {
   val UndefinedKind: Short = -1
-
-  // TODO drop me
-  val xxxx = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](1111)
-  xxxx(0) = FormalQtyType.QtyOne
-  xxxx(1) = FormalQtyType.IntType
 }
 
 object FormalQtyType {
