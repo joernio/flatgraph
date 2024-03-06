@@ -15,7 +15,7 @@ sbt scalafmt Test/scalafmt
 - [x] Full support for self-edges; neighbor order is well-defined
 - [x] Support node properties
 - [x] Support a single optional edge property
-- [ ] Support file IO
+- [x] Support file IO
 - [ ] Version counters for stuff like iterator invalidation
 
 ## Performance and memory features
