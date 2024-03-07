@@ -14,17 +14,17 @@ package object graphml {
     val String  = Value("string")
 
     def fromRuntimeClass(clazz: Class[_]): Type.Value = {
-      if (clazz.isAssignableFrom(classOf[Boolean]) || clazz.isAssignableFrom(classOf[java.lang.Boolean]))
+      if (clazz == classOf[Boolean] || clazz == classOf[java.lang.Boolean])
         Type.Boolean
-      else if (clazz.isAssignableFrom(classOf[Int]) || clazz.isAssignableFrom(classOf[Integer]))
+      else if (clazz == classOf[Int] || clazz == classOf[Integer])
         Type.Int
-      else if (clazz.isAssignableFrom(classOf[Long]) || clazz.isAssignableFrom(classOf[java.lang.Long]))
+      else if (clazz == classOf[Long] || clazz == classOf[java.lang.Long])
         Type.Long
-      else if (clazz.isAssignableFrom(classOf[Float]) || clazz.isAssignableFrom(classOf[java.lang.Float]))
+      else if (clazz == classOf[Float] || clazz == classOf[java.lang.Float])
         Type.Float
-      else if (clazz.isAssignableFrom(classOf[Double]) || clazz.isAssignableFrom(classOf[java.lang.Double]))
+      else if (clazz == classOf[Double] || clazz == classOf[java.lang.Double])
         Type.Double
-      else if (clazz.isAssignableFrom(classOf[String]))
+      else if (clazz == classOf[String])
         Type.String
       else
         throw new AssertionError(s"unsupported runtime class `$clazz` - only ${Type.values.mkString("|")} are supported...}")
