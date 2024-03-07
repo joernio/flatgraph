@@ -160,6 +160,16 @@ object Accessors {
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
+  def getNodeProperties(node: GNode): IterableOnce[(String, AnyRef)] = {
+    val schema = node.graph.schema
+    for {
+      propertyKind <- Range(0, schema.getNumberOfProperties)
+      property = Accessors.getNodeProperty(node, propertyKind)
+      if property.nonEmpty
+      propertyLabel = schema.getPropertyLabel(node.nodeKind, propertyKind)
+    } yield propertyLabel -> property
+  }
+
   def getInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): MultiDictIndex[GNode] = {
     val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     graph.inverseIndices.get(pos) match {

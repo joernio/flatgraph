@@ -2,6 +2,7 @@ package flatgraph
 
 import flatgraph.TestHelpers.withTemporaryFile
 import flatgraph.misc.DebugDump.debugDump
+import flatgraph.misc.Conversions.toShortSafely
 import flatgraph.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers.shouldBe
 
@@ -10,7 +11,7 @@ import scala.util.Try
 
 object TestHelpers {
   def createTestNode(nodeKind: Int = 0, seqId: Int = 0): GNode =
-    GNode(null, 0, 0)
+    GNode(null, nodeKind.toShortSafely, seqId)
 
   val DummyTestNode = createTestNode()
 
@@ -42,15 +43,12 @@ object TestSchema {
   }
 
   def testSerialization(graph: Graph): Unit = {
-    val orig = debugDump(graph)
+    val originalDump = debugDump(graph)
     withTemporaryFile(s"flatgraph-${getClass.getSimpleName}", "fg") { storagePath =>
       Serialization.writeGraph(graph, storagePath)
       val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
-      val newdump      = debugDump(deserialized)
-      //    if (newdump != orig) {
-      //      1 + 1 // for easier breakpoints
-      //    }
-      orig shouldBe newdump
+      val newDump      = debugDump(deserialized)
+      originalDump shouldBe newDump
     }
   }
 
