@@ -157,26 +157,26 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     }
   }
 
-  private def deriveNeo4jTypeForScalarValue(tpe: Class[_]): ColumnType.Value = {
-    if (tpe.isAssignableFrom(classOf[String]))
+  private def deriveNeo4jTypeForScalarValue(clazz: Class[_]): ColumnType.Value = {
+    if (clazz == classOf[String])
       ColumnType.String
-    else if (tpe.isAssignableFrom(classOf[Int]) || tpe.isAssignableFrom(classOf[Integer]))
+    else if (clazz == classOf[Int] || clazz == classOf[Integer])
       ColumnType.Int
-    else if (tpe.isAssignableFrom(classOf[Long]) || tpe.isAssignableFrom(classOf[java.lang.Long]))
+    else if (clazz == classOf[Long] || clazz == classOf[java.lang.Long])
       ColumnType.Long
-    else if (tpe.isAssignableFrom(classOf[Float]) || tpe.isAssignableFrom(classOf[java.lang.Float]))
+    else if (clazz == classOf[Float] || clazz == classOf[java.lang.Float])
       ColumnType.Float
-    else if (tpe.isAssignableFrom(classOf[Double]) || tpe.isAssignableFrom(classOf[java.lang.Double]))
+    else if (clazz == classOf[Double] || clazz == classOf[java.lang.Double])
       ColumnType.Double
-    else if (tpe.isAssignableFrom(classOf[Boolean]) || tpe.isAssignableFrom(classOf[java.lang.Boolean]))
+    else if (clazz == classOf[Boolean] || clazz == classOf[java.lang.Boolean])
       ColumnType.Boolean
-    else if (tpe.isAssignableFrom(classOf[Byte]) || tpe.isAssignableFrom(classOf[java.lang.Byte]))
+    else if (clazz == classOf[Byte] || clazz == classOf[java.lang.Byte])
       ColumnType.Byte
-    else if (tpe.isAssignableFrom(classOf[Short]) || tpe.isAssignableFrom(classOf[java.lang.Short]))
+    else if (clazz == classOf[Short] || clazz == classOf[java.lang.Short])
       ColumnType.Short
-    else if (tpe.isAssignableFrom(classOf[Char]))
+    else if (clazz == classOf[Char])
       ColumnType.Char
     else
-      throw new NotImplementedError(s"unable to derive a Neo4j type for given runtime type $tpe")
+      throw new NotImplementedError(s"unable to derive a Neo4j type for given runtime type $clazz")
   }
 }
