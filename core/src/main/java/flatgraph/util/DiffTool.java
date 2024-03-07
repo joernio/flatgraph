@@ -65,11 +65,11 @@ public class DiffTool {
     if (value1 != null && value2 != null) {
       if (value1 instanceof IterableOnce<?> && value2 instanceof IterableOnce<?>) {
         if (!iterablesEqual((IterableOnce<?>) value1, (IterableOnce<?>) value2)) {
-          diff.add(String.format("%s; IterableOnce property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
+          diff.add(String.format("%s; property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
         }
       } else if (value1.getClass().isArray() && value2.getClass().isArray()) { // both values are arrays
         if (!arraysEqual(value1, value2)) {
-          diff.add(String.format("%s; array property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
+          diff.add(String.format("%s; property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
         }
       } else if (!value1.equals(value2)) { // not both values are arrays
         diff.add(String.format("%s; property '%s' has different values: graph1='%s', graph2='%s'", context, key, value1, value2));
@@ -100,6 +100,8 @@ public class DiffTool {
         if ((node1.nodeKind != node2.nodeKind) || node1.seq() != node2.seq()) {
           return false;
         }
+      } else if (!value1.equals(value2)) {
+        return false;
       }
     }
     return true;
