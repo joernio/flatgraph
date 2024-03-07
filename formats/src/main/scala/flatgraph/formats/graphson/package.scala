@@ -41,11 +41,11 @@ package object graphson {
     implicit def name(x: GraphSONVal): String = x.typ
   }
 
-  case class GraphSON(`@value`: GraphSONElements, `@type`: String)  derives ReadWriter
+  case class GraphSON(`@value`: GraphSONElements, `@type`: String)  
 
-  case class GraphSONElements(vertices: Seq[Vertex], edges: Seq[Edge])  derives ReadWriter
+  case class GraphSONElements(vertices: Seq[Vertex], edges: Seq[Edge])  
 
-  case class Vertex(id: LongValue, label: String, properties: Map[String, Property], `@type`: String)  derives ReadWriter
+  case class Vertex(id: LongValue, label: String, properties: Map[String, Property], `@type`: String)  
 
   case class Edge(
     id: LongValue,
@@ -55,29 +55,31 @@ package object graphson {
     inV: LongValue,
     outV: LongValue,
     properties: Map[String, Property],
-    `@type`: String) derives ReadWriter
+    `@type`: String) 
 
-  sealed trait PropertyValue derives ReadWriter {
+  sealed trait PropertyValue  {
     def `@value`: Any
     def `@type`: String
   }
 
-  case class StringValue(override val `@value`: String, `@type`: String = Type.String.typ) extends PropertyValue derives ReadWriter
+  case class StringValue(override val `@value`: String, `@type`: String = Type.String.typ) extends PropertyValue 
 
-  case class BooleanValue(override val `@value`: Boolean, `@type`: String = Type.Boolean.typ) extends PropertyValue  derives ReadWriter
+  case class BooleanValue(override val `@value`: Boolean, `@type`: String = Type.Boolean.typ) extends PropertyValue  
 
-  case class LongValue(override val `@value`: Long, `@type`: String = Type.Long.typ) extends PropertyValue  derives ReadWriter
+  // TODO revert
+//  case class LongValue(override val `@value`: Long, `@type`: String = Type.Long.typ) extends PropertyValue
+  case class LongValue(override val `@value`: Long, `@type`: String = Type.Long.typ) extends PropertyValue
 
-  case class IntValue(override val `@value`: Int, `@type`: String = Type.Int.typ) extends PropertyValue  derives ReadWriter
+  case class IntValue(override val `@value`: Int, `@type`: String = Type.Int.typ) extends PropertyValue  
 
-  case class DoubleValue(override val `@value`: Double, `@type`: String = Type.Double.typ) extends PropertyValue  derives ReadWriter
+  case class DoubleValue(override val `@value`: Double, `@type`: String = Type.Double.typ) extends PropertyValue  
 
-  case class FloatValue(override val `@value`: Float, `@type`: String = Type.Float.typ) extends PropertyValue  derives ReadWriter
+  case class FloatValue(override val `@value`: Float, `@type`: String = Type.Float.typ) extends PropertyValue  
 
-  case class ListValue(override val `@value`: Array[PropertyValue], `@type`: String = Type.List.typ) extends PropertyValue derives ReadWriter
+  case class ListValue(override val `@value`: Array[PropertyValue], `@type`: String = Type.List.typ) extends PropertyValue 
 
-  case class NodeIdValue(override val `@value`: Long, `@type`: String = Type.NodeId.typ) extends PropertyValue  derives ReadWriter
+  case class NodeIdValue(override val `@value`: Long, `@type`: String = Type.NodeId.typ) extends PropertyValue  
 
-  case class Property(id: LongValue, `@value`: PropertyValue, `@type`: String = "g:Property") derives ReadWriter
+  case class Property(id: LongValue, `@value`: PropertyValue, `@type`: String = "g:Property") 
 
 }

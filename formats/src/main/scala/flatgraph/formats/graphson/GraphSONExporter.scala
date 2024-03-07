@@ -61,17 +61,39 @@ object GraphSONExporter extends Exporter {
     println(s"spray json: $outFile")
 //    println(json.prettyPrint)
 
-    val json2 = upickle.default.write(graphSON, indent = 2)
-    val outFile2 = outFile.resolveSibling("export.ujson")
-    println(s"ujson: $outFile2")
-    writeFile(outFile2, json2)
-
+//    val json2 = upickle.default.write(graphSON, indent = 2)
+//    val outFile2 = outFile.resolveSibling("export.ujson")
+//    println(s"ujson: $outFile2")
+//    writeFile(outFile2, json2)
 //    println(json2)
+    object picklers {
 
-    val json3 = upickle.default.write(GraphSON(
-      GraphSONElements(Seq.empty, Seq.empty), "tinker:graph"
-    ), indent = 2)
-    println(json3)
+      import upickle.default.*
+
+      given ReadWriter[LongValue] = readwriter[ujson.Value].bimap[LongValue](
+        value => ujson.Obj("@type" -> value.`@type`, "@value" -> ujson.Num(value.`@value`)),
+        json => LongValue(json("@value").num.toInt)
+      )
+
+      given ReadWriter[IntValue] = readwriter[ujson.Value].bimap[IntValue](
+        value => ujson.Obj("@type" -> value.`@type`, "@value" -> ujson.Num(value.`@value`)),
+        json => ???
+      )
+    }
+    import picklers.given
+
+    println(implicitly[JsonWriter[LongValue]].write(LongValue(32)))
+    val written = upickle.default.write(LongValue(34))
+    println(written)
+    println(upickle.default.read[LongValue](written))
+//    println(upickle.default.write(IntValue(35)))
+
+
+    //    println(upickle.default.write(Vertex(), indent = 2))
+
+//    println(upickle.default.write(GraphSON(
+//      GraphSONElements(Seq.empty, Seq.empty), "tinker:graph"
+//    ), indent = 2))
 
     ExportResult(nodeCount = nodeEntries.size, edgeCount = edgeEntries.size, files = Seq(outFile), Option.empty)
   }
