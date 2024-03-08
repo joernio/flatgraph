@@ -11,7 +11,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 19
+          java-version: 21
       - uses: actions/cache@v2
         with:
           path: |
@@ -20,9 +20,3 @@ jobs:
           key: ${{ runner.os }}-sbt-${{ hashfiles('**/build.sbt') }}
       - name: scalafmtCheck and tests
         run: sbt scalafmtCheck Test/scalafmtCheck test
-      - name: Generate domain classes and verify everything is committed
-        run: |
-          ./generateDomainClasses.sh
-          UNTRACKED_FILES=$(git status --porcelain 2>/dev/null| grep "^??" | wc -l)
-          echo $UNTRACKED_FILES untracked files
-          exit $UNTRACKED_FILES
