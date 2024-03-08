@@ -173,3 +173,16 @@ ThisBuild / compile / javacOptions ++= Seq(
 
 Global / cancelable           := true
 Global / onChangedBuildSource := ReloadOnSourceChanges
+
+ThisBuild / publishTo := sonatypePublishToBundle.value
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / scmInfo := Some(
+  ScmInfo(url("https://github.com/joernio/flatgraph"), "scm:git@github.com:joernio/flatgraph.git")
+)
+ThisBuild / homepage := Some(url("https://github.com/joernio/flatgraph/"))
+
+ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+ThisBuild / developers := List(
+  Developer("bbrehm", "Bernhard Brehm", "bernhard@shiftleft.io", url("https://github.com/bbrehm")),
+  Developer("mpollmeier", "Michael Pollmeier", "michael@michaelpollmeier.com", url("http://www.michaelpollmeier.com"))
+)
