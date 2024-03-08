@@ -89,11 +89,11 @@ lazy val sbtPlugin = project
   )
 
 lazy val odbConvert = project
-  .in(file("flatgraph-odb-convert"))
+  .in(file("odb-convert"))
   .dependsOn(core)
   .enablePlugins(JavaAppPackaging)
   .settings(
-    name := "odb-convert",
+    name := "flatgraph-odb-convert",
     libraryDependencies ++= Seq(
       "io.shiftleft" %% "overflowdb-core" % "1.181",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
