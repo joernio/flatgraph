@@ -778,6 +778,14 @@ object Accessors {
       case stored: nodes.StoredNode   => new Access_Property_NAME(stored).name
       case newNode: nodes.NewTypeDecl => newNode.name
     }
+    def offset: Option[Int] = node match {
+      case stored: nodes.StoredNode   => new Access_Property_OFFSET(stored).offset
+      case newNode: nodes.NewTypeDecl => newNode.offset
+    }
+    def offsetEnd: Option[Int] = node match {
+      case stored: nodes.StoredNode   => new Access_Property_OFFSET_END(stored).offsetEnd
+      case newNode: nodes.NewTypeDecl => newNode.offsetEnd
+    }
   }
   final class Access_TypeParameterBase(val node: nodes.TypeParameterBase) extends AnyVal {
     def name: String = node match {

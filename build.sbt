@@ -100,6 +100,21 @@ lazy val odbConvert = project
     )
   )
 
+/** temporarily we still want to keep the generated files for the cpg domain in here,
+  * in order to be able to quickly see the differences in the generated files if we
+  * change the codegen
+  * n.b. relies on a manually published version of cpg-schema from https://github.com/ShiftLeftSecurity/codepropertygraph/tree/michael/flatgraph
+  */
+lazy val domainClassesGeneratorJoern = project
+  .in(file("domain-classes-generator-joern"))
+  .dependsOn(domainClassesGenerator_3)
+  .settings(
+    name := "domain-classes-generator-joern",
+    scalaVersion := scala3,
+    publish / skip := true,
+    libraryDependencies += "io.shiftleft" %% "codepropertygraph-schema" % "1.6.6+21-c6774ab5"
+  )
+
 lazy val joernGenerated = project
   .in(file("joern-generated"))
   .dependsOn(core)
