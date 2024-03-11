@@ -95,19 +95,11 @@ public static final String FIELD_IDENTIFIER = "FIELD_IDENTIFIER";
 was generated. File nodes serve as indices, that is, they allow looking up all
 elements of the code by file.
 
-For each file, the graph MUST contain exactly one File node.
+For each file, the graph CAN contain exactly one File node, if not File nodes
+are created as indicated by `FILENAME` property of other nodes.
 As file nodes are root nodes of abstract syntax tress, they are AstNodes and
 their order field is set to 0. This is because they have no sibling nodes,
-not because they are the first node of the AST.
-
-Each CPG MUST contain a special file node with name set to
-`<unknown>`. This node is a placeholder used in cases where a file cannot be
-determined at compile time. As an example, consider external library functions.
-As their code is not available on CPG construction, the file name is unknown.
-
-File nodes MUST NOT be created by the language frontend. Instead, the language
-frontend is assumed to fill out the `FILENAME` field wherever possible,
-allowing File nodes to be created automatically upon first loading the CPG. */
+not because they are the first node of the AST. */
 public static final String FILE = "FILE";
 
 /** Finding nodes may be used to store analysis results in the graph
@@ -188,6 +180,7 @@ Line and column number information is specified in the optional fields
 `LINE_NUMBER`, `COLUMN_NUMBER`, `LINE_NUMBER_END`, and `COLUMN_NUMBER_END` and
 the name of the source file is specified in `FILENAME`. An optional hash value
 MAY be calculated over the function contents and included in the `HASH` field.
+
 The optional `OFFSET` and `OFFSET_END` specify the start
 and exclusive end position of the code belonging to a method within the corresponding
 `FILE` nodes `CONTENT` property.
@@ -294,6 +287,10 @@ Base types can be specified via the `INHERITS_FROM_TYPE_FULL_NAME` list, where
 each entry contains the fully-qualified name of a base type. If the type is
 known to be an alias of another type (as for example introduced via the C
 `typedef` statement), the name of the alias is stored in `ALIAS_TYPE_FULL_NAME`.
+
+The optional `OFFSET` and `OFFSET_END` specify the start
+and exclusive end position of the code belonging to a `TYPE_DECL` within the corresponding
+`FILE` nodes `CONTENT` property.
 
 Finally, the fully qualified name of the program constructs that the type declaration
 is immediately contained in is stored in the `AST_PARENT_FULL_NAME` field

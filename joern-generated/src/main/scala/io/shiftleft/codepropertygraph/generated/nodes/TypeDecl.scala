@@ -14,6 +14,8 @@ trait TypeDeclEMT
     with HasInheritsFromTypeFullNameEMT
     with HasIsExternalEMT
     with HasNameEMT
+    with HasOffsetEMT
+    with HasOffsetEndEMT
 
 trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDeclEMT] {
 
@@ -32,6 +34,8 @@ trait TypeDeclBase extends AbstractNode with AstNodeBase with StaticType[TypeDec
     res.put("IS_EXTERNAL", this.isExternal)
     this.lineNumber.foreach { p => res.put("LINE_NUMBER", p) }
     res.put("NAME", this.name)
+    this.offset.foreach { p => res.put("OFFSET", p) }
+    this.offsetEnd.foreach { p => res.put("OFFSET_END", p) }
     res.put("ORDER", this.order)
     res
   }
@@ -51,6 +55,8 @@ object TypeDecl {
     val IsExternal = io.shiftleft.codepropertygraph.generated.PropertyNames.IS_EXTERNAL
     val LineNumber = io.shiftleft.codepropertygraph.generated.PropertyNames.LINE_NUMBER
     val Name = io.shiftleft.codepropertygraph.generated.PropertyNames.NAME
+    val Offset = io.shiftleft.codepropertygraph.generated.PropertyNames.OFFSET
+    val OffsetEnd = io.shiftleft.codepropertygraph.generated.PropertyNames.OFFSET_END
     val Order = io.shiftleft.codepropertygraph.generated.PropertyNames.ORDER
   }
   object PropertyDefaults {
@@ -84,7 +90,9 @@ class TypeDecl(graph_4762: flatgraph.Graph, seq_4762: Int)
       case 8  => "isExternal"
       case 9  => "lineNumber"
       case 10 => "name"
-      case 11 => "order"
+      case 11 => "offset"
+      case 12 => "offsetEnd"
+      case 13 => "order"
       case _  => ""
     }
 
@@ -101,12 +109,14 @@ class TypeDecl(graph_4762: flatgraph.Graph, seq_4762: Int)
       case 8  => this.isExternal
       case 9  => this.lineNumber
       case 10 => this.name
-      case 11 => this.order
+      case 11 => this.offset
+      case 12 => this.offsetEnd
+      case 13 => this.order
       case _  => null
     }
 
   override def productPrefix = "TypeDecl"
-  override def productArity = 12
+  override def productArity = 14
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[TypeDecl]
 }
@@ -1369,6 +1379,8 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew 
   var isExternal: Boolean = false: Boolean
   var lineNumber: Option[Int] = None
   var name: String = "<empty>": String
+  var offset: Option[Int] = None
+  var offsetEnd: Option[Int] = None
   var order: Int = -1: Int
   def aliasTypeFullName(value: Option[String]): this.type = { this.aliasTypeFullName = value; this }
   def aliasTypeFullName(value: String): this.type = { this.aliasTypeFullName = Option(value); this }
@@ -1386,6 +1398,10 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew 
   def lineNumber(value: Int): this.type = { this.lineNumber = Option(value); this }
   def lineNumber(value: Option[Int]): this.type = { this.lineNumber = value; this }
   def name(value: String): this.type = { this.name = value; this }
+  def offset(value: Int): this.type = { this.offset = Option(value); this }
+  def offset(value: Option[Int]): this.type = { this.offset = value; this }
+  def offsetEnd(value: Int): this.type = { this.offsetEnd = Option(value); this }
+  def offsetEnd(value: Option[Int]): this.type = { this.offsetEnd = value; this }
   def order(value: Int): this.type = { this.order = value; this }
   override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     if (aliasTypeFullName.nonEmpty) interface.insertProperty(this, 0, this.aliasTypeFullName)
@@ -1399,6 +1415,8 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew 
     interface.insertProperty(this, 29, Iterator(this.isExternal))
     if (lineNumber.nonEmpty) interface.insertProperty(this, 34, this.lineNumber)
     interface.insertProperty(this, 39, Iterator(this.name))
+    if (offset.nonEmpty) interface.insertProperty(this, 41, this.offset)
+    if (offsetEnd.nonEmpty) interface.insertProperty(this, 42, this.offsetEnd)
     interface.insertProperty(this, 43, Iterator(this.order))
   }
 
@@ -1415,6 +1433,8 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew 
     newInstance.isExternal = this.isExternal
     newInstance.lineNumber = this.lineNumber
     newInstance.name = this.name
+    newInstance.offset = this.offset
+    newInstance.offsetEnd = this.offsetEnd
     newInstance.order = this.order
     newInstance.asInstanceOf[this.type]
   }
@@ -1432,7 +1452,9 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew 
       case 8  => "isExternal"
       case 9  => "lineNumber"
       case 10 => "name"
-      case 11 => "order"
+      case 11 => "offset"
+      case 12 => "offsetEnd"
+      case 13 => "order"
       case _  => ""
     }
 
@@ -1449,11 +1471,13 @@ class NewTypeDecl extends NewNode(40.toShort) with TypeDeclBase with AstNodeNew 
       case 8  => this.isExternal
       case 9  => this.lineNumber
       case 10 => this.name
-      case 11 => this.order
+      case 11 => this.offset
+      case 12 => this.offsetEnd
+      case 13 => this.order
       case _  => null
     }
 
   override def productPrefix = "NewTypeDecl"
-  override def productArity = 12
+  override def productArity = 14
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewTypeDecl]
 }

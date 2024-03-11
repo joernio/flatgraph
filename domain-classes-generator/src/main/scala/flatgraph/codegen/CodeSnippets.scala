@@ -161,6 +161,20 @@ object CodeSnippets {
          |}
          |
          |/**
+         |  * Traverse to nodes where the $nameCamelCase is not equal to the given `value`
+         |  * */
+         |def ${nameCamelCase}Not(value: $baseType): Iterator[NodeType] =
+         |  traversal.filter{_.$nameCamelCase != value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase is not equal to any of the given `values`
+         |  * */
+         |def ${nameCamelCase}Not(values: $baseType*): Iterator[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => !vset.contains(node.$nameCamelCase)}
+         |}
+         |
+         |/**
          |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
          |  * */
          |def ${nameCamelCase}Gt(value: $baseType): Iterator[NodeType] =
@@ -203,6 +217,20 @@ object CodeSnippets {
          |}
          |
          |/**
+         |  * Traverse to nodes where the $nameCamelCase is not equal to the given `value`
+         |  * */
+         |def ${nameCamelCase}Not(value: $baseType): Iterator[NodeType] =
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isEmpty || tmp.get != value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase does not equal any one of the given `values`
+         |  * */
+         |def ${nameCamelCase}Not(values: $baseType*): Iterator[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isEmpty || !vset.contains(tmp.get)}
+         |}
+         |
+         |/**
          |  * Traverse to nodes where the $nameCamelCase is greater than the given `value`
          |  * */
          |def ${nameCamelCase}Gt(value: $baseType): Iterator[NodeType] =
@@ -241,9 +269,22 @@ object CodeSnippets {
          |  * */
          |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
          |  val vset = values.toSet
-         |  traversal.filter{node => !vset.contains(node.$nameCamelCase)}
+         |  traversal.filter{node => vset.contains(node.$nameCamelCase)}
          |}
          |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase does not equal the given `value`
+         |  * */
+         |def ${nameCamelCase}Not(value: $baseType): Iterator[NodeType] =
+         |  traversal.filter{_.$nameCamelCase != value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase does not equal any one of the given `values`
+         |  * */
+         |def ${nameCamelCase}Not(values: $baseType*): Iterator[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => !vset.contains(node.$nameCamelCase)}
+         |}
          |""".stripMargin
     }
 
@@ -259,7 +300,21 @@ object CodeSnippets {
          |  * */
          |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
          |  val vset = values.toSet
-         |  traversal.filter{node => node.$nameCamelCase.isDefined && !vset.contains(node.$nameCamelCase.get)}
+         |  traversal.filter{node => node.$nameCamelCase.isDefined && vset.contains(node.$nameCamelCase.get)}
+         |}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase does not equal the given `value`
+         |  * */
+         |def ${nameCamelCase}Not(value: $baseType): Iterator[NodeType] =
+         |  traversal.filter{node => node.$nameCamelCase.empty || node.$nameCamelCase.get != value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase does not equal any one of the given `values`
+         |  * */
+         |def ${nameCamelCase}Not(values: $baseType*): Iterator[NodeType] = {
+         |  val vset = values.toSet
+         |  traversal.filter{node => node.$nameCamelCase.empty || !vset.contains(node.$nameCamelCase.get)}
          |}
          |""".stripMargin
     }

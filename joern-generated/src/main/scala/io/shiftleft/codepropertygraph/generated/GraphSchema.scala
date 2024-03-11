@@ -857,6 +857,10 @@ object GraphSchema extends flatgraph.Schema {
     nodePropertyDescriptors(3073) = FormalQtyType.QtyOption
     nodePropertyDescriptors(3512) = FormalQtyType.StringType // TYPE_DECL.NAME
     nodePropertyDescriptors(3513) = FormalQtyType.QtyOne
+    nodePropertyDescriptors(3688) = FormalQtyType.IntType // TYPE_DECL.OFFSET
+    nodePropertyDescriptors(3689) = FormalQtyType.QtyOption
+    nodePropertyDescriptors(3776) = FormalQtyType.IntType // TYPE_DECL.OFFSET_END
+    nodePropertyDescriptors(3777) = FormalQtyType.QtyOption
     nodePropertyDescriptors(3864) = FormalQtyType.IntType // TYPE_DECL.ORDER
     nodePropertyDescriptors(3865) = FormalQtyType.QtyOne
     nodePropertyDescriptors(962) = FormalQtyType.StringType // TYPE_PARAMETER.CODE
