@@ -220,7 +220,7 @@ object CodeSnippets {
          |  * Traverse to nodes where the $nameCamelCase is not equal to the given `value`
          |  * */
          |def ${nameCamelCase}Not(value: $baseType): Iterator[NodeType] =
-         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isEmtpy || tmp.get != value}
+         |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isEmpty || tmp.get != value}
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase does not equal any one of the given `values`
