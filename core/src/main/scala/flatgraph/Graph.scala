@@ -45,7 +45,9 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
   /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
-  private[flatgraph] def nodeCountByKind(kind: Int): Int = nodesArray(kind).length
+  private[flatgraph] def nodeCountByKind(kind: Int): Int =
+    if (nodesArray.length <= kind) 0
+    else nodesArray(kind).length
 
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val inverseIndices = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
@@ -53,15 +55,18 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private[flatgraph] val neighbors: Array[AnyRef]        = makeNeighbors()
 
   def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
-    if (nodeCountByKind(nodeKind) == livingNodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
+    if (nodeKind < 0 || schema.getNumberOfNodeKinds <= nodeKind) InitNodeIteratorArray(Array.empty[GNode])
+    else if (nodeCountByKind(nodeKind) == livingNodeCountByKind(nodeKind)) new InitNodeIteratorArray[GNode](nodesArray(nodeKind))
     else new InitNodeIteratorArrayFiltered[GNode](nodesArray(nodeKind))
   }
 
   def nodes(label: String): InitNodeIterator[GNode] =
     _nodes(schema.getNodeKindByLabel(label))
 
+  /** Lookup nodes for the given labels, or all nodes if no label is given (`.nodes()`) */
   def nodes(labels: String*): Iterator[GNode] =
-    labels.iterator.flatMap(nodes)
+    if (labels.isEmpty) allNodes
+    else labels.iterator.flatMap(nodes)
 
   /** Lookup node by id - note: this may return null or throw an exception if the referenced node doesn't exist */
   def node(id: Long): GNode =

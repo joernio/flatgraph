@@ -104,6 +104,29 @@ class GraphTests extends AnyWordSpec with Matchers {
     testSerialization(g)
   }
 
+  "some basic lookups" in {
+    val schema = TestSchema.make(2, 1)
+    val g      = new Graph(schema)
+    val V0_0   = new GenericDNode(0)
+    val V0_1   = new GenericDNode(0)
+    val V1_0   = new GenericDNode(1)
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        ._addEdge(V0_0, V0_0, 0)
+        ._addEdge(V0_1, V1_0, 0)
+    )
+
+    g.nodes().label.toSet shouldBe Set("V0", "V1")
+    g.allNodes.size shouldBe 3
+    g.nodes().size shouldBe 3
+    g.nodes("V0").size shouldBe 2
+    g.nodes("V1").size shouldBe 1
+    g.nodes("V0", "V1").size shouldBe 3
+    g.nodes("V0", "V1", "V2").size shouldBe 3
+    g.nodes("V2").size shouldBe 0
+  }
+
   "basically work with multiple edge and node types" in {
     val schema = TestSchema.make(3, 2)
     val g      = new Graph(schema)
