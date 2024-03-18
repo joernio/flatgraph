@@ -23,7 +23,7 @@ object Serialization {
 
     val fileChannel =
       new java.io.RandomAccessFile(
-        storagePath.toFile,
+        storagePath.toAbsolutePath.toFile,
         "rw"
       ).getChannel // if (conf.filename != null) { new java.io.RandomAccessFile("/tmp/foo.fg", "w").getChannel }}
     try {
