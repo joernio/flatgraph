@@ -74,7 +74,7 @@ object Convert {
 
   private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
     val fileAbsolute = filename.getAbsoluteFile
-    val filePtr     = new AtomicLong(16)
+    val filePtr      = new AtomicLong(16)
     if (!fileAbsolute.exists()) {
       fileAbsolute.getParentFile.mkdirs()
       fileAbsolute.createNewFile()
