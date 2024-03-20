@@ -14,7 +14,7 @@ import scala.collection.mutable
 object Deserialization {
 
   def readGraph(storagePath: Path, schemaMaybe: Option[Schema], persistOnClose: Boolean = true): Graph = {
-    val fileChannel = new java.io.RandomAccessFile(storagePath.toFile, "r").getChannel
+    val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "r").getChannel
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
       val manifest = readManifest(fileChannel)

@@ -73,8 +73,13 @@ object Convert {
   }
 
   private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
-    val filePtr     = new AtomicLong(16)
-    val fileChannel = new java.io.RandomAccessFile(filename, "rw").getChannel
+    val fileAbsolute = filename.getAbsoluteFile
+    val filePtr      = new AtomicLong(16)
+    if (!fileAbsolute.exists()) {
+      fileAbsolute.getParentFile.mkdirs()
+      fileAbsolute.createNewFile()
+    }
+    val fileChannel = new java.io.RandomAccessFile(fileAbsolute, "rw").getChannel
     try {
       val nodes      = nodeStuff.map { ns => new Manifest.NodeItem(ns.label, ns.nextId, null) }
       val edges      = mutable.ArrayBuffer[Manifest.EdgeItem]()
