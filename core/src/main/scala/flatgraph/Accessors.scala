@@ -147,7 +147,7 @@ object Accessors {
     schema.getNodePropertyFormalQuantity(nodeKind, propertyKind) match {
       case FormalQtyType.QtyNone                          => None
       case FormalQtyType.QtyOne | FormalQtyType.QtyOption => getNodePropertyOption[Object](graph, nodeKind, propertyKind, seq)
-      case FormalQtyType.QtyMulti                         =>
+      case FormalQtyType.QtyMulti =>
         val multiPropertyValue = getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq)
         Option(multiPropertyValue).filter(_.nonEmpty)
     }
