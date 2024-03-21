@@ -435,16 +435,28 @@ class NodeMethods(node: GNode) extends AnyVal {
   // the "property" accessors have somewhat special behavior. They don't throw if the property is not present,
   // and they distinguish whether the property formally exists on the node-type as multi-valued thing.
   // the static info from the propertyKey is ignored.
-  // this semantics may or may not be desireable -- but it is what odbv1 does, and these are compat anyway.
+  // this semantics may or may not be desirable -- but it is what odbv1 does, and these are compat anyway.
   // we don't really want to specialize here -- otherwise we can get nonsense like `null.asInstanceOf[Double]`
-  def property[ValueType, CompleteType](propertyKey: PropertyKey[ValueType, CompleteType]): CompleteType = {
-    Accessors.getNodePropertyOptionCompat(node, propertyKey.kind).orNull.asInstanceOf[CompleteType]
-  }
+
+  def property[ValueType](propertyKey: SinglePropertyKey[ValueType]): ValueType =
+    Accessors.getNodePropertySingle(node.graph, node.nodeKind, propertyKey.kind, node.seq(), propertyKey.default)
+
+  def property[ValueType](propertyKey: OptionalPropertyKey[ValueType]): Option[ValueType] =
+    Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+
+  def property[ValueType](propertyKey: MultiPropertyKey[ValueType]): IndexedSeq[ValueType] =
+    Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+
   def propertyOption[ValueType](propertyKey: SinglePropertyKey[ValueType]): Option[ValueType] =
+    Accessors
+      .getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+      .orElse(Option(propertyKey.default))
+
+  def propertyOption[ValueType](propertyKey: OptionalPropertyKey[ValueType]): Option[ValueType] =
     Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
-    
-  def propertyOption[ValueType](propertyKey: MultiPropertyKey[ValueType]): Option[IndexedSeq[ValueType]] =
-    Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+
+  def propertyOption[ValueType](propertyKey: MultiPropertyKey[ValueType]): IndexedSeq[ValueType] =
+    Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
 
   def propertyOption[ValueType](name: String): Option[ValueType] = {
     node.graph.schema.getPropertyKindByName(name) match {
@@ -557,11 +569,11 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
     }
 
   def property[@specialized ValueType](propertyKey: SinglePropertyKey[ValueType]): Iterator[ValueType] =
-    traversal.map(_.property[ValueType, ValueType](propertyKey))
+    traversal.map(_.property(propertyKey))
 
   def property[@specialized ValueType](propertyKey: OptionalPropertyKey[ValueType]): Iterator[ValueType] =
-    traversal.flatMap(_.property[ValueType, Option[ValueType]](propertyKey))
+    traversal.flatMap(_.property(propertyKey))
 
   def property[@specialized ValueType](propertyKey: MultiPropertyKey[ValueType]): Iterator[ValueType] =
-    traversal.flatMap(_.property[ValueType, IndexedSeq[ValueType]](propertyKey))
+    traversal.flatMap(_.property(propertyKey))
 }
