@@ -35,10 +35,9 @@ object Graph {
       Graph(schema, storagePathMaybe)
     }
   }
-
 }
 
-class Graph(val schema: Schema, var storagePathMaybe: Option[Path] = None) extends AutoCloseable {
+class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) extends AutoCloseable {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
   private val propertiesCount = schema.getNumberOfProperties
@@ -146,13 +145,6 @@ class Graph(val schema: Schema, var storagePathMaybe: Option[Path] = None) exten
   }
 
   def cloneDataFrom(other: Graph): this.type = {
-    // we might want to implement cloning from different schemas in the future.
-    if (!this.schema.equals(other.schema)) throw new RuntimeException("Can currently clone only from graph with same schema")
-    if (this.nodesArray.exists(_.length > 0)) throw new RuntimeException("Can currently only clone into empty graphs")
-
-    // we also might want to implement cloning from different Graph subclasses in the future. These should do their thing and
-    // then call super.cloneDataFrom.
-
     for (kind <- Range(0, schema.getNumberOfNodeKinds)) {
       val arr = other.nodesArray(kind).clone()
       this.nodesArray(kind) = arr
