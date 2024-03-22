@@ -752,17 +752,20 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // test cases where the property is not defined
     v0.property(propertySingle) shouldBe "propertySingleDefault"
-    v0.property(propertyOptional) shouldBe None
-    v0.property(propertyMulti) shouldBe Seq.empty
     v0.propertyOption(propertySingle) shouldBe Some("propertySingleDefault")
+    v0.property(propertyOptional) shouldBe None
     v0.propertyOption(propertyOptional) shouldBe None
-    v0.propertyOption(propertyMulti) shouldBe Seq.empty
+    v0.property(propertyMulti) shouldBe Seq.empty
+    // TODO this should rather return `None` for an undefined property, rather than `Some(Seq.empty)`, but we only want
+    //  to make that change after joern's transition to flatgraph - see https://github.com/joernio/joern/pull/4382
+//    v0.propertyOption(propertyMulti) shouldBe None
+    v0.propertyOption(propertyMulti) shouldBe Some(Seq.empty[String])
 
     // ensure odb compat accessors work just like before
-    // see https://github.com/ShiftLeftSecurity/overflowdb/blob/1b5df058569a3e87192f2dce4e019e3b4a0c1d91/core-tests/src/test/java/overflowdb/ElementTest.java#L54-L67
+    // see https://github.com/joernio/joern/pull/4382
     Accessors.getNodePropertyOptionCompat(v0, 0) shouldBe None
     Accessors.getNodePropertyOptionCompat(v0, 1) shouldBe None
-    Accessors.getNodePropertyOptionCompat(v0, 2) shouldBe None
+    Accessors.getNodePropertyOptionCompat(v0, 2) shouldBe Some(Seq.empty)
 
     DiffGraphApplier.applyDiff(
       g,
@@ -780,14 +783,14 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // test cases where the property is defined
     v0.property(propertySingle) shouldBe "a"
-    v0.property(propertyOptional) shouldBe Some("b")
-    v0.property(propertyMulti) shouldBe Seq("c", "d")
     v0.propertyOption(propertySingle) shouldBe Some("a")
+    v0.property(propertyOptional) shouldBe Some("b")
     v0.propertyOption(propertyOptional) shouldBe Some("b")
-    v0.propertyOption(propertyMulti) shouldBe Seq("c", "d")
+    v0.property(propertyMulti) shouldBe Seq("c", "d")
+    v0.propertyOption(propertyMulti) shouldBe Some(Seq("c", "d"))
 
     // ensure odb compat accessors work just like before
-    // see https://github.com/ShiftLeftSecurity/overflowdb/blob/1b5df058569a3e87192f2dce4e019e3b4a0c1d91/core-tests/src/test/java/overflowdb/ElementTest.java#L54-L67
+    // see https://github.com/joernio/joern/pull/4382
     Accessors.getNodePropertyOptionCompat(v0, 0) shouldBe Some("a")
     Accessors.getNodePropertyOptionCompat(v0, 1) shouldBe Some("b")
     Accessors.getNodePropertyOptionCompat(v0, 2) shouldBe Some(Seq("c", "d"))

@@ -455,8 +455,10 @@ class NodeMethods(node: GNode) extends AnyVal {
   def propertyOption[ValueType](propertyKey: OptionalPropertyKey[ValueType]): Option[ValueType] =
     Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
 
-  def propertyOption[ValueType](propertyKey: MultiPropertyKey[ValueType]): IndexedSeq[ValueType] =
-    Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
+  // TODO this should rather return `None` for an undefined property, rather than `Some(Seq.empty)`, but we only want
+  //  to make that change after joern's transition to flatgraph - see https://github.com/joernio/joern/pull/4382
+  def propertyOption[ValueType](propertyKey: MultiPropertyKey[ValueType]): Option[IndexedSeq[ValueType]] =
+    Option(Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq()))
 
   def propertyOption[ValueType](name: String): Option[ValueType] = {
     node.graph.schema.getPropertyKindByName(name) match {
