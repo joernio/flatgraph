@@ -144,11 +144,10 @@ object Accessors {
     val schema   = graph.schema
     val seq      = node.seq()
     val nodeKind = node.nodeKind.toInt
-    val res      = getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq)
     schema.getNodePropertyFormalQuantity(nodeKind, propertyKind) match {
       case FormalQtyType.QtyNone                          => None
       case FormalQtyType.QtyOne | FormalQtyType.QtyOption => getNodePropertyOption[Object](graph, nodeKind, propertyKind, seq)
-      case FormalQtyType.QtyMulti                         => Some(getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq))
+      case FormalQtyType.QtyMulti                         => Option(getNodePropertyMulti[Object](graph, nodeKind, propertyKind, seq))
     }
   }
 
