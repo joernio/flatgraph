@@ -10,6 +10,8 @@ import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicReferenceArray
 import org.slf4j.LoggerFactory
 
+import java.util
+
 object Graph {
   // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
   // neighbors, and one array containing edge properties
@@ -36,7 +38,7 @@ object Graph {
 
 }
 
-class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) extends AutoCloseable {
+class Graph(val schema: Schema, var storagePathMaybe: Option[Path] = None) extends AutoCloseable {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
   private val propertiesCount = schema.getNumberOfProperties
@@ -44,15 +46,15 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
 
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
-  /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
-  private[flatgraph] def nodeCountByKind(kind: Int): Int =
-    if (nodesArray.length <= kind) 0
-    else nodesArray(kind).length
-
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val inverseIndices = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val nodesArray: Array[Array[GNode]] = makeNodesArray()
   private[flatgraph] val neighbors: Array[AnyRef]        = makeNeighbors()
+
+  /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
+  private[flatgraph] def nodeCountByKind(kind: Int): Int =
+    if (nodesArray.length <= kind) 0
+    else nodesArray(kind).length
 
   def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
     if (nodeKind < 0 || schema.getNumberOfNodeKinds <= nodeKind) InitNodeIteratorArray(Array.empty[GNode])
@@ -141,6 +143,42 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
       logger.info(s"closing graph: writing to storage at `$storagePath`")
       Serialization.writeGraph(this, storagePath)
     }
+  }
+
+  def cloneDataFrom(other: Graph): this.type = {
+    // we might want to implement cloning from different schemas in the future.
+    if (!this.schema.equals(other.schema)) throw new RuntimeException("Can currently clone only from graph with same schema")
+    if (this.nodesArray.exists(_.length > 0)) throw new RuntimeException("Can currently only clone into empty graphs")
+
+    // we also might want to implement cloning from different Graph subclasses in the future. These should do their thing and
+    // then call super.cloneDataFrom.
+
+    for (kind <- Range(0, schema.getNumberOfNodeKinds)) {
+      val arr = other.nodesArray(kind).clone()
+      this.nodesArray(kind) = arr
+      arr.mapInPlace { old =>
+        val n = schema.makeNode(this, old.nodeKind, old.seq())
+        if (AccessHelpers.isDeleted(old)) AccessHelpers.markDeleted(n)
+        n
+      }
+    }
+
+    def cloneThing(item: AnyRef): AnyRef = item match {
+      case null => null
+      case a: Array[GNode] =>
+        a.clone().mapInPlace { oldNode =>
+          if (oldNode == null) null else this.nodesArray(oldNode.nodeKind)(oldNode.seq())
+        }
+      case other => other
+    }
+    // adjust that once we do diffgraph applications in-place
+    for (idx <- Range(0, this.properties.length))
+      this.properties(idx) = cloneThing(other.properties(idx))
+    for (idx <- Range(0, this.neighbors.length))
+      this.neighbors(idx) = cloneThing(other.neighbors(idx))
+    java.lang.System.arraycopy(other.livingNodeCountByKind, 0, this.livingNodeCountByKind, 0, this.livingNodeCountByKind.length)
+
+    this
   }
 
 }

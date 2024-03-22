@@ -49,6 +49,10 @@ object TestSchema {
       val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
       val newDump      = debugDump(deserialized)
       originalDump shouldBe newDump
+      // we also test cloning.
+      val cloned    = new Graph(graph.schema).cloneDataFrom(graph)
+      val cloneDump = debugDump(cloned)
+      originalDump shouldBe cloneDump
     }
   }
 
