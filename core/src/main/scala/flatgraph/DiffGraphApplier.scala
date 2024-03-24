@@ -545,8 +545,14 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       while (insertionCounter < insertions.size && insertions(insertionCounter).src.seq == insertionSeq) {
         val insertion = insertions(insertionCounter)
         newNeighbors(insertionBaseIndex + insertionCounter) = insertion.dst
-        if (newPropertyView != null && insertion.property != DefaultValue)
-          newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
+        if (newPropertyView != null && insertion.property != DefaultValue) {
+          try {
+            newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
+          } catch {
+            case _: ArrayStoreException =>
+              throw new UnsupportedOperationException(s"unsupported property type: ${insertion.property.getClass}")
+          }
+        }
         insertionCounter += 1
       }
       newQty(insertionSeq + 1) = insertionBaseIndex + insertionCounter
@@ -617,8 +623,14 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
   }
 
   private def copyToArray[T](buf: mutable.ArrayBuffer[Any], dst: Array[T]): Unit = {
-    // this is a dirty hack in order to make scala type system shut up
-    buf.asInstanceOf[mutable.ArrayBuffer[T]].copyToArray(dst)
+    try {
+      // this is a dirty hack in order to make scala type system shut up
+      buf.asInstanceOf[mutable.ArrayBuffer[T]].copyToArray(dst)
+    } catch {
+      case _: ArrayStoreException =>
+        val typeMaybe = buf.headOption.map(property => s": ${property.getClass}").getOrElse("")
+        throw new UnsupportedOperationException(s"unsupported property type$typeMaybe")
+    }
   }
 
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last

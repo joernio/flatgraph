@@ -796,6 +796,45 @@ class GraphTests extends AnyWordSpec with Matchers {
     Accessors.getNodePropertyOptionCompat(v0, 2) shouldBe Some(Seq("c", "d"))
   }
 
+  "report error when trying to use unsupported property types" in {
+    class A(wrapped: String) // we don't support arbitrary classes as property types
+
+    // ensure that we throw an exception when trying to define a schema with an arbitrary class as a node property type
+    intercept[UnsupportedOperationException] {
+      TestSchema.make(1, 1, nodePropertyPrototypes = Array(Array.empty[A]))
+    }.getMessage should include("unsupported property prototype")
+
+    // same for edge properties
+    intercept[UnsupportedOperationException] {
+      TestSchema.make(1, 1, edgePropertyPrototypes = Array(Array.empty[A]))
+    }.getMessage should include("unsupported property prototype")
+
+    // now let's define a valid schema and try to update a node/edge property to something illegal via a DiffGraph
+    val schema = TestSchema.make(
+      nodeKinds = 1,
+      edgeKinds = 1,
+      properties = 1,
+      edgePropertyPrototypes = Array(Array.empty[String]),
+      nodePropertyPrototypes = Array(Array.empty[String]),
+      formalQtys = Array(FormalQtyType.QtyOption, null, FormalQtyType.QtyMulti, null)
+    )
+
+    val g  = new Graph(schema)
+    val v0 = new GenericDNode(0)
+    val v1 = new GenericDNode(0)
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(v0).addNode(v1))
+
+    // try to update a node property to something unsupported via a DiffGraph
+    intercept[UnsupportedOperationException] {
+      DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._setNodeProperty(v0.storedRef.get, 0, new A("should not work")))
+    }.getMessage should include("unsupported property type")
+
+    // same for edge properties
+    intercept[UnsupportedOperationException] {
+      DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema)._addEdge(v0, v1, 0, new A("should not work")))
+    }.getMessage should include("unsupported property type")
+  }
+
   "Support custom domain classes for detached nodes" in {
     class CustomNode extends DNode {
       override type StoredNodeType = GNode
