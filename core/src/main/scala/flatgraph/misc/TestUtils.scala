@@ -29,7 +29,7 @@ object TestUtils {
     def copy(storagePathMaybe: Option[Path] = None): Graph = {
       val schema = graph.schema
       val newGraph = new Graph(schema, storagePathMaybe)
-      
+
       for (kind <- Range(0, schema.getNumberOfNodeKinds)) {
         newGraph.nodesArray(kind) = graph.nodesArray(kind).clone()
         newGraph.nodesArray(kind).mapInPlace { oldNode =>
@@ -43,17 +43,20 @@ object TestUtils {
         case null => null
         case a: Array[GNode] =>
           a.clone().mapInPlace { oldNode =>
-            if (oldNode == null) null 
-            else graph.nodesArray(oldNode.nodeKind)(oldNode.seq())
+            if (oldNode == null) null
+            else newGraph.nodesArray(oldNode.nodeKind)(oldNode.seq())
           }
-        case other => other
+        case a: Array[_] =>
+          a.clone()
+        case other =>
+          other
       }
       // adjust that once we do diffgraph applications in-place
       for (idx <- Range(0, graph.properties.length))
-        graph.properties(idx) = cloneThing(newGraph.properties(idx))
+        newGraph.properties(idx) = cloneThing(graph.properties(idx))
       for (idx <- Range(0, graph.neighbors.length))
-        graph.neighbors(idx) = cloneThing(newGraph.neighbors(idx))
-      java.lang.System.arraycopy(newGraph.livingNodeCountByKind, 0, graph.livingNodeCountByKind, 0, graph.livingNodeCountByKind.length)
+        newGraph.neighbors(idx) = cloneThing(graph.neighbors(idx))
+      System.arraycopy(graph.livingNodeCountByKind, 0, newGraph.livingNodeCountByKind, 0, graph.livingNodeCountByKind.length)
 
       newGraph
     }
