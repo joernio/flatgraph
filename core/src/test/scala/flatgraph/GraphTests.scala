@@ -1005,7 +1005,7 @@ class GraphTests extends AnyWordSpec with Matchers {
   "copying a graph" in {
     import flatgraph.misc.TestUtils.copy
 
-    val graph = DiffToolTests.makeSampleGraph()
+    val graph                  = DiffToolTests.makeSampleGraph()
     val debugDumpOriginalGraph = debugDump(graph)
     debugDumpOriginalGraph shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
@@ -1020,11 +1020,13 @@ class GraphTests extends AnyWordSpec with Matchers {
     debugDump(graph) shouldBe debugDump(graphCopy)
 
     // make some changes only to the graph copy
-    val v0 = graphCopy.node(kind = 0, seq = 0)
+    val v0   = graphCopy.node(kind = 0, seq = 0)
     val edge = Accessors.getEdgesOut(v0).head
-    DiffGraphApplier.applyDiff(graphCopy, new DiffGraphBuilder(DiffToolTests.sampleSchema)
-      .setNodeProperty(v0, "0", "updatedNodeProperty")
-      .setEdgeProperty(edge, "updatedEdgeProperty")
+    DiffGraphApplier.applyDiff(
+      graphCopy,
+      new DiffGraphBuilder(DiffToolTests.sampleSchema)
+        .setNodeProperty(v0, "0", "updatedNodeProperty")
+        .setEdgeProperty(edge, "updatedEdgeProperty")
     )
     debugDump(graphCopy) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2

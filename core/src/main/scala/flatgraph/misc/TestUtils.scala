@@ -27,7 +27,7 @@ object TestUtils {
     }
 
     def copy(storagePathMaybe: Option[Path] = None): Graph = {
-      val schema = graph.schema
+      val schema   = graph.schema
       val newGraph = new Graph(schema, storagePathMaybe)
 
       for (kind <- Range(0, schema.getNumberOfNodeKinds)) {
