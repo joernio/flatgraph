@@ -144,33 +144,4 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     }
   }
 
-  def cloneDataFrom(other: Graph): this.type = {
-    for (kind <- Range(0, schema.getNumberOfNodeKinds)) {
-      val arr = other.nodesArray(kind).clone()
-      this.nodesArray(kind) = arr
-      arr.mapInPlace { old =>
-        val n = schema.makeNode(this, old.nodeKind, old.seq())
-        if (AccessHelpers.isDeleted(old)) AccessHelpers.markDeleted(n)
-        n
-      }
-    }
-
-    def cloneThing(item: AnyRef): AnyRef = item match {
-      case null => null
-      case a: Array[GNode] =>
-        a.clone().mapInPlace { oldNode =>
-          if (oldNode == null) null else this.nodesArray(oldNode.nodeKind)(oldNode.seq())
-        }
-      case other => other
-    }
-    // adjust that once we do diffgraph applications in-place
-    for (idx <- Range(0, this.properties.length))
-      this.properties(idx) = cloneThing(other.properties(idx))
-    for (idx <- Range(0, this.neighbors.length))
-      this.neighbors(idx) = cloneThing(other.neighbors(idx))
-    java.lang.System.arraycopy(other.livingNodeCountByKind, 0, this.livingNodeCountByKind, 0, this.livingNodeCountByKind.length)
-
-    this
-  }
-
 }
