@@ -156,7 +156,7 @@ class FreeSchema(
     case a: Array[Double]  => if (a.length == 0) FormalQtyType.DoubleType else FormalQtyType.DoubleTypeWithDefault(a(0))
     case a: Array[String]  => if (a.length == 0) FormalQtyType.StringType else FormalQtyType.StringTypeWithDefault(a(0))
     case a: Array[GNode]   => FormalQtyType.RefType
-    case _                 => ???
+    case other             => throw new UnsupportedOperationException(s"unsupported property prototype: ${other.getClass}")
   }
   override def getNumberOfNodeKinds: Int                                  = nodeLabels.length
   override def getNumberOfEdgeKinds: Int                                  = edgeLabels.length
