@@ -6,6 +6,7 @@ import flatgraph.misc.DebugDump.debugDump
 import flatgraph.storage.Deserialization
 import flatgraph.storage.Deserialization.DeserializationException
 import flatgraph.traversal.Language.*
+import flatgraph.util.DiffToolTests
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
@@ -999,5 +1000,44 @@ class GraphTests extends AnyWordSpec with Matchers {
         assertThrows[DeserializationException](Deserialization.readGraph(storagePath, None))
       }
     }
+  }
+
+  "copying a graph" in {
+    import flatgraph.misc.TestUtils.copy
+
+    val graph                  = DiffToolTests.makeSampleGraph()
+    val debugDumpOriginalGraph = debugDump(graph)
+    debugDumpOriginalGraph shouldBe
+      """#Node numbers (kindId, nnodes) (0: 2), total 2
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 1 [dense], 1 [dense]),
+        |   V0_0       : 0: [A], 1: [40]
+        |   V0_0   [0] -> (edgePropertyValue) V0_1
+        |   V0_1       : 0: [X, Y], 1: [50, 51]
+        |   V0_1   [0] <- (edgePropertyValue) V0_0
+        |""".stripMargin
+
+    val graphCopy = graph.copy()
+    debugDump(graph) shouldBe debugDump(graphCopy)
+
+    // make some changes only to the graph copy
+    val v0   = graphCopy.node(kind = 0, seq = 0)
+    val edge = Accessors.getEdgesOut(v0).head
+    DiffGraphApplier.applyDiff(
+      graphCopy,
+      new DiffGraphBuilder(DiffToolTests.sampleSchema)
+        .setNodeProperty(v0, "0", "updatedNodeProperty")
+        .setEdgeProperty(edge, "updatedEdgeProperty")
+    )
+    debugDump(graphCopy) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 2), total 2
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 1 [dense], 1 [dense]),
+        |   V0_0       : 0: [updatedNodeProperty], 1: [40]
+        |   V0_0   [0] -> (updatedEdgeProperty) V0_1
+        |   V0_1       : 0: [X, Y], 1: [50, 51]
+        |   V0_1   [0] <- (updatedEdgeProperty) V0_0
+        |""".stripMargin
+
+    // original graph should be untouched
+    debugDump(graph) shouldBe debugDumpOriginalGraph
   }
 }

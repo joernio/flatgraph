@@ -10,6 +10,8 @@ import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicReferenceArray
 import org.slf4j.LoggerFactory
 
+import java.util
+
 object Graph {
   // Slot size is 3 because we have one pointer to array of quantity array and one pointer to array of
   // neighbors, and one array containing edge properties
@@ -33,7 +35,6 @@ object Graph {
       Graph(schema, storagePathMaybe)
     }
   }
-
 }
 
 class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) extends AutoCloseable {
@@ -44,15 +45,15 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
 
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
-  /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
-  private[flatgraph] def nodeCountByKind(kind: Int): Int =
-    if (nodesArray.length <= kind) 0
-    else nodesArray(kind).length
-
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val inverseIndices = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val nodesArray: Array[Array[GNode]] = makeNodesArray()
   private[flatgraph] val neighbors: Array[AnyRef]        = makeNeighbors()
+
+  /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
+  private[flatgraph] def nodeCountByKind(kind: Int): Int =
+    if (nodesArray.length <= kind) 0
+    else nodesArray(kind).length
 
   def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
     if (nodeKind < 0 || schema.getNumberOfNodeKinds <= nodeKind) InitNodeIteratorArray(Array.empty[GNode])

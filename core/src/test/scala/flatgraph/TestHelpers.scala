@@ -3,6 +3,7 @@ package flatgraph
 import flatgraph.TestHelpers.withTemporaryFile
 import flatgraph.misc.DebugDump.debugDump
 import flatgraph.misc.Conversions.toShortSafely
+import flatgraph.misc.TestUtils.copy
 import flatgraph.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers.shouldBe
 
@@ -49,6 +50,10 @@ object TestSchema {
       val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
       val newDump      = debugDump(deserialized)
       originalDump shouldBe newDump
+
+      val cloned    = graph.copy()
+      val cloneDump = debugDump(cloned)
+      originalDump shouldBe cloneDump
     }
   }
 

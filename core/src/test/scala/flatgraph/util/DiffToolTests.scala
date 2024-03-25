@@ -9,6 +9,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.jdk.CollectionConverters.*
 
 class DiffToolTests extends AnyWordSpec {
+  import DiffToolTests.makeSampleGraph
 
   "detects zero changes for the same (identity) graph" in {
     val graph = makeSampleGraph()
@@ -88,29 +89,33 @@ class DiffToolTests extends AnyWordSpec {
     diff should contain("node flatgraph.GNode[label=V0; id=0] only exists in graph1")
   }
 
-  private def makeSampleGraph(): Graph = {
-    val schema = TestSchema.make(
-      nodeKinds = 1,
-      edgeKinds = 1,
-      properties = 2,
-      nodePropertyPrototypes = Array(Array.empty[String], Array.emptyShortArray),
-      edgePropertyPrototypes = Array(Array.empty[String])
-    )
-    val graph = new Graph(schema)
+}
+
+object DiffToolTests {
+  val sampleSchema = TestSchema.make(
+    nodeKinds = 1,
+    edgeKinds = 1,
+    properties = 2,
+    nodePropertyPrototypes = Array(Array.empty[String], Array.emptyShortArray),
+    edgePropertyPrototypes = Array(Array.empty[String])
+  )
+
+  def makeSampleGraph(): Graph = {
+    val graph = new Graph(sampleSchema)
 
     val v0 = new GenericDNode(0)
     val v1 = new GenericDNode(0)
 
-    DiffGraphApplier.applyDiff(graph, new DiffGraphBuilder(schema)._addEdge(v0, v1, 0, "edgePropertyValue"))
+    DiffGraphApplier.applyDiff(graph, new DiffGraphBuilder(sampleSchema)._addEdge(v0, v1, 0, "edgePropertyValue"))
     DiffGraphApplier.applyDiff(
       graph,
-      new DiffGraphBuilder(schema)
+      new DiffGraphBuilder(sampleSchema)
         ._setNodeProperty(v0.storedRef.get, 0, "A")
         ._setNodeProperty(v1.storedRef.get, 0, Seq("X", "Y"))
         ._setNodeProperty(v0.storedRef.get, 1, 40.toShort)
         ._setNodeProperty(v1.storedRef.get, 1, Seq(50.toShort, 51.toShort))
     )
-//    println(debugDump(graph))
+    //    println(debugDump(graph))
     debugDump(graph) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 1 [dense], 1 [dense]),
@@ -122,5 +127,4 @@ class DiffToolTests extends AnyWordSpec {
     testSerialization(graph)
     graph
   }
-
 }
