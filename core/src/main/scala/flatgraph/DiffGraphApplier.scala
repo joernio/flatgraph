@@ -411,8 +411,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
         graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size)
       case other =>
         other
-        // ^ change this once we switch away from full copy-on-write, see e.g.
-        // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
+      // ^ change this once we switch away from full copy-on-write, see e.g.
+      // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
     }
     val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[_]]).asInstanceOf[mutable.ArraySeq[Any]]
     // this will fail if the edge doesn't support properties. todo: better error message
