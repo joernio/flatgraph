@@ -43,7 +43,7 @@ object Serialization {
     val nodes      = mutable.ArrayBuffer.empty[NodeItem]
     val edges      = mutable.ArrayBuffer.empty[EdgeItem]
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
-    for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
+    for (nodeKind <- g.schema.nodeKinds) {
       val nodeLabel = g.schema.getNodeLabel(nodeKind)
       val deletions = g
         .nodesArray(nodeKind)
@@ -55,8 +55,8 @@ object Serialization {
       nodes.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
     }
     for {
-      nodeKind  <- Range(0, g.schema.getNumberOfNodeKinds)
-      edgeKind  <- Range(0, g.schema.getNumberOfEdgeKinds)
+      nodeKind  <- g.schema.nodeKinds
+      edgeKind  <- g.schema.edgeKinds
       direction <- Direction.values
     } {
       val pos = g.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
@@ -72,8 +72,8 @@ object Serialization {
       }
     }
     for {
-      nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds)
-      propertyKind <- Range(0, g.schema.getNumberOfProperties)
+      nodeKind     <- g.schema.nodeKinds
+      propertyKind <- g.schema.propertyKinds
     } {
       val pos = g.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
       if (g.properties(pos) != null) {

@@ -96,7 +96,14 @@ object FormalQtyType {
 
 abstract class Schema {
   def getNumberOfNodeKinds: Int
+  def nodeKinds: Range = Range(0, getNumberOfNodeKinds)
+
   def getNumberOfEdgeKinds: Int
+  def edgeKinds: Range = Range(0, getNumberOfEdgeKinds)
+
+  def getNumberOfPropertyKinds: Int
+  def propertyKinds: Range = Range(0, getNumberOfPropertyKinds)
+
   def getNodeLabel(nodeKind: Int): String
   def getNodeKindByLabel(label: String): Int
 
@@ -108,8 +115,6 @@ abstract class Schema {
 
   def getPropertyLabel(nodeKind: Int, propertyKind: Int): String
   def getPropertyKindByName(label: String): Int
-
-  def getNumberOfProperties: Int
 
   final def neighborOffsetArrayIndex(nodeKind: Int, direction: Edge.Direction, edgeKind: Int): Int = {
     val directionFactor: Int = direction.encoding
@@ -166,7 +171,7 @@ class FreeSchema(
   override def getEdgeKindByLabel(label: String): Int                     = edgeMap.getOrElse(label, Schema.UndefinedKind)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
   override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
-  override def getNumberOfProperties: Int                                 = propertyLabels.length
+  override def getNumberOfPropertyKinds: Int                              = propertyLabels.length
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
     new Edge(src, dst, edgeKind, subSeq, property)
