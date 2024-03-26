@@ -632,7 +632,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  }
          |
          |  override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-         |  override def getNumberOfProperties: Int = ${relevantProperties.size + containedNames.size}
+         |  override def getNumberOfPropertyKinds: Int = ${relevantProperties.size + containedNames.size}
          |  override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
          |  override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge = edgeFactories(edgeKind)(src, dst, subSeq, property)
          |  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
