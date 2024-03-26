@@ -184,20 +184,20 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
     // set edge properties
     for {
-      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      nodeKind  <- graph.schema.nodeKinds
+      edgeKind  <- graph.schema.edgeKinds
       direction <- Edge.Direction.values
     } setEdgeProperty(nodeKind, direction, edgeKind)
 
     // remove edges
     for {
-      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      nodeKind  <- graph.schema.nodeKinds
+      edgeKind  <- graph.schema.edgeKinds
       direction <- Edge.Direction.values
     } deleteEdges(nodeKind, direction, edgeKind)
 
     // add nodes
-    for (nodeKind <- Range(0, graph.schema.getNumberOfNodeKinds))
+    for (nodeKind <- graph.schema.nodeKinds)
       addNodes(nodeKind)
 
     // delete nodes
@@ -207,15 +207,15 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
     // add edges
     for {
-      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      nodeKind  <- graph.schema.nodeKinds
+      edgeKind  <- graph.schema.edgeKinds
       direction <- Direction.values
     } addEdges(nodeKind, direction, edgeKind)
 
     // set node properties
     for {
-      nodeKind     <- Range(0, graph.schema.getNumberOfNodeKinds)
-      propertyKind <- Range(0, graph.schema.getNumberOfProperties)
+      nodeKind     <- graph.schema.nodeKinds
+      propertyKind <- graph.schema.propertyKinds
     } setNodeProperties(nodeKind, propertyKind)
 
   }
@@ -249,7 +249,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
     // remove properties
     for {
-      propertyKind <- Range(0, graph.schema.getNumberOfProperties)
+      propertyKind <- graph.schema.propertyKinds
       deletedNode  <- delNodes
     } {
       val pos = graph.schema.propertyOffsetArrayIndex(deletedNode.nodeKind, propertyKind)
@@ -265,7 +265,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
     // delete incident edges
     for {
-      edgeKind    <- Range(0, graph.schema.getNumberOfEdgeKinds) // this part can run in parallel
+      edgeKind    <- graph.schema.edgeKinds // this part can run in parallel
       direction   <- Direction.values
       deletedNode <- delNodes
     } {
@@ -297,8 +297,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
     }
     // Now replacements is filled with the modifications.
     for {
-      nodeKind  <- Range(0, graph.schema.getNumberOfNodeKinds)
-      edgeKind  <- Range(0, graph.schema.getNumberOfEdgeKinds)
+      nodeKind  <- graph.schema.nodeKinds
+      edgeKind  <- graph.schema.edgeKinds
       direction <- Direction.values
     } {
       val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)

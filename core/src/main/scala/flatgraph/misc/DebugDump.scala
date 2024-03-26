@@ -31,9 +31,9 @@ object DebugDump {
     sb.append(s"#Node numbers (kindId, nnodes) ${numstr}, total ${g.nodesArray.iterator.map {
         _.size
       }.sum}\n")
-    for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) {
+    for (nodeKind <- g.schema.nodeKinds) {
       sb.append(s"Node kind ${nodeKind}. (eid, nEdgesOut, nEdgesIn):")
-      for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
+      for (edgeKind <- g.schema.edgeKinds) {
         val posOut = g.schema.neighborOffsetArrayIndex(nodeKind, Outgoing, edgeKind)
         val neO = g.neighbors(posOut + 1) match {
           case null        => "0 [NA]"
@@ -50,7 +50,7 @@ object DebugDump {
 
       for (n <- g._nodes(nodeKind)) {
         val properties = mutable.ArrayBuffer.empty[String]
-        for (propertyKind <- Range(0, g.schema.getNumberOfProperties)) {
+        for (propertyKind <- g.schema.propertyKinds) {
           val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
           val p             = Accessors.getNodeProperty(n, propertyKind)
           if (p.nonEmpty)
@@ -68,7 +68,7 @@ object DebugDump {
           sb.append(s"   ${printNode(n)}       : " + properties.mkString(", ") + "\n")
         }
 
-        for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
+        for (edgeKind <- g.schema.edgeKinds) {
           val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
           val edgesOut  = Accessors.getEdgesOut(n, edgeKind)
           assert(
@@ -82,7 +82,7 @@ object DebugDump {
             sb.append(s"   ${printNode(n)}   [${edgeLabel}] -> " + edgesOut.map { e => printNode(e.dst, e.property) }.mkString(", ") + "\n")
           }
         }
-        for (edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)) {
+        for (edgeKind <- g.schema.edgeKinds) {
           val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
           val edgesIn   = Accessors.getEdgesIn(n, edgeKind)
           assert(Accessors.getNeighborsIn(n, edgeKind).to(Seq) == edgesIn.map(_.src).to(Seq))

@@ -37,10 +37,10 @@ object Accessors {
   }
 
   def getEdgesOut(node: GNode): IndexedSeq[Edge] =
-    Range(0, node.graph.schema.getNumberOfEdgeKinds).flatMap(getEdgesOut(node, _))
+    node.graph.schema.edgeKinds.flatMap(getEdgesOut(node, _))
 
   def getEdgesIn(node: GNode): IndexedSeq[Edge] =
-    Range(0, node.graph.schema.getNumberOfEdgeKinds).flatMap(getEdgesIn(node, _))
+    node.graph.schema.edgeKinds.flatMap(getEdgesIn(node, _))
 
   class EdgeView(neighbors: Array[GNode], base: GNode, properties: Any, inout: Byte, edgeKind: Short, start: Int, end: Int)
       extends IndexedSeq[Edge] {
@@ -83,14 +83,14 @@ object Accessors {
 
   /** follow _all_ OUT edges to their adjacent nodes */
   def getNeighborsOut(g: Graph, nodeKind: Short, seq: Int): Iterator[GNode] = {
-    Range(0, g.schema.getNumberOfEdgeKinds).iterator.flatMap { edgeKind =>
+    g.schema.edgeKinds.iterator.flatMap { edgeKind =>
       getNeighborsOut(g, nodeKind, seq, edgeKind.toShort)
     }
   }
 
   /** follow _all_ IN edges to their adjacent nodes */
   def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int): Iterator[GNode] = {
-    Range(0, g.schema.getNumberOfEdgeKinds).iterator.flatMap { edgeKind =>
+    g.schema.edgeKinds.iterator.flatMap { edgeKind =>
       getNeighborsIn(g, nodeKind, seq, edgeKind.toShort)
     }
   }
@@ -162,7 +162,7 @@ object Accessors {
   def getNodeProperties(node: GNode): IterableOnce[(String, AnyRef)] = {
     val schema = node.graph.schema
     for {
-      propertyKind <- Range(0, schema.getNumberOfProperties)
+      propertyKind <- schema.propertyKinds
       property = Accessors.getNodeProperty(node, propertyKind)
       if property.nonEmpty
       propertyLabel = schema.getPropertyLabel(node.nodeKind, propertyKind)

@@ -25,7 +25,7 @@ object Deserialization {
         else None
       val g         = new Graph(schema, storagePathMaybe)
       val nodekinds = mutable.HashMap[String, Short]()
-      for (nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
+      for (nodeKind <- g.schema.nodeKinds) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
       val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
       val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
       for {
@@ -49,8 +49,8 @@ object Deserialization {
 
       val edgeKinds = mutable.HashMap[(String, String), Short]()
       for {
-        nodeKind <- Range(0, g.schema.getNumberOfNodeKinds)
-        edgeKind <- Range(0, g.schema.getNumberOfEdgeKinds)
+        nodeKind <- g.schema.nodeKinds
+        edgeKind <- g.schema.edgeKinds
       } {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
         val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
@@ -75,8 +75,8 @@ object Deserialization {
 
       val propertykinds = mutable.HashMap[(String, String), Int]()
       for {
-        nodeKind     <- Range(0, g.schema.getNumberOfNodeKinds)
-        propertyKind <- Range(0, g.schema.getNumberOfProperties)
+        nodeKind     <- g.schema.nodeKinds
+        propertyKind <- g.schema.propertyKinds
       } {
         val nodeLabel     = g.schema.getNodeLabel(nodeKind)
         val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)

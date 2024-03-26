@@ -40,7 +40,7 @@ object Graph {
 class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) extends AutoCloseable {
   private val nodeKindCount   = schema.getNumberOfNodeKinds
   private val edgeKindCount   = schema.getNumberOfEdgeKinds
-  private val propertiesCount = schema.getNumberOfProperties
+  private val propertiesCount = schema.getNumberOfPropertyKinds
   private var closed          = false
 
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
@@ -85,7 +85,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     node(kindAndSeq.kind, kindAndSeq.seq)
 
   def allNodes: Iterator[GNode] =
-    Range(0, schema.getNumberOfNodeKinds).iterator.flatMap(_nodes)
+    schema.nodeKinds.iterator.flatMap(_nodes)
 
   def nodeCount(label: String): Int =
     livingNodeCountByKind(schema.getNodeKindByLabel(label))
@@ -104,7 +104,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
       case Schema.UndefinedKind =>
         Iterator.empty
       case propertyKind =>
-        Range(0, schema.getNumberOfNodeKinds).iterator.flatMap { nodeKind =>
+        schema.nodeKinds.iterator.flatMap { nodeKind =>
           Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
         }
     }
@@ -120,9 +120,9 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private def makeNeighbors() = {
     val neighbors = new Array[AnyRef](nodeKindCount * edgeKindCount * NeighborsSlotSize * NumberOfDirections)
     for {
-      nodeKind  <- Range(0, nodeKindCount)
+      nodeKind  <- schema.nodeKinds
       direction <- Edge.Direction.values
-      edgeKind  <- Range(0, edgeKindCount)
+      edgeKind  <- schema.edgeKinds
       pos             = schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
       propertyDefault = schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size = 1)
       value =

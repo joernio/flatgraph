@@ -30,7 +30,7 @@ object TestUtils {
       val schema   = graph.schema
       val newGraph = new Graph(schema, storagePathMaybe)
 
-      for (kind <- Range(0, schema.getNumberOfNodeKinds)) {
+      for (kind <- schema.nodeKinds) {
         newGraph.nodesArray(kind) = graph.nodesArray(kind).clone()
         newGraph.nodesArray(kind).mapInPlace { oldNode =>
           val newNode = schema.makeNode(newGraph, oldNode.nodeKind, oldNode.seq())

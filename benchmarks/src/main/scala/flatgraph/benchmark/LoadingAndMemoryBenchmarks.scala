@@ -106,7 +106,7 @@ object LoadingAndMemoryBenchmarks {
     var count = 0
     for {
       nodesArray <- graph.nodesArray
-      edgeKind   <- Range(0, graph.schema.getNumberOfEdgeKinds).iterator
+      edgeKind   <- graph.schema.edgeKinds.iterator
       node       <- nodesArray
     } count += flatgraph.Accessors.getNeighborsOut(node, edgeKind).length
 
@@ -168,7 +168,7 @@ object LoadingAndMemoryBenchmarks {
     val nodecount = cpgBox.result.asInstanceOf[flatgraph.Graph].livingNodeCountByKind.sum
     val filesize  = new java.io.File("./cpg.fg").length()
     val (nnodeKinds, npropKinds, nEdgeKinds) = Some(cpgBox.result.asInstanceOf[flatgraph.Graph].schema).map { s =>
-      (s.getNumberOfNodeKinds, s.getNumberOfProperties, s.getNumberOfEdgeKinds)
+      (s.getNumberOfNodeKinds, s.getNumberOfPropertyKinds, s.getNumberOfEdgeKinds)
     }.get
     println(
       s"Graph with ${nodecount} nodes and ${touch1.result} edges. There are ${nnodeKinds} node kinds, ${npropKinds} property kinds and ${nEdgeKinds} edge kinds."
