@@ -9,18 +9,15 @@ object PathAwareRepeatStep {
 
   case class WorklistItem[A](traversal: Iterator[A], depth: Int)
 
-  /** @see [[Traversal.repeat]] for a detailed overview
+  /** @see
+    *   [[Traversal.repeat]] for a detailed overview
     *
-    * Implementation note: using recursion results in nicer code, but uses the JVM stack, which only has enough space
-    * for ~10k steps. So instead, this uses a programmatic Stack which is semantically identical. The
-    * RepeatTraversalTests cover this case.
+    * Implementation note: using recursion results in nicer code, but uses the JVM stack, which only has enough space for ~10k steps. So
+    * instead, this uses a programmatic Stack which is semantically identical. The RepeatTraversalTests cover this case.
     */
-  def apply[A](
-      repeatTraversal: Iterator[A] => Iterator[A],
-      behaviour: RepeatBehaviour[A]
-  ): A => PathAwareTraversal[A] = { (element: A) =>
+  def apply[A](repeatTraversal: Iterator[A] => Iterator[A], behaviour: RepeatBehaviour[A]): A => PathAwareTraversal[A] = { (element: A) =>
     new PathAwareTraversal[A](new Iterator[(A, Vector[Any])] {
-      val visited = mutable.Set.empty[A]
+      val visited                                   = mutable.Set.empty[A]
       val emitSack: mutable.Queue[(A, Vector[Any])] = mutable.Queue.empty
       val worklist: Worklist[WorklistItem[A]] = behaviour.searchAlgorithm match {
         case SearchAlgorithm.DepthFirst   => new LifoWorklist()
@@ -41,7 +38,7 @@ object PathAwareRepeatStep {
         var stop = false
         while (worklist.nonEmpty && !stop) {
           val WorklistItem(trav0, depth) = worklist.head
-          val trav = trav0.asInstanceOf[PathAwareTraversal[A]].wrapped
+          val trav                       = trav0.asInstanceOf[PathAwareTraversal[A]].wrapped
           if (trav.isEmpty) worklist.removeHead()
           else if (behaviour.maxDepthReached(depth)) stop = true
           else {

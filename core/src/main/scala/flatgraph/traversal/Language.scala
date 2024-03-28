@@ -301,21 +301,21 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
       }
   }
 
-   @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
+  @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
   def enablePathTracking: PathAwareTraversal[A] =
     iterator match {
       case pathAwareTraversal: PathAwareTraversal[_] => throw new RuntimeException("path tracking is already enabled")
-      case _ => new PathAwareTraversal[A](iterator.map { a => (a, Vector.empty) })
+      case _                                         => new PathAwareTraversal[A](iterator.map { a => (a, Vector.empty) })
     }
 
- @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
+  @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
   def discardPathTracking: Iterator[A] =
     iterator match {
       case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal.wrapped.map { _._1 }
       case _                                         => iterator
     }
 
-  def isPathTracking: Boolean = 
+  def isPathTracking: Boolean =
     iterator.isInstanceOf[PathAwareTraversal[_]]
 
   /** retrieve entire path that has been traversed thus far prerequisite: enablePathTracking has been called previously
@@ -390,7 +390,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
         new PathAwareTraversal(tracked.wrapped.flatMap { case (a, p) =>
           step.apply(a).wrapped.map { case (aa, pp) => (aa, p ++ pp) }
         })
-      case _ => 
+      case _ =>
         iterator.flatMap(RepeatStep(_repeatTraversal, behaviour))
     }
   }

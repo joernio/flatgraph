@@ -19,17 +19,15 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
       }
     })
 
-  override def distinctBy[B](f: A => B): PathAwareTraversal[A] = new PathAwareTraversal[A](wrapped.distinctBy {
-    case (a, p) => f(a)
+  override def distinctBy[B](f: A => B): PathAwareTraversal[A] = new PathAwareTraversal[A](wrapped.distinctBy { case (a, p) =>
+    f(a)
   })
 
   override def collect[B](pf: PartialFunction[A, B]): PathAwareTraversal[B] = flatMap(pf.lift)
 
   override def filter(p: A => Boolean): PathAwareTraversal[A] = new PathAwareTraversal(wrapped.filter(ap => p(ap._1)))
 
-  override def filterNot(p: A => Boolean): PathAwareTraversal[A] = new PathAwareTraversal(
-    wrapped.filterNot(ap => p(ap._1))
-  )
+  override def filterNot(p: A => Boolean): PathAwareTraversal[A] = new PathAwareTraversal(wrapped.filterNot(ap => p(ap._1)))
 
   override def duplicate: (Iterator[A], Iterator[A]) = {
     val tmp = wrapped.duplicate
@@ -48,7 +46,7 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
     })
 
   private[traversal] def _choose[BranchOn >: Null, NewEnd](on: Iterator[A] => Iterator[BranchOn])(
-      options: PartialFunction[BranchOn, Iterator[A] => Iterator[NewEnd]]
+    options: PartialFunction[BranchOn, Iterator[A] => Iterator[NewEnd]]
   ): Iterator[NewEnd] =
     new PathAwareTraversal(wrapped.flatMap { case (a, p) =>
       val branchOnValue: BranchOn = on(Iterator.single(a)).nextOption().getOrElse(null)
@@ -75,8 +73,8 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
         .getOrElse(Iterator.empty)
     })
 
-  private[traversal] def _sideEffect(f: A => _): PathAwareTraversal[A] = new PathAwareTraversal(wrapped.map {
-    case (a, p) => f(a); (a, p)
+  private[traversal] def _sideEffect(f: A => _): PathAwareTraversal[A] = new PathAwareTraversal(wrapped.map { case (a, p) =>
+    f(a); (a, p)
   })
 
 }
