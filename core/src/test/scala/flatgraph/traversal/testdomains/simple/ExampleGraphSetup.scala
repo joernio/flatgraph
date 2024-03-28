@@ -93,7 +93,7 @@ object SimpleDomain {
       edgeLabels = edgeLabels,
       propertyLabels = Array(ExampleGraphSetup.Properties.Name.name),
       edgePropertyPrototypes = new Array(edgeLabels.length),
-      nodePropertyPrototypes = Array(Array.empty[String]),
+      nodePropertyPrototypes = Array(Array.empty[String])
     )
     Graph(schema)
   }
