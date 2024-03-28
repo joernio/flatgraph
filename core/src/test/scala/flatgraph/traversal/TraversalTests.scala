@@ -5,7 +5,7 @@ import flatgraph.GNode
 import flatgraph.help.{DocSearchPackages, Table}
 import flatgraph.help.Table.AvailableWidthProvider
 import flatgraph.traversal.Language.*
-import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
+import flatgraph.traversal.testdomains.simple.SimpleDomain.{Connection, Thing}
 import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -19,11 +19,11 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
   def centerTrav = Iterator.single(center)
 
   "GNode traversals" in {
-    centerTrav.label.l shouldBe Seq("V0")
+    centerTrav.label.l shouldBe Seq(Thing.Label)
     centerTrav.outE.size shouldBe 2
     centerTrav.inE.size shouldBe 0
-    centerTrav.outE("0").size shouldBe 2
-    centerTrav.inE("0").size shouldBe 0
+    centerTrav.outE(Connection.Label).size shouldBe 2
+    centerTrav.inE(Connection.Label).size shouldBe 0
   }
 
   "can only be iterated once" in {

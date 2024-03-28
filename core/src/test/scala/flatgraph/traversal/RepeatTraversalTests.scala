@@ -3,6 +3,7 @@ package flatgraph.traversal
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.traversal.testdomains.simple.ExampleGraphSetup
+import flatgraph.traversal.testdomains.simple.ExampleGraphSetup.Properties
 import flatgraph.traversal.Language.*
 import scala.collection.mutable
 
@@ -48,19 +49,15 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     centerTrav.repeat(_.out)(_.emitAllButFirst.breadthFirstSearch).toSetMutable shouldBe expectedResults
   }
 
-  // TODO continue here
-//   "emit nodes that meet given condition" in {
-//     val expectedResults = Set("L1", "L2", "L3")
-//     centerTrav
-//       .repeat(_.out)(_.emit(_.has(Name.where(_.startsWith("L")))))
-//       .property(Name)
-//       .toSetMutable shouldBe expectedResults
-//     centerTrav
-//       .repeat(_.out)(_.emit(_.has(Name.where(_.startsWith("L")))).breadthFirstSearch)
-//       .property(Name)
-//       .toSetMutable shouldBe expectedResults
-//   }
+  "emit nodes that meet given condition" in {
+    val expectedResults = Set("L1", "L2", "L3")
+    centerTrav
+      .repeat(_.out)(_.emit(_.where(_.property(Properties.Name).filter(_.startsWith("L")))).breadthFirstSearch)
+      .property(Properties.Name)
+      .toSetMutable shouldBe expectedResults
+  }
 
+  // TODO continue here
   // "going through multiple steps in repeat traversal" in {
   //   r1.start.repeat(_.out.out)(_.emit).l shouldBe Seq(r1, r3, r5)
   //   r1.start.enablePathTracking.repeat(_.out.out)(_.emit).path.l shouldBe Seq(
