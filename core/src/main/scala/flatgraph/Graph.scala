@@ -52,7 +52,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
 
   /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
   private[flatgraph] def nodeCountByKind(kind: Int): Int =
-    if (nodesArray.length <= kind) 0
+    if (nodesArray.length < kind || kind < 0) 0
     else nodesArray(kind).length
 
   def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
