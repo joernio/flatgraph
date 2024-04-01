@@ -76,7 +76,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
             val nodeKind = detached.nodeKind
             assert(
               0 <= nodeKind && nodeKind < graph.schema.getNumberOfNodeKinds,
-              s"given nodeKind=$nodeKind does not fit into the graph schema, which only supports node kinds [0..${graph.schema.getNumberOfNodeKinds - 1}] (inclusive range)"
+              s"given nodeKind=$nodeKind does not belong to (this) graph schema, which only supports node kinds [0..${graph.schema.getNumberOfNodeKinds - 1}] (inclusive range)"
             )
 
             val seqId = graph.nodeCountByKind(nodeKind) + Option(newNodes(nodeKind)).map { _.size }.getOrElse(0)
