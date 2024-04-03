@@ -3,11 +3,11 @@ package flatgraph.misc
 object Conversions {
   extension (i: Int) {
     def toShortSafely: Short = {
-      assert(
-        Short.MinValue <= i && i <= Short.MaxValue,
+      val shortValue = i.toShort
+      if (shortValue.toInt == i)
+        shortValue
+      else
         throw new ConversionException(s"cannot safely downcast int with value=$i to short")
-      )
-      i.toShort
     }
   }
 }

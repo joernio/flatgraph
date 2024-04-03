@@ -133,6 +133,13 @@ abstract class Schema {
   def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_]
   def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType
   def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity
+
+  def verifyNodeKindIsValid(kind: Int): Unit = {
+    assert(
+      0 <= kind && kind < getNumberOfNodeKinds,
+      s"given nodeKind=$kind does not belong to (this) graph schema, which only supports node kinds [0..${getNumberOfNodeKinds - 1}] (inclusive range)"
+    )
+  }
 }
 
 class FreeSchema(

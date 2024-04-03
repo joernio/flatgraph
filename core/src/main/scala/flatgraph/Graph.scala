@@ -51,9 +51,10 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private[flatgraph] val neighbors: Array[AnyRef]        = makeNeighbors()
 
   /** Note: this included `deleted` nodes! You might want to use `livingNodeCountByKind` instead. */
-  private[flatgraph] def nodeCountByKind(kind: Int): Int =
-    if (nodesArray.length < kind || kind < 0) 0
-    else nodesArray(kind).length
+  private[flatgraph] def nodeCountByKind(kind: Int): Int = {
+    schema.verifyNodeKindIsValid(kind)
+    nodesArray(kind).length
+  }
 
   def _nodes(nodeKind: Int): InitNodeIterator[GNode] = {
     if (nodeKind < 0 || schema.getNumberOfNodeKinds <= nodeKind) InitNodeIteratorArray(Array.empty[GNode])
