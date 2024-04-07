@@ -447,9 +447,7 @@ class NodeMethods(node: GNode) extends AnyVal {
     Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq())
 
   def propertyOption[ValueType](propertyKey: SinglePropertyKey[ValueType]): Option[ValueType] =
-    Accessors
-      .getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
-      .orElse(Option(propertyKey.default))
+    Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
 
   def propertyOption[ValueType](propertyKey: OptionalPropertyKey[ValueType]): Option[ValueType] =
     Accessors.getNodePropertyOption(node.graph, node.nodeKind, propertyKey.kind, node.seq())
