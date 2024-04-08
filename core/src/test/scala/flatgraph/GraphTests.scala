@@ -753,7 +753,12 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // test cases where the property is not defined
     v0.property(propertySingle) shouldBe "propertySingleDefault"
-    v0.propertyOption(propertySingle) shouldBe Some("propertySingleDefault")
+
+    // TODO this should rather return `Some("propertySingleDefault")` for an undefined property, rather than `None`, but
+    // we only want to make that change after joern's transition to flatgraph
+    // v0.propertyOption(propertySingle) shouldBe Some("propertySingleDefault")
+    v0.propertyOption(propertySingle) shouldBe None
+
     v0.property(propertyOptional) shouldBe None
     v0.propertyOption(propertyOptional) shouldBe None
     v0.property(propertyMulti) shouldBe Seq.empty
