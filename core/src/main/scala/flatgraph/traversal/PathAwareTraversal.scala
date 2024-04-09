@@ -73,7 +73,7 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
         .getOrElse(Iterator.empty)
     })
 
-  private[traversal] def _sideEffect(f: A => _): PathAwareTraversal[A] = new PathAwareTraversal(wrapped.map { case (a, p) =>
+  private[traversal] def _sideEffect(f: A => ?): PathAwareTraversal[A] = new PathAwareTraversal(wrapped.map { case (a, p) =>
     f(a); (a, p)
   })
 

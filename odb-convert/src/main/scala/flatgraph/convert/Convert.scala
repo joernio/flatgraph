@@ -152,7 +152,7 @@ object Convert {
     } finally { fileChannel.close() }
   }
 
-  private def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[_]) = {
+  private def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[?]) = {
     items.find { _ != null } match {
       case None             => (null, null)
       case Some(_: Boolean) => (storage.StorageType.Bool, items.asInstanceOf[mutable.ArrayBuffer[Boolean]].toArray)

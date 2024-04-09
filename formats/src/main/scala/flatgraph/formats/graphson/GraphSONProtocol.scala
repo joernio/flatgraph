@@ -24,7 +24,7 @@ object GraphSONProtocol extends DefaultJsonProtocol {
       }
     }
 
-    def read(value: JsValue): PropertyValue with Product = {
+    def read(value: JsValue): PropertyValue & Product = {
       value match {
         case JsString(v)  => return StringValue(v)
         case JsBoolean(v) => return BooleanValue(v)
@@ -37,7 +37,7 @@ object GraphSONProtocol extends DefaultJsonProtocol {
       }
     }
 
-    def readNonList(value: Seq[_]): PropertyValue with Product = value match {
+    def readNonList(value: Seq[?]): PropertyValue & Product = value match {
       case Seq(JsNumber(v), JsString(typ)) =>
         if (typ.equals(Type.Long.typ)) LongValue(v.toLongExact)
         else if (typ.equals(Type.Int.typ)) IntValue(v.toIntExact)
@@ -52,7 +52,7 @@ object GraphSONProtocol extends DefaultJsonProtocol {
   implicit object LongValueFormat extends RootJsonFormat[LongValue] {
     def write(c: LongValue): JsValue = PropertyValueJsonFormat.write(c)
 
-    def read(value: JsValue): LongValue with Product =
+    def read(value: JsValue): LongValue & Product =
       value.asJsObject.getFields("@value", "@type") match {
         case Seq(JsNumber(v), JsString(typ)) if typ.equals(Type.Long.typ) =>
           LongValue(v.toLongExact)

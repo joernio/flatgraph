@@ -411,7 +411,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       // ^ change this once we switch away from full copy-on-write, see e.g.
       // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
     }
-    val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[_]]).asInstanceOf[mutable.ArraySeq[Any]]
+    val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[mutable.ArraySeq[Any]]
     // this will fail if the edge doesn't support properties. todo: better error message
     val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
     for (edgeRepr <- setEdgeProperties(pos)) {
@@ -584,7 +584,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
       val oldProperty = Option(graph.properties(pos + 1))
         .getOrElse(graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
-        .asInstanceOf[Array[_]]
+        .asInstanceOf[Array[?]]
       if oldProperty == null then throw new SchemaViolationException("Unsupported property on node")
 
       val newQty      = new Array[Int](nodeCount + 1)

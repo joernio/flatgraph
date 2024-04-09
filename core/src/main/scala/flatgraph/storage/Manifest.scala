@@ -20,9 +20,9 @@ object Manifest {
     def write(item: GraphItem): ujson.Value = {
       val res = ujson.Obj()
       res(Keys.Version) = 0
-      res(Keys.Nodes) = ujson.Arr(item.nodes.map(NodeItem.write): _*)
-      res(Keys.Edges) = ujson.Arr(item.edges.map(EdgeItem.write): _*)
-      res(Keys.Properties) = ujson.Arr(item.properties.map(PropertyItem.write): _*)
+      res(Keys.Nodes) = ujson.Arr(item.nodes.map(NodeItem.write)*)
+      res(Keys.Edges) = ujson.Arr(item.edges.map(EdgeItem.write)*)
+      res(Keys.Properties) = ujson.Arr(item.properties.map(PropertyItem.write)*)
       res(Keys.StringPoolLength) = OutlineStorage.write(item.stringPoolLength)
       res(Keys.StringPoolBytes) = OutlineStorage.write(item.stringPoolBytes)
       res
@@ -48,7 +48,7 @@ object Manifest {
       res(Keys.NodeLabel) = item.nodeLabel
       res(Keys.NNodes) = item.nnodes
       res(Keys.Deletions) =
-        if (item.deletions == null || item.deletions.isEmpty) ujson.Null else ujson.Arr(item.deletions.map { seq => ujson.Num(seq) }: _*)
+        if (item.deletions == null || item.deletions.isEmpty) ujson.Null else ujson.Arr(item.deletions.map { seq => ujson.Num(seq) }*)
       res
     }
 

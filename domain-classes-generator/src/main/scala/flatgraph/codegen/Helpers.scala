@@ -68,7 +68,7 @@ object Helpers {
   def snakeCase(camelCase: String): String =
     flatgraph.schema.Helpers.snakeCase(camelCase)
 
-  def getCompleteType[A](property: Property[_]): String =
+  def getCompleteType[A](property: Property[?]): String =
     getCompleteType(property.cardinality, typeFor(property))
 
   def typeFor(containedNode: ContainedNode): String = {
@@ -126,7 +126,7 @@ object Helpers {
     }
   }
 
-  def propertyDefaultValueImpl(propertyDefaultsPath: String, properties: Seq[Property[_]]): String = {
+  def propertyDefaultValueImpl(propertyDefaultsPath: String, properties: Seq[Property[?]]): String = {
     val propertyDefaultValueCases = properties
       .collect {
         case property if property.hasDefault =>
@@ -142,7 +142,7 @@ object Helpers {
        |""".stripMargin
   }
 
-  def propertyDefaultCases(properties: Seq[Property[_]]): String = {
+  def propertyDefaultCases(properties: Seq[Property[?]]): String = {
     properties
       .collect {
         case p if p.hasDefault =>
@@ -151,7 +151,7 @@ object Helpers {
       .mkString(s"$lineSeparator|    ")
   }
 
-  def propertyAccessors(properties: Seq[Property[_]]): String = {
+  def propertyAccessors(properties: Seq[Property[?]]): String = {
     properties
       .map { property =>
         val camelCaseName = camelCase(property.name)

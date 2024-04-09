@@ -114,7 +114,7 @@ object Neo4jCsvImporter extends Importer {
         case s if s.endsWith(ColumnType.EndId.toString) =>
           ColumnDef(None, ColumnType.EndId)
         case propertyDef if propertyDef.contains(":") =>
-          val name :: valueTpe0 :: Nil = propertyDef.split(':').toList
+          val name :: valueTpe0 :: Nil = propertyDef.split(':').toList: @unchecked
           val isArray = propertyDef.endsWith(ColumnType.ArrayMarker) // from the docs: "To define an array type, append [] to the type"
           val valueTpe =
             if (isArray) valueTpe0.dropRight(2)
@@ -222,7 +222,7 @@ object Neo4jCsvImporter extends Importer {
   }
 
   private def parseEntry(rawValue: String, columnDef: ColumnDef, inputFile: Path, lineNo: Int)(
-    handleColumn: PartialFunction[ColumnDef, _]
+    handleColumn: PartialFunction[ColumnDef, ?]
   ): Unit = {
     try {
       handleColumn.applyOrElse(

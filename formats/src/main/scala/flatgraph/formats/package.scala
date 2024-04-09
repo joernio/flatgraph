@@ -19,13 +19,13 @@ package object formats {
   /** @return
     *   true if the given class is either array or a (subclass of) Java Iterable or Scala IterableOnce
     */
-  def isList(clazz: Class[_]): Boolean = {
+  def isList(clazz: Class[?]): Boolean = {
     clazz.isArray ||
-    classOf[java.lang.Iterable[_]].isAssignableFrom(clazz) ||
-    classOf[IterableOnce[_]].isAssignableFrom(clazz)
+    classOf[java.lang.Iterable[?]].isAssignableFrom(clazz) ||
+    classOf[IterableOnce[?]].isAssignableFrom(clazz)
   }
 
-  val iterableForList: PartialFunction[Any, Iterable[_]] = {
+  val iterableForList: PartialFunction[Any, Iterable[?]] = {
     case it: Iterable[_]           => it
     case it: IterableOnce[_]       => it.iterator.toSeq
     case it: java.lang.Iterable[_] => it.asScala

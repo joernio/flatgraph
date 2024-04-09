@@ -13,7 +13,7 @@ package object graphml {
     val Double  = Value("double")
     val String  = Value("string")
 
-    def fromRuntimeClass(clazz: Class[_]): Type.Value = {
+    def fromRuntimeClass(clazz: Class[?]): Type.Value = {
       if (clazz == classOf[Boolean] || clazz == classOf[java.lang.Boolean])
         Type.Boolean
       else if (clazz == classOf[Int] || clazz == classOf[Integer])

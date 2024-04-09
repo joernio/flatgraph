@@ -22,11 +22,11 @@ import scala.jdk.CollectionConverters.*
 class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
   import TraversalHelp._
 
-  def forElementSpecificSteps(elementClass: Class[_], verbose: Boolean)(implicit availableWidthProvider: AvailableWidthProvider): String = {
+  def forElementSpecificSteps(elementClass: Class[?], verbose: Boolean)(implicit availableWidthProvider: AvailableWidthProvider): String = {
     val isNode = classOf[GNode].isAssignableFrom(elementClass)
 
     val stepDocs = {
-      def parentTraitsRecursively(clazz: Class[_]): List[Class[_]] = {
+      def parentTraitsRecursively(clazz: Class[?]): List[Class[?]] = {
         val parents = clazz.getInterfaces.to(List)
         parents ++ parents.flatMap(parentTraitsRecursively)
       }
@@ -76,7 +76,7 @@ class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
   /** Scans the entire classpath for classes annotated with @TraversalExt (using java reflection), to then extract the \@Doc annotations for
     * all steps, and group them by the elementType (e.g. node.Method).
     */
-  lazy val stepDocsByElementType: Map[Class[_], List[StepDoc]] = {
+  lazy val stepDocsByElementType: Map[Class[?], List[StepDoc]] = {
     for {
       packageName <- packageNamesToSearch()
       traversal   <- findClassesAnnotatedWith(packageName, classOf[help.Traversal])
@@ -88,16 +88,16 @@ class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
   private def findClassesAnnotatedWith[Annotation <: JAnnotation](
     packageName: String,
     annotationClass: Class[Annotation]
-  ): Iterator[Class[_]] =
+  ): Iterator[Class[?]] =
     new Reflections(packageName).getTypesAnnotatedWith(annotationClass).asScala.iterator
 
   lazy val genericStepDocs: Iterable[StepDoc] =
-    findStepDocs(classOf[flatgraph.traversal.GenericSteps[_]])
+    findStepDocs(classOf[flatgraph.traversal.GenericSteps[?]])
 
   lazy val nodeStepDocs: Iterable[StepDoc] =
-    findStepDocs(classOf[flatgraph.traversal.NodeSteps[_]])
+    findStepDocs(classOf[flatgraph.traversal.NodeSteps[?]])
 
-  protected def findStepDocs(traversal: Class[_]): Iterable[StepDoc] = {
+  protected def findStepDocs(traversal: Class[?]): Iterable[StepDoc] = {
     DocFinder
       .findDocumentedMethodsOf(traversal)
       // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
