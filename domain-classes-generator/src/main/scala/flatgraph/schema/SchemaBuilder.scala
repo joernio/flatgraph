@@ -6,13 +6,13 @@ import flatgraph.schema.Property.ValueType
 import scala.collection.mutable
 
 class SchemaBuilder(domainShortName: String, basePackage: String, additionalTraversalsPackages: Seq[String] = Seq.empty) {
-  val properties                                               = mutable.ListBuffer.empty[Property[_]]
+  val properties                                               = mutable.ListBuffer.empty[Property[?]]
   val nodeBaseTypes                                            = mutable.ListBuffer.empty[NodeBaseType]
   val nodeTypes                                                = mutable.ListBuffer.empty[NodeType]
   val edgeTypes                                                = mutable.ListBuffer.empty[EdgeType]
-  val constantsByCategory                                      = mutable.Map.empty[String, Seq[Constant[_]]]
+  val constantsByCategory                                      = mutable.Map.empty[String, Seq[Constant[?]]]
   var protoOptions: Option[ProtoOptions]                       = None
-  val noWarnList: mutable.Set[(AbstractNodeType, Property[_])] = mutable.Set.empty
+  val noWarnList: mutable.Set[(AbstractNodeType, Property[?])] = mutable.Set.empty
 
   /** root node trait for all nodes - use if you want to be explicitly unspecific */
   lazy val anyNode: AnyNodeType = new AnyNodeType
@@ -34,7 +34,7 @@ class SchemaBuilder(domainShortName: String, basePackage: String, additionalTrav
   def addNodeType(name: String, comment: String = "")(implicit schemaInfo: SchemaInfo = SchemaInfo.Unknown): NodeType =
     addAndReturn(nodeTypes, new NodeType(name, stringToOption(comment), schemaInfo))
 
-  def addConstants(category: String, constants: Constant[_]*): Seq[Constant[_]] = {
+  def addConstants(category: String, constants: Constant[?]*): Seq[Constant[?]] = {
     val previousEntries = constantsByCategory.getOrElse(category, Seq.empty)
     constantsByCategory.put(category, previousEntries ++ constants)
     constants
@@ -45,7 +45,7 @@ class SchemaBuilder(domainShortName: String, basePackage: String, additionalTrav
     this
   }
 
-  def dontWarnForDuplicateProperty(nodeType: AbstractNodeType, property: Property[_]): SchemaBuilder = {
+  def dontWarnForDuplicateProperty(nodeType: AbstractNodeType, property: Property[?]): SchemaBuilder = {
     noWarnList.add((nodeType, property))
     this
   }

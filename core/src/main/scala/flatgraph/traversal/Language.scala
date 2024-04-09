@@ -165,7 +165,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
 
   /** perform side effect without changing the contents of the traversal */
   @Doc(info = "perform side effect without changing the contents of the traversal")
-  def sideEffect(fun: A => _): Iterator[A] =
+  def sideEffect(fun: A => ?): Iterator[A] =
     iterator match {
       case pathAwareTraversal: PathAwareTraversal[A] =>
         pathAwareTraversal._sideEffect(fun)
@@ -179,26 +179,26 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     * input - analogous to `collect`
     */
   @Doc(info = "perform side effect without changing the contents of the traversal")
-  def sideEffectPF(pf: PartialFunction[A, _]): Iterator[A] =
+  def sideEffectPF(pf: PartialFunction[A, ?]): Iterator[A] =
     sideEffect(pf.lift)
 
   /** only preserves elements if the provided traversal has at least one result */
   @Doc(info = "only preserves elements if the provided traversal has at least one result")
-  def where(trav: Iterator[A] => Iterator[_]): Iterator[A] =
+  def where(trav: Iterator[A] => Iterator[?]): Iterator[A] =
     iterator.filter { (a: A) =>
       trav(Iterator.single(a)).hasNext
     }
 
   /** only preserves elements if the provided traversal does _not_ have any results */
   @Doc(info = "only preserves elements if the provided traversal does _not_ have any results")
-  def whereNot(trav: Iterator[A] => Iterator[_]): Iterator[A] =
+  def whereNot(trav: Iterator[A] => Iterator[?]): Iterator[A] =
     iterator.filter { (a: A) =>
       !trav(Iterator.single(a)).hasNext
     }
 
   /** only preserves elements if the provided traversal does _not_ have any results - alias for whereNot */
   @Doc(info = "only preserves elements if the provided traversal does _not_ have any results - alias for whereNot")
-  def not(trav: Iterator[A] => Iterator[_]): Iterator[A] =
+  def not(trav: Iterator[A] => Iterator[?]): Iterator[A] =
     whereNot(trav)
 
   /** only preserves elements for which _at least one of_ the given traversals has at least one result Works for arbitrary amount of 'OR'
@@ -208,7 +208,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     *   {{{.or(_.label("someLabel"), _.has("someProperty"))}}}
     */
   @Doc(info = "only preserves elements for which _at least one of_ the given traversals has at least one result")
-  def or(traversals: (Iterator[A] => Iterator[_])*): Iterator[A] = {
+  def or(traversals: (Iterator[A] => Iterator[?])*): Iterator[A] = {
     iterator.filter { (a: A) =>
       traversals.exists { trav =>
         trav(Iterator.single(a)).hasNext
@@ -223,7 +223,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     *   {{{.and(_.label("someLabel"), _.has("someProperty"))}}}
     */
   @Doc(info = "only preserves elements for which _all of_ the given traversals have at least one result")
-  def and(traversals: (Iterator[A] => Iterator[_])*): Iterator[A] = {
+  def and(traversals: (Iterator[A] => Iterator[?])*): Iterator[A] = {
     iterator.filter { (a: A) =>
       traversals.forall { trav =>
         trav(Iterator.single(a)).hasNext
@@ -241,7 +241,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   @Doc(info = "union/sum/aggregate/join given traversals from the current point")
   def union[B](traversals: (Iterator[A] => Iterator[B])*): Iterator[B] = iterator match {
     case pathAwareTraversal: PathAwareTraversal[A] =>
-      pathAwareTraversal._union(traversals: _*)
+      pathAwareTraversal._union(traversals*)
     case _ =>
       iterator.flatMap { (a: A) =>
         traversals.flatMap(_.apply(Iterator.single(a)))
@@ -289,7 +289,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   @Doc(info = "evaluates the provided traversals in order and returns the first traversal that emits at least one element")
   def coalesce[NewEnd](options: (Iterator[A] => Iterator[NewEnd])*): Iterator[NewEnd] = iterator match {
     case pathAwareTraversal: PathAwareTraversal[A] =>
-      pathAwareTraversal._coalesce(options: _*)
+      pathAwareTraversal._coalesce(options*)
     case _ =>
       iterator.flatMap { (a: A) =>
         options.iterator
@@ -316,7 +316,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     }
 
   def isPathTracking: Boolean =
-    iterator.isInstanceOf[PathAwareTraversal[_]]
+    iterator.isInstanceOf[PathAwareTraversal[?]]
 
   /** retrieve entire path that has been traversed thus far prerequisite: enablePathTracking has been called previously
     *
@@ -379,7 +379,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   @Doc(info = "repeat the given traversal")
   def repeat[B >: A](
     repeatTraversal: Iterator[A] => Iterator[B]
-  )(implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B] _): Iterator[B] = {
+  )(implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B]): Iterator[B] = {
     val behaviour = behaviourBuilder(new RepeatBehaviour.Builder[B]).build
     val _repeatTraversal =
       repeatTraversal
@@ -510,7 +510,7 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
 
   /** alias for {{{label}}} */
   def hasLabel(values: String*): Iterator[A] =
-    label(values: _*)
+    label(values*)
 
   /** filter by the node label (inverse) */
   def labelNot(value: String): Iterator[A] =
@@ -560,7 +560,7 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
   def property[@specialized T](name: String): Iterator[T] =
     traversal.flatMap(_.propertyOption[T](name))
 
-  def property[@specialized ValueType](propertyKey: PropertyKey[ValueType, _]): Iterator[ValueType] =
+  def property[@specialized ValueType](propertyKey: PropertyKey[ValueType, ?]): Iterator[ValueType] =
     propertyKey match {
       case propertyKey: SinglePropertyKey[_]   => property(propertyKey)
       case propertyKey: OptionalPropertyKey[_] => property(propertyKey)

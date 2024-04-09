@@ -22,75 +22,75 @@ object FormalQtyType {
   object QtyMulti extends FormalQuantity
 
   sealed trait FormalType {
-    def allocate(n: Int): Array[_]
+    def allocate(n: Int): Array[?]
   }
 
   object NothingType extends FormalType {
-    def allocate(n: Int): Array[_] = null
+    def allocate(n: Int): Array[?] = null
   }
 
   object BoolType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Boolean](n)
+    override def allocate(n: Int): Array[?] = new Array[Boolean](n)
   }
   case class BoolTypeWithDefault(b: Boolean) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
 
   object ByteType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Byte](n)
+    override def allocate(n: Int): Array[?] = new Array[Byte](n)
   }
 
   case class ByteTypeWithDefault(b: Byte) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
 
   object ShortType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Short](n)
+    override def allocate(n: Int): Array[?] = new Array[Short](n)
   }
 
   case class ShortTypeWithDefault(b: Short) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
 
   object IntType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Int](n)
+    override def allocate(n: Int): Array[?] = new Array[Int](n)
   }
 
   case class IntTypeWithDefault(b: Int) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
   object LongType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Long](n)
+    override def allocate(n: Int): Array[?] = new Array[Long](n)
   }
 
   case class LongTypeWithDefault(b: Long) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
 
   object FloatType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Float](n)
+    override def allocate(n: Int): Array[?] = new Array[Float](n)
   }
 
   case class FloatTypeWithDefault(b: Float) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
   object DoubleType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[Double](n)
+    override def allocate(n: Int): Array[?] = new Array[Double](n)
   }
 
   case class DoubleTypeWithDefault(b: Double) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
 
   object StringType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[String](n)
+    override def allocate(n: Int): Array[?] = new Array[String](n)
   }
 
   case class StringTypeWithDefault(b: String) extends FormalType {
-    override def allocate(n: Int): Array[_] = Array.fill(n)(b)
+    override def allocate(n: Int): Array[?] = Array.fill(n)(b)
   }
   object RefType extends FormalType {
-    override def allocate(n: Int): Array[_] = new Array[GNode](n)
+    override def allocate(n: Int): Array[?] = new Array[GNode](n)
   }
 }
 
@@ -130,7 +130,7 @@ abstract class Schema {
   // fixme: API will need to change when we add generated edge classes (relevant for edge properties)
   def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge
 
-  def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_]
+  def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[?]
   def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType
   def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity
 
@@ -184,7 +184,7 @@ class FreeSchema(
     new Edge(src, dst, edgeKind, subSeq, property)
 
   override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyTypes(propertyKind)
-  override def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[_] =
+  override def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[?] =
     edgePropertyTypes(edgeKind).allocate(size)
 
   override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity =

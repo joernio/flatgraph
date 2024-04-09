@@ -8,7 +8,7 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
 
 sealed trait ColumnDef
 case class ScalarColumnDef(valueType: ColumnType.Value)                                              extends ColumnDef
-case class ArrayColumnDef(valueType: Option[ColumnType.Value], iteratorAccessor: Any => Iterable[_]) extends ColumnDef
+case class ArrayColumnDef(valueType: Option[ColumnType.Value], iteratorAccessor: Any => Iterable[?]) extends ColumnDef
 
 class ColumnDefinitions(propertyNames: Iterable[String]) {
   private val propertyNamesOrdered     = propertyNames.toSeq.sorted
@@ -48,7 +48,7 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
   /** for data file updates our internal `_columnDefByPropertyName` model with type information based on runtime values, so that we later
     * have all metadata required for the header file
     */
-  def propertyValues(byNameAccessor: String => Option[_]): Seq[String] = {
+  def propertyValues(byNameAccessor: String => Option[?]): Seq[String] = {
     propertyNamesOrdered.map { propertyName =>
       byNameAccessor(propertyName) match {
         case None =>
@@ -134,7 +134,7 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
     * same property
     */
   private def deriveNeo4jType(value: Any): ColumnDef = {
-    def deriveNeo4jTypeForArray(iteratorAccessor: Any => Iterable[_]): ArrayColumnDef = {
+    def deriveNeo4jTypeForArray(iteratorAccessor: Any => Iterable[?]): ArrayColumnDef = {
       // Iterable is immutable, so we can safely (try to) get it's first element
       val valueTypeMaybe = iteratorAccessor(value).iterator
         .nextOption()
@@ -145,19 +145,19 @@ class ColumnDefinitions(propertyNames: Iterable[String]) {
 
     value match {
       case _: Iterable[_] =>
-        deriveNeo4jTypeForArray(_.asInstanceOf[Iterable[_]])
+        deriveNeo4jTypeForArray(_.asInstanceOf[Iterable[?]])
       case _: IterableOnce[_] =>
-        deriveNeo4jTypeForArray(_.asInstanceOf[IterableOnce[_]].iterator.toSeq)
+        deriveNeo4jTypeForArray(_.asInstanceOf[IterableOnce[?]].iterator.toSeq)
       case _: java.lang.Iterable[_] =>
-        deriveNeo4jTypeForArray(_.asInstanceOf[java.lang.Iterable[_]].asScala)
+        deriveNeo4jTypeForArray(_.asInstanceOf[java.lang.Iterable[?]].asScala)
       case _: Array[_] =>
-        deriveNeo4jTypeForArray(x => ArraySeq.unsafeWrapArray(x.asInstanceOf[Array[_]]))
+        deriveNeo4jTypeForArray(x => ArraySeq.unsafeWrapArray(x.asInstanceOf[Array[?]]))
       case scalarValue =>
         ScalarColumnDef(deriveNeo4jTypeForScalarValue(scalarValue.getClass))
     }
   }
 
-  private def deriveNeo4jTypeForScalarValue(clazz: Class[_]): ColumnType.Value = {
+  private def deriveNeo4jTypeForScalarValue(clazz: Class[?]): ColumnType.Value = {
     if (clazz == classOf[String])
       ColumnType.String
     else if (clazz == classOf[Int] || clazz == classOf[Integer])

@@ -17,7 +17,7 @@ package object graphson {
     val List    = GraphSONVal(7, "g:List")
     val NodeId  = GraphSONVal(8, "g:VertexId")
 
-    def fromRuntimeClass(clazz: Class[_]): Type.Value = {
+    def fromRuntimeClass(clazz: Class[?]): Type.Value = {
       if (clazz == classOf[Boolean] || clazz == classOf[java.lang.Boolean])
         Type.Boolean
       else if (clazz == classOf[Int] || clazz == classOf[Integer])
@@ -30,7 +30,7 @@ package object graphson {
         Type.Double
       else if (clazz == classOf[String])
         Type.String
-      else if (clazz == classOf[List[_]])
+      else if (clazz == classOf[List[?]])
         Type.List
       else
         throw new AssertionError(s"unsupported runtime class `$clazz` - only ${Type.values.mkString("|")} are supported...}")

@@ -231,10 +231,10 @@ class ProtoGen(schema: Schema) {
       .mkString("\n")
   }
 
-  private def enumEntryMaybe(constant: Constant[_]): EnumEntryMaybe =
+  private def enumEntryMaybe(constant: Constant[?]): EnumEntryMaybe =
     EnumEntryMaybe(constant.protoId, constant.name, constant.comment)
 
-  private def enumEntryMaybe(property: Property[_]): EnumEntryMaybe =
+  private def enumEntryMaybe(property: Property[?]): EnumEntryMaybe =
     EnumEntryMaybe(property.protoId, property.name, property.comment)
 
   private def enumEntryMaybe(nodeType: NodeType): EnumEntryMaybe =

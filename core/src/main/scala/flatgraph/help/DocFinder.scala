@@ -1,7 +1,7 @@
 package flatgraph.help
 
 object DocFinder {
-  def findDocumentedMethodsOf(clazz: Class[_]): Iterable[StepDoc] = {
+  def findDocumentedMethodsOf(clazz: Class[?]): Iterable[StepDoc] = {
     clazz.getMethods.flatMap { method =>
       method.getAnnotations.find(_.isInstanceOf[Doc]).map { case docAnnotation: Doc =>
         StepDoc(

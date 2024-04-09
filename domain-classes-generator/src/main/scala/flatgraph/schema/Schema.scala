@@ -14,14 +14,14 @@ class Schema(
   val domainShortName: String,
   val basePackage: String,
   val additionalTraversalsPackages: Seq[String],
-  val properties: Seq[Property[_]],
+  val properties: Seq[Property[?]],
   val anyNode: AnyNodeType,
   val nodeBaseTypes: Seq[NodeBaseType],
   val nodeTypes: Seq[NodeType],
   val edgeTypes: Seq[EdgeType],
-  val constantsByCategory: Map[String, Seq[Constant[_]]],
+  val constantsByCategory: Map[String, Seq[Constant[?]]],
   val protoOptions: Option[ProtoOptions],
-  val noWarnList: Set[(AbstractNodeType, Property[_])]
+  val noWarnList: Set[(AbstractNodeType, Property[?])]
 ) {
 
   /** nodeTypes and nodeBaseTypes combined */
@@ -29,11 +29,11 @@ class Schema(
     nodeTypes ++ nodeBaseTypes
 
   /** properties that are used in node types */
-  def nodeProperties: Seq[Property[_]] =
+  def nodeProperties: Seq[Property[?]] =
     properties.filter(property => (nodeTypes ++ nodeBaseTypes).exists(_.properties.contains(property)))
 
   /** properties that are used in edge types */
-  def edgeProperties: Seq[Property[_]] =
+  def edgeProperties: Seq[Property[?]] =
     properties.filter(property => edgeTypes.exists(_.properties.contains(property)))
 }
 
@@ -59,12 +59,12 @@ abstract class AbstractNodeType(val name: String, val comment: Option[String], v
   def withoutStarter(): this.type          = starterName(null)
 
   /** properties (including potentially inherited properties) */
-  override def properties: Seq[Property[_]] = {
+  override def properties: Seq[Property[?]] = {
     val entireClassHierarchy = this +: extendzRecursively
     entireClassHierarchy.flatMap(_.propertiesWithoutInheritance).distinct.sortBy(_.name.toLowerCase)
   }
 
-  def propertiesWithoutInheritance: Seq[Property[_]] =
+  def propertiesWithoutInheritance: Seq[Property[?]] =
     _properties.toSeq.sortBy(_.name.toLowerCase)
 
   def extendz(additional: NodeBaseType*): this.type = {
@@ -144,14 +144,14 @@ class NodeType(name: String, comment: Option[String], schemaInfo: SchemaInfo)
     with HasOptionalProtoId {
   protected val _containedNodes: mutable.Set[ContainedNode] = mutable.Set.empty
 
-  private var _primaryKey: Option[Property[_]] = None
+  private var _primaryKey: Option[Property[?]] = None
 
-  def primaryKey(p: Property[_]): this.type = {
+  def primaryKey(p: Property[?]): this.type = {
     this._primaryKey = Option(p)
     this
   }
 
-  def primaryKey: Option[Property[_]] = this._primaryKey
+  def primaryKey: Option[Property[?]] = this._primaryKey
 
   lazy val classNameDb = s"${className}Db"
 
@@ -219,7 +219,7 @@ class EdgeType(val name: String, val comment: Option[String], val schemaInfo: Sc
   override def toString = s"EdgeType($name)"
 
   /** properties (including potentially inherited properties) */
-  def properties: Seq[Property[_]] =
+  def properties: Seq[Property[?]] =
     _properties.toSeq.sortBy(_.name.toLowerCase)
 }
 
@@ -247,7 +247,7 @@ class Property[A](val name: String, val valueType: Property.ValueType[A], val co
   }
 
   def isMandatory: Boolean =
-    cardinality.isInstanceOf[Cardinality.One[_]]
+    cardinality.isInstanceOf[Cardinality.One[?]]
 
   def hasDefault: Boolean =
     default.isDefined
@@ -280,7 +280,7 @@ object Property {
     object Long    extends ValueType[Long]
     object Float   extends ValueType[Float]
     object Double  extends ValueType[Double]
-    object List    extends ValueType[Seq[_]]
+    object List    extends ValueType[Seq[?]]
     object Char    extends ValueType[Char]
     object NodeRef extends ValueType[Any]
     object Unknown extends ValueType[Any]
@@ -365,20 +365,20 @@ trait HasClassName {
 }
 
 trait HasProperties {
-  protected val _properties: mutable.Set[Property[_]] = mutable.Set.empty
+  protected val _properties: mutable.Set[Property[?]] = mutable.Set.empty
 
-  def addProperty(additional: Property[_]): this.type = {
+  def addProperty(additional: Property[?]): this.type = {
     _properties.add(additional)
     this
   }
 
-  def addProperties(additional: Property[_]*): this.type = {
+  def addProperties(additional: Property[?]*): this.type = {
     additional.foreach(addProperty)
     this
   }
 
   /** properties (including potentially inherited properties) */
-  def properties: Seq[Property[_]]
+  def properties: Seq[Property[?]]
 }
 
 trait HasOptionalProtoId {
@@ -399,10 +399,10 @@ trait HasSchemaInfo {
 /** carry extra information on where a schema element is being defined, e.g. when we want to be able to refer back that `node XYZ` was
   * defined in `BaseSchema`, e.g. for documentation
   */
-case class SchemaInfo(definedIn: Option[Class[_]])
+case class SchemaInfo(definedIn: Option[Class[?]])
 object SchemaInfo {
   val Unknown = SchemaInfo(None)
 
-  def forClass(schemaClass: Class[_]): SchemaInfo =
+  def forClass(schemaClass: Class[?]): SchemaInfo =
     SchemaInfo(Option(schemaClass))
 }
