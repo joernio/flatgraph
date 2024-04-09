@@ -40,7 +40,7 @@ class TraversalHelp(packageNamesToSearch: DocSearchPackages) {
 
     val table = Table(
       columnNames = if (verbose) ColumnNames ++ Seq("implemented in", "more details") else ColumnNames,
-      rows = stepDocs.sortBy(_.methodName).map { stepDoc =>
+      rows = stepDocs.distinct.sortBy(_.methodName).map { stepDoc =>
         val baseColumns = List(s".${stepDoc.methodName}", stepDoc.doc.info)
         if (verbose) baseColumns ++ Seq(stepDoc.traversalClassName, stepDoc.doc.longInfo)
         else baseColumns
