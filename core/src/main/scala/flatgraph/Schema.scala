@@ -148,7 +148,7 @@ class FreeSchema(
   nodePropertyPrototypes: Array[AnyRef],
   val edgeLabels: Array[String],
   edgePropertyPrototypes: Array[AnyRef],
-  formalqtys: Array[FormalQtyType.FormalQuantity] = null
+  formalQuantities: Array[FormalQtyType.FormalQuantity] = null
 ) extends Schema {
   val nodeMap = nodeLabels.zipWithIndex.toMap
   val propMap = propertyLabels.zipWithIndex.toMap
@@ -188,10 +188,10 @@ class FreeSchema(
     edgePropertyTypes(edgeKind).allocate(size)
 
   override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity =
-    if (formalqtys == null) getNodePropertyFormalType(nodeKind, propertyKind) match {
+    if (formalQuantities == null) getNodePropertyFormalType(nodeKind, propertyKind) match {
       case FormalQtyType.NothingType => FormalQtyType.QtyNone
       case _                         => FormalQtyType.QtyMulti
     }
-    else formalqtys(propertyOffsetArrayIndex(nodeKind, propertyKind))
+    else formalQuantities(propertyOffsetArrayIndex(nodeKind, propertyKind))
 
 }
