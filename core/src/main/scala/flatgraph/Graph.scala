@@ -97,12 +97,11 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def allEdges: Iterator[Edge] =
     allNodes.flatMap(Accessors.getEdgesOut)
 
-  /** Lookup nodes with a given label and property value via index. N.b. currently only supported for String properties.
-   * Context: MultiDictIndex requires the key to be a String and this is using reverse indices, i.e. the lookup
-   * is from String -> GNode.
-   */
+  /** Lookup nodes with a given label and property value via index. N.b. currently only supported for String properties. Context:
+    * MultiDictIndex requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.
+    */
   def nodesWithProperty(label: String, propertyName: String, value: String): Iterator[GNode] = {
-    val nodeKind = schema.getNodeKindByLabel(label)
+    val nodeKind     = schema.getNodeKindByLabel(label)
     val propertyKind = schema.getPropertyKindByName(propertyName)
     if (nodeKind == Schema.UndefinedKind || propertyKind == Schema.UndefinedKind)
       Iterator.empty
@@ -110,10 +109,9 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
       Accessors.getWithInverseIndex(this, nodeKind, propertyKind, value)
   }
 
-  /** Lookup nodes with a given property value via index. N.b. currently only supported for String properties.
-   * Context: MultiDictIndex requires the key to be a String and this is using reverse indices, i.e. the lookup
-   * is from String -> GNode.
-   */
+  /** Lookup nodes with a given property value via index. N.b. currently only supported for String properties. Context: MultiDictIndex
+    * requires the key to be a String and this is using reverse indices, i.e. the lookup is from String -> GNode.
+    */
   def nodesWithProperty(propertyName: String, value: String): Iterator[GNode] = {
     schema.getPropertyKindByName(propertyName) match {
       case Schema.UndefinedKind =>
