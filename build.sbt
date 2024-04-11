@@ -3,7 +3,7 @@ ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
 val slf4jVersion = "2.0.7"
-val scala3 = "3.4.1"
+val scala3 = "3.3.3"
 val scala2_12 = "2.12.18"
 
 /** Only the below listed projects are included in things like `sbt compile`.
