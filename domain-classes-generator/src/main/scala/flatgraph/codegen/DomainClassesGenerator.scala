@@ -1053,16 +1053,8 @@ class DomainClassesGenerator(schema: Schema) {
 
       val neighborContextsByEdge: Seq[NeighborContextsByEdge] =
         Direction.all.flatMap { direction =>
-          // to ensure we generate each `neighborViaEdgeDirection` step only once for each node type hierarchy tree, only generate it for the highest-up node type
-          // this is to avoid any 'presumably' duplicate steps, which would cause to unambiguous implicits
-          val inheritedNeighbors = nodeType.extendzRecursively
-            .flatMap(_.edges(direction))
-            .map(adjacentNode => (adjacentNode.viaEdge, adjacentNode.neighbor))
-            .toSet
-
           nodeType
             .edges(direction)
-            .filterNot(adjacentNode => inheritedNeighbors.contains((adjacentNode.viaEdge, adjacentNode.neighbor)))
             .groupBy(_.viaEdge)
             .map { case (edge, adjacentNodes) =>
               val neighborContexts = adjacentNodes.map { adjacentNode =>

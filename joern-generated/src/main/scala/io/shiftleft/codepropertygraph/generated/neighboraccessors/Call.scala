@@ -185,6 +185,10 @@ final class AccessNeighborsForCall(val node: nodes.Call) extends AnyVal {
     */
   def fieldIdentifierViaCdgOut: Iterator[nodes.FieldIdentifier] = cdgOut.collectAll[nodes.FieldIdentifier]
 
+  /** Traverse to FIELD_IDENTIFIER via CFG IN edge.
+    */
+  def fieldIdentifierViaCfgIn: Option[nodes.FieldIdentifier] = cfgIn.collectAll[nodes.FieldIdentifier].nextOption()
+
   /** Traverse to FIELD_IDENTIFIER via DOMINATE IN edge.
     */
   def fieldIdentifierViaDominateIn: Iterator[nodes.FieldIdentifier] = dominateIn.collectAll[nodes.FieldIdentifier]
@@ -565,6 +569,8 @@ final class AccessNeighborsForCall(val node: nodes.Call) extends AnyVal {
 
   def cdgOut: Iterator[nodes.CfgNode] = node._cdgOut.cast[nodes.CfgNode]
 
+  def cfgIn: Iterator[nodes.FieldIdentifier] = node._cfgIn.cast[nodes.FieldIdentifier]
+
   def cfgOut: Iterator[nodes.CfgNode] = node._cfgOut.cast[nodes.CfgNode]
 
   def conditionIn: Iterator[nodes.ControlStructure] = node._conditionIn.cast[nodes.ControlStructure]
@@ -774,6 +780,10 @@ final class AccessNeighborsForCallTraversal(val traversal: Iterator[nodes.Call])
   /** Traverse to FIELD_IDENTIFIER via CDG OUT edge.
     */
   def fieldIdentifierViaCdgOut: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaCdgOut)
+
+  /** Traverse to FIELD_IDENTIFIER via CFG IN edge.
+    */
+  def fieldIdentifierViaCfgIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.fieldIdentifierViaCfgIn)
 
   /** Traverse to FIELD_IDENTIFIER via DOMINATE IN edge.
     */
@@ -1155,6 +1165,8 @@ final class AccessNeighborsForCallTraversal(val traversal: Iterator[nodes.Call])
   def cdgIn: Iterator[nodes.CfgNode] = traversal.flatMap(_.cdgIn)
 
   def cdgOut: Iterator[nodes.CfgNode] = traversal.flatMap(_.cdgOut)
+
+  def cfgIn: Iterator[nodes.FieldIdentifier] = traversal.flatMap(_.cfgIn)
 
   def cfgOut: Iterator[nodes.CfgNode] = traversal.flatMap(_.cfgOut)
 
