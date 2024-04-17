@@ -669,14 +669,14 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin
       )
       concreteStoredConv.addOne(
-        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
       accessorsForConcreteNodeTraversals.addOne(
-        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
+        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
           generatePropertyTraversals(p, propertyKindByProperty(p)) + "}"
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode with nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal.iterator)""".stripMargin
+        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal.iterator)""".stripMargin
       )
     }
 
