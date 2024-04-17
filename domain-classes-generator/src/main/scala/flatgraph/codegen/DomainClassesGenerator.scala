@@ -296,7 +296,7 @@ class DomainClassesGenerator(schema: Schema) {
           case one: Cardinality.One[?] =>
             newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
             newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
-            propDictItems.append(s"""res.put("${p.name}", this.$pname )""")
+            propDictItems.append(s"""if ((${unpackDefault(p.valueType, one.default)}) != this.$pname) res.put("${p.name}", this.$pname )""")
             flattenItems.append(s"""interface.insertProperty(this, ${propertyKindByProperty(p)}, Iterator(this.$pname))""")
         }
       }
