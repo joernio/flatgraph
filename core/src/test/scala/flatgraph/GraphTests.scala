@@ -173,6 +173,9 @@ class GraphTests extends AnyWordSpec with Matchers {
     Accessors.getNeighborsIn(V0_0_GNode).size shouldBe 2
     V0_0_GNode.out.size shouldBe 1
     V0_0_GNode.in.size shouldBe 2
+
+    g.toString shouldBe "Graph[4 nodes]"
+    g.nodeCountByLabel shouldBe Map("V0" -> 2, "V1" -> 2)
   }
 
   val schema = TestSchema.make(1, 1)

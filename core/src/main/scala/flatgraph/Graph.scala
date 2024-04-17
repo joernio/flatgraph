@@ -157,4 +157,15 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     }
   }
 
+  override def toString(): String =
+    s"Graph[${nodeCount()} nodes]"
+
+  def nodeCountByLabel: Map[String, Int] = {
+    schema.nodeKinds
+      .map(schema.getNodeLabel)
+      .map(label => label -> nodeCount(label))
+      .filter { case (label, count) => count > 0 }
+      .toMap
+  }
+
 }
