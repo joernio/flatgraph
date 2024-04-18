@@ -890,6 +890,9 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |  override def close(): Unit =
          |    _graph.close()
+         |
+         |  override def toString(): String =
+         |    String.format("$domainShortName[%s]", graph)
          |}
          |
          |@flatgraph.help.TraversalSource
