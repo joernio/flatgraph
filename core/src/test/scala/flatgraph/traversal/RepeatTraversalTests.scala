@@ -1,11 +1,13 @@
 package flatgraph.traversal
 
-import org.scalatest.matchers.should.Matchers._
+import flatgraph.GNode
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+import flatgraph.Implicits.*
 import flatgraph.traversal.testdomains.simple.ExampleGraphSetup
-import flatgraph.traversal.testdomains.simple.ExampleGraphSetup.Properties
+import flatgraph.traversal.testdomains.simple.ExampleGraphSetup.Properties.Name
 import flatgraph.traversal.Language.*
-import scala.collection.mutable
+import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
 
 class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
   /* most tests work with this simple graph:
@@ -52,119 +54,120 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
   "emit nodes that meet given condition" in {
     val expectedResults = Set("L1", "L2", "L3")
     centerTrav
-      .repeat(_.out)(_.emit(_.where(_.property(Properties.Name).filter(_.startsWith("L")))).breadthFirstSearch)
-      .property(Properties.Name)
+      .repeat(_.out)(_.emit(_.where(_.property(Name).filter(_.startsWith("L")))).breadthFirstSearch)
+      .property(Name)
       .toSetMutable shouldBe expectedResults
   }
 
-  // TODO continue here
-  // "going through multiple steps in repeat traversal" in {
-  //   r1.start.repeat(_.out.out)(_.emit).l shouldBe Seq(r1, r3, r5)
-  //   r1.start.enablePathTracking.repeat(_.out.out)(_.emit).path.l shouldBe Seq(
-  //     Seq(r1),
-  //     Seq(r1, r2, r3),
-  //     Seq(r1, r2, r3, r4, r5)
-  //   )
-  // }
+   "going through multiple steps in repeat traversal" in {
+     r1.start.repeat(_.out.out)(_.emit).l shouldBe Seq(r1, r3, r5)
+     r1.start.enablePathTracking.repeat(_.out.out)(_.emit).path.l shouldBe Seq(
+       Seq(r1),
+       Seq(r1, r2, r3),
+       Seq(r1, r2, r3, r4, r5)
+     )
+   }
 
-  // "support arbitrary `until` condition" should {
-  //   "work without emit" in {
-  //     val expectedResults = Set("L2", "R2")
+   "support arbitrary `until` condition" should {
+     "work without emit" in {
+       val expectedResults = Set("L2", "R2")
 
-  //     centerTrav
-  //       .repeat(_.out)(_.until(_.has(Name.where(_.matches(".*2")))))
-  //       .property(Name)
-  //       .toSetMutable shouldBe expectedResults
+       centerTrav
+         .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))))
+         .property(Name)
+         .toSetMutable shouldBe expectedResults
 
-  //     centerTrav
-  //       .repeat(_.out)(_.until(_.has(Name.where(_.matches(".*2")))).breadthFirstSearch)
-  //       .property(Name)
-  //       .toSetMutable shouldBe expectedResults
-  //   }
+       centerTrav
+         .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))).breadthFirstSearch)
+         .property(Name)
+         .toSetMutable shouldBe expectedResults
+     }
 
-  //   "work in combination with emit" in {
-  //     val expectedResults = Set("Center", "L1", "L2", "R1", "R2")
-  //     centerTrav
-  //       .repeat(_.out)(_.until(_.has(Name.where(_.matches(".*2")))).emit)
-  //       .property(Name)
-  //       .toSetMutable shouldBe expectedResults
-  //     centerTrav
-  //       .repeat(_.out)(_.until(_.has(Name.where(_.matches(".*2")))).emit.breadthFirstSearch)
-  //       .property(Name)
-  //       .toSetMutable shouldBe expectedResults
-  //   }
+     "work in combination with emit" in {
+       val expectedResults = Set("Center", "L1", "L2", "R1", "R2")
+       centerTrav
+         .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))).emit)
+         .property(Name)
+         .toSetMutable shouldBe expectedResults
+       centerTrav
+         .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))).emit.breadthFirstSearch)
+         .property(Name)
+         .toSetMutable shouldBe expectedResults
+     }
 
-  //   "result in 'repeat/until' behaviour, i.e. `until` condition is only evaluated after one iteration" in {
-  //     val expectedResults = Set("L1", "R1")
-  //     centerTrav.repeat(_.out)(_.until(_.hasLabel(Thing.Label))).property(Name).toSetMutable shouldBe expectedResults
-  //     centerTrav
-  //       .repeat(_.out)(_.until(_.hasLabel(Thing.Label)).breadthFirstSearch)
-  //       .property(Name)
-  //       .toSetMutable shouldBe expectedResults
-  //   }
+     "result in 'repeat/until' behaviour, i.e. `until` condition is only evaluated after one iteration" in {
+       val expectedResults = Set("L1", "R1")
+       centerTrav.repeat(_.out)(_.until(_.hasLabel(Thing.Label))).property(Name).toSetMutable shouldBe expectedResults
+       centerTrav
+         .repeat(_.out)(_.until(_.hasLabel(Thing.Label)).breadthFirstSearch)
+         .property(Name)
+         .toSetMutable shouldBe expectedResults
+     }
 
-  //   "be combinable with `.maxDepth`" in {
-  //     centerTrav.repeat(_.followedBy)(_.until(_.name("R2")).maxDepth(3)).name.toSetMutable shouldBe Set("L3", "R2")
-  //   }
-  // }
+     "be combinable with `.maxDepth`" in {
+       centerTrav
+         .repeat(_.out)(_.until(_.property(Name).filter(_ == "R2")).maxDepth(3))
+         .property(Name)
+         .toSetMutable shouldBe Set("L3", "R2")
+     }
+   }
 
-  // "until and maxDepth" should {
-  //   "work in combination" in {
-  //     centerTrav.repeat(_.out)(_.until(_.has(Name -> "R2")).maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
-  //     centerTrav.repeat(_.out)(_.until(_.has(Name -> "R2")).maxDepth(2)).has(Name -> "R2").l shouldBe Seq(r2)
-  //     centerTrav.repeat(_.out)(_.breadthFirstSearch.until(_.has(Name -> "R2")).maxDepth(2)).toSetMutable shouldBe Set(
-  //       l2,
-  //       r2
-  //     )
-  //   }
+   "until and maxDepth" should {
+     "work in combination" in {
+       centerTrav.repeat(_.out)(_.until(_.property(Name).filter(_ == "R2")).maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
+       centerTrav.repeat(_.out)(_.breadthFirstSearch.until(_.property(Name).filter(_ == "R2")).maxDepth(2)).toSetMutable shouldBe Set(
+         l2,
+         r2
+       )
+     }
 
-  //   "work in combination with path" in {
-  //     centerTrav.enablePathTracking
-  //       .repeat(_.out)(_.until(_.has(Name -> "R2")).maxDepth(2))
-  //       .path
-  //       .filter(_.last == r2)
-  //       .l shouldBe Seq(Vector(center, r1, r2))
-  //   }
-  // }
+     "work in combination with path" in {
+       centerTrav.enablePathTracking
+         .repeat(_.out)(_.until(_.property(Name).filter(_ == "R2")).maxDepth(2))
+         .path
+         .filter(_.last == r2)
+         .l shouldBe Seq(Vector(center, r1, r2))
+     }
+   }
 
-  // "support repeat/while behaviour" should {
-  //   "base case: given `whilst` condition is also evaluated for first iteration" in {
-  //     centerTrav.repeat(_.out)(_.whilst(_.has(Name, "does not exist"))).toSetMutable shouldBe Set(center)
-  //   }
+   "support repeat/while behaviour" should {
+     "base case: given `whilst` condition is also evaluated for first iteration" in {
+       centerTrav.repeat(_.out)(_.whilst(_.property(Name).filter(_ == "does not exist"))).toSetMutable shouldBe Set(center)
+     }
 
-  //   "walk one iteration" in {
-  //     centerTrav.repeat(_.out)(_.whilst(_.has(Name, "Center"))).toSetMutable shouldBe Set(l1, r1)
-  //   }
+     "walk one iteration" in {
+       centerTrav.repeat(_.out)(_.whilst(_.property(Name).filter(_ == "Center"))).toSetMutable shouldBe Set(l1, r1)
+     }
 
-  //   "walk two iterations" in {
-  //     centerTrav
-  //       .repeat(_.out)(
-  //         _.whilst(
-  //           _.or(
-  //             _.has(Name.where(_.endsWith("1"))),
-  //             _.has(Name, "Center")
-  //           )
-  //         )
-  //       )
-  //       .toSetMutable shouldBe Set(l2, r2)
-  //   }
+     "walk two iterations" in {
+       centerTrav
+         .repeat(_.out)(
+           _.whilst(
+             _.or(
+               _.property(Name).filter(_.endsWith("1")),
+               _.property(Name).filter(_ == "Center")
+             )
+           )
+         )
+         .toSetMutable shouldBe Set(l2, r2)
+     }
 
-  //   "emitting nodes along the way" in {
-  //     centerTrav.repeat(_.followedBy)(_.emit.whilst(_.name("Center"))).toSetMutable shouldBe Set(center, l1, r1)
-  //     centerTrav.repeat(_.followedBy)(_.emitAllButFirst.whilst(_.name("Center"))).toSetMutable shouldBe Set(l1, r1)
-  //   }
+     "emitting nodes along the way" in {
+       centerTrav.repeat(_.out)(_.emit.whilst(_.property(Name).filter(_ == "Center"))).toSetMutable shouldBe Set(center, l1, r1)
+       centerTrav.repeat(_.out)(_.emitAllButFirst.whilst(_.property(Name).filter(_ == "Center"))).toSetMutable shouldBe Set(l1, r1)
+     }
 
-  //   "with path tracking enabled" in {
-  //     centerTrav.enablePathTracking.repeat(_.followedBy)(_.whilst(_.name("Center"))).path.toSetMutable shouldBe Set(
-  //       Seq(center, r1),
-  //       Seq(center, l1)
-  //     )
-  //   }
+     "with path tracking enabled" in {
+       centerTrav.enablePathTracking.repeat(_.out)(_.whilst(_.property(Name).filter(_ == "Center"))).path.toSetMutable shouldBe Set(
+         Seq(center, r1),
+         Seq(center, l1)
+       )
+     }
 
-  //   "be combinable with `.maxDepth`" in {
-  //     centerTrav.repeat(_.followedBy)(_.whilst(_.nameNot("R2")).maxDepth(3)).name.toSetMutable shouldBe Set("L3", "R2")
-  //   }
-  // }
+     "be combinable with `.maxDepth`" in {
+       centerTrav.repeat(_.out)(_.whilst(_.property(Name).filter(_ != "R2")).maxDepth(3)).property(Name).toSetMutable shouldBe Set("L3", "R2")
+     }
+   }
 
   // ".dedup should apply to all repeat iterations - e.g. to avoid cycles" when {
   //   "path tracking is not enabled" in {
