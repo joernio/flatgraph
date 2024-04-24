@@ -1,13 +1,15 @@
 package flatgraph.traversal
 
-import flatgraph.GNode
+import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode, GenericDNode, TestHelpers}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.Implicits.*
-import flatgraph.traversal.testdomains.simple.ExampleGraphSetup
+import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
 import flatgraph.traversal.testdomains.simple.ExampleGraphSetup.Properties.Name
 import flatgraph.traversal.Language.*
-import flatgraph.traversal.testdomains.simple.SimpleDomain.Thing
+import flatgraph.traversal.testdomains.simple.SimpleDomain.{Connection, Thing}
+
+import scala.collection.mutable
 
 class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
   /* most tests work with this simple graph:
@@ -169,233 +171,235 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
      }
    }
 
-  // ".dedup should apply to all repeat iterations - e.g. to avoid cycles" when {
-  //   "path tracking is not enabled" in {
-  //     centerTrav.repeat(_.both)(_.maxDepth(2).dedup).toSetMutable shouldBe Set(l2, r2)
-  //     centerTrav.repeat(_.both)(_.maxDepth(3).dedup).toSetMutable shouldBe Set(l3, r3)
-  //     centerTrav.repeat(_.both)(_.maxDepth(4).dedup).toSetMutable shouldBe Set(r4)
+  // TODO continue
+  ".dedup should apply to all repeat iterations - e.g. to avoid cycles" ignore {
+//     "path tracking is not enabled" in {
+//       centerTrav.repeat(_.both)(_.maxDepth(2).dedup).toSetMutable shouldBe Set(l2, r2)
+//       centerTrav.repeat(_.both)(_.maxDepth(3).dedup).toSetMutable shouldBe Set(l3, r3)
+//       centerTrav.repeat(_.both)(_.maxDepth(4).dedup).toSetMutable shouldBe Set(r4)
+//
+//       // for reference, without dedup (order is irrelevant, only using .l to show duplicate `center`)
+//       centerTrav.repeat(_.both)(_.maxDepth(2)).l shouldBe Seq(l2, center, r2, center)
+//     }
+//
+//     "path tracking is enabled" in {
+//       centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).dedup).path.toSetMutable shouldBe Set(
+//         Seq(center, l1, l2),
+//         Seq(center, r1, r2)
+//       )
+//
+//       // for reference, without dedup:
+//       centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
+//         Seq(center, l1, l2),
+//         Seq(center, l1, center),
+//         Seq(center, r1, r2),
+//         Seq(center, r1, center)
+//       )
+//     }
+//
+//     "used with emit" in {
+//       // order is irrelevant, only using .l to show that there's no duplicates
+//       centerTrav.repeat(_.both)(_.maxDepth(2).emit.dedup).l shouldBe Seq(center, l1, l2, r1, r2)
+//     }
+//
+//     "used with emit and path" in {
+//       centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).emit.dedup).path.toSetMutable shouldBe Set(
+//         Seq(center),
+//         Seq(center, l1),
+//         Seq(center, l1, l2),
+//         Seq(center, r1),
+//         Seq(center, r1, r2)
+//       )
+//     }
+   }
 
-  //     // for reference, without dedup (order is irrelevant, only using .l to show duplicate `center`)
-  //     centerTrav.repeat(_.both)(_.maxDepth(2)).l shouldBe Seq(l2, center, r2, center)
-  //   }
+   "is lazy" in {
+     val traversedNodes = mutable.ListBuffer.empty[GNode]
+     val traversalNotYetExecuted = {
+       centerTrav.repeat(_.out.sideEffect(traversedNodes.addOne))
+       centerTrav.repeat(_.out.sideEffect(traversedNodes.addOne))(_.breadthFirstSearch)
+     }
+     withClue("traversal should not do anything when it's only created") {
+       traversedNodes.size shouldBe 0
+     }
+   }
 
-  //   "path tracking is enabled" in {
-  //     centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).dedup).path.toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2),
-  //       Seq(center, r1, r2)
-  //     )
+   "hasNext check doesn't change contents of traversal" when {
+     "path tracking is not enabled" in {
+       val trav = centerTrav.repeat(_.out)(_.maxDepth(2))
+       trav.hasNext shouldBe true
+       trav.toSetMutable shouldBe Set(l2, r2)
+     }
 
-  //     // for reference, without dedup:
-  //     centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2),
-  //       Seq(center, l1, center),
-  //       Seq(center, r1, r2),
-  //       Seq(center, r1, center)
-  //     )
-  //   }
+     "path tracking is enabled" in {
+       val trav1 = centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2))
+       val trav2 = centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2)).path
+       trav1.hasNext shouldBe true
+       trav2.hasNext shouldBe true
+       trav1.toSetMutable shouldBe Set(l2, r2)
+       trav2.toSetMutable shouldBe Set(
+         Seq(center, l1, l2),
+         Seq(center, r1, r2)
+       )
+     }
+   }
 
-  //   "used with emit" in {
-  //     // order is irrelevant, only using .l to show that there's no duplicates
-  //     centerTrav.repeat(_.both)(_.maxDepth(2).emit.dedup).l shouldBe Seq(center, l1, l2, r1, r2)
-  //   }
+   "traverses all nodes to outer limits exactly once, emitting and returning nothing, by default" in {
+     val traversedNodes = mutable.ListBuffer.empty[Any]
 
-  //   "used with emit and path" in {
-  //     centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).emit.dedup).path.toSetMutable shouldBe Set(
-  //       Seq(center),
-  //       Seq(center, l1),
-  //       Seq(center, l1, l2),
-  //       Seq(center, r1),
-  //       Seq(center, r1, r2)
-  //     )
-  //   }
-  // }
+     def test(traverse: => Iterable[_]) = {
+       traversedNodes.clear()
+       val results = traverse
+       traversedNodes.size shouldBe 9
+       results.size shouldBe 0
+     }
 
-  // "is lazy" in {
-  //   val traversedNodes = mutable.ListBuffer.empty[Node]
-  //   val traversalNotYetExecuted = {
-  //     centerTrav.repeat(_.out.sideEffect(traversedNodes.addOne))
-  //     centerTrav.repeat(_.out.sideEffect(traversedNodes.addOne))(_.breadthFirstSearch)
-  //   }
-  //   withClue("traversal should not do anything when it's only created") {
-  //     traversedNodes.size shouldBe 0
-  //   }
-  // }
+     test(centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out).l)
+     test(centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out)(_.breadthFirstSearch).l)
 
-  // "hasNext check doesn't change contents of traversal" when {
-  //   "path tracking is not enabled" in {
-  //     val trav = centerTrav.repeat(_.followedBy)(_.maxDepth(2))
-  //     trav.hasNext shouldBe true
-  //     trav.toSetMutable shouldBe Set(l2, r2)
-  //   }
+     // for reference: this is the equivalent in tinkerpop - this doesn't compile any more because we dropped that dependency
+     //    withClue("for reference: this behaviour is adapted from tinkerpop") {
+     //      import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.__
+     //      import org.apache.tinkerpop.gremlin.process.traversal.{Traverser, Traversal => TPTraversal}
+     //      import org.apache.tinkerpop.gremlin.structure.Vertex
+     //      test {
+     //        val centerTp3: Vertex = NodeTp3.wrap(center)
+     //        __(centerTp3).repeat(
+     //          __().sideEffect { x: Traverser[Vertex] => traversedNodes += x.get }
+     //            .out().asInstanceOf[TPTraversal[_, Vertex]]
+     //        ).toList.asScala
+     //      }
+     //    }
+   }
 
-  //   "path tracking is enabled" in {
-  //     val trav1 = centerTrav.enablePathTracking.repeat(_.followedBy)(_.maxDepth(2))
-  //     val trav2 = centerTrav.enablePathTracking.repeat(_.followedBy)(_.maxDepth(2)).path
-  //     trav1.hasNext shouldBe true
-  //     trav2.hasNext shouldBe true
-  //     trav1.toSetMutable shouldBe Set(l2, r2)
-  //     trav2.toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2),
-  //       Seq(center, r1, r2)
-  //     )
-  //   }
-  // }
+   "uses DFS (depth first search) by default" in {
+     val traversedNodes = mutable.ListBuffer.empty[GNode]
+     centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out).iterate()
 
-  // "traverses all nodes to outer limits exactly once, emitting and returning nothing, by default" in {
-  //   val traversedNodes = mutable.ListBuffer.empty[Any]
+     traversedNodes.property(Name).l shouldBe List("Center", "L1", "L2", "L3", "R1", "R2", "R3", "R4", "R5")
+   }
 
-  //   def test(traverse: => Iterable[_]) = {
-  //     traversedNodes.clear()
-  //     val results = traverse
-  //     traversedNodes.size shouldBe 9
-  //     results.size shouldBe 0
-  //   }
+   "uses BFS (breadth first search) if configured" in {
+     val traversedNodes = mutable.ListBuffer.empty[GNode]
+     centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out)(_.breadthFirstSearch).iterate()
 
-  //   test(centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out).l)
-  //   test(centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out)(_.breadthFirstSearch).l)
+     traversedNodes.property(Name).l shouldBe List("Center", "L1", "R1", "L2", "R2", "L3", "R3", "R4", "R5")
+   }
 
-  //   // for reference: this is the equivalent in tinkerpop - this doesn't compile any more because we dropped that dependency
-  //   //    withClue("for reference: this behaviour is adapted from tinkerpop") {
-  //   //      import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.__
-  //   //      import org.apache.tinkerpop.gremlin.process.traversal.{Traverser, Traversal => TPTraversal}
-  //   //      import org.apache.tinkerpop.gremlin.structure.Vertex
-  //   //      test {
-  //   //        val centerTp3: Vertex = NodeTp3.wrap(center)
-  //   //        __(centerTp3).repeat(
-  //   //          __().sideEffect { x: Traverser[Vertex] => traversedNodes += x.get }
-  //   //            .out().asInstanceOf[TPTraversal[_, Vertex]]
-  //   //        ).toList.asScala
-  //   //      }
-  //   //    }
-  // }
+   "hasNext is idempotent: DFS" in {
+     val traversedNodes = mutable.ListBuffer.empty[GNode]
+     val traversal = centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out)(_.maxDepth(3))
 
-  // "uses DFS (depth first search) by default" in {
-  //   val traversedNodes = mutable.ListBuffer.empty[Thing]
-  //   centerTrav.repeat(_.sideEffect(traversedNodes.addOne).followedBy).iterate()
+     // hasNext will run the provided repeat traversal exactly 3 times (as configured)
+     traversal.hasNext shouldBe true
+     traversedNodes.size shouldBe 3
+     traversedNodes.property(Name).l shouldBe List("Center", "L1", "L2")
+     // hasNext is idempotent - calling it again doesn't result in any further traversing
+     traversal.hasNext shouldBe true
+     traversedNodes.size shouldBe 3
+   }
 
-  //   traversedNodes.map(_.name).toList shouldBe List("Center", "L1", "L2", "L3", "R1", "R2", "R3", "R4", "R5")
-  // }
+   "hasNext is idempotent: BFS" in {
+     val traversedNodes = mutable.ListBuffer.empty[GNode]
+     val traversal = centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out)(_.maxDepth(2).breadthFirstSearch)
 
-  // "uses BFS (breadth first search) if configured" in {
-  //   val traversedNodes = mutable.ListBuffer.empty[Thing]
-  //   centerTrav.repeat(_.sideEffect(traversedNodes.addOne).followedBy)(_.breadthFirstSearch).iterate()
+     // hasNext will run the provided repeat traversal exactly 3 times (as configured)
+     traversal.hasNext shouldBe true
+     traversedNodes.size shouldBe 2
+     traversedNodes.property(Name).l shouldBe List("Center", "L1")
+     // hasNext is idempotent - calling it again doesn't result in any further traversing
+     traversal.hasNext shouldBe true
+     traversedNodes.size shouldBe 2
+   }
 
-  //   traversedNodes.map(_.name).toList shouldBe List("Center", "L1", "R1", "L2", "R2", "L3", "R3", "R4", "R5")
-  // }
+   "supports large amount of iterations" in {
+     // using circular graph so that we can repeat any number of times
+     val graph = SimpleDomain.newGraph
 
-  // "hasNext is idempotent: DFS" in {
-  //   val traversedNodes = mutable.ListBuffer.empty[Thing]
-  //   val traversal = centerTrav.repeat(_.sideEffect(traversedNodes.addOne).followedBy)(_.maxDepth(3))
+     val Seq(a, b, c) = TestHelpers.addNodes(graph, 0.to(2).map(_ => new GenericDNode(0)))
 
-  //   // hasNext will run the provided repeat traversal exactly 3 times (as configured)
-  //   traversal.hasNext shouldBe true
-  //   traversedNodes.size shouldBe 3
-  //   traversedNodes.map(_.name).toList shouldBe List("Center", "L1", "L2")
-  //   // hasNext is idempotent - calling it again doesn't result in any further traversing
-  //   traversal.hasNext shouldBe true
-  //   traversedNodes.size shouldBe 3
-  // }
+     val diff = DiffGraphBuilder(graph.schema)
+       .setNodeProperty(a, Name.name, "a")
+       .setNodeProperty(b, Name.name, "b")
+       .setNodeProperty(c, Name.name, "c")
+       .addEdge(a, b, Connection.Label)
+       .addEdge(b, c, Connection.Label)
+       .addEdge(c, a, Connection.Label)
+     DiffGraphApplier.applyDiff(graph, diff)
 
-  // "hasNext is idempotent: BFS" in {
-  //   val traversedNodes = mutable.ListBuffer.empty[Thing]
-  //   val traversal = centerTrav.repeat(_.sideEffect(traversedNodes.addOne).followedBy)(_.maxDepth(2).breadthFirstSearch)
+     val repeatCount = 100000
+     a.start.repeat(_.out)(_.maxDepth(repeatCount)).property(Name).l shouldBe List("b")
+     a.start.repeat(_.out)(_.maxDepth(repeatCount).breadthFirstSearch).property(Name).l shouldBe List("b")
 
-  //   // hasNext will run the provided repeat traversal exactly 3 times (as configured)
-  //   traversal.hasNext shouldBe true
-  //   traversedNodes.size shouldBe 2
-  //   traversedNodes.map(_.name).toList shouldBe List("Center", "L1")
-  //   // hasNext is idempotent - calling it again doesn't result in any further traversing
-  //   traversal.hasNext shouldBe true
-  //   traversedNodes.size shouldBe 2
-  // }
+     // for reference: tinkerpop becomes very slow with large iteration counts:
+     // on my machine this didn't terminate within 5mins, hence commenting out
+     //    import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.__
+     //    __(a).repeat(
+     //      __().out().asInstanceOf[org.apache.tinkerpop.gremlin.process.traversal.Traversal[_, Node]]
+     //    ).times(repeatCount).values[String](Name.name).next() shouldBe "b"
+   }
 
-  // "supports large amount of iterations" in {
-  //   // using circular graph so that we can repeat any number of times
-  //   val graph = SimpleDomain.newGraph
+   "support .path step" when {
+     "using `maxDepth` modulator" in {
+       centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
+         Seq(center, l1, l2),
+         Seq(center, r1, r2)
+       )
+     }
 
-  //   def addThing(name: String) = graph + (Thing.Label, Name.of(name))
+     "using `emit` modulator" in {
+       centerTrav.enablePathTracking.repeat(_.out)(_.emit).path.toSetMutable shouldBe Set(
+         Seq(center),
+         Seq(center, l1),
+         Seq(center, l1, l2),
+         Seq(center, l1, l2, l3),
+         Seq(center, r1),
+         Seq(center, r1, r2),
+         Seq(center, r1, r2, r3),
+         Seq(center, r1, r2, r3, r4),
+         Seq(center, r1, r2, r3, r4, r5)
+       )
+     }
 
-  //   val a = addThing("a")
-  //   val b = addThing("b")
-  //   val c = addThing("c")
-  //   a --- Connection.Label --> b
-  //   b --- Connection.Label --> c
-  //   c --- Connection.Label --> a
+     "using `until` modulator" in {
+       centerTrav.enablePathTracking.repeat(_.out)(_.until(_.property(Name).filter(_.endsWith("2")))).path.toSetMutable shouldBe Set(
+         Seq(center, l1, l2),
+         Seq(center, r1, r2)
+       )
+     }
 
-  //   val repeatCount = 100000
-  //   Iterator.single(a).repeat(_.out)(_.maxDepth(repeatCount)).property(Name).l shouldBe List("b")
-  //   Iterator.single(a).repeat(_.out)(_.maxDepth(repeatCount).breadthFirstSearch).property(Name).l shouldBe List(
-  //     "b"
-  //   )
+     "using breadth first search" in {
+       centerTrav.enablePathTracking
+         .repeat(_.out)(_.breadthFirstSearch.maxDepth(2))
+         .path
+         .toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
+     }
 
-  //   // for reference: tinkerpop becomes very slow with large iteration counts:
-  //   // on my machine this didn't terminate within 5mins, hence commenting out
-  //   //    import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.__
-  //   //    __(a).repeat(
-  //   //      __().out().asInstanceOf[org.apache.tinkerpop.gremlin.process.traversal.Traversal[_, Node]]
-  //   //    ).times(repeatCount).values[String](Name.name).next() shouldBe "b"
-  // }
+     "doing multiple steps: should track every single step along the way" in {
+       centerTrav.enablePathTracking.repeat(_.out.out)(_.maxDepth(1)).path.toSetMutable shouldBe Set(
+         Seq(center, l1, l2),
+         Seq(center, r1, r2)
+       )
 
-  // "support .path step" when {
-  //   "using `maxDepth` modulator" in {
-  //     centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2),
-  //       Seq(center, r1, r2)
-  //     )
-  //   }
+       r1.start.enablePathTracking
+         .repeat(_.out.out.out)(_.maxDepth(1))
+         .path
+         .toSetMutable shouldBe Set(Seq(r1, r2, r3, r4))
 
-  //   "using `emit` modulator" in {
-  //     centerTrav.enablePathTracking.repeat(_.out)(_.emit).path.toSetMutable shouldBe Set(
-  //       Seq(center),
-  //       Seq(center, l1),
-  //       Seq(center, l1, l2),
-  //       Seq(center, l1, l2, l3),
-  //       Seq(center, r1),
-  //       Seq(center, r1, r2),
-  //       Seq(center, r1, r2, r3),
-  //       Seq(center, r1, r2, r3, r4),
-  //       Seq(center, r1, r2, r3, r4, r5)
-  //     )
-  //   }
+       r1.start.enablePathTracking.repeat(_.out.out)(_.maxDepth(2)).l shouldBe Seq(r5)
+       r1.start.enablePathTracking.repeat(_.out.out)(_.maxDepth(2)).path.next() shouldBe List(r1, r2, r3, r4, r5)
+     }
 
-  //   "using `until` modulator" in {
-  //     centerTrav.enablePathTracking.repeat(_.followedBy)(_.until(_.nameEndsWith("2"))).path.toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2),
-  //       Seq(center, r1, r2)
-  //     )
-  //   }
+     "should not forget steps preceding the repeat" in {
+       centerTrav.enablePathTracking.out
+         .repeat(_.out.out)(_.maxDepth(1))
+         .path
+         .toSetMutable shouldBe Set(
+         Seq(center, l1, l2, l3),
+         Seq(center, r1, r2, r3)
+       )
+     }
 
-  //   "using breadth first search" in {
-  //     centerTrav.enablePathTracking
-  //       .repeat(_.followedBy)(_.breadthFirstSearch.maxDepth(2))
-  //       .path
-  //       .toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
-  //   }
-
-  //   "doing multiple steps: should track every single step along the way" in {
-  //     centerTrav.enablePathTracking.repeat(_.followedBy.followedBy)(_.maxDepth(1)).path.toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2),
-  //       Seq(center, r1, r2)
-  //     )
-
-  //     r1.start.enablePathTracking
-  //       .repeat(_.followedBy.followedBy.followedBy)(_.maxDepth(1))
-  //       .path
-  //       .toSetMutable shouldBe Set(Seq(r1, r2, r3, r4))
-
-  //     r1.start.enablePathTracking.repeat(_.out.out)(_.maxDepth(2)).l shouldBe Seq(r5)
-  //     r1.start.enablePathTracking.repeat(_.out.out)(_.maxDepth(2)).path.next() shouldBe List(r1, r2, r3, r4, r5)
-  //   }
-  //   "should not forget steps preceding the repeat" in {
-  //     centerTrav.enablePathTracking.followedBy
-  //       .repeat(_.followedBy.followedBy)(_.maxDepth(1))
-  //       .path
-  //       .toSetMutable shouldBe Set(
-  //       Seq(center, l1, l2, l3),
-  //       Seq(center, r1, r2, r3)
-  //     )
-  //   }
-
-  // }
+   }
 
 }

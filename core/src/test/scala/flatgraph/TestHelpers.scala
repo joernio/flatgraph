@@ -22,6 +22,13 @@ object TestHelpers {
     Files.deleteIfExists(storagePath)
     attempt.get
   }
+
+  def addNodes(graph: Graph, nodes: Seq[DNode]): Seq[GNode] = {
+    val diffGraph = new DiffGraphBuilder(graph.schema)
+    nodes.foreach(diffGraph.addNode)
+    DiffGraphApplier.applyDiff(graph, diffGraph)
+    nodes.map(_.storedRef.get)
+  }
 }
 
 object TestSchema {
