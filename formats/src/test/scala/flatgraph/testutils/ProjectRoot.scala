@@ -12,7 +12,7 @@ import java.nio.file.{Files, Paths}
   */
 object ProjectRoot {
 
-  private val SEARCH_DEPTH = 6
+  private val MaxSearchDepth = 6
   object SearchDepthExceededError extends Error
 
   def relativise(path: String): String =
@@ -21,15 +21,16 @@ object ProjectRoot {
   def findRelativePath: String = {
     val fileThatOnlyExistsInRoot = ".git"
 
-    for (depth <- 0 to SEARCH_DEPTH) {
-      val pathPrefix = "./" + "../" * depth
-
-      if (Files.exists(Paths.get(s"$pathPrefix$fileThatOnlyExistsInRoot"))) {
-        return pathPrefix
-      }
+    var currentDepth     = 0
+    var currentAttempt   = "./"
+    def foundIt: Boolean = Files.exists(Paths.get(s"$currentAttempt$fileThatOnlyExistsInRoot"))
+    while (!foundIt && currentDepth < MaxSearchDepth) {
+      currentAttempt += "../"
+      currentDepth += 1
     }
 
-    throw SearchDepthExceededError
+    if (foundIt) currentAttempt
+    else throw SearchDepthExceededError
   }
 
 }

@@ -16,7 +16,7 @@ class Neo4jCsvTests extends AnyWordSpec {
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "foo" in {
-    pending // TODO
+    pending // TODO bring back: generate domain specific code with codegen from a schema
   }
 
 //  "Importer" should {

@@ -160,46 +160,46 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     }
   }
 
-  // TODO continue
-  ".dedup should apply to all repeat iterations - e.g. to avoid cycles" ignore {
-//     "path tracking is not enabled" in {
-//       centerTrav.repeat(_.both)(_.maxDepth(2).dedup).toSetMutable shouldBe Set(l2, r2)
-//       centerTrav.repeat(_.both)(_.maxDepth(3).dedup).toSetMutable shouldBe Set(l3, r3)
-//       centerTrav.repeat(_.both)(_.maxDepth(4).dedup).toSetMutable shouldBe Set(r4)
-//
-//       // for reference, without dedup (order is irrelevant, only using .l to show duplicate `center`)
-//       centerTrav.repeat(_.both)(_.maxDepth(2)).l shouldBe Seq(l2, center, r2, center)
-//     }
-//
-//     "path tracking is enabled" in {
-//       centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).dedup).path.toSetMutable shouldBe Set(
-//         Seq(center, l1, l2),
-//         Seq(center, r1, r2)
-//       )
-//
-//       // for reference, without dedup:
-//       centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
-//         Seq(center, l1, l2),
-//         Seq(center, l1, center),
-//         Seq(center, r1, r2),
-//         Seq(center, r1, center)
-//       )
-//     }
-//
-//     "used with emit" in {
-//       // order is irrelevant, only using .l to show that there's no duplicates
-//       centerTrav.repeat(_.both)(_.maxDepth(2).emit.dedup).l shouldBe Seq(center, l1, l2, r1, r2)
-//     }
-//
-//     "used with emit and path" in {
-//       centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).emit.dedup).path.toSetMutable shouldBe Set(
-//         Seq(center),
-//         Seq(center, l1),
-//         Seq(center, l1, l2),
-//         Seq(center, r1),
-//         Seq(center, r1, r2)
-//       )
-//     }
+  ".dedup should apply to all repeat iterations - e.g. to avoid cycles" when {
+
+    "path tracking is not enabled" in {
+      centerTrav.repeat(_.both)(_.maxDepth(2).dedup).toSetMutable shouldBe Set(l2, r2)
+      centerTrav.repeat(_.both)(_.maxDepth(3).dedup).toSetMutable shouldBe Set(l3, r3)
+      centerTrav.repeat(_.both)(_.maxDepth(4).dedup).toSetMutable shouldBe Set(r4)
+
+      // for reference, without dedup (order is irrelevant, only using .l to show duplicate `center`)
+      centerTrav.repeat(_.both)(_.maxDepth(2)).l shouldBe Seq(l2, center, r2, center)
+    }
+
+    "path tracking is enabled" in {
+      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).dedup).path.toSetMutable shouldBe Set(
+        Seq(center, l1, l2),
+        Seq(center, r1, r2)
+      )
+
+      // for reference, without dedup:
+      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
+        Seq(center, l1, l2),
+        Seq(center, l1, center),
+        Seq(center, r1, r2),
+        Seq(center, r1, center)
+      )
+    }
+
+    "used with emit" in {
+      // order is irrelevant, only using .l to show that there's no duplicates
+      centerTrav.repeat(_.both)(_.maxDepth(2).emit.dedup).l shouldBe Seq(center, l1, l2, r1, r2)
+    }
+
+    "used with emit and path" in {
+      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).emit.dedup).path.toSetMutable shouldBe Set(
+        Seq(center),
+        Seq(center, l1),
+        Seq(center, l1, l2),
+        Seq(center, r1),
+        Seq(center, r1, r2)
+      )
+    }
   }
 
   "is lazy" in {
@@ -233,7 +233,7 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
   "traverses all nodes to outer limits exactly once, emitting and returning nothing, by default" in {
     val traversedNodes = mutable.ListBuffer.empty[Any]
 
-    def test(traverse: => Iterable[_]) = {
+    def test(traverse: => Iterable[?]) = {
       traversedNodes.clear()
       val results = traverse
       traversedNodes.size shouldBe 9
