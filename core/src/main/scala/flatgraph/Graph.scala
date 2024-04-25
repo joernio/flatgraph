@@ -96,7 +96,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
 
   def allEdges: Iterator[Edge] =
     allNodes.flatMap(Accessors.getEdgesOut)
-    
+
   def edgeCount(): Int =
     allEdges.size
 

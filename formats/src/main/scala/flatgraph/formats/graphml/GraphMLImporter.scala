@@ -18,14 +18,14 @@ object GraphMLImporter extends Importer {
 
   override def runImport(graph: Graph, inputFiles: Seq[Path]): Unit = {
     assert(inputFiles.size == 1, s"input must be exactly one file, but got ${inputFiles.size}")
-    val doc = XML.loadFile(inputFiles.head.toFile)
-    val graphXml   = doc \ "graph"
+    val doc      = XML.loadFile(inputFiles.head.toFile)
+    val graphXml = doc \ "graph"
 
-    val graphmlNodes = graphXml \ "node"
+    val graphmlNodes         = graphXml \ "node"
     val graphmlNodeIdToGNode = addNodesRaw(graphmlNodes, graph)
 
     val keyEntries = doc \ "key"
-    val diffGraph = new DiffGraphBuilder(graph.schema)
+    val diffGraph  = new DiffGraphBuilder(graph.schema)
 
     // node properties
     val nodePropertyContextById = parsePropertyEntries("node", keyEntries)
@@ -41,7 +41,7 @@ object GraphMLImporter extends Importer {
             .get(key)
             .getOrElse(throw new AssertionError(s"key $key not found in propertyContext..."))
             .tpe
-          val value = entry.text
+          val value          = entry.text
           val convertedValue = convertValue(value, propertyType, context = graphmlNode)
           diffGraph.setNodeProperty(graphmlNodeIdToGNode(nodeId), key, value)
       }
@@ -52,15 +52,26 @@ object GraphMLImporter extends Importer {
     for (edge <- graphXml \ "edge") {
       addEdge(diffGraph, graphmlNodeIdToGNode, edge, edgePropertyContextById)
     }
+
+    DiffGraphApplier.applyDiff(graph, diffGraph)
   }
 
   private def addNodesRaw(graphmlNodes: Seq[xml.Node], graph: Graph): Map[String, GNode] = {
-    val diffGraphForRawNodes  = new DiffGraphBuilder(graph.schema)
+    val diffGraphForRawNodes = new DiffGraphBuilder(graph.schema)
     val graphmlNodeIdToGNode = mutable.Map.empty[String, GenericDNode]
     graphmlNodes.foreach { graphmlNode =>
       val id = graphmlNode \@ "id"
-      val label = (graphmlNode \ "data").find(_ \@ "key" == KeyForNodeLabel).map(_.text)
+      val label = (graphmlNode \ "data")
+        .find(_ \@ "key" == KeyForNodeLabel)
+        .map(_.text)
         .getOrElse(throw new AssertionError(s"node label must be defined, but isn't: $graphmlNode"))
+      val nodeKind = graph.schema
+        .getNodeKindByLabelMaybe(label)
+        .getOrElse(
+          throw new AssertionError(
+            s"node label `$label` is not one of the labels defined in the schema, which are: [${graph.schema.nodeLabels.mkString(",")}]"
+          )
+        )
       val newNode = new GenericDNode(graph.schema.getNodeKindByLabel(label).toShortSafely)
       diffGraphForRawNodes.addNode(newNode)
       graphmlNodeIdToGNode.put(id, newNode)
@@ -81,10 +92,15 @@ object GraphMLImporter extends Importer {
       .toMap
   }
 
-  private def addEdge(diffGraph: DiffGraphBuilder, graphmlNodeIdToGNode: Map[String, GNode], edge: xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
-    val sourceId              = edge \@ "source"
-    val targetId              = edge \@ "target"
-    var label: Option[String] = None
+  private def addEdge(
+    diffGraph: DiffGraphBuilder,
+    graphmlNodeIdToGNode: Map[String, GNode],
+    edge: xml.Node,
+    propertyContextById: Map[String, PropertyContext]
+  ): Unit = {
+    val sourceId                                 = edge \@ "source"
+    val targetId                                 = edge \@ "target"
+    var label: Option[String]                    = None
     var edgePropertyMaybe: Option[(String, Any)] = None
 
     for (entry <- edge \ "data") {
@@ -97,7 +113,9 @@ object GraphMLImporter extends Importer {
             .getOrElse(throw new AssertionError(s"key $key not found in propertyContext..."))
           val convertedValue = convertValue(value, tpe, context = edge)
           if (edgePropertyMaybe.isDefined) {
-            logger.warn(s"flatgraph only supports 0..1 edge properties. This graphml edge has more than one properties though - taking only the first one... graphml node: $edge")
+            logger.warn(
+              s"flatgraph only supports 0..1 edge properties. This graphml edge has more than one properties though - taking only the first one... graphml node: $edge"
+            )
           }
           edgePropertyMaybe = Some(name -> convertedValue)
       }
@@ -106,7 +124,7 @@ object GraphMLImporter extends Importer {
     for {
       source <- graphmlNodeIdToGNode.get(sourceId)
       target <- graphmlNodeIdToGNode.get(targetId)
-      label <- label
+      label  <- label
       edgeProperty = edgePropertyMaybe.map(_._2).getOrElse(flatgraph.DefaultValue)
     } diffGraph.addEdge(source, target, label, edgeProperty)
   }

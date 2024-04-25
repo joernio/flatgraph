@@ -16,6 +16,16 @@ abstract class StoredNode(graph_4762: flatgraph.Graph, kind_4762: Short, seq_476
   final def _followedbyIn: Iterator[StoredNode] =
     flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 0).asInstanceOf[Iterator[StoredNode]]
 
+  final def _sungbyOut: Iterator[StoredNode] =
+    flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 1).asInstanceOf[Iterator[StoredNode]]
+  final def _sungbyIn: Iterator[StoredNode] =
+    flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 1).asInstanceOf[Iterator[StoredNode]]
+
+  final def _writtenbyOut: Iterator[StoredNode] =
+    flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 2).asInstanceOf[Iterator[StoredNode]]
+  final def _writtenbyIn: Iterator[StoredNode] =
+    flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 2).asInstanceOf[Iterator[StoredNode]]
+
 }
 
 abstract class NewNode(val nodeKind: Short) extends AbstractNode with flatgraph.DNode {

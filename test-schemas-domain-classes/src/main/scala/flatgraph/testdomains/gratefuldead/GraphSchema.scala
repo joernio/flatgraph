@@ -4,47 +4,53 @@ import flatgraph.testdomains.gratefuldead.edges
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {
-  val nodeLabels      = Array("Artist", "Song")
-  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
-  val edgeLabels      = Array("followedBy")
-  val edgeIdByLabel   = edgeLabels.zipWithIndex.toMap
+  private val nodeLabels = IndexedSeq("artist", "song")
+  val nodeKindByLabel    = nodeLabels.zipWithIndex.toMap
+  val edgeLabels         = Array("followedBy", "sungBy", "writtenBy")
+  val edgeIdByLabel      = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
-    Array(size => Array.fill(size)(0: Long) /* label = followedBy, id = 0 */ )
+    Array(size => Array.fill(size)(0: Long) /* label = followedBy, id = 0 */, size => null, size => null)
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
     Array((g, seq) => new nodes.Artist(g, seq), (g, seq) => new nodes.Song(g, seq))
-  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] =
-    Array((s, d, subseq, p) => new edges.Followedby(s, d, subseq, p))
-  val nodePropertyAllocators: Array[Int => Array[?]] = Array(size => new Array[String](size))
-  val normalNodePropertyNames                        = Array("Name")
-  val nodePropertyByLabel                            = normalNodePropertyNames.zipWithIndex.toMap
+  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array(
+    (s, d, subseq, p) => new edges.Followedby(s, d, subseq, p),
+    (s, d, subseq, p) => new edges.Sungby(s, d, subseq, p),
+    (s, d, subseq, p) => new edges.Writtenby(s, d, subseq, p)
+  )
+  val nodePropertyAllocators: Array[Int => Array[?]] =
+    Array(size => new Array[String](size), size => new Array[String](size))
+  val normalNodePropertyNames = Array("name", "songType")
+  val nodePropertyByLabel     = normalNodePropertyNames.zipWithIndex.toMap
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
-    val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](4)
-    for (idx <- Range(0, 4)) {
+    val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](8)
+    for (idx <- Range(0, 8)) {
       nodePropertyDescriptors(idx) =
         if ((idx & 1) == 0) FormalQtyType.NothingType
         else FormalQtyType.QtyNone
     }
 
-    nodePropertyDescriptors(0) = FormalQtyType.StringType // Artist.Name
+    nodePropertyDescriptors(0) = FormalQtyType.StringType // artist.name
     nodePropertyDescriptors(1) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(2) = FormalQtyType.StringType // Song.Name
+    nodePropertyDescriptors(2) = FormalQtyType.StringType // song.name
     nodePropertyDescriptors(3) = FormalQtyType.QtyOne
+    nodePropertyDescriptors(6) = FormalQtyType.StringType // song.songType
+    nodePropertyDescriptors(7) = FormalQtyType.QtyOption
     nodePropertyDescriptors
   }
   override def getNumberOfNodeKinds: Int                          = 2
-  override def getNumberOfEdgeKinds: Int                          = 1
+  override def getNumberOfEdgeKinds: Int                          = 3
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
   override def getEdgeKindByLabel(label: String): Int             = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
-    if (propertyKind < 1) normalNodePropertyNames(propertyKind)
+    if (propertyKind < 2) normalNodePropertyNames(propertyKind)
     else null
   }
 
   override def getPropertyKindByName(label: String): Int =
     nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-  override def getNumberOfPropertyKinds: Int = 1
+  override def getNumberOfPropertyKinds: Int = 2
   override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode =
     nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge =

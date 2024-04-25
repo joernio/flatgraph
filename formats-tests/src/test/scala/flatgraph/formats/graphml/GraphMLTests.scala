@@ -15,7 +15,7 @@ class GraphMLTests extends AnyWordSpec {
 
   "import minified gratefuldead graph" in {
     val gratefulDead = GratefulDead.empty
-    val graph = gratefulDead.graph
+    val graph        = gratefulDead.graph
     graph.nodeCount() shouldBe 0
 
     GraphMLImporter.runImport(graph, Paths.get(getClass.getResource("/graphml-small.xml").toURI))
@@ -23,26 +23,18 @@ class GraphMLTests extends AnyWordSpec {
     graph.edgeCount() shouldBe 2
 
     gratefulDead.song.size shouldBe 1
+    gratefulDead.song.name.l shouldBe List("HEY BO DIDDLEY")
     gratefulDead.artist.size shouldBe 2
+    gratefulDead.artist.name.l shouldBe List("Garcia", "Bo_Diddley")
 
-    gratefulDead.song.name.l shouldBe List("TODO")
+    val Seq(boDiddley, garcia) = gratefulDead.artist.sortBy(_.name).l
+    val Seq(heyBoDiddley)      = gratefulDead.song.l
 
-//    val node1 = graph.node(1)
-//    node1.label() shouldBe "song"
-//    val node340 = node1.out("sungBy").next()
-//    val node527 = node1.out("writtenBy").next()
+    heyBoDiddley.sungBy shouldBe garcia
+    heyBoDiddley.writtenBy shouldBe boDiddley
+    garcia.sang.l shouldBe List(heyBoDiddley)
+    boDiddley.wrote.l shouldBe List(heyBoDiddley)
 
-//    node340.label shouldBe "artist"
-//    node340.property("name") shouldBe "Garcia"
-//    node340.out().hasNext shouldBe false
-//    node340.in().hasNext shouldBe true
-//
-//    node527.label shouldBe "artist"
-//    node527.property("name") shouldBe "Bo_Diddley"
-//    node527.out().hasNext shouldBe false
-//    node527.in().hasNext shouldBe true
-
-    1 shouldBe 2
     graph.close()
   }
 
