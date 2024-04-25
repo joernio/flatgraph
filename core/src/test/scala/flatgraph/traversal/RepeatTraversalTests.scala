@@ -233,7 +233,7 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
   "traverses all nodes to outer limits exactly once, emitting and returning nothing, by default" in {
     val traversedNodes = mutable.ListBuffer.empty[Any]
 
-    def test(traverse: => Iterable[_]) = {
+    def test(traverse: => Iterable[?]) = {
       traversedNodes.clear()
       val results = traverse
       traversedNodes.size shouldBe 9
