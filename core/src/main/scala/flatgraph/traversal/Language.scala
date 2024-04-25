@@ -536,7 +536,7 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
 
   /** follow _all_ OUT and IN edges to their adjacent nodes */
   def both: Iterator[GNode] =
-    out ++ in
+    traversal.flatMap(node => node.out ++ node.in)
 
   /** follow the given OUT edge(s) to their adjacent nodes */
   @Doc("follow the given OUT edge(s) to their adjacent nodes")
