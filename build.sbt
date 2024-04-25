@@ -100,6 +100,23 @@ lazy val odbConvert = project
     )
   )
 
+lazy val testSchemas = project
+  .in(file("test-schemas"))
+  .dependsOn(domainClassesGenerator_3)
+  .settings(
+    name := "test-schemas",
+    scalaVersion := scala3,
+    publish / skip := true,
+  )
+
+lazy val testSchemasDomainClasses = project
+  .in(file("test-schemas-domain-classes"))
+  .dependsOn(core)
+  .settings(
+    name := "test-schemas-domain-classes",
+    publish / skip := true
+  )
+
 /** temporarily we still want to keep the generated files for the cpg domain in here,
   * in order to be able to quickly see the differences in the generated files if we
   * change the codegen
