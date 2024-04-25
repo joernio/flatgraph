@@ -65,12 +65,10 @@ object GraphMLImporter extends Importer {
       }
     }
 
-    // TODO reimplement
-//    for {
-//      id <- id.toLongOption
-//      label <- label
-//    } graph.addNode(id, label, keyValuePairs.result: _*)
-    ???
+    for {
+      id <- id.toLongOption
+      label <- label
+    } graph.addNode(id, label, keyValuePairs.result: _*)
   }
 
   private def addEdge(graph: Graph, edge: scala.xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
