@@ -792,7 +792,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     // domain object and starters: start
     // TODO: extract into separate method
-    val domainShortName = schema.domainShortName
+    val domainShortName       = schema.domainShortName
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val starters              = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>

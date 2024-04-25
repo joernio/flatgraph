@@ -43,15 +43,15 @@ class Song(graph_4762: flatgraph.Graph, seq_4762: Int)
     }
 
   override def productPrefix = "Song"
-  override def productArity = 1
+  override def productArity  = 1
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Song]
 }
 
 object NewSong {
-  def apply(): NewSong = new NewSong
+  def apply(): NewSong                               = new NewSong
   private val outNeighbors: Map[String, Set[String]] = Map("followedBy" -> Set("Song"))
-  private val inNeighbors: Map[String, Set[String]] = Map("followedBy" -> Set("Song"))
+  private val inNeighbors: Map[String, Set[String]]  = Map("followedBy" -> Set("Song"))
 }
 class NewSong extends NewNode(1.toShort) with SongBase {
   override type StoredNodeType = Song
@@ -64,7 +64,7 @@ class NewSong extends NewNode(1.toShort) with SongBase {
     NewSong.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
-  var name: String = "": String
+  var name: String                   = "": String
   def name(value: String): this.type = { this.name = value; this }
   override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 0, Iterator(this.name))
@@ -88,7 +88,7 @@ class NewSong extends NewNode(1.toShort) with SongBase {
       case _ => null
     }
 
-  override def productPrefix = "NewSong"
-  override def productArity = 1
+  override def productPrefix                = "NewSong"
+  override def productArity                 = 1
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewSong]
 }

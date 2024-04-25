@@ -36,5 +36,5 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 trait ConcreteBaseConversions {
   import Accessors.*
   implicit def access_ArtistBase(node: nodes.ArtistBase): Access_ArtistBase = new Access_ArtistBase(node)
-  implicit def access_SongBase(node: nodes.SongBase): Access_SongBase = new Access_SongBase(node)
+  implicit def access_SongBase(node: nodes.SongBase): Access_SongBase       = new Access_SongBase(node)
 }

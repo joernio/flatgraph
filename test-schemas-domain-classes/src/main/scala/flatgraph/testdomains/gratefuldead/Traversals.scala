@@ -7,9 +7,8 @@ object Accessors {
   import flatgraph.testdomains.gratefuldead.accessors.Lang.*
 
   /* accessors for concrete stored nodes start */
-  final class Traversal_Property_Name[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](
-      val traversal: Iterator[NodeType]
-  ) extends AnyVal {
+  final class Traversal_Property_Name[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](val traversal: Iterator[NodeType])
+      extends AnyVal {
 
     /** Traverse to name property */
     def name: Iterator[String] =
@@ -203,16 +202,14 @@ object Accessors {
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
   import Accessors.*
   implicit def accessPropertyNameTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](
-      traversal: IterableOnce[NodeType]
+    traversal: IterableOnce[NodeType]
   ): Traversal_Property_Name[NodeType] = new Traversal_Property_Name(traversal.iterator)
 }
 
 trait ConcreteBaseConversions {
   import Accessors.*
-  implicit def traversal_ArtistBase[NodeType <: nodes.ArtistBase](
-      traversal: IterableOnce[NodeType]
-  ): Traversal_ArtistBase[NodeType] = new Traversal_ArtistBase(traversal.iterator)
-  implicit def traversal_SongBase[NodeType <: nodes.SongBase](
-      traversal: IterableOnce[NodeType]
-  ): Traversal_SongBase[NodeType] = new Traversal_SongBase(traversal.iterator)
+  implicit def traversal_ArtistBase[NodeType <: nodes.ArtistBase](traversal: IterableOnce[NodeType]): Traversal_ArtistBase[NodeType] =
+    new Traversal_ArtistBase(traversal.iterator)
+  implicit def traversal_SongBase[NodeType <: nodes.SongBase](traversal: IterableOnce[NodeType]): Traversal_SongBase[NodeType] =
+    new Traversal_SongBase(traversal.iterator)
 }

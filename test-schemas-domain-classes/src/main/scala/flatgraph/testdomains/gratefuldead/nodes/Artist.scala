@@ -43,15 +43,15 @@ class Artist(graph_4762: flatgraph.Graph, seq_4762: Int)
     }
 
   override def productPrefix = "Artist"
-  override def productArity = 1
+  override def productArity  = 1
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[Artist]
 }
 
 object NewArtist {
-  def apply(): NewArtist = new NewArtist
+  def apply(): NewArtist                             = new NewArtist
   private val outNeighbors: Map[String, Set[String]] = Map()
-  private val inNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
 }
 class NewArtist extends NewNode(0.toShort) with ArtistBase {
   override type StoredNodeType = Artist
@@ -64,7 +64,7 @@ class NewArtist extends NewNode(0.toShort) with ArtistBase {
     NewArtist.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
-  var name: String = "": String
+  var name: String                   = "": String
   def name(value: String): this.type = { this.name = value; this }
   override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.insertProperty(this, 0, Iterator(this.name))
@@ -88,7 +88,7 @@ class NewArtist extends NewNode(0.toShort) with ArtistBase {
       case _ => null
     }
 
-  override def productPrefix = "NewArtist"
-  override def productArity = 1
+  override def productPrefix                = "NewArtist"
+  override def productArity                 = 1
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewArtist]
 }

@@ -25,9 +25,8 @@ object GratefulDead {
 
   def empty: GratefulDead = new GratefulDead(new flatgraph.Graph(GraphSchema))
 
-  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into
-    * memory. `Graph.close` will serialise graph to that given file (and override whatever was there before), unless you
-    * specify `persistOnClose = false`.
+  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
+    * serialise graph to that given file (and override whatever was there before), unless you specify `persistOnClose = false`.
     */
   def withStorage(storagePath: java.nio.file.Path, persistOnClose: Boolean = true): GratefulDead = {
     val graph = flatgraph.Graph.withStorage(GraphSchema, storagePath, persistOnClose)
