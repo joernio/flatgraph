@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sbt domainClassesGeneratorJoern/run
+sbt testSchemas/run domainClassesGeneratorJoern/run
