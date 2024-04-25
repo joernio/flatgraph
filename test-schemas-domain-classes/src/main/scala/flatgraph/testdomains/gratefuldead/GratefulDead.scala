@@ -58,4 +58,11 @@ class GratefulDeadNodeStarters(val wrappedCpg: GratefulDead) {
   @flatgraph.help.Doc(info = "all nodes")
   def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
 
+  /** */
+  @flatgraph.help.Doc(info = """""")
+  def artist: Iterator[nodes.Artist] = wrappedCpg.graph._nodes(0).asInstanceOf[Iterator[nodes.Artist]]
+
+  /** */
+  @flatgraph.help.Doc(info = """""")
+  def song: Iterator[nodes.Song] = wrappedCpg.graph._nodes(1).asInstanceOf[Iterator[nodes.Song]]
 }

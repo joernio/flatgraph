@@ -6,8 +6,14 @@ import java.util.Set;
 public class NodeTypes {
 
 
-public static Set<String> ALL = new HashSet<String>() {{
+public static final String Artist = "Artist";
 
+
+public static final String Song = "Song";
+
+public static Set<String> ALL = new HashSet<String>() {{
+add(Artist);
+add(Song);
 }};
 
 }
