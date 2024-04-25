@@ -38,7 +38,7 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
     new PathAwareTraversal(wrapped.flatMap { case (a, p) =>
       traversals.iterator.flatMap { inner =>
         inner(new PathAwareTraversal(Iterator.single((a, p)))) match {
-          case stillPathAware: PathAwareTraversal[B] => stillPathAware.wrapped
+          case stillPathAware: PathAwareTraversal[?] => stillPathAware.asInstanceOf[PathAwareTraversal[B]].wrapped
           // do we really want to allow the following, or is it an error?
           case notPathAware => notPathAware.iterator.map { (b: B) => (b, p.appended(a)) }
         }
@@ -53,7 +53,7 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
       options
         .applyOrElse(branchOnValue, (failState: BranchOn) => (unused: Iterator[A]) => Iterator.empty[NewEnd])
         .apply(new PathAwareTraversal(Iterator.single((a, p)))) match {
-        case stillPathAware: PathAwareTraversal[NewEnd] => stillPathAware.wrapped
+        case stillPathAware: PathAwareTraversal[?] => stillPathAware.asInstanceOf[PathAwareTraversal[NewEnd]].wrapped
         // do we really want to allow the following, or is it an error?
         case notPathAware => notPathAware.iterator.map { (b: NewEnd) => (b, p.appended(a)) }
       }
@@ -64,7 +64,7 @@ class PathAwareTraversal[A](val wrapped: Iterator[(A, Vector[Any])]) extends Ite
       options.iterator
         .map { inner =>
           inner(new PathAwareTraversal(Iterator.single((a, p)))) match {
-            case stillPathAware: PathAwareTraversal[NewEnd] => stillPathAware.wrapped
+            case stillPathAware: PathAwareTraversal[?] => stillPathAware.asInstanceOf[PathAwareTraversal[NewEnd]].wrapped
             // do we really want to allow the following, or is it an error?
             case notPathAware => notPathAware.iterator.map { (b: NewEnd) => (b, p.appended(a)) }
           }
