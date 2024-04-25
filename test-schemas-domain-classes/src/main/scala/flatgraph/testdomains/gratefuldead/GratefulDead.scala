@@ -53,16 +53,16 @@ class GratefulDead(private val _graph: flatgraph.Graph = new flatgraph.Graph(Gra
 }
 
 @flatgraph.help.TraversalSource
-class GratefulDeadNodeStarters(val wrappedCpg: GratefulDead) {
+class GratefulDeadNodeStarters(val wrappedGratefulDead: GratefulDead) {
 
   @flatgraph.help.Doc(info = "all nodes")
-  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
+  def all: Iterator[nodes.StoredNode] = wrappedGratefulDead.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
 
   /** */
   @flatgraph.help.Doc(info = """""")
-  def artist: Iterator[nodes.Artist] = wrappedCpg.graph._nodes(0).asInstanceOf[Iterator[nodes.Artist]]
+  def artist: Iterator[nodes.Artist] = wrappedGratefulDead.graph._nodes(0).asInstanceOf[Iterator[nodes.Artist]]
 
   /** */
   @flatgraph.help.Doc(info = """""")
-  def song: Iterator[nodes.Song] = wrappedCpg.graph._nodes(1).asInstanceOf[Iterator[nodes.Song]]
+  def song: Iterator[nodes.Song] = wrappedGratefulDead.graph._nodes(1).asInstanceOf[Iterator[nodes.Song]]
 }

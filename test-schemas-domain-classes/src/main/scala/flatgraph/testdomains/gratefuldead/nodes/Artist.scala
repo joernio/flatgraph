@@ -1,6 +1,6 @@
 package flatgraph.testdomains.gratefuldead.nodes
 
-import io.shiftleft.codepropertygraph.generated.Language.*
+import flatgraph.testdomains.gratefuldead.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait ArtistEMT extends AnyRef with HasNameEMT

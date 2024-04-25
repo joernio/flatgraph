@@ -465,7 +465,7 @@ class DomainClassesGenerator(schema: Schema) {
       val nodeSource = {
         s"""package $basePackage.nodes
              |
-             |import io.shiftleft.codepropertygraph.generated.Language.*
+             |import $basePackage.Language.*
              |import scala.collection.immutable.{IndexedSeq, ArraySeq}
              |
              |$erasedMarkerType
@@ -792,6 +792,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     // domain object and starters: start
     // TODO: extract into separate method
+    val domainShortName = schema.domainShortName
     val sanitizeReservedNames = Map("return" -> "ret", "type" -> "typ", "import" -> "imports").withDefault(identity)
     val starters              = mutable.ArrayBuffer[String]()
     nodeTypes.zipWithIndex.collect { case (typ, idx) =>
@@ -801,7 +802,7 @@ class DomainClassesGenerator(schema: Schema) {
         starters.append(
           s"""/** $comment */
              |@flatgraph.help.Doc(info = \"\"\"$comment\"\"\")
-             |def $starterName: Iterator[nodes.${typ.className}] = wrappedCpg.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]""".stripMargin
+             |def $starterName: Iterator[nodes.${typ.className}] = wrapped$domainShortName.graph._nodes($idx).asInstanceOf[Iterator[nodes.${typ.className}]]""".stripMargin
         )
 
         // starter for primary key property (if defined) of this concrete node type
@@ -838,7 +839,6 @@ class DomainClassesGenerator(schema: Schema) {
       }
     }
 
-    val domainShortName = schema.domainShortName
     val domainMain =
       s"""package $basePackage
          |import flatgraph.DiffGraphBuilder
@@ -896,10 +896,10 @@ class DomainClassesGenerator(schema: Schema) {
          |}
          |
          |@flatgraph.help.TraversalSource
-         |class ${domainShortName}NodeStarters(val wrappedCpg: $domainShortName) {
+         |class ${domainShortName}NodeStarters(val wrapped$domainShortName: $domainShortName) {
          |
          |  @flatgraph.help.Doc(info = "all nodes")
-         |  def all: Iterator[nodes.StoredNode] = wrappedCpg.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
+         |  def all: Iterator[nodes.StoredNode] = wrapped$domainShortName.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
          |
          |${starters.mkString("\n\n")}
          |}
@@ -918,7 +918,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  with neighboraccessors.Conversions
          |  with flatgraph.traversal.Language
          |  with flatgraph.Implicits {
-         |    implicit def cpgToGeneratedNodeStarters(cpg: Cpg): CpgNodeStarters = CpgNodeStarters(cpg)
+         |    implicit def toGeneratedNodeStarters(domain: $domainShortName): ${domainShortName}NodeStarters = ${domainShortName}NodeStarters(domain)
          |  }
          |
          |object Language extends Language

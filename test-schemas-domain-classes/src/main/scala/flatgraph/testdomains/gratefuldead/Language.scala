@@ -7,7 +7,9 @@ trait Language
     with neighboraccessors.Conversions
     with flatgraph.traversal.Language
     with flatgraph.Implicits {
-  implicit def cpgToGeneratedNodeStarters(cpg: Cpg): CpgNodeStarters = CpgNodeStarters(cpg)
+  implicit def toGeneratedNodeStarters(domain: GratefulDead): GratefulDeadNodeStarters = GratefulDeadNodeStarters(
+    domain
+  )
 }
 
 object Language extends Language
