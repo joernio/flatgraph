@@ -15,7 +15,7 @@ object Schema {
       val name = builder.addProperty("Name", ValueType.String).mandatory(default = "")
       val songType = builder.addProperty("SongType", ValueType.String)
       val performances = builder.addProperty("performances", ValueType.Int)
-      val weight = builder.addProperty("weight", ValueType.Long)
+      val weight = builder.addProperty("weight", ValueType.Long).mandatory(default = 0)
     }
 
     val artist = builder
@@ -26,9 +26,8 @@ object Schema {
       .addNodeType("Song")
       .addProperty(Properties.name)
 
-    val followedBy = builder.addEdgeType("followedBy")// TODO .addProperty(Properties.weight)
+    val followedBy = builder.addEdgeType("followedBy").addProperty(Properties.weight)
     song.addOutEdge(followedBy, inNode = song, cardinalityOut = Cardinality.One)
-
 
     builder.build
   }

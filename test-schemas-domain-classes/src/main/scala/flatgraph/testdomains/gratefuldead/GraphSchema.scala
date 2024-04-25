@@ -8,7 +8,8 @@ object GraphSchema extends flatgraph.Schema {
   val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
   val edgeLabels = Array("followedBy")
   val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
-  val edgePropertyAllocators: Array[Int => Array[?]] = Array(size => null)
+  val edgePropertyAllocators: Array[Int => Array[?]] =
+    Array(size => Array.fill(size)(0: Long) /* label = followedBy, id = 0 */ )
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
     Array((g, seq) => new nodes.Artist(g, seq), (g, seq) => new nodes.Song(g, seq))
   val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] =
