@@ -1,11 +1,14 @@
 package flatgraph.formats.graphml
 
-import flatgraph.Graph
 import flatgraph.formats.Importer
+import flatgraph.misc.Conversions.toShortSafely
+import flatgraph.*
 
 import java.nio.file.Path
+import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
-import scala.xml.{NodeSeq, XML}
+import scala.xml
+import scala.xml.XML
 
 /** Imports GraphML into flatgraph
   *
@@ -16,26 +19,57 @@ object GraphMLImporter extends Importer {
   override def runImport(graph: Graph, inputFiles: Seq[Path]): Unit = {
     assert(inputFiles.size == 1, s"input must be exactly one file, but got ${inputFiles.size}")
     val doc = XML.loadFile(inputFiles.head.toFile)
-
-    val keyEntries = doc \ "key"
     val graphXml   = doc \ "graph"
 
-    { // nodes
-      val nodePropertyContextById = parsePropertyEntries("node", keyEntries)
-      for (node <- graphXml \ "node") {
-        addNode(graph, node, nodePropertyContextById)
+    val graphmlNodes = graphXml \ "node"
+    val graphmlNodeIdToGNode = addNodesRaw(graphmlNodes, graph)
+
+    val keyEntries = doc \ "key"
+    val diffGraph = new DiffGraphBuilder(graph.schema)
+
+    // node properties
+    val nodePropertyContextById = parsePropertyEntries("node", keyEntries)
+    for {
+      graphmlNode <- graphmlNodes
+      nodeId = graphmlNode \@ "id"
+      entry <- graphmlNode \ "data"
+    } {
+      entry \@ "key" match {
+        case KeyForNodeLabel => // ignore, already extracted in `addNodesRaw`
+        case key =>
+          val propertyType = nodePropertyContextById
+            .get(key)
+            .getOrElse(throw new AssertionError(s"key $key not found in propertyContext..."))
+            .tpe
+          val value = entry.text
+          val convertedValue = convertValue(value, propertyType, context = graphmlNode)
+          diffGraph.setNodeProperty(graphmlNodeIdToGNode(nodeId), key, value)
       }
     }
 
-    { // edges
-      val edgePropertyContextById = parsePropertyEntries("edge", keyEntries)
-      for (edge <- graphXml \ "edge") {
-        addEdge(graph, edge, edgePropertyContextById)
-      }
+    // edges
+    val edgePropertyContextById = parsePropertyEntries("edge", keyEntries)
+    for (edge <- graphXml \ "edge") {
+      addEdge(diffGraph, graphmlNodeIdToGNode, edge, edgePropertyContextById)
     }
   }
 
-  private def parsePropertyEntries(forElementType: String, keyEntries: NodeSeq): Map[String, PropertyContext] = {
+  private def addNodesRaw(graphmlNodes: Seq[xml.Node], graph: Graph): Map[String, GNode] = {
+    val diffGraphForRawNodes  = new DiffGraphBuilder(graph.schema)
+    val graphmlNodeIdToGNode = mutable.Map.empty[String, GenericDNode]
+    graphmlNodes.foreach { graphmlNode =>
+      val id = graphmlNode \@ "id"
+      val label = (graphmlNode \ "data").find(_ \@ "key" == KeyForNodeLabel).map(_.text)
+        .getOrElse(throw new AssertionError(s"node label must be defined, but isn't: $graphmlNode"))
+      val newNode = new GenericDNode(graph.schema.getNodeKindByLabel(label).toShortSafely)
+      diffGraphForRawNodes.addNode(newNode)
+      graphmlNodeIdToGNode.put(id, newNode)
+    }
+    DiffGraphApplier.applyDiff(graph, diffGraphForRawNodes)
+    graphmlNodeIdToGNode.view.mapValues(_.storedRef.get).toMap
+  }
+
+  private def parsePropertyEntries(forElementType: String, keyEntries: xml.NodeSeq): Map[String, PropertyContext] = {
     keyEntries
       .filter(_ \@ "for" == forElementType)
       .map { node =>
@@ -47,35 +81,11 @@ object GraphMLImporter extends Importer {
       .toMap
   }
 
-  private def addNode(graph: Graph, node: scala.xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
-    val id                    = node \@ "id"
-    var label: Option[String] = None
-    val keyValuePairs         = Seq.newBuilder[Any]
-
-    for (entry <- node \ "data") {
-      val value = entry.text
-      entry \@ "key" match {
-        case KeyForNodeLabel => label = Option(value)
-        case key =>
-          val PropertyContext(name, tpe) = propertyContextById
-            .get(key)
-            .getOrElse(throw new AssertionError(s"key $key not found in propertyContext..."))
-          val convertedValue = convertValue(value, tpe, context = node)
-          keyValuePairs.addAll(Seq(name, convertedValue))
-      }
-    }
-
-    for {
-      id <- id.toLongOption
-      label <- label
-    } graph.addNode(id, label, keyValuePairs.result: _*)
-  }
-
-  private def addEdge(graph: Graph, edge: scala.xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
+  private def addEdge(diffGraph: DiffGraphBuilder, graphmlNodeIdToGNode: Map[String, GNode], edge: xml.Node, propertyContextById: Map[String, PropertyContext]): Unit = {
     val sourceId              = edge \@ "source"
     val targetId              = edge \@ "target"
     var label: Option[String] = None
-    val keyValuePairs         = Seq.newBuilder[Any]
+    var edgePropertyMaybe: Option[(String, Any)] = None
 
     for (entry <- edge \ "data") {
       val value = entry.text
@@ -86,22 +96,22 @@ object GraphMLImporter extends Importer {
             .get(key)
             .getOrElse(throw new AssertionError(s"key $key not found in propertyContext..."))
           val convertedValue = convertValue(value, tpe, context = edge)
-          keyValuePairs.addAll(Seq(name, convertedValue))
+          if (edgePropertyMaybe.isDefined) {
+            logger.warn(s"flatgraph only supports 0..1 edge properties. This graphml edge has more than one properties though - taking only the first one... graphml node: $edge")
+          }
+          edgePropertyMaybe = Some(name -> convertedValue)
       }
     }
 
-    // TODO reimplement
-//    for {
-//      sourceId <- sourceId.toLongOption
-//      source <- Option(graph.node(sourceId))
-//      targetId <- targetId.toLongOption
-//      target <- Option(graph.node(targetId))
-//      label <- label
-//    } source.addEdge(label, target, keyValuePairs.result: _*)
-    ???
+    for {
+      source <- graphmlNodeIdToGNode.get(sourceId)
+      target <- graphmlNodeIdToGNode.get(targetId)
+      label <- label
+      edgeProperty = edgePropertyMaybe.map(_._2).getOrElse(flatgraph.DefaultValue)
+    } diffGraph.addEdge(source, target, label, edgeProperty)
   }
 
-  private def convertValue(stringValue: String, tpe: Type.Value, context: scala.xml.Node): Any = {
+  private def convertValue(stringValue: String, tpe: Type.Value, context: xml.Node): Any = {
     tryConvertScalarValue(stringValue, tpe) match {
       case Success(value) => value
       case Failure(e)     => throw new AssertionError(s"unable to parse `$stringValue` of tpe=$tpe. context: $context", e)
