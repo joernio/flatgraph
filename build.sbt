@@ -12,10 +12,13 @@ val scala2_12 = "2.12.18"
 lazy val root = (project in file(".")).aggregate(
     core,
     formats,
+    formatsTests,
     domainClassesGenerator_3,
     domainClassesGenerator_2_12,
     sbtPlugin,
-    odbConvert
+    odbConvert,
+    testSchemas,
+    testSchemasDomainClasses,
   )
 
 lazy val core = project
@@ -43,8 +46,16 @@ lazy val formats = project
       "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
       "io.spray" %% "spray-json" % "1.3.6",
       "com.github.scopt" %% "scopt" % "4.1.0",
-      "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
     )
+  )
+
+lazy val formatsTests = project
+  .in(file("formats-tests"))
+  .dependsOn(formats, testSchemasDomainClasses)
+  .settings(
+    name := "flatgraph-formats-tests",
+    publish / skip := true,
+    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.9.2" % Test
   )
 
 lazy val domainClassesGenerator_3 = project
