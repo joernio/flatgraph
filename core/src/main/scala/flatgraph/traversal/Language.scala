@@ -167,11 +167,12 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   @Doc(info = "perform side effect without changing the contents of the traversal")
   def sideEffect(fun: A => ?): Iterator[A] =
     iterator match {
-      case pathAwareTraversal: PathAwareTraversal[A] =>
-        pathAwareTraversal._sideEffect(fun)
+      case pathAwareTraversal: PathAwareTraversal[?] =>
+        pathAwareTraversal.asInstanceOf[PathAwareTraversal[A]]._sideEffect(fun)
       case _ =>
         iterator.map { a =>
-          fun(a); a
+          fun(a)
+          a
         }
     }
 
@@ -240,8 +241,8 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     */
   @Doc(info = "union/sum/aggregate/join given traversals from the current point")
   def union[B](traversals: (Iterator[A] => Iterator[B])*): Iterator[B] = iterator match {
-    case pathAwareTraversal: PathAwareTraversal[A] =>
-      pathAwareTraversal._union(traversals*)
+    case pathAwareTraversal: PathAwareTraversal[?] =>
+      pathAwareTraversal.asInstanceOf[PathAwareTraversal[A]]._union(traversals*)
     case _ =>
       iterator.flatMap { (a: A) =>
         traversals.flatMap(_.apply(Iterator.single(a)))
@@ -275,8 +276,8 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   def choose[BranchOn >: Null, NewEnd](
     on: Iterator[A] => Iterator[BranchOn]
   )(options: PartialFunction[BranchOn, Iterator[A] => Iterator[NewEnd]]): Iterator[NewEnd] = iterator match {
-    case pathAwareTraversal: PathAwareTraversal[A] =>
-      pathAwareTraversal._choose[BranchOn, NewEnd](on)(options)
+    case pathAwareTraversal: PathAwareTraversal[?] =>
+      pathAwareTraversal.asInstanceOf[PathAwareTraversal[A]]._choose[BranchOn, NewEnd](on)(options)
     case _ =>
       iterator.flatMap { (a: A) =>
         val branchOnValue: BranchOn = on(Iterator.single(a)).nextOption().getOrElse(null)
@@ -288,8 +289,8 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
 
   @Doc(info = "evaluates the provided traversals in order and returns the first traversal that emits at least one element")
   def coalesce[NewEnd](options: (Iterator[A] => Iterator[NewEnd])*): Iterator[NewEnd] = iterator match {
-    case pathAwareTraversal: PathAwareTraversal[A] =>
-      pathAwareTraversal._coalesce(options*)
+    case pathAwareTraversal: PathAwareTraversal[?] =>
+      pathAwareTraversal.asInstanceOf[PathAwareTraversal[A]]._coalesce(options*)
     case _ =>
       iterator.flatMap { (a: A) =>
         options.iterator
@@ -311,8 +312,10 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   @Doc(info = "enable path tracking - prerequisite for path/simplePath steps")
   def discardPathTracking: Iterator[A] =
     iterator match {
-      case pathAwareTraversal: PathAwareTraversal[A] => pathAwareTraversal.wrapped.map { _._1 }
-      case _                                         => iterator
+      case pathAwareTraversal: PathAwareTraversal[?] =>
+        pathAwareTraversal.asInstanceOf[PathAwareTraversal[A]].wrapped.map(_._1)
+      case _ =>
+        iterator
     }
 
   def isPathTracking: Boolean =
@@ -328,7 +331,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     */
   @Doc(info = "retrieve entire path that has been traversed thus far")
   def path: Iterator[Vector[Any]] = iterator match {
-    case tracked: PathAwareTraversal[A] =>
+    case tracked: PathAwareTraversal[?] =>
       tracked.wrapped.map { case (a, p) =>
         p.appended(a)
       }
@@ -339,8 +342,8 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   } // fixme: I think ClassCastException is the correct result when the user forgot to enable path tracking. But a better error message to go along with it would be nice.
 
   def simplePath: Iterator[A] = iterator match {
-    case tracked: PathAwareTraversal[A] =>
-      new PathAwareTraversal(tracked.wrapped.filter { case (a, p) =>
+    case tracked: PathAwareTraversal[?] =>
+      new PathAwareTraversal(tracked.asInstanceOf[PathAwareTraversal[A]].wrapped.filter { case (a, p) =>
         mutable.Set.from(p).addOne(a).size == 1 + p.size
       })
     case _ =>
@@ -381,13 +384,14 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     repeatTraversal: Iterator[A] => Iterator[B]
   )(implicit behaviourBuilder: RepeatBehaviour.Builder[B] => RepeatBehaviour.Builder[B] = RepeatBehaviour.noop[B]): Iterator[B] = {
     val behaviour = behaviourBuilder(new RepeatBehaviour.Builder[B]).build
-    val _repeatTraversal =
-      repeatTraversal
-        .asInstanceOf[Iterator[B] => Iterator[B]] // this cast usually :tm: safe, because `B` is a supertype of `A`
+
+    // this cast usually :tm: safe, because `B` is a supertype of `A`
+    val _repeatTraversal = repeatTraversal.asInstanceOf[Iterator[B] => Iterator[B]]
+
     iterator match {
-      case tracked: PathAwareTraversal[A] =>
+      case tracked: PathAwareTraversal[?] =>
         val step = PathAwareRepeatStep(_repeatTraversal, behaviour)
-        new PathAwareTraversal(tracked.wrapped.flatMap { case (a, p) =>
+        new PathAwareTraversal(tracked.asInstanceOf[PathAwareTraversal[A]].wrapped.flatMap { case (a, p) =>
           step.apply(a).wrapped.map { case (aa, pp) => (aa, p ++ pp) }
         })
       case _ =>
