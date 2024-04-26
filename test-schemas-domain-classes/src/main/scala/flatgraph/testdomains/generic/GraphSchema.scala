@@ -6,13 +6,13 @@ import flatgraph.FormalQtyType
 object GraphSchema extends flatgraph.Schema {
   private val nodeLabels = IndexedSeq("node_a")
   val nodeKindByLabel    = nodeLabels.zipWithIndex.toMap
-  val edgeLabels         = Array("connectedTo")
+  val edgeLabels         = Array("connected_to")
   val edgeIdByLabel      = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
-    Array(size => Array.fill(size)("<empty>") /* label = connectedTo, id = 0 */ )
+    Array(size => Array.fill(size)("<empty>") /* label = connected_to, id = 0 */ )
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array((g, seq) => new nodes.NodeA(g, seq))
   val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] =
-    Array((s, d, subseq, p) => new edges.Connectedto(s, d, subseq, p))
+    Array((s, d, subseq, p) => new edges.ConnectedTo(s, d, subseq, p))
   val nodePropertyAllocators: Array[Int => Array[?]] = Array(
     size => new Array[Int](size),
     size => new Array[Int](size),

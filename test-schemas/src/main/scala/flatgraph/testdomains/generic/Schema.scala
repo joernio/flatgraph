@@ -26,7 +26,7 @@ object Schema {
       .addProperty(intList)
 
     val connectedTo =
-      builder.addEdgeType("connectedTo").addProperty(stringMandatory) // TODO implement properties with cardinality ONE and LIST
+      builder.addEdgeType("connected_to").addProperty(stringMandatory) // TODO implement properties with cardinality ONE and LIST
     nodeA.addOutEdge(connectedTo, nodeA, stepNameOut = "connectedTo")
 
     builder.build

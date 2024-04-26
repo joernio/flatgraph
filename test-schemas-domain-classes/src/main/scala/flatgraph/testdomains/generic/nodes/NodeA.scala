@@ -78,8 +78,8 @@ class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
 
 object NewNodeA {
   def apply(): NewNodeA                              = new NewNodeA
-  private val outNeighbors: Map[String, Set[String]] = Map("connectedTo" -> Set("node_a"))
-  private val inNeighbors: Map[String, Set[String]]  = Map("connectedTo" -> Set("node_a"))
+  private val outNeighbors: Map[String, Set[String]] = Map("connected_to" -> Set("node_a"))
+  private val inNeighbors: Map[String, Set[String]]  = Map("connected_to" -> Set("node_a"))
 }
 class NewNodeA extends NewNode(0.toShort) with NodeABase {
   override type StoredNodeType = NodeA

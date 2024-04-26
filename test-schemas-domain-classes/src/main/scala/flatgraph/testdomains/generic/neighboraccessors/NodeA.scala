@@ -5,40 +5,40 @@ import flatgraph.testdomains.generic.Language.*
 
 final class AccessNeighborsForNodeA(val node: nodes.NodeA) extends AnyVal {
 
-  /** Traverse to node_a via connectedTo IN edge.
+  /** Traverse to node_a via connected_to IN edge.
     */
-  def nodeAViaConnectedtoIn: Iterator[nodes.NodeA] = connectedtoIn.collectAll[nodes.NodeA]
+  def nodeAViaConnectedToIn: Iterator[nodes.NodeA] = connectedToIn.collectAll[nodes.NodeA]
 
-  /** Traverse to node_a via connectedTo OUT edge.
+  /** Traverse to node_a via connected_to OUT edge.
     */
   @deprecated("please use connectedTo instead")
-  def nodeAViaConnectedtoOut: Iterator[nodes.NodeA] = connectedTo
+  def nodeAViaConnectedToOut: Iterator[nodes.NodeA] = connectedTo
 
-  /** Traverse to node_a via connectedTo OUT edge.
+  /** Traverse to node_a via connected_to OUT edge.
     */
-  def connectedTo: Iterator[nodes.NodeA] = connectedtoOut.collectAll[nodes.NodeA]
+  def connectedTo: Iterator[nodes.NodeA] = connectedToOut.collectAll[nodes.NodeA]
 
-  def connectedtoIn: Iterator[nodes.NodeA] = node._connectedtoIn.cast[nodes.NodeA]
+  def connectedToIn: Iterator[nodes.NodeA] = node._connectedToIn.cast[nodes.NodeA]
 
-  def connectedtoOut: Iterator[nodes.NodeA] = node._connectedtoOut.cast[nodes.NodeA]
+  def connectedToOut: Iterator[nodes.NodeA] = node._connectedToOut.cast[nodes.NodeA]
 }
 
 final class AccessNeighborsForNodeATraversal(val traversal: Iterator[nodes.NodeA]) extends AnyVal {
 
-  /** Traverse to node_a via connectedTo IN edge.
+  /** Traverse to node_a via connected_to IN edge.
     */
-  def nodeAViaConnectedtoIn: Iterator[nodes.NodeA] = traversal.flatMap(_.nodeAViaConnectedtoIn)
+  def nodeAViaConnectedToIn: Iterator[nodes.NodeA] = traversal.flatMap(_.nodeAViaConnectedToIn)
 
-  /** Traverse to node_a via connectedTo OUT edge.
+  /** Traverse to node_a via connected_to OUT edge.
     */
   def connectedTo: Iterator[nodes.NodeA] = traversal.flatMap(_.connectedTo)
 
-  /** Traverse to node_a via connectedTo OUT edge.
+  /** Traverse to node_a via connected_to OUT edge.
     */
   @deprecated("please use connectedTo instead")
-  def nodeAViaConnectedtoOut: Iterator[nodes.NodeA] = traversal.flatMap(_.nodeAViaConnectedtoOut)
+  def nodeAViaConnectedToOut: Iterator[nodes.NodeA] = traversal.flatMap(_.nodeAViaConnectedToOut)
 
-  def connectedtoIn: Iterator[nodes.NodeA] = traversal.flatMap(_.connectedtoIn)
+  def connectedToIn: Iterator[nodes.NodeA] = traversal.flatMap(_.connectedToIn)
 
-  def connectedtoOut: Iterator[nodes.NodeA] = traversal.flatMap(_.connectedtoOut)
+  def connectedToOut: Iterator[nodes.NodeA] = traversal.flatMap(_.connectedToOut)
 }

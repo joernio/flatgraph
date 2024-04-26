@@ -11,9 +11,9 @@ abstract class StoredNode(graph_4762: flatgraph.Graph, kind_4762: Short, seq_476
     extends flatgraph.GNode(graph_4762, kind_4762, seq_4762)
     with AbstractNode {
 
-  final def _connectedtoOut: Iterator[StoredNode] =
+  final def _connectedToOut: Iterator[StoredNode] =
     flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 0).asInstanceOf[Iterator[StoredNode]]
-  final def _connectedtoIn: Iterator[StoredNode] =
+  final def _connectedToIn: Iterator[StoredNode] =
     flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 0).asInstanceOf[Iterator[StoredNode]]
 
 }

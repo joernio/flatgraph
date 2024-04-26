@@ -2,7 +2,7 @@ package flatgraph.testdomains.generic.nodes
 
 extension (iterator: Iterator[StoredNode]) {
 
-  final def _connectedtoOut: Iterator[StoredNode] = iterator.flatMap(_._connectedtoOut)
-  final def _connectedtoIn: Iterator[StoredNode]  = iterator.flatMap(_._connectedtoIn)
+  final def _connectedToOut: Iterator[StoredNode] = iterator.flatMap(_._connectedToOut)
+  final def _connectedToIn: Iterator[StoredNode]  = iterator.flatMap(_._connectedToIn)
 
 }
