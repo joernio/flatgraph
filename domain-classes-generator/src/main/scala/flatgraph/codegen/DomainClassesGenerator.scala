@@ -58,7 +58,9 @@ class DomainClassesGenerator(schema: Schema) {
       schema.allNodeTypes.map { nodeType =>
         nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
       }.toMap
-    val newPropsAtNodeList = newPropertiesByNodeType.mapValues(_.toList.sortBy(_.name))
+    val newPropsAtNodeList = newPropertiesByNodeType.view.map { case (key, values) =>
+      key -> values.toList.sortBy(_.name)
+    }.toMap
     val newExtendzMap = schema.allNodeTypes.map { nodeType =>
       nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
