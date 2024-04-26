@@ -214,7 +214,7 @@ class DomainClassesGenerator(schema: Schema) {
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
-        val accessor = if (edgeType.properties.length == 1) {
+        val propertyAccessor = if (edgeType.properties.length == 1) {
           val p = edgeType.properties.head
           p.cardinality match {
             case _: Cardinality.One[?] =>
@@ -228,12 +228,15 @@ class DomainClassesGenerator(schema: Schema) {
             case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
           }
         } else ""
-        // format: on
 
-        s"""class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
-           |    extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(
-            edgeType
-          )}.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
+        s"""object ${edgeType.className} {
+           |  val Label = "${edgeType.name}"
+           |}
+           |
+           |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
+           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) $propertyAccessor
+           |""".stripMargin
+        // format: on
       }
       .mkString(
         s"""package $basePackage.edges
