@@ -159,7 +159,7 @@ object Accessors {
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
-  def getNodeProperties(node: GNode): IterableOnce[(String, AnyRef)] = {
+  def getNodeProperties(node: GNode): IterableOnce[(String, IndexedSeq[Any])] = {
     val schema = node.graph.schema
     for {
       propertyKind <- schema.propertyKinds

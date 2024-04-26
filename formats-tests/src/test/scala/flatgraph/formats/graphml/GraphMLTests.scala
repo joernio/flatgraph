@@ -7,7 +7,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.util.DiffTool
 
 import java.lang.System.lineSeparator
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
 
 class GraphMLTests extends AnyWordSpec {
@@ -49,46 +49,52 @@ class GraphMLTests extends AnyWordSpec {
       val genericDomain = GenericDomain.empty
       val graph         = genericDomain.graph
 
-      val Seq(node1, node2, node3) = TestHelpers.addNodes(graph, Seq(NewNodeA(), NewNodeA(), NewNodeA()))
+      DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder
+        .addNode(NewNodeA().stringOptional("node 1 opt"))
+      )
 
-      val diffGraph = GenericDomain.newDiffGraphBuilder
-        .addEdge(node1, node2, ConnectedTo.Label)
+      // TODO bring back more complex setup
+//      val node1 = NewNodeA().stringOptional("node 1 opt")
+//      val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
+//      val node3 = NewNodeA().intMandatory(1).intOptional(2)
+//
+//      DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder
+//        .addEdge(node1, node2, ConnectedTo.Label)
+//        .addEdge(node2, node3, ConnectedTo.Label)
+//      )
 
-      DiffGraphApplier.applyDiff(graph, diffGraph)
+      // TODO drop
+      genericDomain.nodeA.foreach { node =>
+        println(s"$node ${node.propertiesMap}")
+      }
 
-//      val node2 = graph.addNode(2, TestNode.LABEL, TestNode.STRING_PROPERTY, "stringProp2")
-//      val node3 = graph.addNode(3, TestNode.LABEL, TestNode.INT_PROPERTY, 13)
-//
-//      // only allows values defined in FunkyList.funkyWords
-//      val funkyList = new FunkyList()
-//      funkyList.add("apoplectic")
-//      funkyList.add("bucolic")
-//      val node1 = graph.addNode(1, TestNode.LABEL, TestNode.INT_PROPERTY, 11, TestNode.STRING_PROPERTY, "<stringProp1>")
-//
-//      node1.addEdge(TestEdge.LABEL, node2, TestEdge.LONG_PROPERTY, Long.MaxValue)
-//      node2.addEdge(TestEdge.LABEL, node3)
-//
-//      File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
-//        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
+      File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
+        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
+        // TODO bring back
 //        exportResult.nodeCount shouldBe 3
 //        exportResult.edgeCount shouldBe 2
-//        val Seq(graphMLFile) = exportResult.files
-//
-//        // import graphml into new graph, use difftool for round trip of conversion
-//        val reimported = SimpleDomain.newGraph()
-//        GraphMLImporter.runImport(reimported, graphMLFile)
-//        val diff = DiffTool.compare(graph, reimported)
-//        withClue(
-//          s"original graph and reimport from graphml should be completely equal, but there are differences:\n" +
-//            diff.asScala.mkString("\n") +
-//            "\n"
-//        ) {
-//          diff.size shouldBe 0
-//        }
-//      }
+        val Seq(graphMLFile) = exportResult.files
+
+        // TODO change to an assertion
+        println(File(graphMLFile).contentAsString)
+
+        // import graphml into new graph, use difftool for round trip of conversion
+        val reimported = GenericDomain.empty.graph
+        GraphMLImporter.runImport(reimported, graphMLFile)
+        val diff = DiffTool.compare(graph, reimported)
+        withClue(
+          s"original graph and reimport from graphml should be completely equal, but there are differences:\n" +
+            diff.asScala.mkString("\n") +
+            "\n"
+        ) {
+          diff.size shouldBe 0
+        }
+      }
     }
 
 //    "using list properties" in {
+//val node2 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
+//    val node3 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
 //      val graph = SimpleDomain.newGraph()
 //
 //      // will discard the list properties

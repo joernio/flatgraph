@@ -22,7 +22,7 @@ object GraphSchema extends flatgraph.Schema {
     size => new Array[String](size)
   )
   val normalNodePropertyNames =
-    Array("intList", "intMandatory", "intOptional", "stringList", "stringMandatory", "stringOptional")
+    Array("int_list", "int_mandatory", "int_optional", "string_list", "string_mandatory", "string_optional")
   val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
     val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](12)
@@ -32,17 +32,17 @@ object GraphSchema extends flatgraph.Schema {
         else FormalQtyType.QtyNone
     }
 
-    nodePropertyDescriptors(0) = FormalQtyType.IntType // node_a.intList
+    nodePropertyDescriptors(0) = FormalQtyType.IntType // node_a.int_list
     nodePropertyDescriptors(1) = FormalQtyType.QtyMulti
-    nodePropertyDescriptors(2) = FormalQtyType.IntType // node_a.intMandatory
+    nodePropertyDescriptors(2) = FormalQtyType.IntType // node_a.int_mandatory
     nodePropertyDescriptors(3) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(4) = FormalQtyType.IntType // node_a.intOptional
+    nodePropertyDescriptors(4) = FormalQtyType.IntType // node_a.int_optional
     nodePropertyDescriptors(5) = FormalQtyType.QtyOption
-    nodePropertyDescriptors(6) = FormalQtyType.StringType // node_a.stringList
+    nodePropertyDescriptors(6) = FormalQtyType.StringType // node_a.string_list
     nodePropertyDescriptors(7) = FormalQtyType.QtyMulti
-    nodePropertyDescriptors(8) = FormalQtyType.StringType // node_a.stringMandatory
+    nodePropertyDescriptors(8) = FormalQtyType.StringType // node_a.string_mandatory
     nodePropertyDescriptors(9) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(10) = FormalQtyType.StringType // node_a.stringOptional
+    nodePropertyDescriptors(10) = FormalQtyType.StringType // node_a.string_optional
     nodePropertyDescriptors(11) = FormalQtyType.QtyOption
     nodePropertyDescriptors
   }

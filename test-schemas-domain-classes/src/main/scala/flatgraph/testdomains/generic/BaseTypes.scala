@@ -1,31 +1,31 @@
 package flatgraph.testdomains.generic.nodes
 
-/** Node types with this marker trait are guaranteed to have the intList property. EMT stands for: "erased marker trait", it exists only at
+/** Node types with this marker trait are guaranteed to have the int_list property. EMT stands for: "erased marker trait", it exists only at
   * compile time in order to improve type safety.
   */
-trait HasIntlistEMT
+trait HasIntListEMT
 
-/** Node types with this marker trait are guaranteed to have the intMandatory property. EMT stands for: "erased marker trait", it exists
+/** Node types with this marker trait are guaranteed to have the int_mandatory property. EMT stands for: "erased marker trait", it exists
   * only at compile time in order to improve type safety.
   */
-trait HasIntmandatoryEMT
+trait HasIntMandatoryEMT
 
-/** Node types with this marker trait are guaranteed to have the intOptional property. EMT stands for: "erased marker trait", it exists only
+/** Node types with this marker trait are guaranteed to have the int_optional property. EMT stands for: "erased marker trait", it exists
+  * only at compile time in order to improve type safety.
+  */
+trait HasIntOptionalEMT
+
+/** Node types with this marker trait are guaranteed to have the string_list property. EMT stands for: "erased marker trait", it exists only
   * at compile time in order to improve type safety.
   */
-trait HasIntoptionalEMT
+trait HasStringListEMT
 
-/** Node types with this marker trait are guaranteed to have the stringList property. EMT stands for: "erased marker trait", it exists only
-  * at compile time in order to improve type safety.
-  */
-trait HasStringlistEMT
-
-/** Node types with this marker trait are guaranteed to have the stringMandatory property. EMT stands for: "erased marker trait", it exists
+/** Node types with this marker trait are guaranteed to have the string_mandatory property. EMT stands for: "erased marker trait", it exists
   * only at compile time in order to improve type safety.
   */
-trait HasStringmandatoryEMT
+trait HasStringMandatoryEMT
 
-/** Node types with this marker trait are guaranteed to have the stringOptional property. EMT stands for: "erased marker trait", it exists
+/** Node types with this marker trait are guaranteed to have the string_optional property. EMT stands for: "erased marker trait", it exists
   * only at compile time in order to improve type safety.
   */
-trait HasStringoptionalEMT
+trait HasStringOptionalEMT

@@ -6,55 +6,55 @@ object Lang extends ConcreteStoredConversions
 
 object Accessors {
   /* accessors for concrete stored nodes start */
-  final class Access_Property_intList(val node: nodes.StoredNode) extends AnyVal {
-    def intlist: IndexedSeq[Int] = flatgraph.Accessors.getNodePropertyMulti[Int](node.graph, node.nodeKind, 0, node.seq)
+  final class Access_Property_int_list(val node: nodes.StoredNode) extends AnyVal {
+    def intList: IndexedSeq[Int] = flatgraph.Accessors.getNodePropertyMulti[Int](node.graph, node.nodeKind, 0, node.seq)
   }
-  final class Access_Property_intMandatory(val node: nodes.StoredNode) extends AnyVal {
-    def intmandatory: Int = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 1, node.seq(), 42: Int)
+  final class Access_Property_int_mandatory(val node: nodes.StoredNode) extends AnyVal {
+    def intMandatory: Int = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 1, node.seq(), 42: Int)
   }
-  final class Access_Property_intOptional(val node: nodes.StoredNode) extends AnyVal {
-    def intoptional: Option[Int] =
+  final class Access_Property_int_optional(val node: nodes.StoredNode) extends AnyVal {
+    def intOptional: Option[Int] =
       flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 2, node.seq)
   }
-  final class Access_Property_stringList(val node: nodes.StoredNode) extends AnyVal {
-    def stringlist: IndexedSeq[String] =
+  final class Access_Property_string_list(val node: nodes.StoredNode) extends AnyVal {
+    def stringList: IndexedSeq[String] =
       flatgraph.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 3, node.seq)
   }
-  final class Access_Property_stringMandatory(val node: nodes.StoredNode) extends AnyVal {
-    def stringmandatory: String =
+  final class Access_Property_string_mandatory(val node: nodes.StoredNode) extends AnyVal {
+    def stringMandatory: String =
       flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 4, node.seq(), "<empty>": String)
   }
-  final class Access_Property_stringOptional(val node: nodes.StoredNode) extends AnyVal {
-    def stringoptional: Option[String] =
+  final class Access_Property_string_optional(val node: nodes.StoredNode) extends AnyVal {
+    def stringOptional: Option[String] =
       flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 5, node.seq)
   }
   /* accessors for concrete stored nodes end */
 
   /* accessors for base nodes start */
   final class Access_NodeABase(val node: nodes.NodeABase) extends AnyVal {
-    def intlist: IndexedSeq[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_intList(stored).intlist
-      case newNode: nodes.NewNodeA  => newNode.intlist
+    def intList: IndexedSeq[Int] = node match {
+      case stored: nodes.StoredNode => new Access_Property_int_list(stored).intList
+      case newNode: nodes.NewNodeA  => newNode.intList
     }
-    def intmandatory: Int = node match {
-      case stored: nodes.StoredNode => new Access_Property_intMandatory(stored).intmandatory
-      case newNode: nodes.NewNodeA  => newNode.intmandatory
+    def intMandatory: Int = node match {
+      case stored: nodes.StoredNode => new Access_Property_int_mandatory(stored).intMandatory
+      case newNode: nodes.NewNodeA  => newNode.intMandatory
     }
-    def intoptional: Option[Int] = node match {
-      case stored: nodes.StoredNode => new Access_Property_intOptional(stored).intoptional
-      case newNode: nodes.NewNodeA  => newNode.intoptional
+    def intOptional: Option[Int] = node match {
+      case stored: nodes.StoredNode => new Access_Property_int_optional(stored).intOptional
+      case newNode: nodes.NewNodeA  => newNode.intOptional
     }
-    def stringlist: IndexedSeq[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_stringList(stored).stringlist
-      case newNode: nodes.NewNodeA  => newNode.stringlist
+    def stringList: IndexedSeq[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_string_list(stored).stringList
+      case newNode: nodes.NewNodeA  => newNode.stringList
     }
-    def stringmandatory: String = node match {
-      case stored: nodes.StoredNode => new Access_Property_stringMandatory(stored).stringmandatory
-      case newNode: nodes.NewNodeA  => newNode.stringmandatory
+    def stringMandatory: String = node match {
+      case stored: nodes.StoredNode => new Access_Property_string_mandatory(stored).stringMandatory
+      case newNode: nodes.NewNodeA  => newNode.stringMandatory
     }
-    def stringoptional: Option[String] = node match {
-      case stored: nodes.StoredNode => new Access_Property_stringOptional(stored).stringoptional
-      case newNode: nodes.NewNodeA  => newNode.stringoptional
+    def stringOptional: Option[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_string_optional(stored).stringOptional
+      case newNode: nodes.NewNodeA  => newNode.stringOptional
     }
   }
   /* accessors for base nodes end */
@@ -62,21 +62,21 @@ object Accessors {
 
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
   import Accessors.*
-  implicit def accessPropertyIntlist(node: nodes.StoredNode & nodes.StaticType[nodes.HasIntlistEMT]): Access_Property_intList =
-    new Access_Property_intList(node)
-  implicit def accessPropertyIntmandatory(
-    node: nodes.StoredNode & nodes.StaticType[nodes.HasIntmandatoryEMT]
-  ): Access_Property_intMandatory = new Access_Property_intMandatory(node)
-  implicit def accessPropertyIntoptional(node: nodes.StoredNode & nodes.StaticType[nodes.HasIntoptionalEMT]): Access_Property_intOptional =
-    new Access_Property_intOptional(node)
-  implicit def accessPropertyStringlist(node: nodes.StoredNode & nodes.StaticType[nodes.HasStringlistEMT]): Access_Property_stringList =
-    new Access_Property_stringList(node)
-  implicit def accessPropertyStringmandatory(
-    node: nodes.StoredNode & nodes.StaticType[nodes.HasStringmandatoryEMT]
-  ): Access_Property_stringMandatory = new Access_Property_stringMandatory(node)
-  implicit def accessPropertyStringoptional(
-    node: nodes.StoredNode & nodes.StaticType[nodes.HasStringoptionalEMT]
-  ): Access_Property_stringOptional = new Access_Property_stringOptional(node)
+  implicit def accessPropertyIntList(node: nodes.StoredNode & nodes.StaticType[nodes.HasIntListEMT]): Access_Property_int_list =
+    new Access_Property_int_list(node)
+  implicit def accessPropertyIntMandatory(
+    node: nodes.StoredNode & nodes.StaticType[nodes.HasIntMandatoryEMT]
+  ): Access_Property_int_mandatory = new Access_Property_int_mandatory(node)
+  implicit def accessPropertyIntOptional(node: nodes.StoredNode & nodes.StaticType[nodes.HasIntOptionalEMT]): Access_Property_int_optional =
+    new Access_Property_int_optional(node)
+  implicit def accessPropertyStringList(node: nodes.StoredNode & nodes.StaticType[nodes.HasStringListEMT]): Access_Property_string_list =
+    new Access_Property_string_list(node)
+  implicit def accessPropertyStringMandatory(
+    node: nodes.StoredNode & nodes.StaticType[nodes.HasStringMandatoryEMT]
+  ): Access_Property_string_mandatory = new Access_Property_string_mandatory(node)
+  implicit def accessPropertyStringOptional(
+    node: nodes.StoredNode & nodes.StaticType[nodes.HasStringOptionalEMT]
+  ): Access_Property_string_optional = new Access_Property_string_optional(node)
 }
 
 trait ConcreteBaseConversions {

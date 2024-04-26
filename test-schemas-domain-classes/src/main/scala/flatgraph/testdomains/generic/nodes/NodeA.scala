@@ -5,24 +5,24 @@ import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 trait NodeAEMT
     extends AnyRef
-    with HasIntlistEMT
-    with HasIntmandatoryEMT
-    with HasIntoptionalEMT
-    with HasStringlistEMT
-    with HasStringmandatoryEMT
-    with HasStringoptionalEMT
+    with HasIntListEMT
+    with HasIntMandatoryEMT
+    with HasIntOptionalEMT
+    with HasStringListEMT
+    with HasStringMandatoryEMT
+    with HasStringOptionalEMT
 
 trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import flatgraph.testdomains.generic.accessors.Lang.*
     val res        = new java.util.HashMap[String, Any]()
-    val tmpIntlist = this.intlist; if (tmpIntlist.nonEmpty) res.put("intList", tmpIntlist)
-    if ((42: Int) != this.intmandatory) res.put("intMandatory", this.intmandatory)
-    this.intoptional.foreach { p => res.put("intOptional", p) }
-    val tmpStringlist = this.stringlist; if (tmpStringlist.nonEmpty) res.put("stringList", tmpStringlist)
-    if (("<empty>": String) != this.stringmandatory) res.put("stringMandatory", this.stringmandatory)
-    this.stringoptional.foreach { p => res.put("stringOptional", p) }
+    val tmpIntList = this.intList; if (tmpIntList.nonEmpty) res.put("int_list", tmpIntList)
+    if ((42: Int) != this.intMandatory) res.put("int_mandatory", this.intMandatory)
+    this.intOptional.foreach { p => res.put("int_optional", p) }
+    val tmpStringList = this.stringList; if (tmpStringList.nonEmpty) res.put("string_list", tmpStringList)
+    if (("<empty>": String) != this.stringMandatory) res.put("string_mandatory", this.stringMandatory)
+    this.stringOptional.foreach { p => res.put("string_optional", p) }
     res
   }
 }
@@ -30,16 +30,16 @@ trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
 object NodeA {
   val Label = "node_a"
   object PropertyNames {
-    val Intlist         = flatgraph.testdomains.generic.PropertyNames.intList
-    val Intmandatory    = flatgraph.testdomains.generic.PropertyNames.intMandatory
-    val Intoptional     = flatgraph.testdomains.generic.PropertyNames.intOptional
-    val Stringlist      = flatgraph.testdomains.generic.PropertyNames.stringList
-    val Stringmandatory = flatgraph.testdomains.generic.PropertyNames.stringMandatory
-    val Stringoptional  = flatgraph.testdomains.generic.PropertyNames.stringOptional
+    val IntList         = flatgraph.testdomains.generic.PropertyNames.int_list
+    val IntMandatory    = flatgraph.testdomains.generic.PropertyNames.int_mandatory
+    val IntOptional     = flatgraph.testdomains.generic.PropertyNames.int_optional
+    val StringList      = flatgraph.testdomains.generic.PropertyNames.string_list
+    val StringMandatory = flatgraph.testdomains.generic.PropertyNames.string_mandatory
+    val StringOptional  = flatgraph.testdomains.generic.PropertyNames.string_optional
   }
   object PropertyDefaults {
-    val Intmandatory    = 42: Int
-    val Stringmandatory = "<empty>"
+    val IntMandatory    = 42: Int
+    val StringMandatory = "<empty>"
   }
 }
 
@@ -50,23 +50,23 @@ class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
 
   override def productElementName(n: Int): String =
     n match {
-      case 0 => "intlist"
-      case 1 => "intmandatory"
-      case 2 => "intoptional"
-      case 3 => "stringlist"
-      case 4 => "stringmandatory"
-      case 5 => "stringoptional"
+      case 0 => "intList"
+      case 1 => "intMandatory"
+      case 2 => "intOptional"
+      case 3 => "stringList"
+      case 4 => "stringMandatory"
+      case 5 => "stringOptional"
       case _ => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0 => this.intlist
-      case 1 => this.intmandatory
-      case 2 => this.intoptional
-      case 3 => this.stringlist
-      case 4 => this.stringmandatory
-      case 5 => this.stringoptional
+      case 0 => this.intList
+      case 1 => this.intMandatory
+      case 2 => this.intOptional
+      case 3 => this.stringList
+      case 4 => this.stringMandatory
+      case 5 => this.stringOptional
       case _ => null
     }
 
@@ -92,59 +92,59 @@ class NewNodeA extends NewNode(0.toShort) with NodeABase {
     NewNodeA.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
-  var intlist: IndexedSeq[Int]                           = ArraySeq.empty
-  var intmandatory: Int                                  = 42: Int
-  var intoptional: Option[Int]                           = None
-  var stringlist: IndexedSeq[String]                     = ArraySeq.empty
-  var stringmandatory: String                            = "<empty>": String
-  var stringoptional: Option[String]                     = None
-  def intlist(value: IterableOnce[Int]): this.type       = { this.intlist = value.iterator.to(ArraySeq); this }
-  def intmandatory(value: Int): this.type                = { this.intmandatory = value; this }
-  def intoptional(value: Int): this.type                 = { this.intoptional = Option(value); this }
-  def intoptional(value: Option[Int]): this.type         = { this.intoptional = value; this }
-  def stringlist(value: IterableOnce[String]): this.type = { this.stringlist = value.iterator.to(ArraySeq); this }
-  def stringmandatory(value: String): this.type          = { this.stringmandatory = value; this }
-  def stringoptional(value: Option[String]): this.type   = { this.stringoptional = value; this }
-  def stringoptional(value: String): this.type           = { this.stringoptional = Option(value); this }
+  var intList: IndexedSeq[Int]                           = ArraySeq.empty
+  var intMandatory: Int                                  = 42: Int
+  var intOptional: Option[Int]                           = None
+  var stringList: IndexedSeq[String]                     = ArraySeq.empty
+  var stringMandatory: String                            = "<empty>": String
+  var stringOptional: Option[String]                     = None
+  def intList(value: IterableOnce[Int]): this.type       = { this.intList = value.iterator.to(ArraySeq); this }
+  def intMandatory(value: Int): this.type                = { this.intMandatory = value; this }
+  def intOptional(value: Int): this.type                 = { this.intOptional = Option(value); this }
+  def intOptional(value: Option[Int]): this.type         = { this.intOptional = value; this }
+  def stringList(value: IterableOnce[String]): this.type = { this.stringList = value.iterator.to(ArraySeq); this }
+  def stringMandatory(value: String): this.type          = { this.stringMandatory = value; this }
+  def stringOptional(value: Option[String]): this.type   = { this.stringOptional = value; this }
+  def stringOptional(value: String): this.type           = { this.stringOptional = Option(value); this }
   override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
-    if (intlist.nonEmpty) interface.insertProperty(this, 0, this.intlist)
-    interface.insertProperty(this, 1, Iterator(this.intmandatory))
-    if (intoptional.nonEmpty) interface.insertProperty(this, 2, this.intoptional)
-    if (stringlist.nonEmpty) interface.insertProperty(this, 3, this.stringlist)
-    interface.insertProperty(this, 4, Iterator(this.stringmandatory))
-    if (stringoptional.nonEmpty) interface.insertProperty(this, 5, this.stringoptional)
+    if (intList.nonEmpty) interface.insertProperty(this, 0, this.intList)
+    interface.insertProperty(this, 1, Iterator(this.intMandatory))
+    if (intOptional.nonEmpty) interface.insertProperty(this, 2, this.intOptional)
+    if (stringList.nonEmpty) interface.insertProperty(this, 3, this.stringList)
+    interface.insertProperty(this, 4, Iterator(this.stringMandatory))
+    if (stringOptional.nonEmpty) interface.insertProperty(this, 5, this.stringOptional)
   }
 
   override def copy(): this.type = {
     val newInstance = new NewNodeA
-    newInstance.intlist = this.intlist
-    newInstance.intmandatory = this.intmandatory
-    newInstance.intoptional = this.intoptional
-    newInstance.stringlist = this.stringlist
-    newInstance.stringmandatory = this.stringmandatory
-    newInstance.stringoptional = this.stringoptional
+    newInstance.intList = this.intList
+    newInstance.intMandatory = this.intMandatory
+    newInstance.intOptional = this.intOptional
+    newInstance.stringList = this.stringList
+    newInstance.stringMandatory = this.stringMandatory
+    newInstance.stringOptional = this.stringOptional
     newInstance.asInstanceOf[this.type]
   }
 
   override def productElementName(n: Int): String =
     n match {
-      case 0 => "intlist"
-      case 1 => "intmandatory"
-      case 2 => "intoptional"
-      case 3 => "stringlist"
-      case 4 => "stringmandatory"
-      case 5 => "stringoptional"
+      case 0 => "intList"
+      case 1 => "intMandatory"
+      case 2 => "intOptional"
+      case 3 => "stringList"
+      case 4 => "stringMandatory"
+      case 5 => "stringOptional"
       case _ => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0 => this.intlist
-      case 1 => this.intmandatory
-      case 2 => this.intoptional
-      case 3 => this.stringlist
-      case 4 => this.stringmandatory
-      case 5 => this.stringoptional
+      case 0 => this.intList
+      case 1 => this.intMandatory
+      case 2 => this.intOptional
+      case 3 => this.stringList
+      case 4 => this.stringMandatory
+      case 5 => this.stringOptional
       case _ => null
     }
 

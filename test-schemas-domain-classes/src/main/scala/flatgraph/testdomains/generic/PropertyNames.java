@@ -6,30 +6,30 @@ import java.util.Set;
 public class PropertyNames {
 
 
-public static final String intList = "intList";
+public static final String int_list = "int_list";
 
 
-public static final String intMandatory = "intMandatory";
+public static final String int_mandatory = "int_mandatory";
 
 
-public static final String intOptional = "intOptional";
+public static final String int_optional = "int_optional";
 
 
-public static final String stringList = "stringList";
+public static final String string_list = "string_list";
 
 
-public static final String stringMandatory = "stringMandatory";
+public static final String string_mandatory = "string_mandatory";
 
 
-public static final String stringOptional = "stringOptional";
+public static final String string_optional = "string_optional";
 
 public static Set<String> ALL = new HashSet<String>() {{
-add(intList);
-add(intMandatory);
-add(intOptional);
-add(stringList);
-add(stringMandatory);
-add(stringOptional);
+add(int_list);
+add(int_mandatory);
+add(int_optional);
+add(string_list);
+add(string_mandatory);
+add(string_optional);
 }};
 
 }
