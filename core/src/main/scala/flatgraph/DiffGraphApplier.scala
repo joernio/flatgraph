@@ -7,9 +7,9 @@ import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import scala.collection.{Iterator, mutable}
 
 object DiffGraphApplier {
-  def applyDiff(g: Graph, diff: DiffGraphBuilder): Unit = {
-    if (g.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
-    new DiffGraphApplier(g, diff).applyUpdate()
+  def applyDiff(graph: Graph, diff: DiffGraphBuilder): Unit = {
+    if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
+    new DiffGraphApplier(graph, diff).applyUpdate()
     diff.buffer = null
   }
 }

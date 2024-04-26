@@ -607,7 +607,7 @@ class DomainClassesGenerator(schema: Schema) {
          |import flatgraph.FormalQtyType
          |
          |object GraphSchema extends flatgraph.Schema {
-         |  val nodeLabels = Array($nodeLabelsSrc)
+         |  private val nodeLabels = IndexedSeq($nodeLabelsSrc)
          |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
          |  val edgeLabels = Array(${edgeTypes.map { e => s""""${e.name}"""" }.mkString(",  ")})
          |  val edgeIdByLabel = edgeLabels.zipWithIndex.toMap

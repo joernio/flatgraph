@@ -1,6 +1,7 @@
 package flatgraph
 
 import flatgraph.Edge.Direction
+import flatgraph.Schema.UndefinedKind
 
 object DefaultValue
 object NoProperty
@@ -96,7 +97,8 @@ object FormalQtyType {
 
 abstract class Schema {
   def getNumberOfNodeKinds: Int
-  def nodeKinds: Range = Range(0, getNumberOfNodeKinds)
+  def nodeKinds: Range        = Range(0, getNumberOfNodeKinds)
+  def nodeLabels: Seq[String] = nodeKinds.map(getNodeLabel)
 
   def getNumberOfEdgeKinds: Int
   def edgeKinds: Range = Range(0, getNumberOfEdgeKinds)
@@ -106,6 +108,9 @@ abstract class Schema {
 
   def getNodeLabel(nodeKind: Int): String
   def getNodeKindByLabel(label: String): Int
+  def getNodeKindByLabelMaybe(label: String): Option[Int] = {
+    Option(getNodeKindByLabel(label)).filterNot(_ == UndefinedKind)
+  }
 
   // So, the issue here is: We have a couple of pseudo-properties that can only exist at a single node kind
   // (theoretically same for edges). We want to allow our data-layout to alias these properties. This means that multiple
@@ -143,10 +148,10 @@ abstract class Schema {
 }
 
 class FreeSchema(
-  val nodeLabels: Array[String],
-  val propertyLabels: Array[String],
+  nodeLabels: Array[String],
+  propertyLabels: Array[String],
   nodePropertyPrototypes: Array[AnyRef],
-  val edgeLabels: Array[String],
+  edgeLabels: Array[String],
   edgePropertyPrototypes: Array[AnyRef],
   formalQuantities: Array[FormalQtyType.FormalQuantity] = null
 ) extends Schema {

@@ -10,15 +10,15 @@ trait ArtistBase extends AbstractNode with StaticType[ArtistEMT] {
   override def propertiesMap: java.util.Map[String, Any] = {
     import flatgraph.testdomains.gratefuldead.accessors.Lang.*
     val res = new java.util.HashMap[String, Any]()
-    if (("": String) != this.name) res.put("Name", this.name)
+    if (("": String) != this.name) res.put("name", this.name)
     res
   }
 }
 
 object Artist {
-  val Label = "Artist"
+  val Label = "artist"
   object PropertyNames {
-    val Name = flatgraph.testdomains.gratefuldead.PropertyNames.Name
+    val Name = flatgraph.testdomains.gratefuldead.PropertyNames.name
   }
   object PropertyDefaults {
     val Name = ""
@@ -51,11 +51,11 @@ class Artist(graph_4762: flatgraph.Graph, seq_4762: Int)
 object NewArtist {
   def apply(): NewArtist                             = new NewArtist
   private val outNeighbors: Map[String, Set[String]] = Map()
-  private val inNeighbors: Map[String, Set[String]]  = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map("sungBy" -> Set("song"), "writtenBy" -> Set("song"))
 }
 class NewArtist extends NewNode(0.toShort) with ArtistBase {
   override type StoredNodeType = Artist
-  override def label: String = "Artist"
+  override def label: String = "artist"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
     NewArtist.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
