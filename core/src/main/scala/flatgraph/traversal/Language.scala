@@ -470,6 +470,18 @@ class NodeMethods(node: GNode) extends AnyVal {
     }
   }
 
+  def propertiesMap: java.util.Map[String, AnyRef] = {
+    val ret = new java.util.HashMap[String, AnyRef]()
+    val schema = node.graph.schema
+    schema.propertyKinds.foreach { propertyKind =>
+      Accessors.getNodePropertyOptionCompat(node, propertyKind).foreach { value =>
+        val key = schema.getPropertyLabel(node.nodeKind, propertyKind)
+        ret.put(key, value)
+      }
+    }
+    ret
+  }
+
   private def edgeKind(edgeLabel: String): Int =
     node.graph.schema.getEdgeKindByLabel(edgeLabel)
 }

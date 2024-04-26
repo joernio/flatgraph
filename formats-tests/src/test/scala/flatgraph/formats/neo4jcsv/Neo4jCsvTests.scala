@@ -1,11 +1,16 @@
 package flatgraph.formats.neo4jcsv
 
-import better.files._
-import org.scalatest.matchers.should.Matchers._
+import better.files.*
+import flatgraph.DiffGraphApplier
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
-import flatgraph.traversal._
+import flatgraph.traversal.*
 import flatgraph.util.DiffTool
+import flatgraph.testdomains.generic.GenericDomain
+import flatgraph.testdomains.generic.Language.*
+import flatgraph.testdomains.generic.edges.ConnectedTo
+import flatgraph.testdomains.generic.nodes.NewNodeA
 
 import java.io.FileNotFoundException
 import java.nio.file.Paths
@@ -15,8 +20,88 @@ class Neo4jCsvTests extends AnyWordSpec {
   val subprojectRoot = testutils.ProjectRoot.relativise("formats")
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
-  "foo" in {
-    pending // TODO bring back: generate domain specific code with codegen from a schema
+  "Exporter should export valid csv" in {
+    val graph = GenericDomain.empty.graph
+    val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
+    val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
+
+    DiffGraphApplier.applyDiff(graph,
+      GenericDomain.newDiffGraphBuilder
+        .addEdge(node1, node2, ConnectedTo.Label, "edge property")
+    )
+
+    File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
+      val ExportResult(nodeCount, edgeCount, exportedFiles0, additionalInfo) =
+        Neo4jCsvExporter.runExport(graph, exportRootDirectory.pathAsString)
+      nodeCount shouldBe 2
+      edgeCount shouldBe 1
+      val exportedFiles = exportedFiles0.map(_.toFile.toScala)
+      exportedFiles.size shouldBe 6
+      exportedFiles.foreach(_.parent shouldBe exportRootDirectory)
+
+      // TODO continue here
+      "continue test impl" shouldBe "done"
+
+      // assert csv file contents
+//      val nodeHeaderFile = fuzzyFindFile(exportedFiles, TestNode.LABEL, HeaderFileSuffix)
+//      nodeHeaderFile.contentAsString.trim shouldBe
+//        ":ID,:LABEL,ContainedTestNodeProperty,FunkyListProperty:string[],IntListProperty:int[],IntProperty:int,StringListProperty:string[],StringProperty:string"
+//
+//      val nodeDataFileLines = fuzzyFindFile(exportedFiles, TestNode.LABEL, DataFileSuffix).lines.toSeq
+//      nodeDataFileLines.size shouldBe 3
+//      nodeDataFileLines should contain("2,testNode,,,,,,stringProp2")
+//      nodeDataFileLines should contain("3,testNode,,,,13,,DEFAULT_STRING_VALUE")
+//      nodeDataFileLines should contain(
+//        "1,testNode,,apoplectic;bucolic,21;31;41,11,stringListProp1a;stringListProp1b,stringProp1"
+//      )
+//
+//      val edgeHeaderFile = fuzzyFindFile(exportedFiles, TestEdge.LABEL, HeaderFileSuffix)
+//      edgeHeaderFile.contentAsString.trim shouldBe ":START_ID,:END_ID,:TYPE,longProperty:long"
+//
+//      val edgeDataFileLines = fuzzyFindFile(exportedFiles, TestEdge.LABEL, DataFileSuffix).lines.toSeq
+//      edgeDataFileLines.size shouldBe 2
+//      edgeDataFileLines should contain(s"1,2,testEdge,${Long.MaxValue}")
+//      edgeDataFileLines should contain(s"2,3,testEdge,${TestEdge.LONG_PROPERTY_DEFAULT}")
+//
+//      fuzzyFindFile(exportedFiles, TestNode.LABEL, CypherFileSuffix).contentAsString shouldBe
+//        """LOAD CSV FROM 'file:/nodes_testNode_data.csv' AS line
+//          |CREATE (:testNode {
+//          |id: toInteger(line[0]),
+//          |ContainedTestNodeProperty: line[2],
+//          |FunkyListProperty: toStringList(split(line[3], ";")),
+//          |IntListProperty: toIntegerList(split(line[4], ";")),
+//          |IntProperty: toInteger(line[5]),
+//          |StringListProperty: toStringList(split(line[6], ";")),
+//          |StringProperty: line[7]
+//          |});
+//          |""".stripMargin
+//
+//      fuzzyFindFile(exportedFiles, TestEdge.LABEL, CypherFileSuffix).contentAsString shouldBe
+//        """LOAD CSV FROM 'file:/edges_testEdge_data.csv' AS line
+//          |MATCH (a), (b)
+//          |WHERE a.id = toInteger(line[0]) AND b.id = toInteger(line[1])
+//          |CREATE (a)-[r:testEdge {longProperty: toInteger(line[3])}]->(b);
+//          |""".stripMargin
+//
+//      /** example cypher queries to run manually in your neo4j instance: MATCH (a) return a; MATCH (a)-[r]->(b) RETURN
+//        * a.id, type(r), b.id;
+//        */
+//
+//      // import csv into new graph, use difftool for round trip of conversion
+//      val graphFromCsv = SimpleDomain.newGraph()
+//      Neo4jCsvImporter.runImport(
+//        graphFromCsv,
+//        exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.toJava.toPath)
+//      )
+//      val diff = DiffTool.compare(graph, graphFromCsv)
+//      withClue(
+//        s"original graph and reimport from csv should be completely equal, but there are differences:\n" +
+//          diff.asScala.mkString("\n") +
+//          "\n"
+//      ) {
+//        diff.size shouldBe 0
+//      }
+    }
   }
 
 //  "Importer" should {
@@ -93,105 +178,6 @@ class Neo4jCsvTests extends AnyWordSpec {
 //    }
 //  }
 //
-//  "Exporter should export valid csv" in {
-//    val graph = SimpleDomain.newGraph()
-//
-//    val node2 = graph.addNode(2, TestNode.LABEL, TestNode.STRING_PROPERTY, "stringProp2")
-//    val node3 = graph.addNode(3, TestNode.LABEL, TestNode.INT_PROPERTY, 13)
-//
-//    // only allows values defined in FunkyList.funkyWords
-//    val funkyList = new FunkyList()
-//    funkyList.add("apoplectic")
-//    funkyList.add("bucolic")
-//    val node1 = graph.addNode(
-//      1,
-//      TestNode.LABEL,
-//      TestNode.INT_PROPERTY,
-//      11,
-//      TestNode.STRING_PROPERTY,
-//      "stringProp1",
-//      TestNode.STRING_LIST_PROPERTY,
-//      List("stringListProp1a", "stringListProp1b").asJava,
-//      TestNode.FUNKY_LIST_PROPERTY,
-//      funkyList,
-//      TestNode.INT_LIST_PROPERTY,
-//      List(21, 31, 41).asJava
-//    )
-//
-//    node1.addEdge(TestEdge.LABEL, node2, TestEdge.LONG_PROPERTY, Long.MaxValue)
-//    node2.addEdge(TestEdge.LABEL, node3)
-//
-//    File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
-//      val ExportResult(nodeCount, edgeCount, exportedFiles0, additionalInfo) =
-//        Neo4jCsvExporter.runExport(graph, exportRootDirectory.pathAsString)
-//      nodeCount shouldBe 3
-//      edgeCount shouldBe 2
-//      val exportedFiles = exportedFiles0.map(_.toFile.toScala)
-//      exportedFiles.size shouldBe 6
-//      exportedFiles.foreach(_.parent shouldBe exportRootDirectory)
-//
-//      // assert csv file contents
-//      val nodeHeaderFile = fuzzyFindFile(exportedFiles, TestNode.LABEL, HeaderFileSuffix)
-//      nodeHeaderFile.contentAsString.trim shouldBe
-//        ":ID,:LABEL,ContainedTestNodeProperty,FunkyListProperty:string[],IntListProperty:int[],IntProperty:int,StringListProperty:string[],StringProperty:string"
-//
-//      val nodeDataFileLines = fuzzyFindFile(exportedFiles, TestNode.LABEL, DataFileSuffix).lines.toSeq
-//      nodeDataFileLines.size shouldBe 3
-//      nodeDataFileLines should contain("2,testNode,,,,,,stringProp2")
-//      nodeDataFileLines should contain("3,testNode,,,,13,,DEFAULT_STRING_VALUE")
-//      nodeDataFileLines should contain(
-//        "1,testNode,,apoplectic;bucolic,21;31;41,11,stringListProp1a;stringListProp1b,stringProp1"
-//      )
-//
-//      val edgeHeaderFile = fuzzyFindFile(exportedFiles, TestEdge.LABEL, HeaderFileSuffix)
-//      edgeHeaderFile.contentAsString.trim shouldBe ":START_ID,:END_ID,:TYPE,longProperty:long"
-//
-//      val edgeDataFileLines = fuzzyFindFile(exportedFiles, TestEdge.LABEL, DataFileSuffix).lines.toSeq
-//      edgeDataFileLines.size shouldBe 2
-//      edgeDataFileLines should contain(s"1,2,testEdge,${Long.MaxValue}")
-//      edgeDataFileLines should contain(s"2,3,testEdge,${TestEdge.LONG_PROPERTY_DEFAULT}")
-//
-//      fuzzyFindFile(exportedFiles, TestNode.LABEL, CypherFileSuffix).contentAsString shouldBe
-//        """LOAD CSV FROM 'file:/nodes_testNode_data.csv' AS line
-//          |CREATE (:testNode {
-//          |id: toInteger(line[0]),
-//          |ContainedTestNodeProperty: line[2],
-//          |FunkyListProperty: toStringList(split(line[3], ";")),
-//          |IntListProperty: toIntegerList(split(line[4], ";")),
-//          |IntProperty: toInteger(line[5]),
-//          |StringListProperty: toStringList(split(line[6], ";")),
-//          |StringProperty: line[7]
-//          |});
-//          |""".stripMargin
-//
-//      fuzzyFindFile(exportedFiles, TestEdge.LABEL, CypherFileSuffix).contentAsString shouldBe
-//        """LOAD CSV FROM 'file:/edges_testEdge_data.csv' AS line
-//          |MATCH (a), (b)
-//          |WHERE a.id = toInteger(line[0]) AND b.id = toInteger(line[1])
-//          |CREATE (a)-[r:testEdge {longProperty: toInteger(line[3])}]->(b);
-//          |""".stripMargin
-//
-//      /** example cypher queries to run manually in your neo4j instance: MATCH (a) return a; MATCH (a)-[r]->(b) RETURN
-//        * a.id, type(r), b.id;
-//        */
-//
-//      // import csv into new graph, use difftool for round trip of conversion
-//      val graphFromCsv = SimpleDomain.newGraph()
-//      Neo4jCsvImporter.runImport(
-//        graphFromCsv,
-//        exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.toJava.toPath)
-//      )
-//      val diff = DiffTool.compare(graph, graphFromCsv)
-//      withClue(
-//        s"original graph and reimport from csv should be completely equal, but there are differences:\n" +
-//          diff.asScala.mkString("\n") +
-//          "\n"
-//      ) {
-//        diff.size shouldBe 0
-//      }
-//    }
-//  }
-//
 //  "main apps for cli export/import" in {
 //    File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
 //      val graphPath = tmpDir / "original.odb"
@@ -223,11 +209,11 @@ class Neo4jCsvTests extends AnyWordSpec {
 //    }
 //  }
 //
-//  private def fuzzyFindFile(files: Seq[File], label: String, fileSuffix: String): File = {
-//    files.find { file =>
-//      val relevantPart = file.nameWithoutExtension.toLowerCase
-//      relevantPart.contains(label.toLowerCase) && relevantPart.endsWith(fileSuffix)
-//    }.get
-//  }
+  private def fuzzyFindFile(files: Seq[File], label: String, fileSuffix: String): File = {
+    files.find { file =>
+      val relevantPart = file.nameWithoutExtension.toLowerCase
+      relevantPart.contains(label.toLowerCase) && relevantPart.endsWith(fileSuffix)
+    }.get
+  }
 
 }
