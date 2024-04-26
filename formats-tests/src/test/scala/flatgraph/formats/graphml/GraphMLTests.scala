@@ -2,13 +2,13 @@ package flatgraph.formats.graphml
 
 import better.files.File
 import flatgraph.DiffGraphApplier
+import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-import flatgraph.util.DiffTool
 
 import java.lang.System.lineSeparator
-import java.nio.file.{Files, Paths}
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
+import java.nio.file.Paths
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class GraphMLTests extends AnyWordSpec {
 
@@ -42,8 +42,8 @@ class GraphMLTests extends AnyWordSpec {
   "Exporter should export valid xml" when {
     import flatgraph.testdomains.generic.GenericDomain
     import flatgraph.testdomains.generic.Language.*
-    import flatgraph.testdomains.generic.nodes.NewNodeA
     import flatgraph.testdomains.generic.edges.ConnectedTo
+    import flatgraph.testdomains.generic.nodes.NewNodeA
 
     "not using (unsupported) list properties" in {
       val genericDomain = GenericDomain.empty
