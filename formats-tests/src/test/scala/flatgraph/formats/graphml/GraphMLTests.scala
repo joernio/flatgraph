@@ -1,7 +1,7 @@
 package flatgraph.formats.graphml
 
 import better.files.File
-import flatgraph.{DiffGraphApplier, TestHelpers}
+import flatgraph.DiffGraphApplier
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.util.DiffTool
@@ -45,36 +45,6 @@ class GraphMLTests extends AnyWordSpec {
     import flatgraph.testdomains.generic.nodes.NewNodeA
     import flatgraph.testdomains.generic.edges.ConnectedTo
 
-    "simplistic graph" in {
-      val genericDomain = GenericDomain.empty
-      val graph         = genericDomain.graph
-
-      DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder
-        .addNode(NewNodeA().stringOptional("node 1 opt"))
-      )
-
-      File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
-        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
-        exportResult.nodeCount shouldBe 1
-        val Seq(graphMLFile) = exportResult.files
-
-        // TODO change to an assertion
-        println(File(graphMLFile).contentAsString)
-
-        // import graphml into new graph, use difftool for round trip of conversion
-        val reimported = GenericDomain.empty.graph
-        GraphMLImporter.runImport(reimported, graphMLFile)
-        val diff = DiffTool.compare(graph, reimported)
-        withClue(
-          s"original graph and reimport from graphml should be completely equal, but there are differences:\n" +
-            diff.asScala.mkString("\n") +
-            "\n"
-        ) {
-          diff.size shouldBe 0
-        }
-      }
-    }
-
     "not using (unsupported) list properties" in {
       val genericDomain = GenericDomain.empty
       val graph         = genericDomain.graph
@@ -83,9 +53,11 @@ class GraphMLTests extends AnyWordSpec {
       val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
       val node3 = NewNodeA().intMandatory(1).intOptional(2)
 
-      DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder
-        .addEdge(node1, node2, ConnectedTo.Label)
-        .addEdge(node2, node3, ConnectedTo.Label)
+      DiffGraphApplier.applyDiff(
+        graph,
+        GenericDomain.newDiffGraphBuilder
+          .addEdge(node1, node2, ConnectedTo.Label)
+          .addEdge(node2, node3, ConnectedTo.Label)
       )
 
       File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
@@ -109,48 +81,43 @@ class GraphMLTests extends AnyWordSpec {
     }
 
     "using list properties" in {
-      ???
-//val node2 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
-//    val node3 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
-//      val graph = SimpleDomain.newGraph()
-//
-//      // will discard the list properties
-//      val node1 = graph.addNode(
-//        1,
-//        TestNode.LABEL,
-//        TestNode.INT_PROPERTY,
-//        11,
-//        TestNode.STRING_PROPERTY,
-//        "<stringProp1>",
-//        TestNode.STRING_LIST_PROPERTY,
-//        List("stringListProp1a", "stringListProp1b").asJava,
-//        TestNode.INT_LIST_PROPERTY,
-//        List(21, 31, 41).asJava
-//      )
-//
-//      File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
-//        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
-//        exportResult.nodeCount shouldBe 1
-//        exportResult.edgeCount shouldBe 0
-//        exportResult.additionalInfo.get should include("discarded 2 list properties")
-//        val Seq(graphMLFile) = exportResult.files
-//
-//        // import graphml into new graph, use difftool for round trip of conversion
-//        val reimported = SimpleDomain.newGraph()
-//        GraphMLImporter.runImport(reimported, graphMLFile)
-//        val diff = DiffTool.compare(graph, reimported)
-//        val diffString = diff.asScala.mkString(lineSeparator)
-//        withClue(
-//          s"because the original graph contained two list properties, and those are not supported by graphml, " +
-//            s"the exporter drops them. therefor they'll not be part of the reimported graph" +
-//            diffString +
-//            lineSeparator
-//        ) {
-//          diff.size shouldBe 2
-//          diffString should include("IntListProperty")
-//          diffString should include("StringListProperty")
-//        }
-//      }
+      val genericDomain = GenericDomain.empty
+      val graph         = genericDomain.graph
+
+      // exporter  will discard the list properties, but inform the user about it
+      val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
+      val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
+
+      DiffGraphApplier.applyDiff(
+        graph,
+        GenericDomain.newDiffGraphBuilder
+          .addEdge(node1, node2, ConnectedTo.Label)
+      )
+
+      File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
+        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
+        exportResult.nodeCount shouldBe 2
+        exportResult.edgeCount shouldBe 1
+        exportResult.additionalInfo.get should include("discarded 2 list properties")
+
+        val Seq(graphMLFile) = exportResult.files
+
+        // import graphml into new graph, use difftool for round trip of conversion
+        val reimported = GenericDomain.empty.graph
+        GraphMLImporter.runImport(reimported, graphMLFile)
+        val diff       = DiffTool.compare(graph, reimported)
+        val diffString = diff.asScala.mkString(lineSeparator)
+        withClue(
+          s"because the original graph contained two list properties, and those are not supported by graphml, " +
+            s"the exporter drops them. therefor they'll not be part of the reimported graph" +
+            diffString +
+            lineSeparator
+        ) {
+          diff.size shouldBe 2
+          diffString should include("Seq(10, 11, 12)")
+          diffString should include("Seq(node 3 c1, node 3 c2)")
+        }
+      }
     }
   }
 
