@@ -45,7 +45,7 @@ class GraphMLTests extends AnyWordSpec {
     import flatgraph.testdomains.generic.nodes.NewNodeA
     import flatgraph.testdomains.generic.edges.ConnectedTo
 
-    "not using (unsupported) list properties" in {
+    "simplistic graph" in {
       val genericDomain = GenericDomain.empty
       val graph         = genericDomain.graph
 
@@ -53,26 +53,9 @@ class GraphMLTests extends AnyWordSpec {
         .addNode(NewNodeA().stringOptional("node 1 opt"))
       )
 
-      // TODO bring back more complex setup
-//      val node1 = NewNodeA().stringOptional("node 1 opt")
-//      val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
-//      val node3 = NewNodeA().intMandatory(1).intOptional(2)
-//
-//      DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder
-//        .addEdge(node1, node2, ConnectedTo.Label)
-//        .addEdge(node2, node3, ConnectedTo.Label)
-//      )
-
-      // TODO drop
-      genericDomain.nodeA.foreach { node =>
-        println(s"$node ${node.propertiesMap}")
-      }
-
       File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
         val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
-        // TODO bring back
-//        exportResult.nodeCount shouldBe 3
-//        exportResult.edgeCount shouldBe 2
+        exportResult.nodeCount shouldBe 1
         val Seq(graphMLFile) = exportResult.files
 
         // TODO change to an assertion
@@ -92,7 +75,41 @@ class GraphMLTests extends AnyWordSpec {
       }
     }
 
-//    "using list properties" in {
+    "not using (unsupported) list properties" in {
+      val genericDomain = GenericDomain.empty
+      val graph         = genericDomain.graph
+
+      val node1 = NewNodeA().stringOptional("node 1 opt")
+      val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
+      val node3 = NewNodeA().intMandatory(1).intOptional(2)
+
+      DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder
+        .addEdge(node1, node2, ConnectedTo.Label)
+        .addEdge(node2, node3, ConnectedTo.Label)
+      )
+
+      File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
+        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
+        exportResult.nodeCount shouldBe 3
+        exportResult.edgeCount shouldBe 2
+        val Seq(graphMLFile) = exportResult.files
+
+        // import graphml into new graph, use difftool for round trip of conversion
+        val reimported = GenericDomain.empty.graph
+        GraphMLImporter.runImport(reimported, graphMLFile)
+        val diff = DiffTool.compare(graph, reimported)
+        withClue(
+          s"original graph and reimport from graphml should be completely equal, but there are differences:\n" +
+            diff.asScala.mkString("\n") +
+            "\n"
+        ) {
+          diff.size shouldBe 0
+        }
+      }
+    }
+
+    "using list properties" in {
+      ???
 //val node2 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
 //    val node3 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
 //      val graph = SimpleDomain.newGraph()
@@ -134,7 +151,7 @@ class GraphMLTests extends AnyWordSpec {
 //          diffString should include("StringListProperty")
 //        }
 //      }
-//    }
+    }
   }
 
 }
