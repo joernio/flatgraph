@@ -5,7 +5,7 @@ class Edge(val src: GNode, val dst: GNode, val edgeKind: Short, val subSeq: Int,
     src.graph.schema.getEdgeLabel(src.nodeKind, edgeKind)
 
   def propertyName: Option[String] = None // override in subclass to provide a property name
-  
+
   def propertyMaybe: Option[Any] = Option(property)
 }
 

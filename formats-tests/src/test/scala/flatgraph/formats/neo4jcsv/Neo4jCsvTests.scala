@@ -76,16 +76,12 @@ class Neo4jCsvTests extends AnyWordSpec {
           |CREATE (a)-[r:connected_to {string_mandatory: line[3]}]->(b);
           |""".stripMargin
 
-      /** example cypher queries to run manually in your neo4j instance: MATCH (a) return a; MATCH (a)-[r]->(b) RETURN
-        * a.id, type(r), b.id;
+      /** example cypher queries to run manually in your neo4j instance: MATCH (a) return a; MATCH (a)-[r]->(b) RETURN a.id, type(r), b.id;
         */
 
       // import csv into new graph, use difftool for round trip of conversion
       val graphFromCsv = GenericDomain.empty.graph
-      Neo4jCsvImporter.runImport(
-        graphFromCsv,
-        exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.toJava.toPath)
-      )
+      Neo4jCsvImporter.runImport(graphFromCsv, exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.toJava.toPath))
       val diff = DiffTool.compare(graph, graphFromCsv)
       withClue(
         s"original graph and reimport from csv should be completely equal, but there are differences:\n" +

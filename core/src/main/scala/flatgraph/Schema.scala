@@ -117,6 +117,7 @@ abstract class Schema {
   // properties share the same propertyKind / slot. Hence, to go back from kind -> label, we also need to know the node-kind.
   def getEdgeLabel(nodeKind: Int, edgeKind: Int): String
   def getEdgeKindByLabel(label: String): Int
+  def getEdgePropertyName(label: String): Option[String]
 
   def getPropertyLabel(nodeKind: Int, propertyKind: Int): String
   def getPropertyKindByName(label: String): Int
@@ -181,6 +182,7 @@ class FreeSchema(
   override def getNodeKindByLabel(label: String): Int                     = nodeMap.getOrElse(label, Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String         = edgeLabels(edgeKind)
   override def getEdgeKindByLabel(label: String): Int                     = edgeMap.getOrElse(label, Schema.UndefinedKind)
+  override def getEdgePropertyName(label: String): Option[String]         = None
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
   override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
   override def getNumberOfPropertyKinds: Int                              = propertyLabels.length

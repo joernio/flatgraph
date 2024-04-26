@@ -109,9 +109,9 @@ object Neo4jCsvExporter extends Exporter {
           val headerFile = outputRootDirectory.resolve(
             s"edges_$label$HeaderFileSuffix.csv"
           ) // to be written at the very end, with complete ColumnDefByName
-          val dataFile       = outputRootDirectory.resolve(s"edges_$label$DataFileSuffix.csv")
-          val cypherFile     = outputRootDirectory.resolve(s"edges_$label$CypherFileSuffix.csv")
-          val dataFileWriter = CSVWriter.open(dataFile.toFile, append = false)
+          val dataFile          = outputRootDirectory.resolve(s"edges_$label$DataFileSuffix.csv")
+          val cypherFile        = outputRootDirectory.resolve(s"edges_$label$CypherFileSuffix.csv")
+          val dataFileWriter    = CSVWriter.open(dataFile.toFile, append = false)
           val columnDefinitions = new ColumnDefinitions(edge.propertyName.toList) // flatgraph only supports edges with 1 property
           EdgeFilesContext(label, headerFile, dataFile, cypherFile, dataFileWriter, columnDefinitions)
         }
@@ -121,9 +121,9 @@ object Neo4jCsvExporter extends Exporter {
       edge.propertyName
       val propertyValueColumns = context.columnDefinitions.propertyValues { propertyName =>
         edge.propertyName.flatMap { edgePropertyName =>
-          if (propertyName == edgePropertyName) 
+          if (propertyName == edgePropertyName)
             edge.propertyMaybe
-          else 
+          else
             None
         }
       }

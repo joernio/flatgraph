@@ -1,4 +1,5 @@
 package flatgraph.testdomains.generic
+
 import flatgraph.testdomains.generic.nodes
 import flatgraph.testdomains.generic.edges
 import flatgraph.FormalQtyType
@@ -7,7 +8,7 @@ object GraphSchema extends flatgraph.Schema {
   private val nodeLabels = IndexedSeq("node_a")
   val nodeKindByLabel    = nodeLabels.zipWithIndex.toMap
   val edgeLabels         = Array("connected_to")
-  val edgeIdByLabel      = edgeLabels.zipWithIndex.toMap
+  val edgeKindByLabel    = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
     Array(size => Array.fill(size)("<empty>") /* label = connected_to, id = 0 */ )
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array((g, seq) => new nodes.NodeA(g, seq))
@@ -51,7 +52,14 @@ object GraphSchema extends flatgraph.Schema {
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-  override def getEdgeKindByLabel(label: String): Int             = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+  override def getEdgeKindByLabel(label: String): Int             = edgeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+  override def getEdgePropertyName(label: String): Option[String] = {
+    label match {
+      case "connected_to" => Some("string_mandatory")
+      case _              => None
+    }
+  }
+
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
     if (propertyKind < 6) normalNodePropertyNames(propertyKind)
     else null
