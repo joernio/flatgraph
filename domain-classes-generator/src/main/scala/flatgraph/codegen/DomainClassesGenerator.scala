@@ -29,12 +29,11 @@ class DomainClassesGenerator(schema: Schema) {
     val basePackage = schema.basePackage
 
     val outputDir0 = {
-      val outputDirRoot = os.Path(outputDir.toAbsolutePath)
-
-      // start with a clean slate
-      os.remove.all(outputDirRoot)
-
+      val outputDirRoot           = os.Path(outputDir.toAbsolutePath)
       val outputDirForBasePackage = outputDirRoot / os.RelPath(basePackage.replace('.', '/'))
+
+      // start clean
+      os.remove.all(outputDirForBasePackage)
       os.makeDir.all(outputDirForBasePackage)
       outputDirForBasePackage
     }
