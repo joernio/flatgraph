@@ -1,20 +1,19 @@
 package flatgraph.formats.graphml
 
 import flatgraph.formats.{ExportResult, Exporter, isList, resolveOutputFileSingle, writeFile}
-import flatgraph.{Accessors, Edge, GNode, Graph, Schema}
+import flatgraph.{Accessors, Edge, FormalQtyType, GNode, Schema}
 
 import java.lang.System.lineSeparator
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.xml.{PrettyPrinter, XML}
 
 /** Exports OverflowDB Graph to GraphML
   *
   * Warning: list properties are not natively supported by graphml... We initially built some support for those which deviated from the
-  * spec, but given that other tools don't support it, some refusing to import the remainder, we've dropped it. Now, lists are serialised to
-  * `;`-separated strings.
+  * spec, but given that other tools don't support it and the complications re re-importing, we also dropped support for lists. Now, lists
+  * are dropped and we print a warning.
   *
   * https://en.wikipedia.org/wiki/GraphML http://graphml.graphdrawing.org/primer/graphml-primer.html
   */
@@ -29,9 +28,29 @@ object GraphMLExporter extends Exporter {
     val discardedListPropertyCount = new AtomicInteger(0)
 
     val nodeEntries = nodes.iterator.map { node =>
+      val properties = schema.propertyKinds.flatMap { propertyKind =>
+        val graph    = node.graph
+        val nodeKind = node.nodeKind
+        val nodeSeq  = node.seq()
+        val valueMaybe = schema.getNodePropertyFormalQuantity(nodeKind, propertyKind) match {
+          case FormalQtyType.QtyNone =>
+            None
+          case FormalQtyType.QtyOne | FormalQtyType.QtyOption =>
+            Accessors.getNodePropertyOption[Object](graph, nodeKind, propertyKind, nodeSeq)
+          case FormalQtyType.QtyMulti =>
+            Option(Accessors.getNodePropertyMulti[Object](graph, nodeKind, propertyKind, nodeSeq)).filter(_.nonEmpty).flatMap { p =>
+              // as per class scaladoc: we want to skip list properties, but keep track so we can later inform the user about it...
+              discardedListPropertyCount.incrementAndGet()
+              None
+            }
+        }
+        valueMaybe.map { value =>
+          schema.getPropertyLabel(nodeKind, propertyKind) -> value
+        }
+      }
       s"""<node id="${node.id}">
          |    <data key="$KeyForNodeLabel">${node.label}</data>
-         |    ${dataEntries("node", node.label(), Accessors.getNodeProperties(node), nodePropertyContextById, discardedListPropertyCount)}
+         |    ${dataEntries("node", node.label(), properties, nodePropertyContextById, discardedListPropertyCount)}
          |</node>
          |""".stripMargin
     }.toSeq

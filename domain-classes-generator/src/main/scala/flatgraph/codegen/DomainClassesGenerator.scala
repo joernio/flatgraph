@@ -29,12 +29,11 @@ class DomainClassesGenerator(schema: Schema) {
     val basePackage = schema.basePackage
 
     val outputDir0 = {
-      val outputDirRoot = os.Path(outputDir.toAbsolutePath)
-
-      // start with a clean slate
-      os.remove.all(outputDirRoot)
-
+      val outputDirRoot           = os.Path(outputDir.toAbsolutePath)
       val outputDirForBasePackage = outputDirRoot / os.RelPath(basePackage.replace('.', '/'))
+
+      // start clean
+      os.remove.all(outputDirForBasePackage)
       os.makeDir.all(outputDirForBasePackage)
       outputDirForBasePackage
     }
@@ -58,7 +57,9 @@ class DomainClassesGenerator(schema: Schema) {
       schema.allNodeTypes.map { nodeType =>
         nodeType -> nodeType.properties.toSet.diff(nodeType.extendzRecursively.flatMap(_.properties).toSet)
       }.toMap
-    val newPropsAtNodeList = newPropertiesByNodeType.mapValues(_.toList.sortBy(_.name))
+    val newPropsAtNodeList = newPropertiesByNodeType.view.map { case (key, values) =>
+      key -> values.toList.sortBy(_.name)
+    }.toMap
     val newExtendzMap = schema.allNodeTypes.map { nodeType =>
       nodeType -> nodeType.extendz.toSet.diff(nodeType.extendzRecursively.flatMap(_.extendz).toSet).toList.sortBy(_.name)
     }.toMap
@@ -213,7 +214,7 @@ class DomainClassesGenerator(schema: Schema) {
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
-        val accessor = if (edgeType.properties.length == 1) {
+        val propertyAccessor = if (edgeType.properties.length == 1) {
           val p = edgeType.properties.head
           p.cardinality match {
             case _: Cardinality.One[?] =>
@@ -227,12 +228,15 @@ class DomainClassesGenerator(schema: Schema) {
             case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
           }
         } else ""
-        // format: on
 
-        s"""class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
-           |    extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(
-            edgeType
-          )}.toShort, subSeq_4862, property_4862) $accessor""".stripMargin
+        s"""object ${edgeType.className} {
+           |  val Label = "${edgeType.name}"
+           |}
+           |
+           |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
+           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) $propertyAccessor
+           |""".stripMargin
+        // format: on
       }
       .mkString(
         s"""package $basePackage.edges

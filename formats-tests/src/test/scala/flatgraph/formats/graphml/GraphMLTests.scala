@@ -1,24 +1,25 @@
 package flatgraph.formats.graphml
 
 import better.files.File
-import flatgraph.testdomains.gratefuldead.GratefulDead
-import flatgraph.testdomains.gratefuldead.Language.*
+import flatgraph.DiffGraphApplier
+import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-import flatgraph.util.DiffTool
 
 import java.lang.System.lineSeparator
 import java.nio.file.Paths
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class GraphMLTests extends AnyWordSpec {
 
   "import minified gratefuldead graph" in {
+    import flatgraph.testdomains.gratefuldead.GratefulDead
+    import flatgraph.testdomains.gratefuldead.Language.*
     val gratefulDead = GratefulDead.empty
     val graph        = gratefulDead.graph
     graph.nodeCount() shouldBe 0
 
-    GraphMLImporter.runImport(graph, Paths.get(getClass.getResource("/graphml-small.xml").toURI))
+    GraphMLImporter.runImport(graph, Paths.get(this.getClass.getResource("/graphml-small.xml").toURI))
     graph.nodeCount() shouldBe 3
     graph.edgeCount() shouldBe 2
 
@@ -38,83 +39,86 @@ class GraphMLTests extends AnyWordSpec {
     graph.close()
   }
 
-//  "Exporter should export valid xml" when {
-//    "not using (unsupported) list properties" in {
-//      val graph = SimpleDomain.newGraph()
-//
-//      val node2 = graph.addNode(2, TestNode.LABEL, TestNode.STRING_PROPERTY, "stringProp2")
-//      val node3 = graph.addNode(3, TestNode.LABEL, TestNode.INT_PROPERTY, 13)
-//
-//      // only allows values defined in FunkyList.funkyWords
-//      val funkyList = new FunkyList()
-//      funkyList.add("apoplectic")
-//      funkyList.add("bucolic")
-//      val node1 = graph.addNode(1, TestNode.LABEL, TestNode.INT_PROPERTY, 11, TestNode.STRING_PROPERTY, "<stringProp1>")
-//
-//      node1.addEdge(TestEdge.LABEL, node2, TestEdge.LONG_PROPERTY, Long.MaxValue)
-//      node2.addEdge(TestEdge.LABEL, node3)
-//
-//      File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
-//        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
-//        exportResult.nodeCount shouldBe 3
-//        exportResult.edgeCount shouldBe 2
-//        val Seq(graphMLFile) = exportResult.files
-//
-//        // import graphml into new graph, use difftool for round trip of conversion
-//        val reimported = SimpleDomain.newGraph()
-//        GraphMLImporter.runImport(reimported, graphMLFile)
-//        val diff = DiffTool.compare(graph, reimported)
-//        withClue(
-//          s"original graph and reimport from graphml should be completely equal, but there are differences:\n" +
-//            diff.asScala.mkString("\n") +
-//            "\n"
-//        ) {
-//          diff.size shouldBe 0
-//        }
-//      }
-//    }
-//
-//    "using list properties" in {
-//      val graph = SimpleDomain.newGraph()
-//
-//      // will discard the list properties
-//      val node1 = graph.addNode(
-//        1,
-//        TestNode.LABEL,
-//        TestNode.INT_PROPERTY,
-//        11,
-//        TestNode.STRING_PROPERTY,
-//        "<stringProp1>",
-//        TestNode.STRING_LIST_PROPERTY,
-//        List("stringListProp1a", "stringListProp1b").asJava,
-//        TestNode.INT_LIST_PROPERTY,
-//        List(21, 31, 41).asJava
-//      )
-//
-//      File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
-//        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
-//        exportResult.nodeCount shouldBe 1
-//        exportResult.edgeCount shouldBe 0
-//        exportResult.additionalInfo.get should include("discarded 2 list properties")
-//        val Seq(graphMLFile) = exportResult.files
-//
-//        // import graphml into new graph, use difftool for round trip of conversion
-//        val reimported = SimpleDomain.newGraph()
-//        GraphMLImporter.runImport(reimported, graphMLFile)
-//        val diff = DiffTool.compare(graph, reimported)
-//        val diffString = diff.asScala.mkString(lineSeparator)
-//        withClue(
-//          s"because the original graph contained two list properties, and those are not supported by graphml, " +
-//            s"the exporter drops them. therefor they'll not be part of the reimported graph" +
-//            diffString +
-//            lineSeparator
-//        ) {
-//          diff.size shouldBe 2
-//          diffString should include("IntListProperty")
-//          diffString should include("StringListProperty")
-//        }
-//      }
-//    }
-//  }
+  "Exporter should export valid xml" when {
+    import flatgraph.testdomains.generic.GenericDomain
+    import flatgraph.testdomains.generic.Language.*
+    import flatgraph.testdomains.generic.edges.ConnectedTo
+    import flatgraph.testdomains.generic.nodes.NewNodeA
+
+    "not using (unsupported) list properties" in {
+      val genericDomain = GenericDomain.empty
+      val graph         = genericDomain.graph
+
+      val node1 = NewNodeA().stringOptional("node 1 opt")
+      val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
+      val node3 = NewNodeA().intMandatory(1).intOptional(2)
+
+      DiffGraphApplier.applyDiff(
+        graph,
+        GenericDomain.newDiffGraphBuilder
+          .addEdge(node1, node2, ConnectedTo.Label)
+          .addEdge(node2, node3, ConnectedTo.Label)
+      )
+
+      File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
+        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
+        exportResult.nodeCount shouldBe 3
+        exportResult.edgeCount shouldBe 2
+        val Seq(graphMLFile) = exportResult.files
+
+        // import graphml into new graph, use difftool for round trip of conversion
+        val reimported = GenericDomain.empty.graph
+        GraphMLImporter.runImport(reimported, graphMLFile)
+        val diff = DiffTool.compare(graph, reimported)
+        withClue(
+          s"original graph and reimport from graphml should be completely equal, but there are differences:\n" +
+            diff.asScala.mkString("\n") +
+            "\n"
+        ) {
+          diff.size shouldBe 0
+        }
+      }
+    }
+
+    "using list properties" in {
+      val genericDomain = GenericDomain.empty
+      val graph         = genericDomain.graph
+
+      // exporter  will discard the list properties, but inform the user about it
+      val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
+      val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
+
+      DiffGraphApplier.applyDiff(
+        graph,
+        GenericDomain.newDiffGraphBuilder
+          .addEdge(node1, node2, ConnectedTo.Label)
+      )
+
+      File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
+        val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
+        exportResult.nodeCount shouldBe 2
+        exportResult.edgeCount shouldBe 1
+        exportResult.additionalInfo.get should include("discarded 2 list properties")
+
+        val Seq(graphMLFile) = exportResult.files
+
+        // import graphml into new graph, use difftool for round trip of conversion
+        val reimported = GenericDomain.empty.graph
+        GraphMLImporter.runImport(reimported, graphMLFile)
+        val diff       = DiffTool.compare(graph, reimported)
+        val diffString = diff.asScala.mkString(lineSeparator)
+        withClue(
+          s"because the original graph contained two list properties, and those are not supported by graphml, " +
+            s"the exporter drops them. therefor they'll not be part of the reimported graph" +
+            diffString +
+            lineSeparator
+        ) {
+          diff.size shouldBe 2
+          diffString should include("Seq(10, 11, 12)")
+          diffString should include("Seq(node 3 c1, node 3 c2)")
+        }
+      }
+    }
+  }
 
 }

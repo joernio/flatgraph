@@ -37,13 +37,12 @@ object GraphMLImporter extends Importer {
       entry \@ "key" match {
         case KeyForNodeLabel => // ignore, already extracted in `addNodesRaw`
         case key =>
-          val propertyType = nodePropertyContextById
+          val propertyContext = nodePropertyContextById
             .get(key)
             .getOrElse(throw new AssertionError(s"key $key not found in propertyContext..."))
-            .tpe
           val value          = entry.text
-          val convertedValue = convertValue(value, propertyType, context = graphmlNode)
-          diffGraph.setNodeProperty(graphmlNodeIdToGNode(nodeId), key, value)
+          val convertedValue = convertValue(value, propertyContext.tpe, context = graphmlNode)
+          diffGraph.setNodeProperty(graphmlNodeIdToGNode(nodeId), propertyContext.name, convertedValue)
       }
     }
 
