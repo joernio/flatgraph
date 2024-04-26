@@ -118,11 +118,17 @@ object Neo4jCsvExporter extends Exporter {
       )
 
       val specialColumns = Seq(edge.src.id.toString, edge.dst.id.toString, edge.label)
-      // TODO continue
-      ???
-//      val propertyValueColumns = context.columnDefinitions.propertyValues(edge.propertyOption(_).toScala)
-//      context.dataFileWriter.writeRow(specialColumns ++ propertyValueColumns)
-//      count += 1
+      edge.propertyName
+      val propertyValueColumns = context.columnDefinitions.propertyValues { propertyName =>
+        edge.propertyName.flatMap { edgePropertyName =>
+          if (propertyName == edgePropertyName) 
+            edge.propertyMaybe
+          else 
+            None
+        }
+      }
+      context.dataFileWriter.writeRow(specialColumns ++ propertyValueColumns)
+      count += 1
     }
 
     val files = edgeFilesContextByLabel.values.flatMap {
