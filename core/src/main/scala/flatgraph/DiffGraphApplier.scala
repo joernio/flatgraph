@@ -552,7 +552,9 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
           } catch {
             case _: ArrayStoreException =>
               val edgeType = graph.schema.getEdgeLabel(nodeKind, edgeKind)
-              throw new UnsupportedOperationException(s"unsupported property type `${insertion.property.getClass}` for edge type `$edgeType`")
+              throw new UnsupportedOperationException(
+                s"unsupported property type `${insertion.property.getClass}` for edge type `$edgeType`"
+              )
           }
         }
         insertionCounter += 1

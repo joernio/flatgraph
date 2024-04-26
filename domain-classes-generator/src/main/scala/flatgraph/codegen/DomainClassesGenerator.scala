@@ -214,27 +214,39 @@ class DomainClassesGenerator(schema: Schema) {
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
-        val propertyAccessor = if (edgeType.properties.length == 1) {
-          val p = edgeType.properties.head
-          p.cardinality match {
-            case _: Cardinality.One[?] =>
-              s"""{
-                 |  def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
-                 |}""".stripMargin
-            case Cardinality.ZeroOrOne =>
-              s"""{
-                 |  def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
-                 |}""".stripMargin
-            case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
-          }
-        } else ""
+        val propertyAccessorMaybe: Option[String] = edgeType.properties match {
+          case Nil => None
+          case Seq(p) =>
+            p.cardinality match {
+              case _: Cardinality.One[?] =>
+                Some(s"""def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} =
+                   |  this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]""".stripMargin)
+              case Cardinality.ZeroOrOne =>
+                Some(s"""def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] =
+                   |  Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])""".stripMargin)
+              case Cardinality.List =>
+                throw new RuntimeException("edge properties are only supported with cardinality one or optional")
+            }
+          case multipleProperties =>
+            throw new RuntimeException(s"only one edge property supported - ${edgeType.name} defines ${multipleProperties.size}")
+        }
+
+        val propertyNameImplForObject = edgeType.properties.headOption.map { property=>
+          s"""val propertyName: Option[String] = Some("${property.name}")"""
+        }
+        val propertyNameImplForClass = propertyNameImplForObject.map { _ =>
+          s"override def propertyName: Option[String] = ${edgeType.className}.propertyName"
+        }
 
         s"""object ${edgeType.className} {
            |  val Label = "${edgeType.name}"
+           |  ${propertyNameImplForObject.getOrElse("")}
            |}
            |
            |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
-           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) $propertyAccessor
+           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) {
+           |  ${propertyNameImplForClass.getOrElse("")}
+           |}
            |""".stripMargin
         // format: on
       }

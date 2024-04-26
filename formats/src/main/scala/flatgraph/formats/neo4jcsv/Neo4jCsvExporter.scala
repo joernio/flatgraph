@@ -59,13 +59,12 @@ object Neo4jCsvExporter extends Exporter {
 
   private def exportNodes(nodes: IterableOnce[GNode], label: String, outputRootDirectory: Path): CountAndFiles = {
     val dataFile = outputRootDirectory.resolve(s"nodes_$label$DataFileSuffix.csv")
-    val headerFile = outputRootDirectory.resolve(
-      s"nodes_$label$HeaderFileSuffix.csv"
-    ) // to be written at the very end, with complete ColumnDefByName
+    val headerFile =
+      outputRootDirectory.resolve(s"nodes_$label$HeaderFileSuffix.csv") // to be written at the very end, with complete ColumnDefByName
     val cypherFile = outputRootDirectory.resolve(s"nodes_$label$CypherFileSuffix.csv")
     // will be initialized with the first node
     var columnDefinitions: ColumnDefinitions = null
-    var nodeCount = 0
+    var nodeCount                            = 0
 
     Using.resource(CSVWriter.open(dataFile.toFile, append = false)) { writer =>
       nodes.iterator.foreach { node =>
@@ -73,7 +72,7 @@ object Neo4jCsvExporter extends Exporter {
         val properties = node.propertiesMap.asScala
         if (columnDefinitions == null) columnDefinitions = new ColumnDefinitions(properties.keySet)
 
-        val specialColumns = Seq(node.id.toString, node.label)
+        val specialColumns       = Seq(node.id.toString, node.label)
         val propertyValueColumns = columnDefinitions.propertyValues(properties.get(_))
         writer.writeRow(specialColumns ++ propertyValueColumns)
         nodeCount += 1
@@ -100,7 +99,7 @@ object Neo4jCsvExporter extends Exporter {
   /** write edges of all labels */
   private def exportEdges(edges: IterableOnce[Edge], outputRootDirectory: Path): CountAndFiles = {
     val edgeFilesContextByLabel = mutable.Map.empty[String, EdgeFilesContext]
-    var count = 0
+    var count                   = 0
 
     edges.iterator.foreach { edge =>
       val label = edge.label
@@ -110,14 +109,11 @@ object Neo4jCsvExporter extends Exporter {
           val headerFile = outputRootDirectory.resolve(
             s"edges_$label$HeaderFileSuffix.csv"
           ) // to be written at the very end, with complete ColumnDefByName
-          val dataFile = outputRootDirectory.resolve(s"edges_$label$DataFileSuffix.csv")
-          val cypherFile = outputRootDirectory.resolve(s"edges_$label$CypherFileSuffix.csv")
+          val dataFile       = outputRootDirectory.resolve(s"edges_$label$DataFileSuffix.csv")
+          val cypherFile     = outputRootDirectory.resolve(s"edges_$label$CypherFileSuffix.csv")
           val dataFileWriter = CSVWriter.open(dataFile.toFile, append = false)
-
-          // TODO continue
-          ???
-//          val columnDefinitions = new ColumnDefinitions(edge.propertyKeys.asScala)
-//          EdgeFilesContext(label, headerFile, dataFile, cypherFile, dataFileWriter, columnDefinitions)
+          val columnDefinitions = new ColumnDefinitions(edge.propertyName.toList) // flatgraph only supports edges with 1 property
+          EdgeFilesContext(label, headerFile, dataFile, cypherFile, dataFileWriter, columnDefinitions)
         }
       )
 
@@ -131,10 +127,7 @@ object Neo4jCsvExporter extends Exporter {
 
     val files = edgeFilesContextByLabel.values.flatMap {
       case EdgeFilesContext(label, headerFile, dataFile, cypherFile, dataFileWriter, columnDefinitions) =>
-        writeSingleLineCsv(
-          headerFile,
-          Seq(ColumnType.StartId, ColumnType.EndId, ColumnType.Type) ++ columnDefinitions.propertiesWithTypes
-        )
+        writeSingleLineCsv(headerFile, Seq(ColumnType.StartId, ColumnType.EndId, ColumnType.Type) ++ columnDefinitions.propertiesWithTypes)
 
         dataFileWriter.flush()
         dataFileWriter.close()

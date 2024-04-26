@@ -25,7 +25,8 @@ class Neo4jCsvTests extends AnyWordSpec {
     val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
     val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
 
-    DiffGraphApplier.applyDiff(graph,
+    DiffGraphApplier.applyDiff(
+      graph,
       GenericDomain.newDiffGraphBuilder
         .addEdge(node1, node2, ConnectedTo.Label, "edge property")
     )
