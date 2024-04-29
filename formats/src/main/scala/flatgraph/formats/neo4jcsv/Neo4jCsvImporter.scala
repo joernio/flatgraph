@@ -72,7 +72,7 @@ object Neo4jCsvImporter extends Importer {
 
     DiffGraphApplier.applyDiff(graph, diffGraph)
 
-    logger.info(s"imported $importedNodeCount nodes")
+    logger.info(s"imported $importedNodeCount nodes and $importedEdgeCount edges")
   }
 
   private def groupInputFiles(inputFiles: Seq[Path]): Seq[HeaderAndDataFile] = {

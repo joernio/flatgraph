@@ -17,11 +17,11 @@ class GraphMLTests extends AnyWordSpec {
     import flatgraph.testdomains.gratefuldead.Language.*
     val gratefulDead = GratefulDead.empty
     val graph        = gratefulDead.graph
-    graph.nodeCount() shouldBe 0
+    graph.nodeCount shouldBe 0
 
     GraphMLImporter.runImport(graph, Paths.get(this.getClass.getResource("/graphml-small.xml").toURI))
-    graph.nodeCount() shouldBe 3
-    graph.edgeCount() shouldBe 2
+    graph.nodeCount shouldBe 3
+    graph.edgeCount shouldBe 2
 
     gratefulDead.song.size shouldBe 1
     gratefulDead.song.name.l shouldBe List("HEY BO DIDDLEY")

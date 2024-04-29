@@ -125,7 +125,7 @@ class Neo4jCsvTests extends AnyWordSpec {
       node1.stringList shouldBe Seq("node 3 c1", "node 3 c2")
       node2.stringList shouldBe Seq.empty
 
-      graph.edgeCount() shouldBe 1
+      graph.edgeCount shouldBe 1
       node1.connectedTo.l shouldBe Seq(node2)
       val Seq(edge) = node1.outE(ConnectedTo.Label).l
       edge.property shouldBe "edge property"
@@ -170,7 +170,7 @@ class Neo4jCsvTests extends AnyWordSpec {
 
   "main apps for cli export/import" in {
     File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
-      val graphPath = tmpDir / "original.odb"
+      val graphPath = tmpDir / "original.fg"
       val exportPath = tmpDir / "export"
       val genericDomain = GenericDomain.withStorage(graphPath.path)
 
@@ -189,12 +189,15 @@ class Neo4jCsvTests extends AnyWordSpec {
       exportedFiles.size shouldBe 6
 
       // use importer for round trip
-      val importerMain = ImporterMain()
+      val importerMain = ImporterMain(flatgraph.testdomains.generic.GraphSchema)
       val reimportPath = tmpDir / "reimported.fg"
       val relevantInputFiles = exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.pathAsString)
       importerMain(Array("--format=neo4jcsv", s"--out=${reimportPath.pathAsString}") ++ relevantInputFiles)
+
       val genericDomainReimported = GenericDomain.withStorage(reimportPath.path)
       genericDomainReimported.graph.nodeCount shouldBe 2
+      genericDomainReimported.graph.edgeCount shouldBe 1
+      genericDomainReimported.nodeA.intMandatory.l.sorted shouldBe List(1, 42)
       genericDomainReimported.nodeA.intMandatory(1).connectedTo.stringMandatory.head shouldBe "node 2 a"
     }
   }

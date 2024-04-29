@@ -91,13 +91,13 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def nodeCount(label: String): Int =
     livingNodeCountByKind(schema.getNodeKindByLabel(label))
 
-  def nodeCount(): Int =
+  def nodeCount: Int =
     livingNodeCountByKind.sum
 
   def allEdges: Iterator[Edge] =
     allNodes.flatMap(Accessors.getEdgesOut)
 
-  def edgeCount(): Int =
+  def edgeCount: Int =
     allEdges.size
 
   /** Lookup nodes with a given label and property value via index. N.b. currently only supported for String properties. Context:
@@ -161,7 +161,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   }
 
   override def toString(): String =
-    s"Graph[${nodeCount()} nodes]"
+    s"Graph[$nodeCount nodes]"
 
   def nodeCountByLabel: Map[String, Int] = {
     schema.nodeKinds
