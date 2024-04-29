@@ -169,35 +169,34 @@ class Neo4jCsvTests extends AnyWordSpec {
   }
 
   "main apps for cli export/import" in {
-    ???
-//    File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
-//      val graphPath = tmpDir / "original.odb"
-//      val exportPath = tmpDir / "export"
-//      val graph =
-//        SimpleDomain.newGraph(flatgraph.Config.withoutOverflow().withStorageLocation(graphPath.toJava.toPath))
-//      val node2 = graph.addNode(2, TestNode.LABEL, TestNode.STRING_PROPERTY, "stringProp2")
-//      val node3 = graph.addNode(3, TestNode.LABEL, TestNode.INT_PROPERTY, 13)
-//      node2.addEdge(TestEdge.LABEL, node3)
-//      graph.close()
-//
-//      val exporterMain = ExporterMain(Seq(TestNode.factory), Seq(TestEdge.factory))
-//      exporterMain(Array("--format=neo4jcsv", s"--out=${exportPath.pathAsString}", graphPath.pathAsString))
-//      val exportedFiles = exportPath.list.toArray
-//      exportedFiles.size shouldBe 6
-//
-//      // use importer for round trip
-//      val importerMain = ImporterMain(Seq(TestNode.factory), Seq(TestEdge.factory))
-//      val reimportPath = tmpDir / "reimported.odb"
-//      val relevantInputFiles = exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.pathAsString)
-//      importerMain(Array("--format=neo4jcsv", s"--out=${reimportPath.pathAsString}") ++ relevantInputFiles)
-//      val graphReimported =
-//        SimpleDomain.newGraph(flatgraph.Config.withoutOverflow().withStorageLocation(reimportPath.toJava.toPath))
-//      graphReimported.nodeCount shouldBe 2
-//
-//      // TODO change back once we're on Scala 3.2.2
-//      // graphReimported.node(2).out(TestEdge.LABEL).property(TestNode.INT_PROPERTY).l shouldBe Seq(13)
-//      graphReimported.node(2).out(TestEdge.LABEL).asScala.property(TestNode.INT_PROPERTY).l shouldBe Seq(13)
-//    }
+    File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
+      val graphPath = tmpDir / "original.odb"
+      val exportPath = tmpDir / "export"
+      val genericDomain = GenericDomain.withStorage(graphPath.path)
+
+      val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
+      val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
+
+      DiffGraphApplier.applyDiff(
+        genericDomain.graph,
+        GenericDomain.newDiffGraphBuilder.addEdge(node1, node2, ConnectedTo.Label, "edge property")
+      )
+      genericDomain.close()
+
+      val exporterMain = ExporterMain()
+      exporterMain(Array("--format=neo4jcsv", s"--out=${exportPath.pathAsString}", graphPath.pathAsString))
+      val exportedFiles = exportPath.list.toArray
+      exportedFiles.size shouldBe 6
+
+      // use importer for round trip
+      val importerMain = ImporterMain()
+      val reimportPath = tmpDir / "reimported.fg"
+      val relevantInputFiles = exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.pathAsString)
+      importerMain(Array("--format=neo4jcsv", s"--out=${reimportPath.pathAsString}") ++ relevantInputFiles)
+      val genericDomainReimported = GenericDomain.withStorage(reimportPath.path)
+      genericDomainReimported.graph.nodeCount shouldBe 2
+      genericDomainReimported.nodeA.intMandatory(1).connectedTo.stringMandatory.head shouldBe "node 2 a"
+    }
   }
 
   private def fuzzyFindFile(files: Seq[File], label: String, fileSuffix: String): File = {
