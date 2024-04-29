@@ -358,46 +358,33 @@ class DomainClassesGenerator(schema: Schema) {
         }
       }
 
-      val productElementNames = productElements.zipWithIndex
-        .map { case (name, index) =>
-          s"""case $index => "$name""""
-        }
-        .mkString("\n")
+      // format: off
+      val productElementNames = productElements.zipWithIndex.map { case (name, index) =>
+        s"""case $index => "$name""""
+      }.mkString("\n")
 
-      val productElementAccessors = productElements.zipWithIndex
-        .map { case (name, index) =>
-          s"case $index => this.$name"
-        }
-        .mkString("\n")
+      val productElementAccessors = productElements.zipWithIndex.map { case (name, index) =>
+        s"case $index => this.$name"
+      }.mkString("\n")
 
       val propertyNames = {
         val sourceLines = Seq.newBuilder[String]
-
-        // TODO extract and reuse
-        def scaladocMaybe(comment: Option[String]): String =
-          comment.map(text => s"/** $text */").getOrElse("")
-
-        // format: off
         nodeType.properties.map { property =>
-            s"""${scaladocMaybe(property.comment)}
-             |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin
-          }
-          .map(sourceLines.addOne)
+          s"""${scaladocMaybe(property.comment)}
+           |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin
+        }.map(sourceLines.addOne)
         nodeType.containedNodes.map { containedNode =>
-            s"""${scaladocMaybe(containedNode.comment)}
-               |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin
-          }
-          .map(sourceLines.addOne)
-        // format: on
+          s"""${scaladocMaybe(containedNode.comment)}
+             |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin
+        }.map(sourceLines.addOne)
         sourceLines.result().mkString("")
       }
 
-      val propertyDefaults = nodeType.properties
-        .collect {
-          case p if p.hasDefault =>
-            s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
-        }
-        .mkString("\n")
+      val propertyDefaults = nodeType.properties.collect {
+        case p if p.hasDefault =>
+          s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
+      }.mkString("\n")
+      // format: on
 
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
         es.toSeq.sortBy(_._1).map { case (k, vs) => s"$k -> Set(${vs.toSeq.sorted.mkString(", ")})" }.mkString(", ")
