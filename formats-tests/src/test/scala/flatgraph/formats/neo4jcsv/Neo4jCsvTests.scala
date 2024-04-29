@@ -1,7 +1,7 @@
 package flatgraph.formats.neo4jcsv
 
 import better.files.*
-import flatgraph.DiffGraphApplier
+import flatgraph.TestGraphSimple
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
@@ -20,15 +20,7 @@ class Neo4jCsvTests extends AnyWordSpec {
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "Exporter should export valid csv" in {
-    val graph = GenericDomain.empty.graph
-    val node1 = NewNodeA().stringMandatory("node 1 a").stringOptional("node 1 b").stringList(Seq("node 1 c1", "node 1 c2"))
-    val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
-
-    DiffGraphApplier.applyDiff(
-      graph,
-      GenericDomain.newDiffGraphBuilder
-        .addEdge(node1, node2, ConnectedTo.Label, "edge property")
-    )
+    val graph = TestGraphSimple.create().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val ExportResult(nodeCount, edgeCount, exportedFiles0, additionalInfo) =
@@ -160,16 +152,8 @@ class Neo4jCsvTests extends AnyWordSpec {
     File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
       val graphPath     = tmpDir / "original.fg"
       val exportPath    = tmpDir / "export"
-      val genericDomain = GenericDomain.withStorage(graphPath.path)
-
-      val node1 = NewNodeA().stringMandatory("node 1 a").stringOptional("node 1 b").stringList(Seq("node 1 c1", "node 1 c2"))
-      val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
-
-      DiffGraphApplier.applyDiff(
-        genericDomain.graph,
-        GenericDomain.newDiffGraphBuilder.addEdge(node1, node2, ConnectedTo.Label, "edge property")
-      )
-
+      
+      val genericDomain = TestGraphSimple.create(Some(graphPath.path))
       genericDomain.close()
 
       val exporterMain = ExporterMain()
