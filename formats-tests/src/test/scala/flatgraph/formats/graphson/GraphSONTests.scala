@@ -1,10 +1,11 @@
 package flatgraph.formats.graphson
 
 import better.files.File
-import flatgraph.GenericDNode
+import flatgraph.{GenericDNode, TestGraphSimple}
 import flatgraph.TestDomainSimple.*
 import flatgraph.TestDomainSimple.PropertyNames.{ContainedTestNodeProperty, IntProperty}
 import flatgraph.misc.TestUtils.applyDiff
+import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -15,16 +16,16 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class GraphSONTests extends AnyWordSpec {
 
   "export to GraphSON and back" in {
-    val graph = newGraphSimple()
+    val graph = TestGraphSimple.create().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val exportResult = GraphSONExporter.runExport(graph, exportRootDirectory.pathAsString)
-      exportResult.nodeCount shouldBe 3
-      exportResult.edgeCount shouldBe 2
+      exportResult.nodeCount shouldBe 2
+      exportResult.edgeCount shouldBe 1
       val Seq(graphMLFile) = exportResult.files
 
       // import graphml into new graph, use difftool for round trip of conversion
-      val reimported = newGraphEmpty()
+      val reimported = GenericDomain.empty.graph
       GraphSONImporter.runImport(reimported, graphMLFile)
       val diff = DiffTool.compare(graph, reimported)
       withClue(
