@@ -200,12 +200,7 @@ class Neo4jCsvTests extends AnyWordSpec {
       genericDomainReimported.graph.edgeCount shouldBe 1
 
       genericDomainReimported.nodeA.intMandatory.l.sorted shouldBe List(1, 42)
-      
-      // TODO remove debug code
-      println(genericDomainReimported.nodeA.intMandatory(1).l)
-      println(genericDomainReimported.nodeA.intMandatory(1).connectedTo.l)
-      
-      genericDomainReimported.nodeA.intMandatory(1).connectedTo.stringMandatory.head shouldBe "node 2 a"
+      genericDomainReimported.nodeA.stringMandatory("node 2 a").connectedTo.intOptional.head shouldBe 2
     }
   }
 
