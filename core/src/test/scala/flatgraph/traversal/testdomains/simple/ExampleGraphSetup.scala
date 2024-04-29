@@ -92,6 +92,7 @@ object SimpleDomain {
       nodeLabels = Array(Thing.Label),
       edgeLabels = edgeLabels,
       propertyLabels = Array(ExampleGraphSetup.Properties.Name.name),
+      propertyNamesByNodeLabel = Map.empty,
       edgePropertyPrototypes = new Array(edgeLabels.length),
       nodePropertyPrototypes = Array(Array.empty[String])
     )

@@ -181,6 +181,7 @@ class Neo4jCsvTests extends AnyWordSpec {
         genericDomain.graph,
         GenericDomain.newDiffGraphBuilder.addEdge(node1, node2, ConnectedTo.Label, "edge property")
       )
+
       genericDomain.close()
 
       val exporterMain = ExporterMain()
@@ -197,7 +198,13 @@ class Neo4jCsvTests extends AnyWordSpec {
       val genericDomainReimported = GenericDomain.withStorage(reimportPath.path)
       genericDomainReimported.graph.nodeCount shouldBe 2
       genericDomainReimported.graph.edgeCount shouldBe 1
+
       genericDomainReimported.nodeA.intMandatory.l.sorted shouldBe List(1, 42)
+      
+      // TODO remove debug code
+      println(genericDomainReimported.nodeA.intMandatory(1).l)
+      println(genericDomainReimported.nodeA.intMandatory(1).connectedTo.l)
+      
       genericDomainReimported.nodeA.intMandatory(1).connectedTo.stringMandatory.head shouldBe "node 2 a"
     }
   }

@@ -44,6 +44,7 @@ object TestSchema {
       nodeLabels = Range(0, nodeKinds).map { id => s"V${id}" }.toArray,
       edgeLabels = Range(0, edgeKinds).map { id => s"${id}" }.toArray,
       propertyLabels = Range(0, properties).map { id => s"${id}" }.toArray,
+      propertyNamesByNodeLabel = Map.empty,
       edgePropertyPrototypes = if (edgePropertyPrototypes != null) edgePropertyPrototypes else new Array[AnyRef](edgeKinds),
       nodePropertyPrototypes = if (nodePropertyPrototypes != null) nodePropertyPrototypes else new Array[AnyRef](properties),
       formalQtys

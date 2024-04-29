@@ -5,12 +5,10 @@ import flatgraph.formats.dot.DotExporter
 import flatgraph.formats.graphml.GraphMLExporter
 import flatgraph.formats.graphson.GraphSONExporter
 import flatgraph.formats.neo4jcsv.Neo4jCsvExporter
-import flatgraph.Graph
 import flatgraph.storage.Deserialization
 import scopt.OParser
 
 import java.nio.file.{Files, Path, Paths}
-import scala.jdk.CollectionConverters.SeqHasAsJava
 import scala.util.Using
 
 /** Base functionality to export a given flatgraph to various export formats. */

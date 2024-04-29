@@ -26,6 +26,7 @@ object TestDomainSimple {
       PropertyNames.ContainedTestNodeProperty
     ),
     nodePropertyPrototypes = Array(Array.empty[String], Array.empty[String], Array.emptyIntArray, Array.emptyIntArray, Array.empty[GNode]),
+    propertyNamesByNodeLabel = Map.empty,
     edgePropertyPrototypes = Array(Array.emptyLongArray)
   )
 

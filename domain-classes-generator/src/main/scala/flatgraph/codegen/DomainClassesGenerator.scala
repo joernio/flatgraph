@@ -652,7 +652,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def getNodeKindByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
          |  override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
          |  override def getEdgeKindByLabel(label: String): Int = edgeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-         |  def getNodePropertyNames(nodeLabel: String): Set[String] = {
+         |  override def getNodePropertyNames(nodeLabel: String): Set[String] = {
          |    nodeLabel match {
          |      ${nodePropertyNameCases.mkString("\n")}
          |      case _ => Set.empty

@@ -151,15 +151,16 @@ abstract class Schema {
 
 class FreeSchema(
   nodeLabels: Array[String],
-  propertyLabels: Array[String],
+  propertyLabels: Array[String], // important: array order corresponds to `nodePropertyPrototypes` order!
   nodePropertyPrototypes: Array[AnyRef],
+  propertyNamesByNodeLabel: Map[String, Set[String]],
   edgeLabels: Array[String],
   edgePropertyPrototypes: Array[AnyRef],
   formalQuantities: Array[FormalQtyType.FormalQuantity] = null
 ) extends Schema {
-  val nodeMap = nodeLabels.zipWithIndex.toMap
-  val propMap = propertyLabels.zipWithIndex.toMap
-  val edgeMap = edgeLabels.zipWithIndex.toMap
+  private val nodeMap = nodeLabels.zipWithIndex.toMap
+  private val propMap = propertyLabels.zipWithIndex.toMap
+  private val edgeMap = edgeLabels.zipWithIndex.toMap
 
   val edgePropertyTypes: Array[FormalQtyType.FormalType] = edgePropertyPrototypes.map(fromPrototype)
   val nodePropertyTypes: Array[FormalQtyType.FormalType] = nodePropertyPrototypes.map(fromPrototype)
@@ -186,7 +187,7 @@ class FreeSchema(
   override def getEdgePropertyName(label: String): Option[String]         = None
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
   override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
-  override def getNodePropertyNames(nodeLabel: String): Set[String]       = Set.empty
+  override def getNodePropertyNames(nodeLabel: String): Set[String]       = propertyNamesByNodeLabel.getOrElse(nodeLabel, default = Set.empty)
   override def getNumberOfPropertyKinds: Int                              = propertyLabels.length
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
