@@ -3,6 +3,10 @@ package flatgraph
 import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.TestDomainSimple.PropertyNames.*
 
+object TestGraphSimple {
+  
+}
+
 object TestDomainSimple {
   val TestNodeLabel = "testNode"
   val TestEdgeLabel = "testEdge"
