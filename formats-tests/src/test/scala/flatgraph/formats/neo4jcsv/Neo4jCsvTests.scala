@@ -17,7 +17,7 @@ import java.nio.file.Paths
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, IteratorHasAsScala}
 
 class Neo4jCsvTests extends AnyWordSpec {
-  val subprojectRoot = testutils.ProjectRoot.relativise("formats")
+  val subprojectRoot = testutils.ProjectRoot.relativise("formats-tests")
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "Exporter should export valid csv" in {
@@ -95,80 +95,77 @@ class Neo4jCsvTests extends AnyWordSpec {
   }
 
   "Importer" should {
-    "Foo" in {
-      ???
+    "import valid csv" in {
+      val csvInputFiles = Seq(
+        "edges_connected_to_header.csv",
+        "edges_connected_to_data.csv",
+        "nodes_node_a_header.csv",
+        "nodes_node_a_data.csv"
+      ).map(neo4jcsvRoot.resolve)
+
+      val genericDomain = GenericDomain.empty
+      val graph = genericDomain.graph
+      Neo4jCsvImporter.runImport(graph, csvInputFiles)
+
+      graph.nodeCount shouldBe 2
+
+      val Seq(node1) = genericDomain.nodeA.stringMandatory("node 2 a").l
+      val Seq(node2) = genericDomain.nodeA.intMandatory(1).l
+
+      node1.intMandatory shouldBe 42
+      node2.intMandatory shouldBe 1
+      node1.intOptional shouldBe None
+      node2.intOptional shouldBe Some(2)
+      node1.intList shouldBe Seq.empty
+      node2.intList shouldBe Seq(10, 11, 12)
+      node1.stringMandatory shouldBe "node 2 a"
+      node2.stringMandatory shouldBe "<empty>"
+      node1.stringOptional shouldBe Some("node 2 b")
+      node2.stringOptional shouldBe None
+      node1.stringList shouldBe Seq("node 3 c1", "node 3 c2")
+      node2.stringList shouldBe Seq.empty
+
+      graph.edgeCount() shouldBe 1
+      node1.connectedTo.l shouldBe Seq(node2)
+      val Seq(edge) = node1.outE(ConnectedTo.Label).l
+      edge.property shouldBe "edge property"
     }
 
-//    "import valid csv" in {
-//      val csvInputFiles = Seq(
-//        "testedges_header.csv",
-//        "testedges_data.csv",
-//        "testnodes_header.csv",
-//        "testnodes_data.csv"
-//      ).map(neo4jcsvRoot.resolve)
-//
-//      val graph = SimpleDomain.newGraph()
-//      Neo4jCsvImporter.runImport(graph, csvInputFiles)
-//
-//      graph.nodeCount shouldBe 3
-//
-//      val node1 = graph.node(1).asInstanceOf[TestNode]
-//      node1.label shouldBe "testNode"
-//      node1.intProperty shouldBe 11
-//      node1.stringProperty shouldBe "stringProp1"
-//      node1.stringListProperty.asScala.toList shouldBe List("stringListProp1a", "stringListProp1b")
-//      node1.intListProperty.asScala.toList shouldBe List(21, 31, 41)
-//
-//      val node2 = graph.node(2).asInstanceOf[TestNode]
-//      node2.stringProperty shouldBe "stringProp2"
-//
-//      val node3 = graph.node(3).asInstanceOf[TestNode]
-//      node3.intProperty shouldBe 13
-//
-//      graph.edgeCount shouldBe 2
-//      val edge1 = node1.outE("testEdge").next().asInstanceOf[TestEdge]
-//      edge1.longProperty shouldBe Long.MaxValue
-//      edge1.inNode shouldBe node2
-//
-//      val edge2 = node3.inE("testEdge").next().asInstanceOf[TestEdge]
-//      edge2.outNode shouldBe node2
-//    }
-//
-//    "fail if multiple labels are used (unsupported by flatgraph)" in {
-//      val csvInputFiles = Seq(
-//        "unsupported_multiple_labels_header.csv",
-//        "unsupported_multiple_labels_data.csv"
-//      ).map(neo4jcsvRoot.resolve)
-//
-//      val graph = SimpleDomain.newGraph()
-//      intercept[NotImplementedError] {
-//        Neo4jCsvImporter.runImport(graph, csvInputFiles)
-//      }.getMessage should include("multiple :LABEL columns found")
-//    }
-//
-//    "fail if input file doesn't exist" in {
-//      val csvInputFiles = Seq(
-//        "does_not_exist_header.csv",
-//        "does_not_exist_data.csv"
-//      ).map(neo4jcsvRoot.resolve)
-//
-//      val graph = SimpleDomain.newGraph()
-//      intercept[FileNotFoundException] {
-//        Neo4jCsvImporter.runImport(graph, csvInputFiles)
-//      }
-//    }
-//
-//    "fail with context information (line number etc.) for invalid input" in {
-//      val csvInputFiles = Seq(
-//        "invalid_column_content_header.csv",
-//        "invalid_column_content_data.csv"
-//      ).map(neo4jcsvRoot.resolve)
-//
-//      val graph = SimpleDomain.newGraph()
-//      intercept[RuntimeException] {
-//        Neo4jCsvImporter.runImport(graph, csvInputFiles)
-//      }.getMessage should include("invalid_column_content_data.csv line 3")
-//    }
+    "fail if multiple labels are used (unsupported by flatgraph)" in {
+      val csvInputFiles = Seq(
+        "unsupported_multiple_labels_header.csv",
+        "unsupported_multiple_labels_data.csv"
+      ).map(neo4jcsvRoot.resolve)
+
+      val graph = GenericDomain.empty.graph
+      intercept[NotImplementedError] {
+        Neo4jCsvImporter.runImport(graph, csvInputFiles)
+      }.getMessage should include("multiple :LABEL columns found")
+    }
+
+    "fail if input file doesn't exist" in {
+      val csvInputFiles = Seq(
+        "does_not_exist_header.csv",
+        "does_not_exist_data.csv"
+      ).map(neo4jcsvRoot.resolve)
+
+      val graph = GenericDomain.empty.graph
+      intercept[FileNotFoundException] {
+        Neo4jCsvImporter.runImport(graph, csvInputFiles)
+      }
+    }
+
+    "fail with context information (line number etc.) for invalid input" in {
+      val csvInputFiles = Seq(
+        "invalid_column_content_header.csv",
+        "invalid_column_content_data.csv"
+      ).map(neo4jcsvRoot.resolve)
+
+      val graph = GenericDomain.empty.graph
+      intercept[RuntimeException] {
+        Neo4jCsvImporter.runImport(graph, csvInputFiles)
+      }.getMessage should include("invalid_column_content_data.csv line 3")
+    }
   }
 
   "main apps for cli export/import" in {

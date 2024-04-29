@@ -1,0 +1,4 @@
+LOAD CSV FROM 'file:/edges_connected_to_data.csv' AS line
+MATCH (a), (b)
+WHERE a.id = toInteger(line[0]) AND b.id = toInteger(line[1])
+CREATE (a)-[r:connected_to {string_mandatory: line[3]}]->(b);
