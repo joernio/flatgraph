@@ -2,10 +2,8 @@ package flatgraph.formats.graphson
 
 import better.files.File
 import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphSimple}
-import flatgraph.TestDomainSimple.*
 import flatgraph.testdomains.generic.Language.*
 import flatgraph.testdomains.generic.nodes.NodeA
-import flatgraph.TestDomainSimple.PropertyNames.{ContainedTestNodeProperty, IntProperty}
 import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.nodes.NewNodeB
