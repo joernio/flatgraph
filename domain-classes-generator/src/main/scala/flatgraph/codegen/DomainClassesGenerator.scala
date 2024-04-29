@@ -51,7 +51,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     val propertyKindByProperty = relevantProperties.zipWithIndex.toMap
     val edgeTypes              = schema.edgeTypes.sortBy(_.name).toArray
-    val edgeIdByType           = edgeTypes.zipWithIndex.toMap
+    val edgeKindByType         = edgeTypes.zipWithIndex.toMap
 
     val newPropertiesByNodeType: Map[AbstractNodeType, Set[Property[?]]] =
       schema.allNodeTypes.map { nodeType =>
@@ -82,8 +82,8 @@ class DomainClassesGenerator(schema: Schema) {
     // format: off
     val edgeAccess = edgeTypes.map { et =>
       s"""
-       |final def _${camelCase(et.name)}Out: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
-       |final def _${camelCase(et.name)}In: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeIdByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |final def _${camelCase(et.name)}Out: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeKindByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |final def _${camelCase(et.name)}In: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeKindByType(et)}).asInstanceOf[Iterator[StoredNode]]
        |""".stripMargin
     }.mkString("\n")
     // format: on
@@ -214,27 +214,39 @@ class DomainClassesGenerator(schema: Schema) {
         if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
 
         // format: off
-        val propertyAccessor = if (edgeType.properties.length == 1) {
-          val p = edgeType.properties.head
-          p.cardinality match {
-            case _: Cardinality.One[?] =>
-              s"""{
-                 |  def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} = this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]
-                 |}""".stripMargin
-            case Cardinality.ZeroOrOne =>
-              s"""{
-                 |  def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] = Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])
-                 |}""".stripMargin
-            case Cardinality.List => throw new RuntimeException("edge properties are only supported with cardinality one or optional")
-          }
-        } else ""
+        val propertyAccessorMaybe: Option[String] = edgeType.properties match {
+          case Nil => None
+          case Seq(p) =>
+            p.cardinality match {
+              case _: Cardinality.One[?] =>
+                Some(s"""def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} =
+                   |  this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]""".stripMargin)
+              case Cardinality.ZeroOrOne =>
+                Some(s"""def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] =
+                   |  Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])""".stripMargin)
+              case Cardinality.List =>
+                throw new RuntimeException("edge properties are only supported with cardinality one or optional")
+            }
+          case multipleProperties =>
+            throw new RuntimeException(s"only one edge property supported - ${edgeType.name} defines ${multipleProperties.size}")
+        }
+
+        val propertyNameImplForObject = edgeType.properties.headOption.map { property=>
+          s"""val propertyName: Option[String] = Some("${property.name}")"""
+        }
+        val propertyNameImplForClass = propertyNameImplForObject.map { _ =>
+          s"override def propertyName: Option[String] = ${edgeType.className}.propertyName"
+        }
 
         s"""object ${edgeType.className} {
            |  val Label = "${edgeType.name}"
+           |  ${propertyNameImplForObject.getOrElse("")}
            |}
            |
            |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
-           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) $propertyAccessor
+           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) {
+           |  ${propertyNameImplForClass.getOrElse("")}
+           |}
            |""".stripMargin
         // format: on
       }
@@ -605,7 +617,19 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.result()
       }
 
+      val nodePropertyNameCases = for {
+        nodeType <- nodeTypes
+        propertyNames = nodeType.properties.map(p => s""""${p.name}"""").mkString(", ")
+      } yield s"""case "${nodeType.name}" => Set($propertyNames)"""
+
+      val edgePropertyNameCases = for {
+        edgeType <- edgeTypes
+        property <- edgeType.properties.headOption
+      } yield s"""case "${edgeType.name}" => Some("${property.name}")"""
+
+      // format: off
       s"""package $basePackage
+         |
          |import $basePackage.nodes
          |import $basePackage.edges
          |import flatgraph.FormalQtyType
@@ -613,22 +637,34 @@ class DomainClassesGenerator(schema: Schema) {
          |object GraphSchema extends flatgraph.Schema {
          |  private val nodeLabels = IndexedSeq($nodeLabelsSrc)
          |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
-         |  val edgeLabels = Array(${edgeTypes.map { e => s""""${e.name}"""" }.mkString(",  ")})
-         |  val edgeIdByLabel = edgeLabels.zipWithIndex.toMap
+         |  val edgeLabels = Array(${edgeTypes.map { e => s""""${e.name}"""" }.mkString(", ")})
+         |  val edgeKindByLabel = edgeLabels.zipWithIndex.toMap
          |  val edgePropertyAllocators: Array[Int => Array[?]] = Array($edgePropertyAllocatorsSrc)
          |  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array($nodeFactoriesSrc)
          |  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array($edgeFactoriesSrc)
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
-         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource
-          .mkString("\n")}
+         |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource.mkString("\n")}
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
          |  override def getNodeKindByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
          |  override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-         |  override def getEdgeKindByLabel(label: String): Int = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+         |  override def getEdgeKindByLabel(label: String): Int = edgeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+         |  override def getNodePropertyNames(nodeLabel: String): Set[String] = {
+         |    nodeLabel match {
+         |      ${nodePropertyNameCases.mkString("\n")}
+         |      case _ => Set.empty
+         |    }
+         |  }
+         |  override def getEdgePropertyName(label: String): Option[String] = {
+         |    label match {
+         |      ${edgePropertyNameCases.mkString("\n")}
+         |      case _ => None
+         |    }
+         |  }
+         |
          |  override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
          |    if(propertyKind < ${relevantProperties.length}) normalNodePropertyNames(propertyKind)
          |    $containedNodesAsPropertyCases
@@ -643,6 +679,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
          |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
          |}""".stripMargin
+      // format: on
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
 

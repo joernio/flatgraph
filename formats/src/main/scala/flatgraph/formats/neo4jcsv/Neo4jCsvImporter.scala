@@ -1,11 +1,12 @@
 package flatgraph.formats.neo4jcsv
 
-import com.github.tototoshi.csv._
-import flatgraph.Graph
+import com.github.tototoshi.csv.*
 import flatgraph.formats.Importer
+import flatgraph.misc.Conversions.toShortSafely
+import flatgraph.*
 
 import java.nio.file.Path
-import java.util
+import scala.collection.mutable
 import scala.util.Using
 
 /** Imports from neo4j csv files see https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import/
@@ -14,48 +15,64 @@ object Neo4jCsvImporter extends Importer {
   val Neo4jAdminDoc = "https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import"
 
   override def runImport(graph: Graph, inputFiles: Seq[Path]): Unit = {
-    // TODO reimplement
-    ???
-//    var importedNodeCount = 0
-//    var importedEdgeCount = 0
-//
-//    groupInputFiles(inputFiles)
-//      .sortBy(nodeFilesFirst)
-//      .foreach { case HeaderAndDataFile(ParsedHeaderFile(fileType, columnDefs), dataFile) =>
-//        Using.resource(CSVReader.open(dataFile.toFile)) { dataReader =>
-//          dataReader.iterator.zipWithIndex.foreach { case (columnsRaw, idx) =>
-//            assert(
-//              columnsRaw.size == columnDefs.size,
-//              s"datafile ${dataFile.toAbsolutePath} row must have the same column count as the headerfile (${columnDefs.size}) - instead found ${columnsRaw.size} for row=${columnsRaw
-//                  .mkString(",")}"
-//            )
-//            val lineNo = idx + 1
-//            fileType match {
-//              case FileType.Nodes =>
-//                parseNodeRowData(columnsRaw, columnDefs, dataFile, lineNo) match {
-//                  case ParsedNodeRowData(id, label, properties) =>
-//                    val propertiesAsKeyValues =
-//                      properties.flatMap(parsedProperty => Seq(parsedProperty.name, parsedProperty.value))
-//                    graph.addNode(id, label, propertiesAsKeyValues: _*)
-//                    importedNodeCount += 1
-//                }
-//              case FileType.Relationships =>
-//                parseEdgeRowData(columnsRaw, columnDefs, dataFile, lineNo) match {
-//                  case ParsedEdgeRowData(startId, endId, label, properties) =>
-//                    val startNode = graph.node(startId)
-//                    val endNode = graph.node(endId)
-//                    val propertiesMap = new util.HashMap[String, Object]
-//                    properties.foreach { case ParsedProperty(name, value) =>
-//                      propertiesMap.put(name, value.asInstanceOf[Object])
-//                    }
-//                    startNode.addEdge(label, endNode, propertiesMap)
-//                    importedEdgeCount += 1
-//                }
-//            }
-//          }
-//        }
-//      }
-//    logger.info(s"imported $importedNodeCount nodes")
+    var importedNodeCount = 0
+    var importedEdgeCount = 0
+
+    // we need to add the nodes in two steps: first as raw nodes, and finally add the properties
+    val diffGraphForRawNodes = new DiffGraphBuilder(graph.schema)
+    val diffGraph            = new DiffGraphBuilder(graph.schema)
+    val nodeContextByNeo4jId = mutable.Map.empty[Int, Neo4jNodeContext]
+
+    groupInputFiles(inputFiles)
+      .sortBy(nodeFilesFirst)
+      .foreach { case HeaderAndDataFile(ParsedHeaderFile(fileType, columnDefs), dataFile) =>
+        Using.resource(CSVReader.open(dataFile.toFile)) { dataReader =>
+          dataReader.iterator.zipWithIndex.foreach { case (columnsRaw, idx) =>
+            assert(
+              columnsRaw.size == columnDefs.size,
+              s"datafile ${dataFile.toAbsolutePath} row must have the same column count as the headerfile (${columnDefs.size}) - instead found ${columnsRaw.size} for row=${columnsRaw
+                  .mkString(",")}"
+            )
+            val lineNo = idx + 1
+            fileType match {
+              case FileType.Nodes =>
+                parseNodeRowData(columnsRaw, columnDefs, dataFile, lineNo) match {
+                  case ParsedNodeRowData(id, label, properties) =>
+                    val newNode = new GenericDNode(graph.schema.getNodeKindByLabel(label).toShortSafely)
+                    diffGraphForRawNodes.addNode(newNode)
+                    // we'll need to add the properties in a separate pass at the end
+                    nodeContextByNeo4jId.addOne(id, Neo4jNodeContext(newNode, properties))
+                    importedNodeCount += 1
+                }
+              case FileType.Relationships =>
+                parseEdgeRowData(columnsRaw, columnDefs, dataFile, lineNo) match {
+                  case ParsedEdgeRowData(startId, endId, label, properties) =>
+                    val Seq(startNode, endNode) = Seq(startId, endId).map(nodeContextByNeo4jId).map(_.newNode)
+                    // flatgraph only supports one property per edge type
+                    val propertyMaybe = graph.schema.getEdgePropertyName(label).flatMap { edgePropertyName =>
+                      properties.find(_.name == edgePropertyName).map(_.value)
+                    }
+                    diffGraph.addEdge(startNode, endNode, label, propertyMaybe.orNull)
+                    importedEdgeCount += 1
+                }
+            }
+          }
+        }
+      }
+
+    // apply diffGraphForRawNodes, which sets the `storedRef` handles...
+    DiffGraphApplier.applyDiff(graph, diffGraphForRawNodes)
+
+    // ... so that we can now set the node properties
+    for {
+      Neo4jNodeContext(dnode, properties) <- nodeContextByNeo4jId.values
+      gnode = dnode.storedRef.get
+      ParsedProperty(name, value) <- properties
+    } diffGraph.setNodeProperty(gnode, name, value)
+
+    DiffGraphApplier.applyDiff(graph, diffGraph)
+
+    logger.info(s"imported $importedNodeCount nodes and $importedEdgeCount edges")
   }
 
   private def groupInputFiles(inputFiles: Seq[Path]): Seq[HeaderAndDataFile] = {
@@ -291,4 +308,6 @@ object Neo4jCsvImporter extends Importer {
   private case class ParsedProperty(name: String, value: Any)
   private case class ParsedNodeRowData(id: Int, label: String, properties: Seq[ParsedProperty])
   private case class ParsedEdgeRowData(startId: Int, endId: Int, label: String, properties: Seq[ParsedProperty])
+  private case class Neo4jNodeContext(newNode: DNode, properties: Seq[ParsedProperty])
+
 }

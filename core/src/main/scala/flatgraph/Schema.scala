@@ -111,12 +111,14 @@ abstract class Schema {
   def getNodeKindByLabelMaybe(label: String): Option[Int] = {
     Option(getNodeKindByLabel(label)).filterNot(_ == UndefinedKind)
   }
+  def getNodePropertyNames(nodeLabel: String): Set[String]
 
   // So, the issue here is: We have a couple of pseudo-properties that can only exist at a single node kind
   // (theoretically same for edges). We want to allow our data-layout to alias these properties. This means that multiple
   // properties share the same propertyKind / slot. Hence, to go back from kind -> label, we also need to know the node-kind.
   def getEdgeLabel(nodeKind: Int, edgeKind: Int): String
   def getEdgeKindByLabel(label: String): Int
+  def getEdgePropertyName(label: String): Option[String]
 
   def getPropertyLabel(nodeKind: Int, propertyKind: Int): String
   def getPropertyKindByName(label: String): Int
@@ -149,15 +151,16 @@ abstract class Schema {
 
 class FreeSchema(
   nodeLabels: Array[String],
-  propertyLabels: Array[String],
+  propertyLabels: Array[String], // important: array order corresponds to `nodePropertyPrototypes` order!
   nodePropertyPrototypes: Array[AnyRef],
+  propertyNamesByNodeLabel: Map[String, Set[String]],
   edgeLabels: Array[String],
   edgePropertyPrototypes: Array[AnyRef],
   formalQuantities: Array[FormalQtyType.FormalQuantity] = null
 ) extends Schema {
-  val nodeMap = nodeLabels.zipWithIndex.toMap
-  val propMap = propertyLabels.zipWithIndex.toMap
-  val edgeMap = edgeLabels.zipWithIndex.toMap
+  private val nodeMap = nodeLabels.zipWithIndex.toMap
+  private val propMap = propertyLabels.zipWithIndex.toMap
+  private val edgeMap = edgeLabels.zipWithIndex.toMap
 
   val edgePropertyTypes: Array[FormalQtyType.FormalType] = edgePropertyPrototypes.map(fromPrototype)
   val nodePropertyTypes: Array[FormalQtyType.FormalType] = nodePropertyPrototypes.map(fromPrototype)
@@ -181,10 +184,12 @@ class FreeSchema(
   override def getNodeKindByLabel(label: String): Int                     = nodeMap.getOrElse(label, Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String         = edgeLabels(edgeKind)
   override def getEdgeKindByLabel(label: String): Int                     = edgeMap.getOrElse(label, Schema.UndefinedKind)
+  override def getEdgePropertyName(label: String): Option[String]         = None
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
   override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
-  override def getNumberOfPropertyKinds: Int                              = propertyLabels.length
-  override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
+  override def getNodePropertyNames(nodeLabel: String): Set[String]     = propertyNamesByNodeLabel.getOrElse(nodeLabel, default = Set.empty)
+  override def getNumberOfPropertyKinds: Int                            = propertyLabels.length
+  override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
     new Edge(src, dst, edgeKind, subSeq, property)
 

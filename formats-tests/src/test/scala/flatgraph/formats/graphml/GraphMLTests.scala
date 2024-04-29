@@ -17,11 +17,11 @@ class GraphMLTests extends AnyWordSpec {
     import flatgraph.testdomains.gratefuldead.Language.*
     val gratefulDead = GratefulDead.empty
     val graph        = gratefulDead.graph
-    graph.nodeCount() shouldBe 0
+    graph.nodeCount shouldBe 0
 
     GraphMLImporter.runImport(graph, Paths.get(this.getClass.getResource("/graphml-small.xml").toURI))
-    graph.nodeCount() shouldBe 3
-    graph.edgeCount() shouldBe 2
+    graph.nodeCount shouldBe 3
+    graph.edgeCount shouldBe 2
 
     gratefulDead.song.size shouldBe 1
     gratefulDead.song.name.l shouldBe List("HEY BO DIDDLEY")
@@ -46,9 +46,7 @@ class GraphMLTests extends AnyWordSpec {
     import flatgraph.testdomains.generic.nodes.NewNodeA
 
     "not using (unsupported) list properties" in {
-      val genericDomain = GenericDomain.empty
-      val graph         = genericDomain.graph
-
+      val graph = GenericDomain.empty.graph
       val node1 = NewNodeA().stringOptional("node 1 opt")
       val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
       val node3 = NewNodeA().intMandatory(1).intOptional(2)
@@ -81,8 +79,7 @@ class GraphMLTests extends AnyWordSpec {
     }
 
     "using list properties" in {
-      val genericDomain = GenericDomain.empty
-      val graph         = genericDomain.graph
+      val graph = GenericDomain.empty.graph
 
       // exporter  will discard the list properties, but inform the user about it
       val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))

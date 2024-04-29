@@ -1,0 +1,10 @@
+LOAD CSV FROM 'file:/nodes_node_a_data.csv' AS line
+CREATE (:node_a {
+id: toInteger(line[0]),
+int_list: toIntegerList(split(line[2], ";")),
+int_mandatory: toInteger(line[3]),
+int_optional: toInteger(line[4]),
+string_list: toStringList(split(line[5], ";")),
+string_mandatory: line[6],
+string_optional: line[7]
+});

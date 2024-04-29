@@ -738,6 +738,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       nodeLabels = Array(Node0Label),
       edgeLabels = Array.empty,
       propertyLabels = Array(propertySingle, propertyOptional, propertyMulti).map(_.name),
+      propertyNamesByNodeLabel = Map.empty,
       edgePropertyPrototypes = new Array[AnyRef](0),
       nodePropertyPrototypes = Array(new Array[String](0), new Array[String](0), new Array[String](0)),
       formalQuantities = Array(FormalQtyType.QtyOne, null, FormalQtyType.QtyOption, null, FormalQtyType.QtyMulti)

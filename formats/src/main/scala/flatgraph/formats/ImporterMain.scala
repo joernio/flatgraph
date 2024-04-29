@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import flatgraph.formats.graphml.GraphMLImporter
 import flatgraph.formats.graphson.GraphSONImporter
 import flatgraph.formats.neo4jcsv.Neo4jCsvImporter
-import flatgraph.Graph
+import flatgraph.{Graph, Schema}
 import scopt.OParser
 
 import java.nio.file.{Files, Path, Paths}
@@ -18,7 +18,7 @@ import scala.util.Using
 object ImporterMain extends App {
   lazy val logger = LoggerFactory.getLogger(getClass)
 
-  def apply(convertPropertyForPersistence: Any => Any = identity): Array[String] => Unit = { args =>
+  def apply(schema: Schema): Array[String] => Unit = { args =>
     OParser
       .parse(parser, args, Config(Nil, null, Paths.get("/dev/null")))
       .map { case Config(inputFiles, format, outputFile) =>
@@ -33,22 +33,13 @@ object ImporterMain extends App {
           case Format.GraphML  => GraphMLImporter
           case Format.GraphSON => GraphSONImporter
         }
-        // TODO reimplement
-        ???
-//        Using.resource(
-//          Graph.open(
-//            odbConfig,
-//            nodeFactories.asJava,
-//            edgeFactories.asJava,
-//            convertPropertyForPersistence(_).asInstanceOf[Object]
-//          )
-//        ) { graph =>
-//          logger.info(
-//            s"starting import of ${inputFiles.size} files in format=$format into a new flatgraph instance with storagePath=$outputFile"
-//          )
-//          importer.runImport(graph, inputFiles)
-//          logger.info(s"import completed successfully")
-//        }
+        Using.resource(Graph(schema, storagePathMaybe = Some(outputFile))) { graph =>
+          logger.info(
+            s"starting import of ${inputFiles.size} files in format=$format into a new flatgraph instance with storagePath=$outputFile"
+          )
+          importer.runImport(graph, inputFiles)
+          logger.info(s"import completed successfully")
+        }
       }
   }
 

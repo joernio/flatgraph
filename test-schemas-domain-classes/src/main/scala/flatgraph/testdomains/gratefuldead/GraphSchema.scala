@@ -1,4 +1,5 @@
 package flatgraph.testdomains.gratefuldead
+
 import flatgraph.testdomains.gratefuldead.nodes
 import flatgraph.testdomains.gratefuldead.edges
 import flatgraph.FormalQtyType
@@ -7,7 +8,7 @@ object GraphSchema extends flatgraph.Schema {
   private val nodeLabels = IndexedSeq("artist", "song")
   val nodeKindByLabel    = nodeLabels.zipWithIndex.toMap
   val edgeLabels         = Array("followedBy", "sungBy", "writtenBy")
-  val edgeIdByLabel      = edgeLabels.zipWithIndex.toMap
+  val edgeKindByLabel    = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
     Array(size => Array.fill(size)(0: Long) /* label = followedBy, id = 0 */, size => null, size => null)
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
@@ -42,7 +43,21 @@ object GraphSchema extends flatgraph.Schema {
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
-  override def getEdgeKindByLabel(label: String): Int             = edgeIdByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+  override def getEdgeKindByLabel(label: String): Int             = edgeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+  override def getNodePropertyNames(nodeLabel: String): Set[String] = {
+    nodeLabel match {
+      case "artist" => Set("name")
+      case "song"   => Set("name", "songType")
+      case _        => Set.empty
+    }
+  }
+  override def getEdgePropertyName(label: String): Option[String] = {
+    label match {
+      case "followedBy" => Some("weight")
+      case _            => None
+    }
+  }
+
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
     if (propertyKind < 2) normalNodePropertyNames(propertyKind)
     else null
