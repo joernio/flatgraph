@@ -9,7 +9,7 @@ import flatgraph.util.DiffTool
 import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.Language.*
 import flatgraph.testdomains.generic.edges.ConnectedTo
-import flatgraph.testdomains.generic.nodes.{NewNodeA, NodeA}
+import flatgraph.testdomains.generic.nodes.NodeA
 
 import java.io.FileNotFoundException
 import java.nio.file.Paths
@@ -159,7 +159,7 @@ class Neo4jCsvTests extends AnyWordSpec {
       val exporterMain = ExporterMain()
       exporterMain(Array("--format=neo4jcsv", s"--out=${exportPath.pathAsString}", graphPath.pathAsString))
       val exportedFiles = exportPath.list.toArray
-      exportedFiles.size shouldBe 6
+      exportedFiles.length shouldBe 6
 
       // use importer for round trip
       val importerMain       = ImporterMain(flatgraph.testdomains.generic.GraphSchema)
