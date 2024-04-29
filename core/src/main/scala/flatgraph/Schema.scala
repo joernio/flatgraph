@@ -111,6 +111,7 @@ abstract class Schema {
   def getNodeKindByLabelMaybe(label: String): Option[Int] = {
     Option(getNodeKindByLabel(label)).filterNot(_ == UndefinedKind)
   }
+  def getNodePropertyNames(nodeLabel: String): Set[String]
 
   // So, the issue here is: We have a couple of pseudo-properties that can only exist at a single node kind
   // (theoretically same for edges). We want to allow our data-layout to alias these properties. This means that multiple
@@ -185,6 +186,7 @@ class FreeSchema(
   override def getEdgePropertyName(label: String): Option[String]         = None
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
   override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
+  override def getNodePropertyNames(nodeLabel: String): Set[String]       = Set.empty
   override def getNumberOfPropertyKinds: Int                              = propertyLabels.length
   override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =

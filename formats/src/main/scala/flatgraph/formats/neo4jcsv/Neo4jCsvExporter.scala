@@ -23,7 +23,7 @@ object Neo4jCsvExporter extends Exporter {
     val nodesByLabel = nodes.iterator.toSeq.groupBy(_.label).filter(_._2.nonEmpty)
     val CountAndFiles(nodeCount, nodeFiles) = nodesByLabel
       .map { case (label, nodes) =>
-        exportNodes(nodes, label, outputRootDirectory)
+        exportNodes(nodes, label, schema, outputRootDirectory)
       }
       .reduce(_.plus(_))
 
@@ -57,7 +57,7 @@ object Neo4jCsvExporter extends Exporter {
     )
   }
 
-  private def exportNodes(nodes: IterableOnce[GNode], label: String, outputRootDirectory: Path): CountAndFiles = {
+  private def exportNodes(nodes: IterableOnce[GNode], label: String, schema: Schema, outputRootDirectory: Path): CountAndFiles = {
     val dataFile = outputRootDirectory.resolve(s"nodes_$label$DataFileSuffix.csv")
     val headerFile =
       outputRootDirectory.resolve(s"nodes_$label$HeaderFileSuffix.csv") // to be written at the very end, with complete ColumnDefByName
@@ -69,11 +69,10 @@ object Neo4jCsvExporter extends Exporter {
     Using.resource(CSVWriter.open(dataFile.toFile, append = false)) { writer =>
       nodes.iterator.foreach { node =>
         import flatgraph.traversal.Language.*
-        val properties = node.propertiesMap.asScala
-        if (columnDefinitions == null) columnDefinitions = new ColumnDefinitions(properties.keySet)
+        if (columnDefinitions == null) columnDefinitions = new ColumnDefinitions(schema.getNodePropertyNames(label))
 
         val specialColumns       = Seq(node.id.toString, node.label)
-        val propertyValueColumns = columnDefinitions.propertyValues(properties.get(_))
+        val propertyValueColumns = columnDefinitions.propertyValues(node.propertyOption)
         writer.writeRow(specialColumns ++ propertyValueColumns)
         nodeCount += 1
       }

@@ -617,6 +617,11 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.result()
       }
 
+      val nodePropertyNameCases = for {
+        nodeType <- nodeTypes
+        propertyNames = nodeType.properties.map(p => s""""${p.name}"""").mkString(", ")
+      } yield s"""case "${nodeType.name}" => Set($propertyNames)"""
+
       val edgePropertyNameCases = for {
         edgeType <- edgeTypes
         property <- edgeType.properties.headOption
@@ -647,6 +652,12 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def getNodeKindByLabel(label: String): Int = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
          |  override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
          |  override def getEdgeKindByLabel(label: String): Int = edgeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+         |  def getNodePropertyNames(nodeLabel: String): Set[String] = {
+         |    nodeLabel match {
+         |      ${nodePropertyNameCases.mkString("\n")}
+         |      case _ => Set.empty
+         |    }
+         |  }
          |  override def getEdgePropertyName(label: String): Option[String] = {
          |    label match {
          |      ${edgePropertyNameCases.mkString("\n")}
