@@ -11,7 +11,7 @@ import java.nio.file.Path
 object TestGraphSimple {
   def create(storageMaybe: Option[Path] = None): GenericDomain = {
     val genericDomain = storageMaybe match {
-      case None => GenericDomain.empty
+      case None              => GenericDomain.empty
       case Some(storagePath) => GenericDomain.withStorage(storagePath)
     }
     val graph = genericDomain.graph

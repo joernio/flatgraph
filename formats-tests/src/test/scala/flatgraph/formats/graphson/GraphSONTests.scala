@@ -1,11 +1,14 @@
 package flatgraph.formats.graphson
 
 import better.files.File
-import flatgraph.{GenericDNode, TestGraphSimple}
+import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphSimple}
 import flatgraph.TestDomainSimple.*
+import flatgraph.testdomains.generic.Language.*
+import flatgraph.testdomains.generic.nodes.NodeA
 import flatgraph.TestDomainSimple.PropertyNames.{ContainedTestNodeProperty, IntProperty}
 import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.testdomains.generic.GenericDomain
+import flatgraph.testdomains.generic.nodes.NewNodeB
 import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -36,6 +39,22 @@ class GraphSONTests extends AnyWordSpec {
         diff.size shouldBe 0
       }
     }
+  }
+
+  "foo" in {
+    // TODO integrate into other test
+    val genericDomain = TestGraphSimple.create()
+    val graph         = genericDomain.graph
+    val Seq(node2)    = genericDomain.nodeA.intMandatory(1).l
+    val newNodeB      = NewNodeB().stringOptional("node b stringOptional")
+    DiffGraphApplier.applyDiff(
+      graph,
+      GenericDomain.newDiffGraphBuilder
+//      .setNodeProperty(node2, flatgraph.testdomains.generic.PropertyNames.CONTAINED
+        .setNodeProperty(node2, NodeA.PropertyNames.NodeB, newNodeB)
+    )
+
+    "TODO integrate into other test" shouldBe "done"
   }
 
   "using 'contained node' property" in {

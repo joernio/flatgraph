@@ -19,8 +19,10 @@ trait SongBase extends AbstractNode with StaticType[SongEMT] {
 object Song {
   val Label = "song"
   object PropertyNames {
-    val Name     = flatgraph.testdomains.gratefuldead.PropertyNames.name
-    val Songtype = flatgraph.testdomains.gratefuldead.PropertyNames.songType
+
+    val Name = "name"
+
+    val Songtype = "songType"
   }
   object PropertyDefaults {
     val Name = ""

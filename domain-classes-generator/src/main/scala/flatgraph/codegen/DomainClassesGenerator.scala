@@ -370,13 +370,23 @@ class DomainClassesGenerator(schema: Schema) {
         }
         .mkString("\n")
 
-      val propertyNames = nodeType.properties
-        .map(_.name)
-        .map { name =>
-          val camelCase = camelCaseCaps(name)
-          s"""val $camelCase = $basePackage.PropertyNames.$name"""
+      val propertyNames = {
+        val sourceLines = Seq.newBuilder[String]
+
+        // TODO extract and reuse
+        def scaladocMaybe(comment: Option[String]): String =
+          comment.map(text => s"/** $text */").getOrElse("")
+
+        nodeType.properties.foreach { property =>
+          sourceLines.addOne(s"""${scaladocMaybe(property.comment)}
+               |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin)
         }
-        .mkString("\n")
+        nodeType.containedNodes.foreach { containedNode =>
+          sourceLines.addOne(s"""${scaladocMaybe(containedNode.comment)}
+               |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin)
+        }
+        sourceLines.result().mkString("\n")
+      }
 
       val propertyDefaults = nodeType.properties
         .collect {

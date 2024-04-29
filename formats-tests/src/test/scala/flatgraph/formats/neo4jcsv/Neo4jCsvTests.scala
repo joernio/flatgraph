@@ -150,9 +150,9 @@ class Neo4jCsvTests extends AnyWordSpec {
 
   "main apps for cli export/import" in {
     File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
-      val graphPath     = tmpDir / "original.fg"
-      val exportPath    = tmpDir / "export"
-      
+      val graphPath  = tmpDir / "original.fg"
+      val exportPath = tmpDir / "export"
+
       val genericDomain = TestGraphSimple.create(Some(graphPath.path))
       genericDomain.close()
 
