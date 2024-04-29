@@ -187,9 +187,9 @@ class FreeSchema(
   override def getEdgePropertyName(label: String): Option[String]         = None
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = propertyLabels(propertyKind)
   override def getPropertyKindByName(label: String): Int                  = propMap.getOrElse(label, Schema.UndefinedKind)
-  override def getNodePropertyNames(nodeLabel: String): Set[String]       = propertyNamesByNodeLabel.getOrElse(nodeLabel, default = Set.empty)
-  override def getNumberOfPropertyKinds: Int                              = propertyLabels.length
-  override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode   = new GNode(graph, nodeKind, seq)
+  override def getNodePropertyNames(nodeLabel: String): Set[String]     = propertyNamesByNodeLabel.getOrElse(nodeLabel, default = Set.empty)
+  override def getNumberOfPropertyKinds: Int                            = propertyLabels.length
+  override def makeNode(graph: Graph, nodeKind: Short, seq: Int): GNode = new GNode(graph, nodeKind, seq)
   override def makeEdge(src: GNode, dst: GNode, edgeKind: Short, subSeq: Int, property: Any): Edge =
     new Edge(src, dst, edgeKind, subSeq, property)
 

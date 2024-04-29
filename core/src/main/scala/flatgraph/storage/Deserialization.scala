@@ -99,12 +99,12 @@ object Deserialization {
   }
 
   private def freeSchemaFromManifest(manifest: Manifest.GraphItem): FreeSchema = {
-    val nodeLabels    = manifest.nodes.map { n => n.nodeLabel }
-    val nodePropNames = mutable.LinkedHashMap.empty[String, AnyRef]
+    val nodeLabels               = manifest.nodes.map { n => n.nodeLabel }
+    val nodePropNames            = mutable.LinkedHashMap.empty[String, AnyRef]
     val propertyNamesByNodeLabel = mutable.LinkedHashMap.empty[String, Set[String]]
     for (prop <- manifest.properties) {
       propertyNamesByNodeLabel.updateWith(prop.nodeLabel) {
-        case None => Some(Set(prop.propertyLabel))
+        case None             => Some(Set(prop.propertyLabel))
         case Some(oldEntries) => Some(oldEntries + prop.propertyLabel)
       }
       nodePropNames(prop.propertyLabel) = protoFromOutline(prop.property)

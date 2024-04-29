@@ -5,7 +5,6 @@ import flatgraph.DiffGraphApplier
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
-import flatgraph.traversal.*
 import flatgraph.util.DiffTool
 import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.Language.*
@@ -14,7 +13,7 @@ import flatgraph.testdomains.generic.nodes.{NewNodeA, NodeA}
 
 import java.io.FileNotFoundException
 import java.nio.file.Paths
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, IteratorHasAsScala}
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class Neo4jCsvTests extends AnyWordSpec {
   val subprojectRoot = testutils.ProjectRoot.relativise("formats-tests")
@@ -96,15 +95,13 @@ class Neo4jCsvTests extends AnyWordSpec {
 
   "Importer" should {
     "import valid csv" in {
-      val csvInputFiles = Seq(
-        "edges_connected_to_header.csv",
-        "edges_connected_to_data.csv",
-        "nodes_node_a_header.csv",
-        "nodes_node_a_data.csv"
-      ).map(neo4jcsvRoot.resolve)
+      val csvInputFiles =
+        Seq("edges_connected_to_header.csv", "edges_connected_to_data.csv", "nodes_node_a_header.csv", "nodes_node_a_data.csv").map(
+          neo4jcsvRoot.resolve
+        )
 
       val genericDomain = GenericDomain.empty
-      val graph = genericDomain.graph
+      val graph         = genericDomain.graph
       Neo4jCsvImporter.runImport(graph, csvInputFiles)
 
       graph.nodeCount shouldBe 2
@@ -132,10 +129,7 @@ class Neo4jCsvTests extends AnyWordSpec {
     }
 
     "fail if multiple labels are used (unsupported by flatgraph)" in {
-      val csvInputFiles = Seq(
-        "unsupported_multiple_labels_header.csv",
-        "unsupported_multiple_labels_data.csv"
-      ).map(neo4jcsvRoot.resolve)
+      val csvInputFiles = Seq("unsupported_multiple_labels_header.csv", "unsupported_multiple_labels_data.csv").map(neo4jcsvRoot.resolve)
 
       val graph = GenericDomain.empty.graph
       intercept[NotImplementedError] {
@@ -144,10 +138,7 @@ class Neo4jCsvTests extends AnyWordSpec {
     }
 
     "fail if input file doesn't exist" in {
-      val csvInputFiles = Seq(
-        "does_not_exist_header.csv",
-        "does_not_exist_data.csv"
-      ).map(neo4jcsvRoot.resolve)
+      val csvInputFiles = Seq("does_not_exist_header.csv", "does_not_exist_data.csv").map(neo4jcsvRoot.resolve)
 
       val graph = GenericDomain.empty.graph
       intercept[FileNotFoundException] {
@@ -156,10 +147,7 @@ class Neo4jCsvTests extends AnyWordSpec {
     }
 
     "fail with context information (line number etc.) for invalid input" in {
-      val csvInputFiles = Seq(
-        "invalid_column_content_header.csv",
-        "invalid_column_content_data.csv"
-      ).map(neo4jcsvRoot.resolve)
+      val csvInputFiles = Seq("invalid_column_content_header.csv", "invalid_column_content_data.csv").map(neo4jcsvRoot.resolve)
 
       val graph = GenericDomain.empty.graph
       intercept[RuntimeException] {
@@ -170,8 +158,8 @@ class Neo4jCsvTests extends AnyWordSpec {
 
   "main apps for cli export/import" in {
     File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
-      val graphPath = tmpDir / "original.fg"
-      val exportPath = tmpDir / "export"
+      val graphPath     = tmpDir / "original.fg"
+      val exportPath    = tmpDir / "export"
       val genericDomain = GenericDomain.withStorage(graphPath.path)
 
       val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
@@ -190,8 +178,8 @@ class Neo4jCsvTests extends AnyWordSpec {
       exportedFiles.size shouldBe 6
 
       // use importer for round trip
-      val importerMain = ImporterMain(flatgraph.testdomains.generic.GraphSchema)
-      val reimportPath = tmpDir / "reimported.fg"
+      val importerMain       = ImporterMain(flatgraph.testdomains.generic.GraphSchema)
+      val reimportPath       = tmpDir / "reimported.fg"
       val relevantInputFiles = exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.pathAsString)
       importerMain(Array("--format=neo4jcsv", s"--out=${reimportPath.pathAsString}") ++ relevantInputFiles)
 
