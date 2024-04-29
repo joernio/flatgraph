@@ -377,15 +377,19 @@ class DomainClassesGenerator(schema: Schema) {
         def scaladocMaybe(comment: Option[String]): String =
           comment.map(text => s"/** $text */").getOrElse("")
 
-        nodeType.properties.foreach { property =>
-          sourceLines.addOne(s"""${scaladocMaybe(property.comment)}
-               |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin)
-        }
-        nodeType.containedNodes.foreach { containedNode =>
-          sourceLines.addOne(s"""${scaladocMaybe(containedNode.comment)}
-               |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin)
-        }
-        sourceLines.result().mkString("\n")
+        // format: off
+        nodeType.properties.map { property =>
+            s"""${scaladocMaybe(property.comment)}
+             |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin
+          }
+          .map(sourceLines.addOne)
+        nodeType.containedNodes.map { containedNode =>
+            s"""${scaladocMaybe(containedNode.comment)}
+               |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin
+          }
+          .map(sourceLines.addOne)
+        // format: on
+        sourceLines.result().mkString("")
       }
 
       val propertyDefaults = nodeType.properties

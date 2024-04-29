@@ -32,19 +32,13 @@ object NodeA {
   val Label = "node_a"
   object PropertyNames {
 
-    val IntList = "int_list"
-
-    val IntMandatory = "int_mandatory"
-
-    val IntOptional = "int_optional"
-
-    val StringList = "string_list"
-
+    val IntList         = "int_list"
+    val IntMandatory    = "int_mandatory"
+    val IntOptional     = "int_optional"
+    val StringList      = "string_list"
     val StringMandatory = "string_mandatory"
-
-    val StringOptional = "string_optional"
-
-    val NodeB = "node_b"
+    val StringOptional  = "string_optional"
+    val NodeB           = "node_b"
   }
   object PropertyDefaults {
     val IntMandatory    = 42: Int

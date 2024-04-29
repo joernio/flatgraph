@@ -20,8 +20,7 @@ object Song {
   val Label = "song"
   object PropertyNames {
 
-    val Name = "name"
-
+    val Name     = "name"
     val Songtype = "songType"
   }
   object PropertyDefaults {
