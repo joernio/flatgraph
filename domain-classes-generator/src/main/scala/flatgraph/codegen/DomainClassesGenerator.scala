@@ -371,7 +371,7 @@ class DomainClassesGenerator(schema: Schema) {
         val sourceLines = Seq.newBuilder[String]
         nodeType.properties.map { property =>
           s"""${scaladocMaybe(property.comment)}
-           |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin
+             |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin
         }.map(sourceLines.addOne)
         nodeType.containedNodes.map { containedNode =>
           s"""${scaladocMaybe(containedNode.comment)}
@@ -1041,25 +1041,9 @@ class DomainClassesGenerator(schema: Schema) {
       )
     }
 
-    // PropertyKeys.scala <start>
-    // TODO refactor: extract to method
     val propertyKeysConstantsSource = {
       schema.properties.filter(kindContexts.propertyKindByProperty.contains).map { property =>
-        val kind              = kindContexts.propertyKindByProperty(property)
-        val valueTypeUnpacked = unpackTypeUnboxed(property.valueType, isStored = false)
-        val documentation     = property.comment.filter(_.nonEmpty).map(comment => s"""/** $comment */""").getOrElse("")
-        val propertyKeyConstantImpl = property.cardinality match {
-          case Cardinality.One(default) =>
-            val defaultValueImpl = Helpers.defaultValueImpl(default)
-            s"""flatgraph.SinglePropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}", default = $defaultValueImpl)"""
-          case Cardinality.ZeroOrOne =>
-            s"""flatgraph.OptionalPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
-          case Cardinality.List =>
-            s"""flatgraph.MultiPropertyKey[$valueTypeUnpacked](kind = $kind, name = "${property.name}")"""
-        }
-        s"""$documentation
-           |val ${camelCaseCaps(property.name)} = $propertyKeyConstantImpl
-           |""".stripMargin
+        propertyKeySource(property, propertyKind = kindContexts.propertyKindByProperty(property))
       }
     }.mkString("\n\n")
     val file = outputDir / "PropertyKeys.scala"
@@ -1067,14 +1051,11 @@ class DomainClassesGenerator(schema: Schema) {
       file,
       s"""package ${schema.basePackage}
          |
-         |import flatgraph.PropertyKey
-         |
          |object PropertyKeys {
          |$propertyKeysConstantsSource
          |}""".stripMargin
     )
     results.addOne(file)
-    // PropertyKeys.scala <end>
 
     results.result()
   }
@@ -1337,6 +1318,7 @@ class DomainClassesGenerator(schema: Schema) {
       case _                                                            => ???
     }
   }
+
   def unpackTypeUnboxed(tpe: ValueType[?], isStored: Boolean, raised: Boolean = false): String = {
     tpe match {
       case ValueType.Boolean             => "Boolean"
@@ -1368,6 +1350,21 @@ class DomainClassesGenerator(schema: Schema) {
       case ValueType.NodeRef             => s"nodes.AbstractNode"
       case _                             => ???
     }
+  }
+
+  def propertyKeySource(property: Property[?], propertyKind: Int): String = {
+    val valueTypeUnpacked = unpackTypeUnboxed(property.valueType, isStored = false)
+    val propertyKeyImpl = property.cardinality match {
+      case Cardinality.One(default) =>
+        val defaultValueImpl = Helpers.defaultValueImpl(default)
+        s"""flatgraph.SinglePropertyKey[$valueTypeUnpacked](kind = $propertyKind, name = "${property.name}", default = $defaultValueImpl)"""
+      case Cardinality.ZeroOrOne =>
+        s"""flatgraph.OptionalPropertyKey[$valueTypeUnpacked](kind = $propertyKind, name = "${property.name}")"""
+      case Cardinality.List =>
+        s"""flatgraph.MultiPropertyKey[$valueTypeUnpacked](kind = $propertyKind, name = "${property.name}")"""
+    }
+    s"""${scaladocMaybe(property.comment)}
+       |val ${camelCaseCaps(property.name)} = $propertyKeyImpl""".stripMargin.trim
   }
 
   private case class PropertyContexts(properties: Array[Property[?]], containedNodesByName: Map[String, mutable.HashSet[NodeType]])

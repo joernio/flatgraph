@@ -2,9 +2,9 @@ package flatgraph.codegen
 
 import java.lang.System.lineSeparator
 import flatgraph.algorithm.LowestCommonAncestors
-import flatgraph.schema._
-import flatgraph.schema.Helpers._
-import flatgraph.schema.Property.ValueType
+import flatgraph.schema.*
+import flatgraph.schema.Helpers.*
+import flatgraph.schema.Property.{Cardinality, ValueType}
 
 object Helpers {
 
@@ -16,7 +16,7 @@ object Helpers {
     s""""$string""""
 
   def scaladocMaybe(comment: Option[String]): String =
-    comment.map(text => s"/** $text */").getOrElse("")
+    comment.filter(_.nonEmpty).map(content => s"/** $content */").getOrElse("")
 
   def typeFor[A](property: Property[A]): String = {
     val isMandatory = property.isMandatory
