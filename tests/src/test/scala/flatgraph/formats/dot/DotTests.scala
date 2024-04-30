@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class DotTests extends AnyWordSpec {
 
   "Exporter should export valid dot" in {
-    val graph = TestGraphSimple.create().graph
+    val graph = TestGraphs.createSimpleGraph().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val exportResult = DotExporter.runExport(graph, exportRootDirectory.pathAsString)
