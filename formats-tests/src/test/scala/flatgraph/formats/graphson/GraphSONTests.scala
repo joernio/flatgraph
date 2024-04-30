@@ -1,7 +1,7 @@
 package flatgraph.formats.graphson
 
 import better.files.File
-import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphSimple}
+import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphs}
 import flatgraph.testdomains.generic.Language.*
 import flatgraph.testdomains.generic.nodes.NodeA
 import flatgraph.misc.TestUtils.applyDiff
@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class GraphSONTests extends AnyWordSpec {
 
   "export to GraphSON and back" in {
-    val graph = TestGraphSimple.create().graph
+    val graph = TestGraphs.createSimpleGraph().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val exportResult = GraphSONExporter.runExport(graph, exportRootDirectory.pathAsString)
@@ -40,7 +40,7 @@ class GraphSONTests extends AnyWordSpec {
   }
 
   "using 'contained node' property" in {
-    val genericDomain = TestGraphSimple.create()
+    val genericDomain = TestGraphs.createSimpleGraph()
     val graph         = genericDomain.graph
     val Seq(node2)    = genericDomain.nodeA.intMandatory(1).l
     val newNodeB      = NewNodeB().stringOptional("node b stringOptional")

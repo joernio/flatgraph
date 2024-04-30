@@ -1,7 +1,7 @@
 package flatgraph.formats.neo4jcsv
 
 import better.files.*
-import flatgraph.TestGraphSimple
+import flatgraph.TestGraphs
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
@@ -20,7 +20,7 @@ class Neo4jCsvTests extends AnyWordSpec {
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "Exporter should export valid csv" in {
-    val graph = TestGraphSimple.create().graph
+    val graph = TestGraphs.createSimpleGraph().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val ExportResult(nodeCount, edgeCount, exportedFiles0, additionalInfo) =
@@ -153,7 +153,7 @@ class Neo4jCsvTests extends AnyWordSpec {
       val graphPath  = tmpDir / "original.fg"
       val exportPath = tmpDir / "export"
 
-      val genericDomain = TestGraphSimple.create(Some(graphPath.path))
+      val genericDomain = TestGraphs.createSimpleGraph(Some(graphPath.path))
       genericDomain.close()
 
       val exporterMain = ExporterMain()
