@@ -2,9 +2,9 @@ package flatgraph.codegen
 
 import java.lang.System.lineSeparator
 import flatgraph.algorithm.LowestCommonAncestors
-import flatgraph.schema.*
-import flatgraph.schema.Helpers.*
-import flatgraph.schema.Property.{Cardinality, ValueType}
+import flatgraph.schema._
+import flatgraph.schema.Helpers._
+import flatgraph.schema.Property.ValueType
 
 object Helpers {
 
