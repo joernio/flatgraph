@@ -493,7 +493,6 @@ class GraphTests extends AnyWordSpec with Matchers {
       g,
       new DiffGraphBuilder(schema)._setNodeProperty(n1.storedRef.get, 0, "n1")._setNodeProperty(n2.storedRef.get, 0, "n2")
     )
-    println(debugDump(g))
     DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).removeNode(n1.storedRef.get))
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 2), total 2
