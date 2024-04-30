@@ -1,29 +1,36 @@
 package flatgraph.traversal
 
-import flatgraph.Implicits.start
-import flatgraph.GNode
-import flatgraph.help.{DocSearchPackages, Table}
 import flatgraph.help.Table.AvailableWidthProvider
-import flatgraph.traversal.Language.*
-import flatgraph.traversal.testdomains.simple.SimpleDomain.{Connection, Thing}
-import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
+import flatgraph.help.{DocSearchPackages, Table}
+import flatgraph.testdomains.generic.GenericDomain
+import flatgraph.testdomains.generic.Language.*
+import flatgraph.testdomains.generic.edges.ConnectedTo
+import flatgraph.testdomains.generic.nodes.NodeA
+import flatgraph.{GNode, TestGraphs}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.collection.mutable
 
-class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
-  /* most tests work with this simple graph:
+class TraversalTests extends AnyWordSpec {
+
+  /* sample graph:
    * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
    */
-  def centerTrav = Iterator.single(center)
+  val flatlineGraph = TestGraphs.createFlatlineGraph()
+  def centerTrav    = flatlineGraph.nodeA.stringMandatory("Center")
 
-  "GNode traversals" in {
-    centerTrav.label.l shouldBe Seq(Thing.Label)
+  "domain specific traversals" in {
+    centerTrav.connectedTo.size shouldBe 2
+    centerTrav.connectedToIn.size shouldBe 0
+  }
+
+  "generic GNode traversals" in {
+    centerTrav.label.l shouldBe Seq(NodeA.Label)
     centerTrav.outE.size shouldBe 2
     centerTrav.inE.size shouldBe 0
-    centerTrav.outE(Connection.Label).size shouldBe 2
-    centerTrav.inE(Connection.Label).size shouldBe 0
+    centerTrav.outE(ConnectedTo.Label).size shouldBe 2
+    centerTrav.inE(ConnectedTo.Label).size shouldBe 0
   }
 
   "can only be iterated once" in {
@@ -37,9 +44,9 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
   }
 
   ".sideEffect step should apply provided function and do nothing else" in {
-    val sack = mutable.ListBuffer.empty[GNode]
-    center.start.out.sideEffect(sack.addOne).out.toSetMutable shouldBe Set(l2, r2)
-    sack.toSet shouldBe Set(l1, r1)
+    val sack = mutable.ListBuffer.empty[NodeA]
+    centerTrav.connectedTo.sideEffect(sack.addOne).connectedTo.stringMandatory.toSetMutable shouldBe Set("L2", "R2")
+    sack.map(_.stringMandatory).toSet shouldBe Set("L1", "R1")
   }
 
   ".dedup step" should {
@@ -122,35 +129,35 @@ class TraversalTests extends AnyWordSpec with ExampleGraphSetup {
     }
 
     "give a domain overview" in {
-      import flatgraph.traversal.testdomains.simple.SimpleDomain
-
-      val helpText = SimpleDomain.help
+      given DocSearchPackages = GenericDomain.defaultDocSearchPackage
+      val helpText            = GenericDomain.help
       // should list starter steps etc.
-      helpText should include(".things")
-      helpText should include("all things")
+      helpText should include(".nodeA")
+      helpText should include(".nodeB")
+      helpText should include("all nodes")
     }
 
-    "provide node-specific overview" when {
-      "using simple domain" in {
-        val thingTraversal     = SimpleDomain.traversal(SimpleDomain.newGraph).things
-        val thingTraversalHelp = thingTraversal.help
+    "provide node-specific overview" in {
+      val nodeATraversal     = flatlineGraph.nodeA
+      val nodeATraversalHelp = nodeATraversal.help
 
-        thingTraversalHelp should include(".name")       // step from `flatgraph.traversal.testdomains.simple.SimpleDomainTraversal`
-        thingTraversalHelp should include(".sideEffect") // step from Traversal
-        thingTraversalHelp should include(".label")      // step from ElementTraversal
-        thingTraversalHelp should include(".out")        // step from NodeTraversal
+      // TODO bring these back, by generating the @Doc annotations
+//      nodeATraversalHelp should include(".connectedTo") // step from `flatgraph.traversal.testdomains.simple.SimpleDomainTraversal`
+      nodeATraversalHelp should include(".sideEffect")  // step from Traversal
+      nodeATraversalHelp should include(".label")       // step from ElementTraversal
+      nodeATraversalHelp should include(".out")         // step from NodeTraversal
 
-        // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
-        thingTraversalHelp shouldNot include("$extension")
+      // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
+      nodeATraversalHelp shouldNot include("$extension")
 
-        val thingTraversalHelpVerbose = thingTraversal.helpVerbose
-        thingTraversalHelpVerbose should include("name of the Thing")
-        thingTraversalHelpVerbose should include("simple.SimpleDomainTravers")
-        thingTraversalHelpVerbose should include("node label")
-        thingTraversalHelpVerbose should include("flatgraph.traversal.NodeSteps")
-        thingTraversalHelpVerbose should include("result to a list")
-        thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSt")
-      }
+      val thingTraversalHelpVerbose = nodeATraversal.helpVerbose
+      // TODO bring these back, by generating the @Doc annotations
+//      thingTraversalHelpVerbose should include("name of the Thing")
+//      thingTraversalHelpVerbose should include("simple.SimpleDomainTravers")
+      thingTraversalHelpVerbose should include("node label")
+      thingTraversalHelpVerbose should include("flatgraph.traversal.NodeSteps")
+      thingTraversalHelpVerbose should include("result to a list")
+      thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSt")
     }
 
   }
