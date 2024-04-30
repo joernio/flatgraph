@@ -15,6 +15,9 @@ object Helpers {
   def quote(string: String): String =
     s""""$string""""
 
+  def scaladocMaybe(comment: Option[String]): String =
+    comment.map(text => s"/** $text */").getOrElse("")
+
   def typeFor[A](property: Property[A]): String = {
     val isMandatory = property.isMandatory
     property.valueType match {

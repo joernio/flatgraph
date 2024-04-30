@@ -57,6 +57,12 @@ object Accessors {
       case newNode: nodes.NewNodeA  => newNode.stringOptional
     }
   }
+  final class Access_NodeBBase(val node: nodes.NodeBBase) extends AnyVal {
+    def stringOptional: Option[String] = node match {
+      case stored: nodes.StoredNode => new Access_Property_string_optional(stored).stringOptional
+      case newNode: nodes.NewNodeB  => newNode.stringOptional
+    }
+  }
   /* accessors for base nodes end */
 }
 
@@ -82,4 +88,5 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 trait ConcreteBaseConversions {
   import Accessors.*
   implicit def access_NodeABase(node: nodes.NodeABase): Access_NodeABase = new Access_NodeABase(node)
+  implicit def access_NodeBBase(node: nodes.NodeBBase): Access_NodeBBase = new Access_NodeBBase(node)
 }

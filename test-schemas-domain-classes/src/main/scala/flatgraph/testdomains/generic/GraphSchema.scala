@@ -5,13 +5,14 @@ import flatgraph.testdomains.generic.edges
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {
-  private val nodeLabels = IndexedSeq("node_a")
+  private val nodeLabels = IndexedSeq("node_a", "node_b")
   val nodeKindByLabel    = nodeLabels.zipWithIndex.toMap
   val edgeLabels         = Array("connected_to")
   val edgeKindByLabel    = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
     Array(size => Array.fill(size)("<empty>") /* label = connected_to, id = 0 */ )
-  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array((g, seq) => new nodes.NodeA(g, seq))
+  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
+    Array((g, seq) => new nodes.NodeA(g, seq), (g, seq) => new nodes.NodeB(g, seq))
   val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] =
     Array((s, d, subseq, p) => new edges.ConnectedTo(s, d, subseq, p))
   val nodePropertyAllocators: Array[Int => Array[?]] = Array(
@@ -20,14 +21,15 @@ object GraphSchema extends flatgraph.Schema {
     size => new Array[Int](size),
     size => new Array[String](size),
     size => new Array[String](size),
-    size => new Array[String](size)
+    size => new Array[String](size),
+    size => new Array[flatgraph.GNode](size)
   )
   val normalNodePropertyNames =
     Array("int_list", "int_mandatory", "int_optional", "string_list", "string_mandatory", "string_optional")
-  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap
+  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap.updated("node_b", 6)
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
-    val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](12)
-    for (idx <- Range(0, 12)) {
+    val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](28)
+    for (idx <- Range(0, 28)) {
       nodePropertyDescriptors(idx) =
         if ((idx & 1) == 0) FormalQtyType.NothingType
         else FormalQtyType.QtyNone
@@ -35,19 +37,23 @@ object GraphSchema extends flatgraph.Schema {
 
     nodePropertyDescriptors(0) = FormalQtyType.IntType // node_a.int_list
     nodePropertyDescriptors(1) = FormalQtyType.QtyMulti
-    nodePropertyDescriptors(2) = FormalQtyType.IntType // node_a.int_mandatory
-    nodePropertyDescriptors(3) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(4) = FormalQtyType.IntType // node_a.int_optional
-    nodePropertyDescriptors(5) = FormalQtyType.QtyOption
-    nodePropertyDescriptors(6) = FormalQtyType.StringType // node_a.string_list
-    nodePropertyDescriptors(7) = FormalQtyType.QtyMulti
-    nodePropertyDescriptors(8) = FormalQtyType.StringType // node_a.string_mandatory
-    nodePropertyDescriptors(9) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(10) = FormalQtyType.StringType // node_a.string_optional
-    nodePropertyDescriptors(11) = FormalQtyType.QtyOption
+    nodePropertyDescriptors(4) = FormalQtyType.IntType // node_a.int_mandatory
+    nodePropertyDescriptors(5) = FormalQtyType.QtyOne
+    nodePropertyDescriptors(8) = FormalQtyType.IntType // node_a.int_optional
+    nodePropertyDescriptors(9) = FormalQtyType.QtyOption
+    nodePropertyDescriptors(12) = FormalQtyType.StringType // node_a.string_list
+    nodePropertyDescriptors(13) = FormalQtyType.QtyMulti
+    nodePropertyDescriptors(16) = FormalQtyType.StringType // node_a.string_mandatory
+    nodePropertyDescriptors(17) = FormalQtyType.QtyOne
+    nodePropertyDescriptors(20) = FormalQtyType.StringType // node_a.string_optional
+    nodePropertyDescriptors(21) = FormalQtyType.QtyOption
+    nodePropertyDescriptors(24) = FormalQtyType.RefType // node_a.node_b
+    nodePropertyDescriptors(25) = FormalQtyType.QtyOption
+    nodePropertyDescriptors(22) = FormalQtyType.StringType // node_b.string_optional
+    nodePropertyDescriptors(23) = FormalQtyType.QtyOption
     nodePropertyDescriptors
   }
-  override def getNumberOfNodeKinds: Int                          = 1
+  override def getNumberOfNodeKinds: Int                          = 2
   override def getNumberOfEdgeKinds: Int                          = 1
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
@@ -57,7 +63,8 @@ object GraphSchema extends flatgraph.Schema {
     nodeLabel match {
       case "node_a" =>
         Set("int_list", "int_mandatory", "int_optional", "string_list", "string_mandatory", "string_optional")
-      case _ => Set.empty
+      case "node_b" => Set("string_optional")
+      case _        => Set.empty
     }
   }
   override def getEdgePropertyName(label: String): Option[String] = {
@@ -69,12 +76,13 @@ object GraphSchema extends flatgraph.Schema {
 
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
     if (propertyKind < 6) normalNodePropertyNames(propertyKind)
+    else if (propertyKind == 6 && nodeKind == 0) "node_b" /*on node node_a*/
     else null
   }
 
   override def getPropertyKindByName(label: String): Int =
     nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-  override def getNumberOfPropertyKinds: Int = 6
+  override def getNumberOfPropertyKinds: Int = 7
   override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode =
     nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge =

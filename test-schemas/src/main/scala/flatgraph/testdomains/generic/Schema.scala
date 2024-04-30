@@ -1,6 +1,6 @@
 package flatgraph.testdomains.generic
 
-import flatgraph.schema.Property.ValueType
+import flatgraph.schema.Property.{Cardinality, ValueType}
 import flatgraph.schema.SchemaBuilder
 
 /** Simple generic schema */
@@ -24,6 +24,12 @@ object Schema {
       .addProperty(intMandatory)
       .addProperty(intOptional)
       .addProperty(intList)
+
+    val nodeB = builder
+      .addNodeType("node_b")
+      .addProperty(stringOptional)
+
+    nodeA.addContainedNode(nodeB, "node_b", Cardinality.ZeroOrOne)
 
     // TODO add support for edge properties with cardinality ONE and LIST
     val connectedTo = builder.addEdgeType("connected_to").addProperty(stringMandatory)

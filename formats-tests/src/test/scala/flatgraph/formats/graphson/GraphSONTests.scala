@@ -1,10 +1,12 @@
 package flatgraph.formats.graphson
 
 import better.files.File
-import flatgraph.GenericDNode
-import flatgraph.TestDomainSimple.*
-import flatgraph.TestDomainSimple.PropertyNames.{ContainedTestNodeProperty, IntProperty}
+import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphSimple}
+import flatgraph.testdomains.generic.Language.*
+import flatgraph.testdomains.generic.nodes.NodeA
 import flatgraph.misc.TestUtils.applyDiff
+import flatgraph.testdomains.generic.GenericDomain
+import flatgraph.testdomains.generic.nodes.NewNodeB
 import flatgraph.util.DiffTool
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -15,16 +17,16 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class GraphSONTests extends AnyWordSpec {
 
   "export to GraphSON and back" in {
-    val graph = newGraphSimple()
+    val graph = TestGraphSimple.create().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val exportResult = GraphSONExporter.runExport(graph, exportRootDirectory.pathAsString)
-      exportResult.nodeCount shouldBe 3
-      exportResult.edgeCount shouldBe 2
+      exportResult.nodeCount shouldBe 2
+      exportResult.edgeCount shouldBe 1
       val Seq(graphMLFile) = exportResult.files
 
       // import graphml into new graph, use difftool for round trip of conversion
-      val reimported = newGraphEmpty()
+      val reimported = GenericDomain.empty.graph
       GraphSONImporter.runImport(reimported, graphMLFile)
       val diff = DiffTool.compare(graph, reimported)
       withClue(
@@ -38,26 +40,23 @@ class GraphSONTests extends AnyWordSpec {
   }
 
   "using 'contained node' property" in {
-    val graph = newGraphEmpty()
-    val v0New = new GenericDNode(0)
-    val v1New = new GenericDNode(0)
-
-    graph.applyDiff(_.addNode(v0New).addNode(v1New))
-    val v0 = v0New.storedRef.get
-    val v1 = v1New.storedRef.get
-
-    graph.applyDiff(
-      _.setNodeProperty(v1, ContainedTestNodeProperty, v0)
-        .setNodeProperty(v1, IntProperty, 11)
+    val genericDomain = TestGraphSimple.create()
+    val graph         = genericDomain.graph
+    val Seq(node2)    = genericDomain.nodeA.intMandatory(1).l
+    val newNodeB      = NewNodeB().stringOptional("node b stringOptional")
+    DiffGraphApplier.applyDiff(
+      graph,
+      GenericDomain.newDiffGraphBuilder
+        .setNodeProperty(node2, NodeA.PropertyNames.NodeB, newNodeB)
     )
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val exportResult = GraphSONExporter.runExport(graph, exportRootDirectory.pathAsString)
-      exportResult.nodeCount shouldBe 2
+      exportResult.nodeCount shouldBe 3
       val Seq(graphJsonFile) = exportResult.files
 
       // import graphml into new graph, use difftool for round trip of conversion
-      val reimported = newGraphEmpty()
+      val reimported = GenericDomain.empty.graph
       GraphSONImporter.runImport(reimported, graphJsonFile)
       val diff       = DiffTool.compare(graph, reimported)
       val diffString = diff.asScala.mkString(lineSeparator)

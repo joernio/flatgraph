@@ -18,7 +18,8 @@ trait ArtistBase extends AbstractNode with StaticType[ArtistEMT] {
 object Artist {
   val Label = "artist"
   object PropertyNames {
-    val Name = flatgraph.testdomains.gratefuldead.PropertyNames.name
+
+    val Name = "name"
   }
   object PropertyDefaults {
     val Name = ""

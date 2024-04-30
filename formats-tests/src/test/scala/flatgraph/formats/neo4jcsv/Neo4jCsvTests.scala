@@ -1,7 +1,7 @@
 package flatgraph.formats.neo4jcsv
 
 import better.files.*
-import flatgraph.DiffGraphApplier
+import flatgraph.TestGraphSimple
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
@@ -9,7 +9,7 @@ import flatgraph.util.DiffTool
 import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.Language.*
 import flatgraph.testdomains.generic.edges.ConnectedTo
-import flatgraph.testdomains.generic.nodes.{NewNodeA, NodeA}
+import flatgraph.testdomains.generic.nodes.NodeA
 
 import java.io.FileNotFoundException
 import java.nio.file.Paths
@@ -20,15 +20,7 @@ class Neo4jCsvTests extends AnyWordSpec {
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "Exporter should export valid csv" in {
-    val graph = GenericDomain.empty.graph
-    val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
-    val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
-
-    DiffGraphApplier.applyDiff(
-      graph,
-      GenericDomain.newDiffGraphBuilder
-        .addEdge(node1, node2, ConnectedTo.Label, "edge property")
-    )
+    val graph = TestGraphSimple.create().graph
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>
       val ExportResult(nodeCount, edgeCount, exportedFiles0, additionalInfo) =
@@ -46,7 +38,7 @@ class Neo4jCsvTests extends AnyWordSpec {
 
       val nodeDataFileLines = fuzzyFindFile(exportedFiles, NodeA.Label, DataFileSuffix).lines.toSeq
       nodeDataFileLines.size shouldBe 2
-      nodeDataFileLines should contain("0,node_a,,42,,node 3 c1;node 3 c2,node 2 a,node 2 b")
+      nodeDataFileLines should contain("0,node_a,,42,,node 1 c1;node 1 c2,node 1 a,node 1 b")
       nodeDataFileLines should contain("1,node_a,10;11;12,1,2,,<empty>,")
 
       val edgeHeaderFile = fuzzyFindFile(exportedFiles, ConnectedTo.Label, HeaderFileSuffix)
@@ -106,7 +98,7 @@ class Neo4jCsvTests extends AnyWordSpec {
 
       graph.nodeCount shouldBe 2
 
-      val Seq(node1) = genericDomain.nodeA.stringMandatory("node 2 a").l
+      val Seq(node1) = genericDomain.nodeA.stringMandatory("node 1 a").l
       val Seq(node2) = genericDomain.nodeA.intMandatory(1).l
 
       node1.intMandatory shouldBe 42
@@ -115,11 +107,11 @@ class Neo4jCsvTests extends AnyWordSpec {
       node2.intOptional shouldBe Some(2)
       node1.intList shouldBe Seq.empty
       node2.intList shouldBe Seq(10, 11, 12)
-      node1.stringMandatory shouldBe "node 2 a"
+      node1.stringMandatory shouldBe "node 1 a"
       node2.stringMandatory shouldBe "<empty>"
-      node1.stringOptional shouldBe Some("node 2 b")
+      node1.stringOptional shouldBe Some("node 1 b")
       node2.stringOptional shouldBe None
-      node1.stringList shouldBe Seq("node 3 c1", "node 3 c2")
+      node1.stringList shouldBe Seq("node 1 c1", "node 1 c2")
       node2.stringList shouldBe Seq.empty
 
       graph.edgeCount shouldBe 1
@@ -158,24 +150,16 @@ class Neo4jCsvTests extends AnyWordSpec {
 
   "main apps for cli export/import" in {
     File.usingTemporaryDirectory(getClass.getName) { tmpDir =>
-      val graphPath     = tmpDir / "original.fg"
-      val exportPath    = tmpDir / "export"
-      val genericDomain = GenericDomain.withStorage(graphPath.path)
+      val graphPath  = tmpDir / "original.fg"
+      val exportPath = tmpDir / "export"
 
-      val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
-      val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
-
-      DiffGraphApplier.applyDiff(
-        genericDomain.graph,
-        GenericDomain.newDiffGraphBuilder.addEdge(node1, node2, ConnectedTo.Label, "edge property")
-      )
-
+      val genericDomain = TestGraphSimple.create(Some(graphPath.path))
       genericDomain.close()
 
       val exporterMain = ExporterMain()
       exporterMain(Array("--format=neo4jcsv", s"--out=${exportPath.pathAsString}", graphPath.pathAsString))
       val exportedFiles = exportPath.list.toArray
-      exportedFiles.size shouldBe 6
+      exportedFiles.length shouldBe 6
 
       // use importer for round trip
       val importerMain       = ImporterMain(flatgraph.testdomains.generic.GraphSchema)
@@ -188,7 +172,7 @@ class Neo4jCsvTests extends AnyWordSpec {
       genericDomainReimported.graph.edgeCount shouldBe 1
 
       genericDomainReimported.nodeA.intMandatory.l.sorted shouldBe List(1, 42)
-      genericDomainReimported.nodeA.stringMandatory("node 2 a").connectedTo.intOptional.head shouldBe 2
+      genericDomainReimported.nodeA.stringMandatory("node 1 a").connectedTo.intOptional.head shouldBe 2
     }
   }
 
