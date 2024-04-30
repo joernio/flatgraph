@@ -16,7 +16,7 @@ object Helpers {
     s""""$string""""
 
   def scaladocMaybe(comment: Option[String]): String =
-    comment.map(text => s"/** $text */").getOrElse("")
+    comment.filter(_.nonEmpty).map(content => s"/** $content */").getOrElse("")
 
   def typeFor[A](property: Property[A]): String = {
     val isMandatory = property.isMandatory

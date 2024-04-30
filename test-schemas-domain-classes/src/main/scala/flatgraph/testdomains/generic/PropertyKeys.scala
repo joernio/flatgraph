@@ -1,9 +1,6 @@
 package flatgraph.testdomains.generic
 
-import flatgraph.PropertyKey
-
 object PropertyKeys {
-
   val IntList = flatgraph.MultiPropertyKey[Int](kind = 0, name = "int_list")
 
   val IntMandatory = flatgraph.SinglePropertyKey[Int](kind = 1, name = "int_mandatory", default = 42: Int)
@@ -15,5 +12,4 @@ object PropertyKeys {
   val StringMandatory = flatgraph.SinglePropertyKey[String](kind = 4, name = "string_mandatory", default = "<empty>")
 
   val StringOptional = flatgraph.OptionalPropertyKey[String](kind = 5, name = "string_optional")
-
 }
