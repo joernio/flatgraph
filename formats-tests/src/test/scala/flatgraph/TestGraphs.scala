@@ -35,4 +35,48 @@ object TestGraphs {
     )
     genericDomain
   }
+
+  /**
+   * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
+   */
+  def createFlatlineGraph(): GenericDomain = {
+    val genericDomain = GenericDomain.empty
+    val diffGraph = GenericDomain.newDiffGraphBuilder
+
+    val center = NewNodeA().stringMandatory("Center")
+    val l1 = NewNodeA().stringMandatory("L1")
+    val l2 = NewNodeA().stringMandatory("L2")
+    val l3 = NewNodeA().stringMandatory("L3")
+    val r1 = NewNodeA().stringMandatory("R1")
+    val r2 = NewNodeA().stringMandatory("R2")
+    val r3 = NewNodeA().stringMandatory("R3")
+    val r4 = NewNodeA().stringMandatory("R4")
+    val r5 = NewNodeA().stringMandatory("R5")
+
+    // TODO reimplement arrow synax from odb
+    // center --- Connection.Label --> l1
+    // l1 --- Connection.Label --> l2
+    // l2 --- Connection.Label --> l3
+    // center --- Connection.Label --> r1
+    // r1 --- (Connection.Label, Connection.Properties.Distance.of(10)) --> r2
+    // r2 --- (Connection.Label, Connection.Properties.Distance.of(10)) --> r3
+    // r3 --- (Connection.Label, Connection.Properties.Distance.of(13)) --> r4
+    // r4 --- (Connection.Label, Connection.Properties.Distance.of(14)) --> r5
+
+    DiffGraphApplier.applyDiff(
+      genericDomain.graph,
+      GenericDomain.newDiffGraphBuilder
+        .addEdge(center, l1, ConnectedTo.Label)
+        .addEdge(l1, l2, ConnectedTo.Label)
+        .addEdge(l2, l3, ConnectedTo.Label)
+        .addEdge(center, r1, ConnectedTo.Label)
+        .addEdge(r1, r2, ConnectedTo.Label)
+        .addEdge(r2, r3, ConnectedTo.Label)
+        .addEdge(r3, r4, ConnectedTo.Label)
+        .addEdge(r4, r5, ConnectedTo.Label)
+    )
+
+    genericDomain
+  }
+
 }
