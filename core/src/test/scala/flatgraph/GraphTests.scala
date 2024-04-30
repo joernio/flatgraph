@@ -483,6 +483,25 @@ class GraphTests extends AnyWordSpec with Matchers {
     testSerialization(g)
   }
 
+  "dont mess up after node deletion" in {
+    val schema = TestSchema.make(1, 0, 1, nodePropertyPrototypes = Array(Array[String]("")), edgePropertyPrototypes = null)
+    val g      = new Graph(schema)
+    val n1     = new GenericDNode(0)
+    val n2     = new GenericDNode(0)
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).addNode(n1).addNode(n2))
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)._setNodeProperty(n1.storedRef.get, 0, "n1")._setNodeProperty(n2.storedRef.get, 0, "n2")
+    )
+    DiffGraphApplier.applyDiff(g, new DiffGraphBuilder(schema).removeNode(n1.storedRef.get))
+    debugDump(g) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 2), total 2
+      |Node kind 0. (eid, nEdgesOut, nEdgesIn):
+      |   V0_1       : 0: [n2]
+      |""".stripMargin
+    testSerialization(g)
+  }
+
   "support edge properties" in {
     val schema = TestSchema.make(1, 1, edgePropertyPrototypes = Array(new Array[String](0)))
     val g      = new Graph(schema)

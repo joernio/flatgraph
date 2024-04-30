@@ -511,7 +511,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       s"something went wrong while adding edges - values for debugging: nodeKind=$nodeKind; edgeKind=$edgeKind"
     )
 
-    val nodeCount    = graph.livingNodeCountByKind(nodeKind)
+    val nodeCount    = graph.nodesArray(nodeKind).length
     val oldQty       = Option(graph.neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
     val oldNeighbors = Option(graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
     val newQty       = new Array[Int](nodeCount + 1)
@@ -578,7 +578,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       graph.inverseIndices.set(pos, null)
       setPropertyPositions.sortInPlaceBy(_.node.seq())
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
-      val nodeCount = graph.livingNodeCountByKind(nodeKind)
+      val nodeCount = graph.nodesArray(nodeKind).length
 
       val setPropertyValues = graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
       if (setPropertyValues == null) throw new SchemaViolationException("Unsupported property on node")
