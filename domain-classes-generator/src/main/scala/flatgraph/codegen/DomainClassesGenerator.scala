@@ -375,9 +375,17 @@ class DomainClassesGenerator(schema: Schema) {
         }.map(sourceLines.addOne)
         nodeType.containedNodes.map { containedNode =>
           s"""${scaladocMaybe(containedNode.comment)}
-             |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin
+             |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin.trim
         }.map(sourceLines.addOne)
-        sourceLines.result().mkString("")
+        sourceLines.result().mkString("\n")
+      }
+
+      val propertyKeys = {
+        val sourceLines = Seq.newBuilder[String]
+        nodeType.properties.map { property =>
+          propertyKeySource(property, propertyKindByProperty(property))
+        }.map(sourceLines.addOne)
+        sourceLines.result().mkString("\n")
       }
 
       val propertyDefaults = nodeType.properties.collect {
@@ -496,6 +504,9 @@ class DomainClassesGenerator(schema: Schema) {
              |  val Label = "${nodeType.name}"
              |  object PropertyNames {
              |    $propertyNames
+             |  }
+             |  object PropertyKeys {
+             |    $propertyKeys
              |  }
              |  object PropertyDefaults {
              |    $propertyDefaults
