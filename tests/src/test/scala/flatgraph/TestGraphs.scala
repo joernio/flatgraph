@@ -9,16 +9,12 @@ import java.nio.file.Path
 object TestGraphs {
 
   /** graph from genericDomain with two nodes, one edge and lots of properties:
-   *
-   * #Node numbers (kindId, nnodes) (0: 2), (1: 0), total 2
-   * Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 1 [dense], 1 [dense]),
-   * node_a_0       : int_mandatory: [42], string_list: [node 1 c1, node 1 c2], string_mandatory: [node 1 a], string_optional: [node 1 b]
-   * node_a_0   [connected_to] -> (edge property) node_a_1
-   * node_a_1       : int_list: [10, 11, 12], int_mandatory: [1], int_optional: [2], string_mandatory: [<empty>]
-   * node_a_1   [connected_to] <- (edge property) node_a_0
-   * Node kind 1. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
-   *
-   *  */
+    *
+    * #Node numbers (kindId, nnodes) (0: 2), (1: 0), total 2 Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 1 [dense], 1 [dense]), node_a_0 :
+    * int_mandatory: [42], string_list: [node 1 c1, node 1 c2], string_mandatory: [node 1 a], string_optional: [node 1 b] node_a_0
+    * [connected_to] -> (edge property) node_a_1 node_a_1 : int_list: [10, 11, 12], int_mandatory: [1], int_optional: [2], string_mandatory:
+    * [<empty>] node_a_1 [connected_to] <- (edge property) node_a_0 Node kind 1. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
+    */
   def createSimpleGraph(storageMaybe: Option[Path] = None): GenericDomain = {
     val genericDomain = storageMaybe match {
       case None              => GenericDomain.empty
@@ -36,22 +32,21 @@ object TestGraphs {
     genericDomain
   }
 
-  /**
-   * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
-   */
+  /** L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
+    */
   def createFlatlineGraph(): GenericDomain = {
     val genericDomain = GenericDomain.empty
-    val diffGraph = GenericDomain.newDiffGraphBuilder
+    val diffGraph     = GenericDomain.newDiffGraphBuilder
 
     val center = NewNodeA().stringMandatory("Center")
-    val l1 = NewNodeA().stringMandatory("L1")
-    val l2 = NewNodeA().stringMandatory("L2")
-    val l3 = NewNodeA().stringMandatory("L3")
-    val r1 = NewNodeA().stringMandatory("R1")
-    val r2 = NewNodeA().stringMandatory("R2")
-    val r3 = NewNodeA().stringMandatory("R3")
-    val r4 = NewNodeA().stringMandatory("R4")
-    val r5 = NewNodeA().stringMandatory("R5")
+    val l1     = NewNodeA().stringMandatory("L1")
+    val l2     = NewNodeA().stringMandatory("L2")
+    val l3     = NewNodeA().stringMandatory("L3")
+    val r1     = NewNodeA().stringMandatory("R1")
+    val r2     = NewNodeA().stringMandatory("R2")
+    val r3     = NewNodeA().stringMandatory("R3")
+    val r4     = NewNodeA().stringMandatory("R4")
+    val r5     = NewNodeA().stringMandatory("R5")
 
     // TODO reimplement arrow synax from odb
     // center --- Connection.Label --> l1

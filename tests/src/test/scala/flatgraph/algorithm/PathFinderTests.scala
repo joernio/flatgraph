@@ -13,7 +13,7 @@ class PathFinderTests extends AnyWordSpec {
   /* sample graph:
    * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
    */
-  val flatlineGraph = TestGraphs.createFlatlineGraph()
+  val flatlineGraph                               = TestGraphs.createFlatlineGraph()
   val Seq(center, l1, l2, l3, r1, r2, r3, r4, r5) = flatlineGraph.nodeA.sortBy(_.stringMandatory).l
 
   "verify graph setup" in {
@@ -27,7 +27,7 @@ class PathFinderTests extends AnyWordSpec {
     r4.stringMandatory shouldBe "R4"
     r5.stringMandatory shouldBe "R5"
   }
-  
+
   "identity" in {
     val path = PathFinder(center, center)
     path shouldBe Seq(Path(Seq(center)))

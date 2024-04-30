@@ -16,7 +16,7 @@ import java.nio.file.Paths
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class Neo4jCsvTests extends AnyWordSpec {
-  val subprojectRoot = testutils.ProjectRoot.relativise("formats-tests")
+  val subprojectRoot = testutils.ProjectRoot.relativise("tests")
   val neo4jcsvRoot   = Paths.get(subprojectRoot, "src/test/resources/neo4jcsv")
 
   "Exporter should export valid csv" in {
