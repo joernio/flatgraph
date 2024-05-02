@@ -136,7 +136,7 @@ object Accessors {
     if (qty == null || seq + 1 >= qty.length || qty(seq) == qty(seq + 1)) return None
     if (qty(seq + 1) - qty(seq) != 1) ???
     val vals = graph.properties(pos + 1).asInstanceOf[Array[T]] // cast is checked for primitives and unchecked for reftypes
-    Some(vals(qty(seq)))
+    Option(vals(qty(seq)))
   }
 
   def getNodePropertyOptionCompat(node: GNode, propertyKind: Int): Option[Object] = {
