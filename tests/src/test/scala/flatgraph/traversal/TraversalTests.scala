@@ -143,9 +143,9 @@ class TraversalTests extends AnyWordSpec {
 
       // TODO bring these back, by generating the @Doc annotations
 //      nodeATraversalHelp should include(".connectedTo") // step from `flatgraph.traversal.testdomains.simple.SimpleDomainTraversal`
-      nodeATraversalHelp should include(".sideEffect")  // step from Traversal
-      nodeATraversalHelp should include(".label")       // step from ElementTraversal
-      nodeATraversalHelp should include(".out")         // step from NodeTraversal
+      nodeATraversalHelp should include(".sideEffect") // step from Traversal
+      nodeATraversalHelp should include(".label")      // step from ElementTraversal
+      nodeATraversalHelp should include(".out")        // step from NodeTraversal
 
       // scala generates additional `fooBar$extension` methods, but those don't matter in the context of .help/@Doc
       nodeATraversalHelp shouldNot include("$extension")

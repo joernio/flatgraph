@@ -9,12 +9,12 @@ final class AccessNeighborsForNodeA(val node: nodes.NodeA) extends AnyVal {
     */
   def nodeAViaConnectedToIn: Iterator[nodes.NodeA] = connectedToIn.collectAll[nodes.NodeA]
 
-  /** connected node Traverse to node_a via connected_to OUT edge.
+  /** Connected neighbor node Traverse to node_a via connected_to OUT edge.
     */
   @deprecated("please use connectedTo instead")
   def nodeAViaConnectedToOut: Iterator[nodes.NodeA] = connectedTo
 
-  /** connected node Traverse to node_a via connected_to OUT edge.
+  /** Connected neighbor node Traverse to node_a via connected_to OUT edge.
     */
   def connectedTo: Iterator[nodes.NodeA] = connectedToOut.collectAll[nodes.NodeA]
 
@@ -29,11 +29,11 @@ final class AccessNeighborsForNodeATraversal(val traversal: Iterator[nodes.NodeA
     */
   def nodeAViaConnectedToIn: Iterator[nodes.NodeA] = traversal.flatMap(_.nodeAViaConnectedToIn)
 
-  /** connected node Traverse to node_a via connected_to OUT edge.
+  /** Connected neighbor node Traverse to node_a via connected_to OUT edge.
     */
   def connectedTo: Iterator[nodes.NodeA] = traversal.flatMap(_.connectedTo)
 
-  /** connected node Traverse to node_a via connected_to OUT edge.
+  /** Connected neighbor node Traverse to node_a via connected_to OUT edge.
     */
   @deprecated("please use connectedTo instead")
   def nodeAViaConnectedToOut: Iterator[nodes.NodeA] = traversal.flatMap(_.nodeAViaConnectedToOut)

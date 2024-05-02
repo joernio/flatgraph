@@ -2,31 +2,17 @@ package flatgraph.algorithm
 
 import flatgraph.Edge.Direction
 import flatgraph.TestGraphs
+import flatgraph.TestGraphs.FlatlineGraphFixture
 import flatgraph.algorithm.PathFinder.*
 import flatgraph.testdomains.generic.Language.*
 import flatgraph.testdomains.generic.edges.ConnectedTo
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
-class PathFinderTests extends AnyWordSpec {
-
-  /* sample graph:
-   * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
-   */
-  val flatlineGraph                               = TestGraphs.createFlatlineGraph()
-  val Seq(center, l1, l2, l3, r1, r2, r3, r4, r5) = flatlineGraph.nodeA.sortBy(_.stringMandatory).l
-
-  "verify graph setup" in {
-    center.stringMandatory shouldBe "Center"
-    l1.stringMandatory shouldBe "L1"
-    l2.stringMandatory shouldBe "L2"
-    l3.stringMandatory shouldBe "L3"
-    r1.stringMandatory shouldBe "R1"
-    r2.stringMandatory shouldBe "R2"
-    r3.stringMandatory shouldBe "R3"
-    r4.stringMandatory shouldBe "R4"
-    r5.stringMandatory shouldBe "R5"
-  }
+/* uses 'flat line' sample graph:
+ * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
+ */
+class PathFinderTests extends AnyWordSpec with FlatlineGraphFixture {
 
   "identity" in {
     val path = PathFinder(center, center)

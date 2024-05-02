@@ -1,17 +1,22 @@
 package flatgraph.traversal
 
-import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode, GenericDNode, TestHelpers}
+import flatgraph.TestGraphs.FlatlineGraphFixture
+import flatgraph.traversal.Language.*
+import flatgraph.testdomains.generic.Language.*
+import flatgraph.testdomains.generic.PropertyKeys.StringMandatory
+import flatgraph.*
+import flatgraph.testdomains.generic.GenericDomain
+import flatgraph.testdomains.generic.edges.ConnectedTo
+import flatgraph.testdomains.generic.nodes.{NewNodeA, NodeA}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-import flatgraph.Implicits.*
-import flatgraph.traversal.testdomains.simple.{ExampleGraphSetup, SimpleDomain}
-import flatgraph.traversal.testdomains.simple.ExampleGraphSetup.Properties.Name
-import flatgraph.traversal.Language.*
-import flatgraph.traversal.testdomains.simple.SimpleDomain.{Connection, Thing}
 
 import scala.collection.mutable
 
-class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
+/* uses 'flat line' sample graph:
+ * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
+ */
+class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
   /* most tests work with this simple graph:
    * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
    */
@@ -56,8 +61,14 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
   "emit nodes that meet given condition" in {
     val expectedResults = Set("L1", "L2", "L3")
     centerTrav
-      .repeat(_.out)(_.emit(_.where(_.property(Name).filter(_.startsWith("L")))).breadthFirstSearch)
-      .property(Name)
+      .repeat(_.out)(_.emit(_.where(_.property(StringMandatory).filter(_.startsWith("L")))).breadthFirstSearch)
+      .property(StringMandatory)
+      .toSetMutable shouldBe expectedResults
+
+    // with domain specific language
+    centerTrav
+      .repeat(_.connectedTo)(_.emit(_.where(_.stringMandatory("L.*"))).breadthFirstSearch)
+      .stringMandatory
       .toSetMutable shouldBe expectedResults
   }
 
@@ -71,54 +82,56 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
       val expectedResults = Set("L2", "R2")
 
       centerTrav
-        .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))))
-        .property(Name)
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))))
+        .property(StringMandatory)
         .toSetMutable shouldBe expectedResults
 
       centerTrav
-        .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))).breadthFirstSearch)
-        .property(Name)
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))).breadthFirstSearch)
+        .property(StringMandatory)
         .toSetMutable shouldBe expectedResults
     }
 
     "work in combination with emit" in {
       val expectedResults = Set("Center", "L1", "L2", "R1", "R2")
       centerTrav
-        .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))).emit)
-        .property(Name)
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))).emit)
+        .property(StringMandatory)
         .toSetMutable shouldBe expectedResults
       centerTrav
-        .repeat(_.out)(_.until(_.property(Name).filter(_.matches(".*2"))).emit.breadthFirstSearch)
-        .property(Name)
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))).emit.breadthFirstSearch)
+        .property(StringMandatory)
         .toSetMutable shouldBe expectedResults
     }
 
     "result in 'repeat/until' behaviour, i.e. `until` condition is only evaluated after one iteration" in {
       val expectedResults = Set("L1", "R1")
-      centerTrav.repeat(_.out)(_.until(_.hasLabel(Thing.Label))).property(Name).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.until(_.hasLabel(NodeA.Label))).property(StringMandatory).toSetMutable shouldBe expectedResults
       centerTrav
-        .repeat(_.out)(_.until(_.hasLabel(Thing.Label)).breadthFirstSearch)
-        .property(Name)
+        .repeat(_.out)(_.until(_.hasLabel(NodeA.Label)).breadthFirstSearch)
+        .property(StringMandatory)
         .toSetMutable shouldBe expectedResults
     }
 
     "be combinable with `.maxDepth`" in {
       centerTrav
-        .repeat(_.out)(_.until(_.property(Name).filter(_ == "R2")).maxDepth(3))
-        .property(Name)
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(3))
+        .property(StringMandatory)
         .toSetMutable shouldBe Set("L3", "R2")
     }
   }
 
   "until and maxDepth" should {
     "work in combination" in {
-      centerTrav.repeat(_.out)(_.until(_.property(Name).filter(_ == "R2")).maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
-      centerTrav.repeat(_.out)(_.breadthFirstSearch.until(_.property(Name).filter(_ == "R2")).maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
+      centerTrav.repeat(_.out)(_.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
+      centerTrav
+        .repeat(_.out)(_.breadthFirstSearch.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(2))
+        .toSetMutable shouldBe Set(l2, r2)
     }
 
     "work in combination with path" in {
       centerTrav.enablePathTracking
-        .repeat(_.out)(_.until(_.property(Name).filter(_ == "R2")).maxDepth(2))
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(2))
         .path
         .filter(_.last == r2)
         .l shouldBe Seq(Vector(center, r1, r2))
@@ -127,36 +140,41 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
 
   "support repeat/while behaviour" should {
     "base case: given `whilst` condition is also evaluated for first iteration" in {
-      centerTrav.repeat(_.out)(_.whilst(_.property(Name).filter(_ == "does not exist"))).toSetMutable shouldBe Set(center)
+      centerTrav.repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "does not exist"))).toSetMutable shouldBe Set(center)
     }
 
     "walk one iteration" in {
-      centerTrav.repeat(_.out)(_.whilst(_.property(Name).filter(_ == "Center"))).toSetMutable shouldBe Set(l1, r1)
+      centerTrav.repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSetMutable shouldBe Set(l1, r1)
     }
 
     "walk two iterations" in {
       centerTrav
-        .repeat(_.out)(_.whilst(_.or(_.property(Name).filter(_.endsWith("1")), _.property(Name).filter(_ == "Center"))))
+        .repeat(_.out)(
+          _.whilst(_.or(_.property(StringMandatory).filter(_.endsWith("1")), _.property(StringMandatory).filter(_ == "Center")))
+        )
         .toSetMutable shouldBe Set(l2, r2)
     }
 
     "emitting nodes along the way" in {
-      centerTrav.repeat(_.out)(_.emit.whilst(_.property(Name).filter(_ == "Center"))).toSetMutable shouldBe Set(center, l1, r1)
-      centerTrav.repeat(_.out)(_.emitAllButFirst.whilst(_.property(Name).filter(_ == "Center"))).toSetMutable shouldBe Set(l1, r1)
+      centerTrav.repeat(_.out)(_.emit.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSetMutable shouldBe Set(center, l1, r1)
+      centerTrav.repeat(_.out)(_.emitAllButFirst.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSetMutable shouldBe Set(
+        l1,
+        r1
+      )
     }
 
     "with path tracking enabled" in {
-      centerTrav.enablePathTracking.repeat(_.out)(_.whilst(_.property(Name).filter(_ == "Center"))).path.toSetMutable shouldBe Set(
-        Seq(center, r1),
-        Seq(center, l1)
-      )
+      centerTrav.enablePathTracking
+        .repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "Center")))
+        .path
+        .toSetMutable shouldBe Set(Seq(center, r1), Seq(center, l1))
     }
 
     "be combinable with `.maxDepth`" in {
-      centerTrav.repeat(_.out)(_.whilst(_.property(Name).filter(_ != "R2")).maxDepth(3)).property(Name).toSetMutable shouldBe Set(
-        "L3",
-        "R2"
-      )
+      centerTrav
+        .repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ != "R2")).maxDepth(3))
+        .property(StringMandatory)
+        .toSetMutable shouldBe Set("L3", "R2")
     }
   }
 
@@ -262,14 +280,14 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     val traversedNodes = mutable.ListBuffer.empty[GNode]
     centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out).iterate()
 
-    traversedNodes.property(Name).l shouldBe List("Center", "L1", "L2", "L3", "R1", "R2", "R3", "R4", "R5")
+    traversedNodes.property(StringMandatory).l shouldBe List("Center", "L1", "L2", "L3", "R1", "R2", "R3", "R4", "R5")
   }
 
   "uses BFS (breadth first search) if configured" in {
     val traversedNodes = mutable.ListBuffer.empty[GNode]
     centerTrav.repeat(_.sideEffect(traversedNodes.addOne).out)(_.breadthFirstSearch).iterate()
 
-    traversedNodes.property(Name).l shouldBe List("Center", "L1", "R1", "L2", "R2", "L3", "R3", "R4", "R5")
+    traversedNodes.property(StringMandatory).l shouldBe List("Center", "L1", "R1", "L2", "R2", "L3", "R3", "R4", "R5")
   }
 
   "hasNext is idempotent: DFS" in {
@@ -279,7 +297,7 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     // hasNext will run the provided repeat traversal exactly 3 times (as configured)
     traversal.hasNext shouldBe true
     traversedNodes.size shouldBe 3
-    traversedNodes.property(Name).l shouldBe List("Center", "L1", "L2")
+    traversedNodes.property(StringMandatory).l shouldBe List("Center", "L1", "L2")
     // hasNext is idempotent - calling it again doesn't result in any further traversing
     traversal.hasNext shouldBe true
     traversedNodes.size shouldBe 3
@@ -292,37 +310,43 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     // hasNext will run the provided repeat traversal exactly 3 times (as configured)
     traversal.hasNext shouldBe true
     traversedNodes.size shouldBe 2
-    traversedNodes.property(Name).l shouldBe List("Center", "L1")
+    traversedNodes.property(StringMandatory).l shouldBe List("Center", "L1")
     // hasNext is idempotent - calling it again doesn't result in any further traversing
     traversal.hasNext shouldBe true
     traversedNodes.size shouldBe 2
   }
 
   "supports large amount of iterations" in {
-    // using circular graph so that we can repeat any number of times
-    val graph = SimpleDomain.newGraph
+    // create circular graph so that we can repeat any number of times
+    val genericDomain = GenericDomain.empty
+    val graph         = genericDomain.graph
+    val diffGraph     = GenericDomain.newDiffGraphBuilder
 
-    val Seq(a, b, c) = TestHelpers.addNodes(graph, 0.to(2).map(_ => new GenericDNode(0)))
+    val newA = NewNodeA().stringMandatory("a")
+    val newB = NewNodeA().stringMandatory("b")
+    val newC = NewNodeA().stringMandatory("c")
 
     val diff = DiffGraphBuilder(graph.schema)
-      .setNodeProperty(a, Name.name, "a")
-      .setNodeProperty(b, Name.name, "b")
-      .setNodeProperty(c, Name.name, "c")
-      .addEdge(a, b, Connection.Label)
-      .addEdge(b, c, Connection.Label)
-      .addEdge(c, a, Connection.Label)
+      .addEdge(newA, newB, ConnectedTo.Label)
+      .addEdge(newB, newC, ConnectedTo.Label)
+      .addEdge(newC, newA, ConnectedTo.Label)
     DiffGraphApplier.applyDiff(graph, diff)
 
     val repeatCount = 100000
-    a.start.repeat(_.out)(_.maxDepth(repeatCount)).property(Name).l shouldBe List("b")
-    a.start.repeat(_.out)(_.maxDepth(repeatCount).breadthFirstSearch).property(Name).l shouldBe List("b")
+
+    genericDomain.nodeA.stringMandatory("a").repeat(_.out)(_.maxDepth(repeatCount)).property(StringMandatory).l shouldBe List("b")
+    genericDomain.nodeA
+      .stringMandatory("a")
+      .repeat(_.out)(_.maxDepth(repeatCount).breadthFirstSearch)
+      .property(StringMandatory)
+      .l shouldBe List("b")
 
     // for reference: tinkerpop becomes very slow with large iteration counts:
     // on my machine this didn't terminate within 5mins, hence commenting out
     //    import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.__
     //    __(a).repeat(
     //      __().out().asInstanceOf[org.apache.tinkerpop.gremlin.process.traversal.Traversal[_, Node]]
-    //    ).times(repeatCount).values[String](Name.name).next() shouldBe "b"
+    //    ).times(repeatCount).values[String](StringMandatory.name).next() shouldBe "b"
   }
 
   "support .path step" when {
@@ -345,10 +369,10 @@ class RepeatTraversalTests extends AnyWordSpec with ExampleGraphSetup {
     }
 
     "using `until` modulator" in {
-      centerTrav.enablePathTracking.repeat(_.out)(_.until(_.property(Name).filter(_.endsWith("2")))).path.toSetMutable shouldBe Set(
-        Seq(center, l1, l2),
-        Seq(center, r1, r2)
-      )
+      centerTrav.enablePathTracking
+        .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.endsWith("2"))))
+        .path
+        .toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
     }
 
     "using breadth first search" in {
