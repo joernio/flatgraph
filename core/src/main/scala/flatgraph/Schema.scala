@@ -3,6 +3,8 @@ package flatgraph
 import flatgraph.Edge.Direction
 import flatgraph.Schema.UndefinedKind
 
+import scala.util.Try
+
 object DefaultValue
 object NoProperty
 final class DefaultValue(val default: Any)
@@ -107,10 +109,13 @@ abstract class Schema {
   def propertyKinds: Range = Range(0, getNumberOfPropertyKinds)
 
   def getNodeLabel(nodeKind: Int): String
+  def getNodeLabelMaybe(nodeKind: Int): Option[String] =
+    Try(getNodeLabel(nodeKind)).toOption
+
   def getNodeKindByLabel(label: String): Int
-  def getNodeKindByLabelMaybe(label: String): Option[Int] = {
+  def getNodeKindByLabelMaybe(label: String): Option[Int] =
     Option(getNodeKindByLabel(label)).filterNot(_ == UndefinedKind)
-  }
+
   def getNodePropertyNames(nodeLabel: String): Set[String]
 
   // So, the issue here is: We have a couple of pseudo-properties that can only exist at a single node kind
@@ -121,6 +126,9 @@ abstract class Schema {
   def getEdgePropertyName(label: String): Option[String]
 
   def getPropertyLabel(nodeKind: Int, propertyKind: Int): String
+  def getPropertyLabelMaybe(nodeKind: Int, propertyKind: Int): Option[String] =
+    Option(getPropertyLabel(nodeKind, propertyKind))
+
   def getPropertyKindByName(label: String): Int
 
   final def neighborOffsetArrayIndex(nodeKind: Int, direction: Edge.Direction, edgeKind: Int): Int = {
