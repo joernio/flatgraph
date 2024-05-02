@@ -33,7 +33,7 @@ object Schema {
 
     // TODO add support for edge properties with cardinality ONE and LIST
     val connectedTo = builder.addEdgeType("connected_to").addProperty(stringMandatory)
-    nodeA.addOutEdge(connectedTo, nodeA, stepNameOut = "connectedTo")
+    nodeA.addOutEdge(connectedTo, nodeA, stepNameOut = "connectedTo", stepNameOutDoc = "Connected neighbor node")
 
     builder.build
   }

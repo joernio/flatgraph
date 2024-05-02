@@ -3,6 +3,7 @@ package flatgraph
 import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.edges.ConnectedTo
 import flatgraph.testdomains.generic.nodes.NewNodeA
+import flatgraph.testdomains.generic.Language.*
 
 import java.nio.file.Path
 
@@ -32,8 +33,7 @@ object TestGraphs {
     genericDomain
   }
 
-  /** L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5
-    */
+  /** L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5 */
   def createFlatlineGraph(): GenericDomain = {
     val genericDomain = GenericDomain.empty
     val diffGraph     = GenericDomain.newDiffGraphBuilder
@@ -72,6 +72,23 @@ object TestGraphs {
     )
 
     genericDomain
+  }
+
+  /** L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5 */
+  trait FlatlineGraphFixture {
+    val genericDomain                               = TestGraphs.createFlatlineGraph()
+    val Seq(center, l1, l2, l3, r1, r2, r3, r4, r5) = genericDomain.nodeA.sortBy(_.stringMandatory).l
+
+    // verify graph setup
+    assert(center.stringMandatory == "Center")
+    assert(l1.stringMandatory == "L1")
+    assert(l2.stringMandatory == "L2")
+    assert(l3.stringMandatory == "L3")
+    assert(r1.stringMandatory == "R1")
+    assert(r2.stringMandatory == "R2")
+    assert(r3.stringMandatory == "R3")
+    assert(r4.stringMandatory == "R4")
+    assert(r5.stringMandatory == "R5")
   }
 
 }
