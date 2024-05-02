@@ -571,7 +571,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
   }
 
   private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
-    val pos         = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val schema      = graph.schema
+    val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val propertyBuf = setNodeProperties(pos)
     if (propertyBuf != null) {
       val setPropertyPositions = setNodeProperties(pos + 1).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
@@ -580,18 +581,33 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
       val nodeCount = graph.nodesArray(nodeKind).length
 
-      val setPropertyValues = graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
-      if (setPropertyValues == null) throw new SchemaViolationException("Unsupported property on node")
+      def throwSchemaViolationException() = {
+        val contextBuilder = Seq.newBuilder[String]
+        contextBuilder += s"nodeKind=$nodeKind,propertyKind=$propertyKind"
+        schema.getNodeLabelMaybe(nodeKind).foreach { nodeLabel =>
+          contextBuilder += s"nodeLabel=$nodeLabel"
+          val allowedPropertyNames = schema.getNodePropertyNames(nodeLabel).toSeq.sorted.mkString(",")
+          contextBuilder += s"allowedPropertyNames=[$allowedPropertyNames]"
+        }
+        schema.getPropertyLabelMaybe(nodeKind, propertyKind).foreach { propertyLabel =>
+          contextBuilder += s"propertyLabel=$propertyLabel"
+        }
+        val context = contextBuilder.result().mkString(",")
+        throw new SchemaViolationException(s"""Unsupported property on node. Context: $context""")
+      }
+
+      val setPropertyValues = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
+      if (setPropertyValues == null) throwSchemaViolationException()
       copyToArray(propertyBuf, setPropertyValues)
 
       val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
       val oldProperty = Option(graph.properties(pos + 1))
-        .getOrElse(graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
+        .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
         .asInstanceOf[Array[?]]
-      if oldProperty == null then throw new SchemaViolationException("Unsupported property on node")
+      if (oldProperty == null) throwSchemaViolationException()
 
       val newQty      = new Array[Int](nodeCount + 1)
-      val newProperty = graph.schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size)
+      val newProperty = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size)
 
       val insertionIter = setPropertyPositions.iterator
       var copyStartSeq  = 0
