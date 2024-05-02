@@ -586,10 +586,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
         contextBuilder += s"nodeKind=$nodeKind,propertyKind=$propertyKind"
         schema.getNodeLabelMaybe(nodeKind).foreach { nodeLabel =>
           contextBuilder += s"nodeLabel=$nodeLabel"
-          schema.getNodePropertyNames(nodeLabel).foreach { allowedPropertyNames =>
-            val str = allowedPropertyNames.toSeq.sorted.mkString(",")
-            contextBuilder += s"allowedPropertyNames=[$str]"
-          }
+          val allowedPropertyNames = schema.getNodePropertyNames(nodeLabel).toSeq.sorted.mkString(",")
+          contextBuilder += s"allowedPropertyNames=[$allowedPropertyNames]"
         }
         schema.getPropertyLabelMaybe(nodeKind, propertyKind).foreach { propertyLabel =>
           contextBuilder += s"propertyLabel=$propertyLabel"
