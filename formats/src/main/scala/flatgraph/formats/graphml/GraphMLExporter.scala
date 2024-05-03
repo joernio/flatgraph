@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable
 import scala.xml.{PrettyPrinter, XML}
 
-/** Exports OverflowDB Graph to GraphML
+/** Exports to GraphML
   *
   * Warning: list properties are not natively supported by graphml... We initially built some support for those which deviated from the
   * spec, but given that other tools don't support it and the complications re re-importing, we also dropped support for lists. Now, lists

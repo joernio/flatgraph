@@ -3,25 +3,20 @@
 set -e
 set -o pipefail
 
-if [ ! -f cpg.bin ]; then
-  echo "please provide a sample cpg.bin (overflowdbv1 format) in the project root - see README.md for full instructions"
+if [ ! -f cpg.fg ]; then
+  echo "please provide a sample cpg.fg (codepropertygraph schema) in the project root - see README.md for full instructions"
   exit 1
 fi
 
 echo "compiling"
-time sbt benchmarks/Jmh/compile stage
+sbt benchmarks/stage
 
-echo "converting cpg.bin (odbv1 format) into cpg.fg (flatgraph format)"
-time ./odb-convert/target/universal/stage/bin/odb-convert ./cpg.bin ./cpg.fg > out.json
+echo "Benchmarking load speed and memory consumption of flatgraph:"
+./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttachSelf flatgraph > ./flatgraphResults.txt
+echo "flatgraph load+mem benchmarked. Results are in flatgraphResults.txt."
 
-echo "compiled and staged. Benchmarking load speed and memory consumption of odbv1:"
-time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttachSelf odb > ./odb1Results.txt
-
-echo "odbv1 load+mem benchmarked. Results are in odb1Results.txt. Benchmarking load speed and memory consumption of flatgraph:"
-time ./benchmarks/target/universal/stage/bin/benchmarks -Djdk.attach.allowAttachSelf flatgraph > ./flatgraphResults.txt
-
-echo "odbv2 load+mem benchmarked. Results are in flatgraphResults.txt. Running JMH benchmarks (this will take some time...)"
-time ./benchmarks/target/universal/stage/bin/benchmarks jmh
+echo "Running JMH benchmarks (this will take some time...)"
+./benchmarks/target/universal/stage/bin/benchmarks jmh
 
 RESULTS_FILE=benchmarks/results-history/$(date +"%Y%m%d")_$(git log -1 --pretty=format:%h)-results.csv
 cp benchmarks/target/results.csv $RESULTS_FILE

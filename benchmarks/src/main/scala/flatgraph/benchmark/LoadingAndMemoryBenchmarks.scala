@@ -2,9 +2,8 @@ package flatgraph.benchmark
 
 import better.files.Dsl.cp
 import com.jerolba.jmnemohistosyne.{Histogramer, MemoryHistogram}
-import io.shiftleft.codepropertygraph.cpgloading.{CpgLoader, CpgLoaderConfig}
+import io.shiftleft.codepropertygraph.cpgloading.CpgLoader
 import io.shiftleft.codepropertygraph.generated.Cpg
-import overflowdb.Config
 
 import java.nio.file.{Path, Paths}
 import scala.jdk.CollectionConverters.IteratorHasAsScala
@@ -85,23 +84,6 @@ object LoadingAndMemoryBenchmarks {
     )
   }
 
-  // cpg loading
-  def loadCopyFile(filename: String): Cpg = {
-    val newLoc = better.files.File(filename + ".tmp")
-    cp(better.files.File(filename), newLoc)
-    val odbConfig = Config.withDefaults.withStorageLocation(newLoc.toString())
-    val config    = CpgLoaderConfig.withDefaults.doNotCreateIndexesOnLoad.withOverflowConfig(odbConfig)
-    CpgLoader.loadFromOverflowDb(config)
-  }
-
-  def makeIndices(cpg: Cpg): Unit = {
-    CpgLoader.createIndexes(cpg)
-  }
-
-  def touchGraph(cpg: Cpg): Int = {
-    cpg.graph.edgeCount()
-  }
-
   def touchGraph(graph: flatgraph.Graph): Int = {
     var count = 0
     for {
@@ -115,39 +97,6 @@ object LoadingAndMemoryBenchmarks {
 
   def loadFlatgraph(storagePath: Path, schema: flatgraph.Schema): flatgraph.Graph = {
     flatgraph.storage.Deserialization.readGraph(storagePath, Option(schema))
-  }
-
-  def benchJoern(): Unit = {
-    println(
-      s"VM is version ${System.getProperty("java.runtime.version")} with max heap ${java.lang.Runtime.getRuntime.maxMemory >> 20} mb.\n\n"
-    )
-    val box = new MeasurementBox
-    box.histo = new Histogramer().createHistogram()
-    val cpgBox    = measure { loadCopyFile("./cpg.bin") }
-    val nodecount = cpgBox.result.asInstanceOf[Cpg].graph.nodeCount()
-    val callcount = cpgBox.result.asInstanceOf[Cpg].graph.nodeCount("CALL")
-    val indexify  = measure { makeIndices(cpgBox.result.asInstanceOf[Cpg]) }
-    val touch1    = measure { touchGraph(cpgBox.result.asInstanceOf[Cpg]) }
-    val touch2    = measure { touchGraph(cpgBox.result.asInstanceOf[Cpg]) }
-    val close     = measure { cpgBox.result.asInstanceOf[Cpg].close() }
-    val filesize  = new java.io.File("./cpg.bin").length()
-    println(s"Graph with ${nodecount} nodes (${callcount} calls) and ${touch1.result} edges.")
-    val histoAfter = new Histogramer().createHistogram()
-    box.histo = histoAfter.diff(box.histo)
-    val free = measure { cpgBox.result = null }
-    box.timeNanos = cpgBox.timeNanos + indexify.timeNanos + touch1.timeNanos + touch2.timeNanos
-    println(
-      s"On disk ${filesize} bytes = ${filesize * 1.0 / nodecount} bytes/node.\n" +
-        s"Loading data from disk at ${box.timeNanos * 1.0 / filesize} ns/byte and filling the heap at ${box.timeNanos * 1.0 / box.histo.getTotalMemory} ns/byte."
-    )
-    printHisto("complete benchmark", box, nodecount)
-    printHisto("copy and load cpg file", cpgBox, nodecount)
-    printHisto("load/create indexes", indexify, nodecount)
-    printHisto("count edges (force complete loading)", touch1, nodecount)
-    printHisto("count edges again", touch2, nodecount)
-    printHisto("close graph", close, nodecount)
-    printHisto("free memory", free, nodecount)
-    printMemConsumerLayout(box.histo)
   }
 
   def benchFlatgraph(): Unit = {
