@@ -1,18 +1,23 @@
 package flatgraph.codegen
 
-import java.nio.file.Path
+import java.nio.file.{Files, Path, Paths}
 import org.scalafmt.interfaces.Scalafmt
+import scala.util.Try
 
 object Formatter {
-  val defaultScalafmtConfig = """
-      |version=3.7.11
-      |runner.dialect=scala3
-      |align.preset=some
-      |maxColumn=120
-      |""".stripMargin
+  val defaultScalafmtConfig: String = {
+    Try {
+      os.read(os.pwd / ".scalafmt.conf")
+    }.toOption.getOrElse("""version=3.7.12
+        |runner.dialect=scala3
+        |preset = IntelliJ
+        |maxColumn=140
+        |align.preset=true
+        |""".stripMargin)
+  }
 
   def run(sourceFiles: Seq[Path], scalafmtConfig: Option[Path]): Unit = {
-    println(s"invoking scalafmt on ${sourceFiles.size} files")
+    // println(s"invoking scalafmt on ${sourceFiles.size} files")
     val configFile: Path =
       scalafmtConfig.getOrElse(os.temp(contents = defaultScalafmtConfig, prefix = "flatgraph-scalafmt", suffix = ".conf").toNIO)
 

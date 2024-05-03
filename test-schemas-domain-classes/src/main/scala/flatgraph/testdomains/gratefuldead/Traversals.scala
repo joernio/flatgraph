@@ -36,9 +36,7 @@ object Accessors {
     def nameExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.name == value }
     }
 
@@ -105,9 +103,7 @@ object Accessors {
     def songtypeExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 1, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 1, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
         traversal.filter { node =>
           val tmp = node.songtype; tmp.isDefined && tmp.get == value
@@ -179,9 +175,7 @@ object Accessors {
     def nameExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.name == value }
     }
 
@@ -241,9 +235,7 @@ object Accessors {
     def nameExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 0, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.name == value }
     }
 
@@ -305,9 +297,7 @@ object Accessors {
     def songtypeExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 1, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 1, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
         traversal.filter { node =>
           val tmp = node.songtype; tmp.isDefined && tmp.get == value

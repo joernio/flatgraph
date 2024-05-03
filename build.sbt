@@ -49,6 +49,8 @@ lazy val formats = project
     )
   )
 
+lazy val generateDomainClassesForTestSchemas = taskKey[Unit]("generate domain classes for test schemas")
+
 /** tests that make use of the sample schemas (and the corresponding generated domain classes) */
 lazy val tests = project
   .in(file("tests"))
@@ -56,8 +58,10 @@ lazy val tests = project
   .settings(
     name := "flatgraph-tests",
     publish / skip := true,
-    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.9.2" % Test
+    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
+    Test/compile := (Test/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
   )
+
 
 lazy val domainClassesGenerator_3 = project
   .in(file("domain-classes-generator_3"))
@@ -119,6 +123,26 @@ lazy val testSchemas = project
     name := "test-schemas",
     scalaVersion := scala3,
     publish / skip := true,
+    generateDomainClassesForTestSchemas := Def.taskDyn {
+      /** invoking the codegen and scalafmt is expensive, so we only want to do so if the hashsum of the
+       *  inputs (codegen implementation, build setup, test schemas, scalafmt config) is unknown or different to the
+       *  last known one. We persist the hashsum to preserve it between sbt sessions.
+       */
+      val lastKnownHashsumFile = target.value / "codegen-inputs-hash.md5"
+      def lastKnownHashsum: Option[String] = scala.util.Try(IO.read(lastKnownHashsumFile)).toOption
+      val inputsHashsum = FileUtils.md5(sourceDirectory.value, file("build.sbt"), (domainClassesGenerator_3/sourceDirectory).value)
+
+      if (lastKnownHashsum == Some(inputsHashsum)) {
+        Def.task {
+          streams.value.log.info("no need to regenerate domain classes for test schemas")
+        }
+      } else {
+        Def.task {
+          (Compile/runMain).toTask(s" flatgraph.testdomains.GenerateDomainClasses").value
+          IO.write(lastKnownHashsumFile, inputsHashsum)
+        }
+      }
+    }.value,
   )
 
 lazy val testSchemasDomainClasses = project

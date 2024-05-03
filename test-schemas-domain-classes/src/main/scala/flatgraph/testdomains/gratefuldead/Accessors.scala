@@ -10,8 +10,7 @@ object Accessors {
     def name: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 0, node.seq(), "": String)
   }
   final class Access_Property_songType(val node: nodes.StoredNode) extends AnyVal {
-    def songtype: Option[String] =
-      flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 1, node.seq)
+    def songtype: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 1, node.seq)
   }
   /* accessors for concrete stored nodes end */
 

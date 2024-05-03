@@ -18,10 +18,9 @@ object GraphSchema extends flatgraph.Schema {
     (s, d, subseq, p) => new edges.Sungby(s, d, subseq, p),
     (s, d, subseq, p) => new edges.Writtenby(s, d, subseq, p)
   )
-  val nodePropertyAllocators: Array[Int => Array[?]] =
-    Array(size => new Array[String](size), size => new Array[String](size))
-  val normalNodePropertyNames = Array("name", "songType")
-  val nodePropertyByLabel     = normalNodePropertyNames.zipWithIndex.toMap
+  val nodePropertyAllocators: Array[Int => Array[?]] = Array(size => new Array[String](size), size => new Array[String](size))
+  val normalNodePropertyNames                        = Array("name", "songType")
+  val nodePropertyByLabel                            = normalNodePropertyNames.zipWithIndex.toMap
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
     val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](8)
     for (idx <- Range(0, 8)) {
@@ -63,18 +62,17 @@ object GraphSchema extends flatgraph.Schema {
     else null
   }
 
-  override def getPropertyKindByName(label: String): Int =
-    nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-  override def getNumberOfPropertyKinds: Int = 2
-  override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode =
-    nodeFactories(nodeKind)(graph, seq)
+  override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
+  override def getNumberOfPropertyKinds: Int             = 2
+  override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)
   override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] =
     edgePropertyAllocators(edgeKind)(size)
-  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType =
-    nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
-  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity =
-    nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind))
-      .asInstanceOf[FormalQtyType.FormalQuantity]
+  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(
+    propertyOffsetArrayIndex(nodeKind, propertyKind)
+  ).asInstanceOf[FormalQtyType.FormalType]
+  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(
+    1 + propertyOffsetArrayIndex(nodeKind, propertyKind)
+  ).asInstanceOf[FormalQtyType.FormalQuantity]
 }
