@@ -211,27 +211,21 @@ class DomainClassesGenerator(schema: Schema) {
     val edgeKindByEdgeType = edgeTypes.iterator.zipWithIndex.toMap
     val edgeTypesSource = edgeTypes.iterator
       .map { edgeType =>
-        if (edgeType.properties.length > 1) throw new RuntimeException("we only support zero or one edge properties")
-
         // format: off
-        val propertyAccessorMaybe: Option[String] = edgeType.properties match {
-          case Nil => None
-          case Seq(p) =>
-            p.cardinality match {
-              case _: Cardinality.One[?] =>
-                Some(s"""def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} =
-                   |  this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]""".stripMargin)
-              case Cardinality.ZeroOrOne =>
-                Some(s"""def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] =
-                   |  Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])""".stripMargin)
-              case Cardinality.List =>
-                throw new RuntimeException("edge properties are only supported with cardinality one or optional")
-            }
-          case multipleProperties =>
-            throw new RuntimeException(s"only one edge property supported - ${edgeType.name} defines ${multipleProperties.size}")
+        val propertyAccessorMaybe: Option[String] = edgeType.property.map { p =>
+          p.cardinality match {
+            case _: Cardinality.One[?] =>
+              s"""def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} =
+                 |  this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]""".stripMargin
+            case Cardinality.ZeroOrOne =>
+              s"""def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] =
+                 |  Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])""".stripMargin
+            case Cardinality.List =>
+              throw new RuntimeException("edge properties are only supported with cardinality one or optional")
+          }
         }
 
-        val propertyNameImplForObject = edgeType.properties.headOption.map { property=>
+        val propertyNameImplForObject = edgeType.property.map { property=>
           s"""val propertyName: Option[String] = Some("${property.name}")"""
         }
         val propertyNameImplForClass = propertyNameImplForObject.map { _ =>
@@ -547,7 +541,7 @@ class DomainClassesGenerator(schema: Schema) {
         .mkString(", ")
       val edgePropertyAllocatorsSrc = edgeTypes.zipWithIndex
         .map { case (edge, idx) =>
-          edge.properties.headOption match {
+          edge.property match {
             case Some(p) if p.cardinality == Cardinality.ZeroOrOne => ???
             case Some(p) =>
               s"size => Array.fill(size)(${Helpers.defaultValueImpl(p.cardinality.asInstanceOf[Cardinality.One[?]].default)}) /* label = ${edge.name}, id = $idx */"
@@ -636,7 +630,7 @@ class DomainClassesGenerator(schema: Schema) {
 
       val edgePropertyNameCases = for {
         edgeType <- edgeTypes
-        property <- edgeType.properties.headOption
+        property <- edgeType.property
       } yield s"""case "${edgeType.name}" => Some("${property.name}")"""
 
       // format: off

@@ -34,17 +34,17 @@ class Schema(
 
   /** properties that are used in edge types */
   def edgeProperties: Seq[Property[?]] =
-    properties.filter(property => edgeTypes.exists(_.properties.contains(property)))
+    properties.filter(property => edgeTypes.exists(_.property == Option(property)))
 }
 
 abstract class AbstractNodeType(val name: String, val comment: Option[String], val schemaInfo: SchemaInfo)
     extends HasClassName
-    with HasProperties
     with HasSchemaInfo {
   protected val _extendz: mutable.Set[NodeBaseType]     = mutable.Set.empty
   protected val _outEdges: mutable.Set[AdjacentNode]    = mutable.Set.empty
   protected val _inEdges: mutable.Set[AdjacentNode]     = mutable.Set.empty
   protected val _markerTraits: mutable.Set[MarkerTrait] = mutable.Set.empty
+  protected val _properties: mutable.Set[Property[?]]   = mutable.Set.empty
 
   /** all node types that extend this node */
   def subtypes(allNodes: Set[AbstractNodeType]): Set[AbstractNodeType]
@@ -58,8 +58,18 @@ abstract class AbstractNodeType(val name: String, val comment: Option[String], v
   def starterName(name: String): this.type = { this._starterName = Option(name); this }
   def withoutStarter(): this.type          = starterName(null)
 
+  def addProperty(additional: Property[?]): this.type = {
+    _properties.add(additional)
+    this
+  }
+
+  def addProperties(additional: Property[?]*): this.type = {
+    additional.foreach(addProperty)
+    this
+  }
+
   /** properties (including potentially inherited properties) */
-  override def properties: Seq[Property[?]] = {
+  def properties: Seq[Property[?]] = {
     val entireClassHierarchy = this +: extendzRecursively
     entireClassHierarchy.flatMap(_.propertiesWithoutInheritance).distinct.sortBy(_.name.toLowerCase)
   }
@@ -213,14 +223,22 @@ case class MarkerTrait(name: String)
 
 class EdgeType(val name: String, val comment: Option[String], val schemaInfo: SchemaInfo)
     extends HasClassName
-    with HasProperties
     with HasOptionalProtoId
     with HasSchemaInfo {
+  protected var _property: Option[Property[?]] = None
+
   override def toString = s"EdgeType($name)"
 
-  /** properties (including potentially inherited properties) */
-  def properties: Seq[Property[?]] =
-    _properties.toSeq.sortBy(_.name.toLowerCase)
+  def property: Option[Property[?]] = _property
+
+  def withProperty(property: Property[?]): this.type = {
+    _property = Option(property)
+    this
+  }
+
+  @deprecated("use `withProperty` instead, edges can only have one property max", since = "0.0.49")
+  def addProperty(property: Property[?]): this.type =
+    withProperty(property)
 }
 
 object EdgeType {
@@ -362,23 +380,6 @@ case class ProtoOptions(
 trait HasClassName {
   def name: String
   def className = camelCaseCaps(name)
-}
-
-trait HasProperties {
-  protected val _properties: mutable.Set[Property[?]] = mutable.Set.empty
-
-  def addProperty(additional: Property[?]): this.type = {
-    _properties.add(additional)
-    this
-  }
-
-  def addProperties(additional: Property[?]*): this.type = {
-    additional.foreach(addProperty)
-    this
-  }
-
-  /** properties (including potentially inherited properties) */
-  def properties: Seq[Property[?]]
 }
 
 trait HasOptionalProtoId {
