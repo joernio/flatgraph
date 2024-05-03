@@ -3,6 +3,8 @@ package flatgraph.testdomains.gratefuldead.nodes
 import flatgraph.testdomains.gratefuldead.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
+/** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
+  */
 trait SongEMT extends AnyRef with HasNameEMT with HasSongtypeEMT
 
 trait SongBase extends AbstractNode with StaticType[SongEMT] {

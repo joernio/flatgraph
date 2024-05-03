@@ -3,6 +3,8 @@ package flatgraph.testdomains.generic.nodes
 import flatgraph.testdomains.generic.Language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
+/** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
+  */
 trait NodeAEMT
     extends AnyRef
     with HasIntListEMT
