@@ -1797,15 +1797,6 @@ The runtime for counting all edges with 110 ns/node is a bit faster than odbv1 1
 It is still a disaster and completely unacceptable. We'll see how this fares with a real 
 generated schema (as opposed to an ad-hoc schema infered from the graph data).
 
-# Generating domain classes
-joern domain (open source): regenerate using `./generateDomainClasses.sh`. The classes are checked into [joern-generated/src/main/scala/generated](joern-generated/src/main/scala/generated)
-
-codescience domain (closed source, qwiet.ai internal): regenerate using `./generateDomainClassesCodescience.sh`. The classes are not checked into this repository. 
-
-N.b. there are many debates about whether to check generated code into repositories.
-In this specific case, it is essential to be able to talk about the generated code,
-and track its changes over time.
-
 # FAQ
 
 ## What JDK does flatgraph support?

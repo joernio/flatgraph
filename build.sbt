@@ -129,39 +129,17 @@ lazy val testSchemasDomainClasses = project
     publish / skip := true
   )
 
-/** temporarily we still want to keep the generated files for the cpg domain in here,
-  * in order to be able to quickly see the differences in the generated files if we
-  * change the codegen
-  * n.b. relies on a manually published version of cpg-schema from https://github.com/ShiftLeftSecurity/codepropertygraph/tree/michael/flatgraph
-  */
-lazy val domainClassesGeneratorJoern = project
-  .in(file("domain-classes-generator-joern"))
-  .dependsOn(domainClassesGenerator_3)
-  .settings(
-    name := "domain-classes-generator-joern",
-    scalaVersion := scala3,
-    publish / skip := true,
-    libraryDependencies += "io.shiftleft" %% "codepropertygraph-schema" % "1.6.6+21-c6774ab5"
-  )
-
-lazy val joernGenerated = project
-  .in(file("joern-generated"))
-  .dependsOn(core)
-  .settings(
-    name := "joern-generated",
-    publish / skip := true
-  )
-
+// currently relies on a self-published version of codepropertygraph and joern based on the respective `michael/flatgraph` branches
 lazy val benchmarks = project
   .in(file("benchmarks"))
-  .dependsOn(joernGenerated)
   .enablePlugins(JavaAppPackaging, JmhPlugin)
   .settings(
     name := "benchmarks",
     //Jmh / compile := (Jmh / compile)
     //Jmh / run     := (Jmh / run).dependsOn(Jmh / compile).evaluated
     libraryDependencies ++= Seq(
-      "io.joern"       %% "semanticcpg"              % "2.0.157",
+      // TODO upgrade to released version
+      "io.joern"       %% "semanticcpg"              % "2.0.350+18-f76162b1",
       "com.jerolba"     % "jmnemohistosyne"          % "0.2.3",
       "org.openjdk.jol" % "jol-core"                 % "0.17",
       "org.slf4j"       % "slf4j-simple"             % slf4jVersion % Optional,
