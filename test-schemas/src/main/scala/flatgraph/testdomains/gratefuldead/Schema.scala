@@ -30,7 +30,7 @@ object Schema {
     // edges
     val sungBy     = builder.addEdgeType("sungBy")
     val writtenBy  = builder.addEdgeType("writtenBy")
-    val followedBy = builder.addEdgeType("followedBy").addProperty(weight)
+    val followedBy = builder.addEdgeType("followedBy").withProperty(weight)
     song.addOutEdge(sungBy, inNode = artist, cardinalityOut = Cardinality.One, stepNameOut = "sungBy", stepNameIn = "sang")
     song.addOutEdge(writtenBy, inNode = artist, cardinalityOut = Cardinality.One, stepNameOut = "writtenBy", stepNameIn = "wrote")
     song.addOutEdge(followedBy, inNode = song, cardinalityOut = Cardinality.One, stepNameOut = "followedBy")
