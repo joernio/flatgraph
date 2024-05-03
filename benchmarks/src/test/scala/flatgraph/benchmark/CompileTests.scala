@@ -1,8 +1,8 @@
 package flatgraph.benchmark
 
-import io.shiftleft.codepropertygraph.generated.v2.*
-import io.shiftleft.codepropertygraph.generated.v2.nodes.*
-import io.shiftleft.codepropertygraph.generated.v2.Language.*
+import io.shiftleft.codepropertygraph.generated.*
+import io.shiftleft.codepropertygraph.generated.nodes.*
+import io.shiftleft.codepropertygraph.generated.Language.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -87,7 +87,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       iter.next.order
 
       // edge accessors
-      import io.shiftleft.codepropertygraph.generated.v2.neighboraccessors.Lang.*
+      import io.shiftleft.codepropertygraph.generated.neighboraccessors.Lang.*
       iter.next.blockViaCfgIn
       iter.blockViaCfgIn
     }
@@ -117,7 +117,7 @@ class CompileTests extends AnyWordSpec with Matchers {
     // there exist no nodes in the intersection, but the code should still compile.
 
     "using stored class" in {
-      lazy val iter: Iterator[Declaration with CallRepr] = ???
+      lazy val iter: Iterator[Declaration & CallRepr] = ???
       lazy val compiles = {
         iter.name("a")
         iter.order
@@ -126,7 +126,7 @@ class CompileTests extends AnyWordSpec with Matchers {
     }
 
     "using base class" in {
-      lazy val iter: Iterator[Declaration with CallReprBase] = ???
+      lazy val iter: Iterator[Declaration & CallReprBase] = ???
       lazy val compiles = {
         iter.name("a")
         iter.order
@@ -135,7 +135,7 @@ class CompileTests extends AnyWordSpec with Matchers {
     }
 
     "using New* class" in {
-      lazy val iter: Iterator[Declaration with CallReprNew] = ???
+      lazy val iter: Iterator[Declaration & CallReprNew] = ???
       lazy val compiles = {
         iter.name("a")
         iter.order
@@ -157,19 +157,19 @@ object CompileTests {
   implicit class IsStaticExt[NodeType <: CallBase](val node: NodeType) extends AnyVal {
     // n.b. this should really be `def isStatic: Boolean` - the reason it's not is simply that we wanted to have compile-time test for
     // complex cases and didn't really think this through...
-    def isStatic: Option[NodeType with StaticType[IsStaticEMT]] =
-      if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType with StaticType[IsStaticEMT]]) else None
+    def isStatic: Option[NodeType & StaticType[IsStaticEMT]] =
+      if (node.dispatchType == "STATIC_DISPATCH") Some(node.asInstanceOf[NodeType & StaticType[IsStaticEMT]]) else None
   }
 
   implicit class IsStaticTravExt[NodeType <: CallBase](val trav: Iterator[NodeType]) extends AnyVal {
-    def isStatic: Iterator[NodeType with StaticType[IsStaticEMT]] = trav.flatMap { _.isStatic }
+    def isStatic: Iterator[NodeType & StaticType[IsStaticEMT]] = trav.flatMap { _.isStatic }
   }
 
-  implicit class StaticCallExt[NodeType <: Call with StaticType[IsStaticEMT]](val node: NodeType) extends AnyVal {
+  implicit class StaticCallExt[NodeType <: Call & StaticType[IsStaticEMT]](val node: NodeType) extends AnyVal {
     def staticCallee: Method = node._callOut.head.asInstanceOf[Method]
   }
 
-  implicit class StaticCallTravExt[NodeType <: Call with StaticType[IsStaticEMT]](val trav: Iterator[NodeType]) extends AnyVal {
+  implicit class StaticCallTravExt[NodeType <: Call & StaticType[IsStaticEMT]](val trav: Iterator[NodeType]) extends AnyVal {
     def staticCallee: Iterator[Method] = trav.map { _.staticCallee }
   }
 

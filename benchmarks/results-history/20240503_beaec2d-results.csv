@@ -1,0 +1,19 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: shuffled"
+"flatgraph.benchmark.FlatgraphGenerated.astDFS","avgt",1,6,29.923772,3.051855,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.astDFS","avgt",1,6,28.687518,3.184471,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.astUp","avgt",1,6,55.603290,17.387183,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.astUp","avgt",1,6,14.766773,0.932537,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.callOrderExplicit","avgt",1,6,58.582064,4.612833,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.callOrderExplicit","avgt",1,6,9.241109,0.598604,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.callOrderTrav","avgt",1,6,73.347666,5.723903,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.callOrderTrav","avgt",1,6,12.502853,3.951777,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.indexedMethodFullName","avgt",1,6,31.759798,4.916228,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.indexedMethodFullName","avgt",1,6,20.909101,1.494340,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.orderSumChecked","avgt",1,6,89.349033,5.365285,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.orderSumChecked","avgt",1,6,9.703312,1.459537,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.orderSumExplicit","avgt",1,6,74.298318,3.823149,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.orderSumExplicit","avgt",1,6,7.714675,0.584948,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.orderSumUnchecked","avgt",1,6,83.628153,8.407295,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.orderSumUnchecked","avgt",1,6,8.365514,0.658895,"ns/op",false
+"flatgraph.benchmark.FlatgraphGenerated.unindexedMethodFullName","avgt",1,6,467235.950192,175279.252894,"ns/op",true
+"flatgraph.benchmark.FlatgraphGenerated.unindexedMethodFullName","avgt",1,6,488670.733250,42903.261953,"ns/op",false
