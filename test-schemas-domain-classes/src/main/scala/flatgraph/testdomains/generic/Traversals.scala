@@ -177,9 +177,7 @@ object Accessors {
     def stringMandatoryExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.stringMandatory == value }
     }
 
@@ -246,9 +244,7 @@ object Accessors {
     def stringOptionalExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
         traversal.filter { node =>
           val tmp = node.stringOptional; tmp.isDefined && tmp.get == value
@@ -440,9 +436,7 @@ object Accessors {
     def stringMandatoryExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
       case _ => traversal.filter { _.stringMandatory == value }
     }
 
@@ -504,9 +498,7 @@ object Accessors {
     def stringOptionalExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
         traversal.filter { node =>
           val tmp = node.stringOptional; tmp.isDefined && tmp.get == value
@@ -580,9 +572,7 @@ object Accessors {
     def stringOptionalExact(value: String): Iterator[NodeType] = traversal match {
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
-        flatgraph.Accessors
-          .getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value)
-          .asInstanceOf[Iterator[NodeType]]
+        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value).asInstanceOf[Iterator[NodeType]]
       case _ =>
         traversal.filter { node =>
           val tmp = node.stringOptional; tmp.isDefined && tmp.get == value
@@ -632,8 +622,7 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
   ): Traversal_Property_int_list[NodeType] = new Traversal_Property_int_list(traversal.iterator)
   implicit def accessPropertyIntMandatoryTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasIntMandatoryEMT]](
     traversal: IterableOnce[NodeType]
-  ): Traversal_Property_int_mandatory[NodeType] =
-    new Traversal_Property_int_mandatory(traversal.iterator)
+  ): Traversal_Property_int_mandatory[NodeType] = new Traversal_Property_int_mandatory(traversal.iterator)
   implicit def accessPropertyIntOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasIntOptionalEMT]](
     traversal: IterableOnce[NodeType]
   ): Traversal_Property_int_optional[NodeType] = new Traversal_Property_int_optional(traversal.iterator)
@@ -642,12 +631,10 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
   ): Traversal_Property_string_list[NodeType] = new Traversal_Property_string_list(traversal.iterator)
   implicit def accessPropertyStringMandatoryTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasStringMandatoryEMT]](
     traversal: IterableOnce[NodeType]
-  ): Traversal_Property_string_mandatory[NodeType] =
-    new Traversal_Property_string_mandatory(traversal.iterator)
+  ): Traversal_Property_string_mandatory[NodeType] = new Traversal_Property_string_mandatory(traversal.iterator)
   implicit def accessPropertyStringOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasStringOptionalEMT]](
     traversal: IterableOnce[NodeType]
-  ): Traversal_Property_string_optional[NodeType] =
-    new Traversal_Property_string_optional(traversal.iterator)
+  ): Traversal_Property_string_optional[NodeType] = new Traversal_Property_string_optional(traversal.iterator)
 }
 
 trait ConcreteBaseConversions {
