@@ -49,6 +49,8 @@ lazy val formats = project
     )
   )
 
+lazy val generateDomainClassesForTestSchemas = taskKey[Unit]("generate domain classes for test schemas")
+
 /** tests that make use of the sample schemas (and the corresponding generated domain classes) */
 lazy val tests = project
   .in(file("tests"))
@@ -56,8 +58,10 @@ lazy val tests = project
   .settings(
     name := "flatgraph-tests",
     publish / skip := true,
-    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.9.2" % Test
+    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
+    Test/compile := (Test/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
   )
+
 
 lazy val domainClassesGenerator_3 = project
   .in(file("domain-classes-generator_3"))
@@ -119,6 +123,11 @@ lazy val testSchemas = project
     name := "test-schemas",
     scalaVersion := scala3,
     publish / skip := true,
+    generateDomainClassesForTestSchemas := {
+      // TODO only invoke if inputs changed
+      println("XXX1")
+      (Compile/runMain).toTask(s" flatgraph.testdomains.GenerateDomainClasses").value
+    },
   )
 
 lazy val testSchemasDomainClasses = project

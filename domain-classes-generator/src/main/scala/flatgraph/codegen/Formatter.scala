@@ -12,7 +12,7 @@ object Formatter {
       |""".stripMargin
 
   def run(sourceFiles: Seq[Path], scalafmtConfig: Option[Path]): Unit = {
-    println(s"invoking scalafmt on ${sourceFiles.size} files")
+    // println(s"invoking scalafmt on ${sourceFiles.size} files")
     val configFile: Path =
       scalafmtConfig.getOrElse(os.temp(contents = defaultScalafmtConfig, prefix = "flatgraph-scalafmt", suffix = ".conf").toNIO)
 
