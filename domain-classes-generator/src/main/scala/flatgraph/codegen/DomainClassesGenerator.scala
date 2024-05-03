@@ -261,7 +261,9 @@ class DomainClassesGenerator(schema: Schema) {
 
       val erasedMarkerType = {
         val mixins = newExtendz.map(b => s"${b.className}EMT") ++ newProperties.map(p => s"Has${p.className}EMT")
-        s"""trait ${nodeType.className}EMT extends AnyRef""" +: mixins
+        s"""/** Node base type for compiletime-only checks to improve type safety.
+           | * EMT stands for: "erased marker trait", i.e. it is erased at runtime */
+           |trait ${nodeType.className}EMT extends AnyRef""".stripMargin +: mixins
       }.mkString(" with ")
 
       val baseTrait = {
