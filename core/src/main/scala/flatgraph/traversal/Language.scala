@@ -600,4 +600,7 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
 
   def property[@specialized ValueType](propertyKey: MultiPropertyKey[ValueType]): Iterator[ValueType] =
     traversal.flatMap(_.property(propertyKey))
+    
+  def propertiesMap: Iterator[java.util.Map[String, AnyRef]] =
+    traversal.map(_.propertiesMap)
 }

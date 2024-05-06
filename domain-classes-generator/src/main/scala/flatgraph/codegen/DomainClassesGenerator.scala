@@ -485,53 +485,53 @@ class DomainClassesGenerator(schema: Schema) {
       )
       val nodeSource = {
         s"""package $basePackage.nodes
-             |
-             |import $basePackage.Language.*
-             |import scala.collection.immutable.{IndexedSeq, ArraySeq}
-             |
-             |$erasedMarkerType
-             |
-             |$baseTrait {
-             |  ${baseNodeProps.mkString("\n")}
-             |  $propDictItemsSource
-             |}
-             |
-             |object ${nodeType.className} {
-             |  val Label = "${nodeType.name}"
-             |  object PropertyNames {
-             |    $propertyNames
-             |  }
-             |  object PropertyKeys {
-             |    $propertyKeys
-             |  }
-             |  object PropertyDefaults {
-             |    $propertyDefaults
-             |  }
-             |}
-             |
-             |$storedNode {
-             |  ${storedNodeProps.mkString("\n")}
-             |
-             |  override def productElementName(n: Int): String =
-             |    n match {
-             |      $productElementNames
-             |      case _ => ""
-             |    }
-             |
-             |  override def productElement(n: Int): Any =
-             |    n match {
-             |      $productElementAccessors
-             |      case _ => null
-             |    }
-             |
-             |  override def productPrefix = "${nodeType.className}"
-             |  override def productArity = ${productElements.size}
-             |
-             |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
-             |}
-             |
-             |$newNode
-             |""".stripMargin
+           |
+           |import $basePackage.Language.*
+           |import scala.collection.immutable.{IndexedSeq, ArraySeq}
+           |
+           |$erasedMarkerType
+           |
+           |$baseTrait {
+           |  ${baseNodeProps.mkString("\n")}
+           |  $propDictItemsSource
+           |}
+           |
+           |object ${nodeType.className} {
+           |  val Label = "${nodeType.name}"
+           |  object PropertyNames {
+           |    $propertyNames
+           |  }
+           |  object PropertyKeys {
+           |    $propertyKeys
+           |  }
+           |  object PropertyDefaults {
+           |    $propertyDefaults
+           |  }
+           |}
+           |
+           |$storedNode {
+           |  ${storedNodeProps.mkString("\n")}
+           |
+           |  override def productElementName(n: Int): String =
+           |    n match {
+           |      $productElementNames
+           |      case _ => ""
+           |    }
+           |
+           |  override def productElement(n: Int): Any =
+           |    n match {
+           |      $productElementAccessors
+           |      case _ => null
+           |    }
+           |
+           |  override def productPrefix = "${nodeType.className}"
+           |  override def productArity = ${productElements.size}
+           |
+           |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
+           |}
+           |
+           |$newNode
+           |""".stripMargin
       }
       os.write(nodesRootDir / s"${nodeType.className}.scala", nodeSource)
     }
@@ -690,6 +690,23 @@ class DomainClassesGenerator(schema: Schema) {
       // format: on
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
+
+    os.write(outputDir0 / "PropertyErrorRegister.scala",
+      s"""package $basePackage
+         |
+         |object PropertyErrorRegister {
+         |  private var errorMap = Set.empty[(Class[?], String)]
+         |  private val logger = org.slf4j.LoggerFactory.getLogger(getClass)
+         |
+         |  def logPropertyErrorIfFirst(clazz: Class[?], propertyName: String): Unit = {
+         |    if (!errorMap.contains((clazz, propertyName))) {
+         |      logger.warn("Property " + propertyName + " is deprecated for " + clazz.getName + ".")
+         |      errorMap += ((clazz, propertyName))
+         |    }
+         |  }
+         |}
+         |""".stripMargin
+    )
 
     // Accessors and traversals: start
     // TODO extract into separate method

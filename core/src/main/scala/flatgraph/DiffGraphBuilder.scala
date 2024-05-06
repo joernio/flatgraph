@@ -2,10 +2,12 @@ package flatgraph
 
 import DiffGraphBuilder.*
 import flatgraph.misc.Conversions.toShortSafely
+import flatgraph.misc.SchemaViolationReporter
+
 import scala.collection.mutable
 
-class DiffGraphBuilder(schema: Schema) {
-  var buffer = mutable.ArrayDeque[RawUpdate]()
+class DiffGraphBuilder(schema: Schema, schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter) {
+  private[flatgraph] var buffer = mutable.ArrayDeque[RawUpdate]()
 
   def addNode(newNode: DNode): this.type = {
     this.buffer.append(newNode)
@@ -38,7 +40,8 @@ class DiffGraphBuilder(schema: Schema) {
   def setNodeProperty(node: GNode, propertyName: String, property: Any): this.type = {
     schema.getPropertyKindByName(propertyName) match {
       case Schema.UndefinedKind =>
-        throw new SchemaViolationException(s"unknown property: `$propertyName`")
+        schemaViolationReporter.illegalNodeProperty(node.nodeKind, propertyName, schema)
+        this
       case propertyKind =>
         this._setNodeProperty(node, propertyKind, property)
     }
