@@ -3,20 +3,25 @@ package flatgraph
 import DiffGraphBuilder.*
 import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
+import flatgraph.misc.SchemaViolationReporter
 
 import scala.collection.{Iterator, mutable}
 
 object DiffGraphApplier {
-  def applyDiff(graph: Graph, diff: DiffGraphBuilder): Unit = {
+  def applyDiff(
+    graph: Graph,
+    diff: DiffGraphBuilder,
+    schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter
+  ): Unit = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
-    new DiffGraphApplier(graph, diff).applyUpdate()
+    new DiffGraphApplier(graph, diff, schemaViolationReporter).applyUpdate()
     diff.buffer = null
   }
 }
 
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
-private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) {
+private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, schemaViolationReporter: SchemaViolationReporter) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges          = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
@@ -37,16 +42,20 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
 
   private def insertProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
     val pos = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
-    if (setNodeProperties(pos) == null)
-      setNodeProperties(pos) = mutable.ArrayBuffer.empty
-    val buf   = setNodeProperties(pos)
-    val start = buf.size
-    propertyValues.iterator.foreach {
-      case dnode: DNode => buf.addOne(getGNode(dnode))
-      case other        => buf.addOne(other)
+    if (0 > pos || pos >= setNodeProperties.length) {
+      schemaViolationReporter.illegalNodeProperty(node.nodeKind, propertyKind, graph.schema)
+    } else {
+      if (setNodeProperties(pos) == null)
+        setNodeProperties(pos) = mutable.ArrayBuffer.empty
+      val buf   = setNodeProperties(pos)
+      val start = buf.size
+      propertyValues.iterator.foreach {
+        case dnode: DNode => buf.addOne(getGNode(dnode))
+        case other        => buf.addOne(other)
+      }
+      val bound = new SetPropertyDesc(node, start, buf.size)
+      insert(setNodeProperties, bound, pos + 1)
     }
-    val bound = new SetPropertyDesc(node, start, buf.size)
-    insert(setNodeProperties, bound, pos + 1)
   }
 
   private def insert[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
@@ -176,7 +185,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
     drainDeferred()
   }
 
-  private def applyUpdate(): Unit = {
+  private[flatgraph] def applyUpdate(): Unit = {
     splitUpdate()
 
     // set edge properties
@@ -581,64 +590,52 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder) 
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
       val nodeCount = graph.nodesArray(nodeKind).length
 
-      def throwSchemaViolationException() = {
-        val contextBuilder = Seq.newBuilder[String]
-        contextBuilder += s"nodeKind=$nodeKind,propertyKind=$propertyKind"
-        schema.getNodeLabelMaybe(nodeKind).foreach { nodeLabel =>
-          contextBuilder += s"nodeLabel=$nodeLabel"
-          val allowedPropertyNames = schema.getNodePropertyNames(nodeLabel).toSeq.sorted.mkString(",")
-          contextBuilder += s"allowedPropertyNames=[$allowedPropertyNames]"
-        }
-        schema.getPropertyLabelMaybe(nodeKind, propertyKind).foreach { propertyLabel =>
-          contextBuilder += s"propertyLabel=$propertyLabel"
-        }
-        val context = contextBuilder.result().mkString(",")
-        throw new SchemaViolationException(s"""Unsupported property on node. Context: $context""")
-      }
-
       val setPropertyValues = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
-      if (setPropertyValues == null) throwSchemaViolationException()
-      copyToArray(propertyBuf, setPropertyValues)
+      if (setPropertyValues == null) {
+        schemaViolationReporter.illegalNodeProperty(nodeKind, propertyKind, schema)
+      } else {
+        copyToArray(propertyBuf, setPropertyValues)
 
-      val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
-      val oldProperty = Option(graph.properties(pos + 1))
-        .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
-        .asInstanceOf[Array[?]]
-      if (oldProperty == null) throwSchemaViolationException()
+        val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+        val oldProperty = Option(graph.properties(pos + 1))
+          .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
+          .asInstanceOf[Array[?]]
+        if (oldProperty == null) schemaViolationReporter.illegalNodeProperty(nodeKind, propertyKind, schema)
 
-      val newQty      = new Array[Int](nodeCount + 1)
-      val newProperty = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size)
+        val newQty      = new Array[Int](nodeCount + 1)
+        val newProperty = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size)
 
-      val insertionIter = setPropertyPositions.iterator
-      var copyStartSeq  = 0
-      var outIndex      = 0
-      while (copyStartSeq < nodeCount) {
-        val insertion      = insertionIter.nextOption()
-        val insertionSeq   = insertion.map(_.node.seq()).getOrElse(nodeCount)
-        val copyStartIndex = get(oldQty, copyStartSeq)
-        val copyEndIndex   = get(oldQty, insertionSeq)
-        val offset         = outIndex - copyStartIndex
-        System.arraycopy(oldProperty, copyStartIndex, newProperty, outIndex, copyEndIndex - copyStartIndex)
-        outIndex += copyEndIndex - copyStartIndex
-        assert(
-          newQty(copyStartSeq) == get(oldQty, copyStartSeq) + offset,
-          s"something went wrong while copying properties: newQty(copyStartSeq) was supposed to be ${get(oldQty, copyStartSeq) + offset} but instead was ${newQty(copyStartSeq)}"
-        )
-        for (idx <- Range(copyStartSeq + 1, insertionSeq + 1))
-          newQty(idx) = get(oldQty, idx) + offset
+        val insertionIter = setPropertyPositions.iterator
+        var copyStartSeq  = 0
+        var outIndex      = 0
+        while (copyStartSeq < nodeCount) {
+          val insertion      = insertionIter.nextOption()
+          val insertionSeq   = insertion.map(_.node.seq()).getOrElse(nodeCount)
+          val copyStartIndex = get(oldQty, copyStartSeq)
+          val copyEndIndex   = get(oldQty, insertionSeq)
+          val offset         = outIndex - copyStartIndex
+          System.arraycopy(oldProperty, copyStartIndex, newProperty, outIndex, copyEndIndex - copyStartIndex)
+          outIndex += copyEndIndex - copyStartIndex
+          assert(
+            newQty(copyStartSeq) == get(oldQty, copyStartSeq) + offset,
+            s"something went wrong while copying properties: newQty(copyStartSeq) was supposed to be ${get(oldQty, copyStartSeq) + offset} but instead was ${newQty(copyStartSeq)}"
+          )
+          for (idx <- Range(copyStartSeq + 1, insertionSeq + 1))
+            newQty(idx) = get(oldQty, idx) + offset
 
-        insertion.foreach { insertion =>
-          System.arraycopy(setPropertyValues, insertion.start, newProperty, outIndex, insertion.length)
-          outIndex += insertion.length
-          newQty(insertionSeq + 1) = outIndex
+          insertion.foreach { insertion =>
+            System.arraycopy(setPropertyValues, insertion.start, newProperty, outIndex, insertion.length)
+            outIndex += insertion.length
+            newQty(insertionSeq + 1) = outIndex
+          }
+          copyStartSeq = insertionSeq + 1
         }
-        copyStartSeq = insertionSeq + 1
-      }
-      newQty(nodeCount) = outIndex
+        newQty(nodeCount) = outIndex
 
-      graph.properties(pos) = newQty
-      // fixme: need to support graphs with unknown schema. Then we need to homogenize the array here.
-      graph.properties(pos + 1) = newProperty
+        graph.properties(pos) = newQty
+        // fixme: need to support graphs with unknown schema. Then we need to homogenize the array here.
+        graph.properties(pos + 1) = newProperty
+      }
     }
   }
 

@@ -58,7 +58,10 @@ lazy val tests = project
   .settings(
     name := "flatgraph-tests",
     publish / skip := true,
-    libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
+    libraryDependencies ++= Seq(
+      "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
+      "org.scalamock" %% "scalamock" % "6.0.0" % Test
+    ),
     Test/compile := (Test/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
   )
 
