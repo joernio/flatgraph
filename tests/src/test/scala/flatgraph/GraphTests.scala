@@ -28,6 +28,7 @@ class GraphTests extends AnyWordSpec with MockFactory {
     mockSchemaViolationReporter.illegalNodeProperty.expects(nodeA.nodeKind: Int, "UNKNOWN", schema)
     mockSchemaViolationReporter.illegalNodeProperty.expects(nodeA.nodeKind: Int, 999, schema)
     mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, NodeA.PropertyKeys.IntOptional.kind, schema)
+    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, 998, schema)
 
     val setProperties = new DiffGraphBuilder(schema, mockSchemaViolationReporter)
       // this is fine
@@ -36,6 +37,7 @@ class GraphTests extends AnyWordSpec with MockFactory {
       .setNodeProperty(nodeA, "UNKNOWN", "value1")
       ._setNodeProperty(nodeA, 999, "value2")
       .setNodeProperty(nodeB, NodeA.PropertyNames.IntOptional, 101)
+      ._setNodeProperty(nodeB, 998, 102)
     new DiffGraphApplier(graph, setProperties, mockSchemaViolationReporter).applyUpdate()
 
     genericDomain.nodeA.head.propertiesMap.asScala shouldBe Map("int_optional" -> 100)
