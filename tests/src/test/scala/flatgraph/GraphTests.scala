@@ -14,15 +14,14 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.MapHasAsScala
 
-
 class GraphTests extends AnyWordSpec with MockFactory {
 
   "node property: log warning for schema-unconform property usage" in {
     // unknown node properties often root in deserialising an old storage format,
     // so we don't want to error out but rather log a warning
-    val genericDomain = GenericDomain.empty
-    val graph = genericDomain.graph
-    val schema = graph.schema
+    val genericDomain     = GenericDomain.empty
+    val graph             = genericDomain.graph
+    val schema            = graph.schema
     val Seq(nodeA, nodeB) = TestHelpers.addNodes(graph, Seq(NewNodeA(), NewNodeB()))
 
     val mockSchemaViolationReporter = mock[SchemaViolationReporter]
@@ -42,7 +41,6 @@ class GraphTests extends AnyWordSpec with MockFactory {
     genericDomain.nodeA.head.propertiesMap.asScala shouldBe Map("int_optional" -> 100)
     genericDomain.nodeB.head.propertiesMap.asScala shouldBe Map()
   }
-
 
   /* sample graph:
    * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5

@@ -691,7 +691,8 @@ class DomainClassesGenerator(schema: Schema) {
     }
     os.write(outputDir0 / "GraphSchema.scala", schemaFile)
 
-    os.write(outputDir0 / "PropertyErrorRegister.scala",
+    os.write(
+      outputDir0 / "PropertyErrorRegister.scala",
       s"""package $basePackage
          |
          |object PropertyErrorRegister {

@@ -8,7 +8,11 @@ import flatgraph.misc.SchemaViolationReporter
 import scala.collection.{Iterator, mutable}
 
 object DiffGraphApplier {
-  def applyDiff(graph: Graph, diff: DiffGraphBuilder, schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter): Unit = {
+  def applyDiff(
+    graph: Graph,
+    diff: DiffGraphBuilder,
+    schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter
+  ): Unit = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
     new DiffGraphApplier(graph, diff, schemaViolationReporter).applyUpdate()
     diff.buffer = null
