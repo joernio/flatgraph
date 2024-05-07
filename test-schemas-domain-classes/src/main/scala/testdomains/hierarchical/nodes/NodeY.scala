@@ -5,9 +5,9 @@ import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
   */
-trait NodeAEMT extends AnyRef with BaseNodeEMT
+trait NodeYEMT extends AnyRef with BaseNodeEMT
 
-trait NodeABase extends AbstractNode with BaseNodeBase with StaticType[NodeAEMT] {
+trait NodeYBase extends AbstractNode with BaseNodeBase with StaticType[NodeYEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
     import testdomains.hierarchical.accessors.Lang.*
@@ -17,8 +17,8 @@ trait NodeABase extends AbstractNode with BaseNodeBase with StaticType[NodeAEMT]
   }
 }
 
-object NodeA {
-  val Label = "node_a"
+object NodeY {
+  val Label = "node_y"
   object PropertyNames {
 
     val Name = "name"
@@ -31,11 +31,11 @@ object NodeA {
   }
 }
 
-class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 0.toShort, seq_4762)
-    with NodeABase
+class NodeY(graph_4762: flatgraph.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 1.toShort, seq_4762)
+    with NodeYBase
     with BaseNode
-    with StaticType[NodeAEMT] {
+    with StaticType[NodeYEMT] {
 
   override def productElementName(n: Int): String =
     n match {
@@ -49,26 +49,26 @@ class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
       case _ => null
     }
 
-  override def productPrefix = "NodeA"
+  override def productPrefix = "NodeY"
   override def productArity  = 1
 
-  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NodeA]
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NodeY]
 }
 
-object NewNodeA {
-  def apply(): NewNodeA                              = new NewNodeA
+object NewNodeY {
+  def apply(): NewNodeY                              = new NewNodeY
   private val outNeighbors: Map[String, Set[String]] = Map()
   private val inNeighbors: Map[String, Set[String]]  = Map()
 }
-class NewNodeA extends NewNode(0.toShort) with NodeABase with BaseNodeNew {
-  override type StoredNodeType = NodeA
-  override def label: String = "node_a"
+class NewNodeY extends NewNode(1.toShort) with NodeYBase with BaseNodeNew {
+  override type StoredNodeType = NodeY
+  override def label: String = "node_y"
 
   override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
-    NewNodeA.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+    NewNodeY.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
   override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
-    NewNodeA.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+    NewNodeY.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
   var name: String                   = "<empty>": String
@@ -78,7 +78,7 @@ class NewNodeA extends NewNode(0.toShort) with NodeABase with BaseNodeNew {
   }
 
   override def copy(): this.type = {
-    val newInstance = new NewNodeA
+    val newInstance = new NewNodeY
     newInstance.name = this.name
     newInstance.asInstanceOf[this.type]
   }
@@ -95,7 +95,7 @@ class NewNodeA extends NewNode(0.toShort) with NodeABase with BaseNodeNew {
       case _ => null
     }
 
-  override def productPrefix                = "NewNodeA"
+  override def productPrefix                = "NewNodeY"
   override def productArity                 = 1
-  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNodeA]
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNodeY]
 }

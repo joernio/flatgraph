@@ -12,8 +12,8 @@ object Accessors {
   /* accessors for concrete stored nodes end */
 
   /* accessors for base nodes start */
-  final class Access_NodeABase(val node: nodes.NodeABase) extends AnyVal {}
-  final class Access_NodeBBase(val node: nodes.NodeBBase) extends AnyVal {}
+  final class Access_NodeXBase(val node: nodes.NodeXBase) extends AnyVal {}
+  final class Access_NodeYBase(val node: nodes.NodeYBase) extends AnyVal {}
   final class Access_BaseNodeBase(val node: nodes.BaseNodeBase) extends AnyVal {
     def name: String = node match {
       case stored: nodes.StoredNode   => new Access_Property_name(stored).name
@@ -31,8 +31,8 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
   import Accessors.*
-  implicit def access_NodeABase(node: nodes.NodeABase): Access_NodeABase = new Access_NodeABase(node)
-  implicit def access_NodeBBase(node: nodes.NodeBBase): Access_NodeBBase = new Access_NodeBBase(node)
+  implicit def access_NodeXBase(node: nodes.NodeXBase): Access_NodeXBase = new Access_NodeXBase(node)
+  implicit def access_NodeYBase(node: nodes.NodeYBase): Access_NodeYBase = new Access_NodeYBase(node)
 }
 
 trait AbstractBaseConversions0 {

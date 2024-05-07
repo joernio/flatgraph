@@ -6,14 +6,14 @@ import java.util.Set;
 public class NodeTypes {
 
 
-public static final String node_a = "node_a";
+public static final String node_x = "node_x";
 
 
-public static final String node_b = "node_b";
+public static final String node_y = "node_y";
 
 public static Set<String> ALL = new HashSet<String>() {{
-add(node_a);
-add(node_b);
+add(node_x);
+add(node_y);
 }};
 
 }

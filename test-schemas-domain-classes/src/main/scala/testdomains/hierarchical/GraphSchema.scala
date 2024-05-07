@@ -5,13 +5,13 @@ import testdomains.hierarchical.edges
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {
-  private val nodeLabels                             = IndexedSeq("node_a", "node_b")
+  private val nodeLabels                             = IndexedSeq("node_x", "node_y")
   val nodeKindByLabel                                = nodeLabels.zipWithIndex.toMap
   val edgeLabels                                     = Array("connected_to")
   val edgeKindByLabel                                = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] = Array(size => null)
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
-    Array((g, seq) => new nodes.NodeA(g, seq), (g, seq) => new nodes.NodeB(g, seq))
+    Array((g, seq) => new nodes.NodeX(g, seq), (g, seq) => new nodes.NodeY(g, seq))
   val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] =
     Array((s, d, subseq, p) => new edges.ConnectedTo(s, d, subseq, p))
   val nodePropertyAllocators: Array[Int => Array[?]] = Array(size => new Array[String](size))
@@ -25,9 +25,9 @@ object GraphSchema extends flatgraph.Schema {
         else FormalQtyType.QtyNone
     }
 
-    nodePropertyDescriptors(0) = FormalQtyType.StringType // node_a.name
+    nodePropertyDescriptors(0) = FormalQtyType.StringType // node_x.name
     nodePropertyDescriptors(1) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(2) = FormalQtyType.StringType // node_b.name
+    nodePropertyDescriptors(2) = FormalQtyType.StringType // node_y.name
     nodePropertyDescriptors(3) = FormalQtyType.QtyOne
     nodePropertyDescriptors
   }
@@ -39,8 +39,8 @@ object GraphSchema extends flatgraph.Schema {
   override def getEdgeKindByLabel(label: String): Int             = edgeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getNodePropertyNames(nodeLabel: String): Set[String] = {
     nodeLabel match {
-      case "node_a" => Set("name")
-      case "node_b" => Set("name")
+      case "node_x" => Set("name")
+      case "node_y" => Set("name")
       case _        => Set.empty
     }
   }

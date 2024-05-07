@@ -71,8 +71,8 @@ object Accessors {
   /* accessors for concrete stored nodes end */
 
   /* accessors for base nodes start */
-  final class Traversal_NodeABase[NodeType <: nodes.NodeABase](val traversal: Iterator[NodeType])       extends AnyVal {}
-  final class Traversal_NodeBBase[NodeType <: nodes.NodeBBase](val traversal: Iterator[NodeType])       extends AnyVal {}
+  final class Traversal_NodeXBase[NodeType <: nodes.NodeXBase](val traversal: Iterator[NodeType])       extends AnyVal {}
+  final class Traversal_NodeYBase[NodeType <: nodes.NodeYBase](val traversal: Iterator[NodeType])       extends AnyVal {}
   final class Traversal_BaseNodeBase[NodeType <: nodes.BaseNodeBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
     /** Traverse to name property */
@@ -144,10 +144,10 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
   import Accessors.*
-  implicit def traversal_NodeABase[NodeType <: nodes.NodeABase](traversal: IterableOnce[NodeType]): Traversal_NodeABase[NodeType] =
-    new Traversal_NodeABase(traversal.iterator)
-  implicit def traversal_NodeBBase[NodeType <: nodes.NodeBBase](traversal: IterableOnce[NodeType]): Traversal_NodeBBase[NodeType] =
-    new Traversal_NodeBBase(traversal.iterator)
+  implicit def traversal_NodeXBase[NodeType <: nodes.NodeXBase](traversal: IterableOnce[NodeType]): Traversal_NodeXBase[NodeType] =
+    new Traversal_NodeXBase(traversal.iterator)
+  implicit def traversal_NodeYBase[NodeType <: nodes.NodeYBase](traversal: IterableOnce[NodeType]): Traversal_NodeYBase[NodeType] =
+    new Traversal_NodeYBase(traversal.iterator)
 }
 
 trait AbstractBaseConversions0 {

@@ -6,7 +6,7 @@ trait BaseNodeBase extends AbstractNode with StaticType[BaseNodeEMT]
 // new properties: name
 // inherited properties:
 // inherited interfaces:
-// implementing nodes: node_a, node_b
+// implementing nodes: node_x, node_y
 trait BaseNode extends StoredNode with BaseNodeBase with StaticType[BaseNodeEMT]
 
 object BaseNode {

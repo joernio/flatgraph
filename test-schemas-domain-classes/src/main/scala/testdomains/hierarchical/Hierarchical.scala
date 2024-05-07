@@ -59,15 +59,15 @@ class HierarchicalNodeStarters(val wrappedHierarchical: Hierarchical) {
 
   /** */
   @flatgraph.help.Doc(info = """""")
-  def nodeA: Iterator[nodes.NodeA] = wrappedHierarchical.graph._nodes(0).asInstanceOf[Iterator[nodes.NodeA]]
+  def nodeX: Iterator[nodes.NodeX] = wrappedHierarchical.graph._nodes(0).asInstanceOf[Iterator[nodes.NodeX]]
 
   /** */
   @flatgraph.help.Doc(info = """""")
-  def nodeB: Iterator[nodes.NodeB] = wrappedHierarchical.graph._nodes(1).asInstanceOf[Iterator[nodes.NodeB]]
+  def nodeY: Iterator[nodes.NodeY] = wrappedHierarchical.graph._nodes(1).asInstanceOf[Iterator[nodes.NodeY]]
 
-  /** subtypes: node_a, node_b
+  /** subtypes: node_x, node_y
     */
-  @flatgraph.help.Doc(info = """""", longInfo = """subtypes: node_a, node_b""")
-  def baseNode: Iterator[nodes.BaseNode] = Iterator(this.nodeA, this.nodeB).flatten
+  @flatgraph.help.Doc(info = """""", longInfo = """subtypes: node_x, node_y""")
+  def baseNode: Iterator[nodes.BaseNode] = Iterator(this.nodeX, this.nodeY).flatten
 
 }
