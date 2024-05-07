@@ -1,15 +1,15 @@
-package flatgraph.testdomains.gratefuldead
+package flatgraph.testdomains
 
+import flatgraph.schema.*
 import flatgraph.schema.EdgeType.Cardinality
 import flatgraph.schema.Property.ValueType
-import flatgraph.schema.SchemaBuilder
 
 /** Tinkerpop GratefulDead schema:
   * https://github.com/apache/tinkerpop/blob/ac40c7442957e7e756fcaf9336c41c36fd95c467/docs/static/images/grateful-dead-schema.png
   */
-object Schema {
-  val instance: flatgraph.schema.Schema = {
-    val builder = new SchemaBuilder(domainShortName = "GratefulDead", basePackage = "flatgraph.testdomains.gratefuldead")
+object GratefulDead {
+  val schema: Schema = {
+    val builder = new SchemaBuilder(domainShortName = "GratefulDead", basePackage = "testdomains.gratefuldead")
 
     // properties
     val name         = builder.addProperty("name", ValueType.String).mandatory(default = "")

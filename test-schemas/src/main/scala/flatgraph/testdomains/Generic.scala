@@ -1,12 +1,11 @@
-package flatgraph.testdomains.generic
+package flatgraph.testdomains
 
+import flatgraph.schema.*
 import flatgraph.schema.Property.{Cardinality, ValueType}
-import flatgraph.schema.SchemaBuilder
 
-/** Simple generic schema */
-object Schema {
-  val instance: flatgraph.schema.Schema = {
-    val builder = new SchemaBuilder(domainShortName = "GenericDomain", basePackage = "flatgraph.testdomains.generic")
+object Generic {
+  val schema: Schema = {
+    val builder = new SchemaBuilder(domainShortName = "GenericDomain", basePackage = "testdomains.generic")
 
     // properties
     val stringMandatory = builder.addProperty("string_mandatory", ValueType.String).mandatory(default = "<empty>")

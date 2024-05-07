@@ -1,6 +1,5 @@
 package flatgraph
 
-import flatgraph.help.Table
 import flatgraph.misc.SchemaViolationReporter
 import flatgraph.testutils.TestHelpers
 import flatgraph.testdomains.generic.GenericDomain
