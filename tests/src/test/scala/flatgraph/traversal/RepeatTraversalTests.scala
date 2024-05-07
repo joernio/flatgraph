@@ -410,22 +410,22 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     import testdomains.hierarchical.Language.*
     import testdomains.hierarchical.nodes.*
 
-    /** Using hierarchical domain to verify that repeat derives the correct types. Graph setup:
-     * NodeX <: BaseType
-     * NodeY <: BaseType
-     * X1 --> Y2 --> X3 --> X4
-     */
+    /** Using hierarchical domain to verify that repeat derives the correct types. Graph setup: NodeX <: BaseType NodeY <: BaseType X1 -->
+      * Y2 --> X3 --> X4
+      */
 
     val hierarchical = Hierarchical.empty
-    val newNodeX1 = NewNodeX().name("X1")
-    val newNodeY2 = NewNodeY().name("Y2")
-    val newNodeX3 = NewNodeX().name("X3")
-    val newNodeY4 = NewNodeY().name("Y4")
+    val newNodeX1    = NewNodeX().name("X1")
+    val newNodeY2    = NewNodeY().name("Y2")
+    val newNodeX3    = NewNodeX().name("X3")
+    val newNodeY4    = NewNodeY().name("Y4")
 
-    DiffGraphApplier.applyDiff(hierarchical.graph, Hierarchical.newDiffGraphBuilder
-      .addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.EdgeTypes.connected_to)
-      .addEdge(newNodeY2, newNodeX3, testdomains.hierarchical.EdgeTypes.connected_to)
-      .addEdge(newNodeX3, newNodeY4, testdomains.hierarchical.EdgeTypes.connected_to)
+    DiffGraphApplier.applyDiff(
+      hierarchical.graph,
+      Hierarchical.newDiffGraphBuilder
+        .addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.EdgeTypes.connected_to)
+        .addEdge(newNodeY2, newNodeX3, testdomains.hierarchical.EdgeTypes.connected_to)
+        .addEdge(newNodeX3, newNodeY4, testdomains.hierarchical.EdgeTypes.connected_to)
     )
 
     val nodeX = hierarchical.nodeX.name("X1")
