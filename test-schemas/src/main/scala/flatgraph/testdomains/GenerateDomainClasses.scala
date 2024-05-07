@@ -6,7 +6,7 @@ object GenerateDomainClasses {
   def main(args: Array[String]): Unit = {
     val outputDir = "test-schemas-domain-classes/src/main/scala"
 
-    Seq(gratefuldead.Schema.instance, generic.Schema.instance).foreach { schema =>
+    Seq(GratefulDead.schema, Generic.schema).foreach { schema =>
       new DomainClassesGenerator(schema).run(java.nio.file.Paths.get(outputDir))
 
       // this also works...
