@@ -1,11 +1,10 @@
 package flatgraph.traversal
 
+import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode}
 import flatgraph.TestGraphs.FlatlineGraphFixture
-import flatgraph.traversal.Language.*
+import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.Language.*
 import flatgraph.testdomains.generic.PropertyKeys.StringMandatory
-import flatgraph.*
-import flatgraph.testdomains.generic.GenericDomain
 import flatgraph.testdomains.generic.edges.ConnectedTo
 import flatgraph.testdomains.generic.nodes.{NewNodeA, NodeA}
 import org.scalatest.matchers.should.Matchers.*
@@ -404,6 +403,33 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
         .toSetMutable shouldBe Set(Seq(center, l1, l2, l3), Seq(center, r1, r2, r3))
     }
 
+  }
+
+  "type resolution in hierarchical domain schema" in {
+    import testdomains.hierarchical.Hierarchical
+    import testdomains.hierarchical.Language.*
+    import testdomains.hierarchical.nodes.*
+
+    /** Using hierarchical domain to verify that repeat derives the correct types. Graph setup: NodeX <: BaseType NodeY <: BaseType X1 -->
+      * Y2 --> X3 --> X4
+      */
+
+    val hierarchical = Hierarchical.empty
+    val newNodeX1    = NewNodeX().name("X1")
+    val newNodeY2    = NewNodeY().name("Y2")
+    val newNodeX3    = NewNodeX().name("X3")
+    val newNodeY4    = NewNodeY().name("Y4")
+
+    DiffGraphApplier.applyDiff(
+      hierarchical.graph,
+      Hierarchical.newDiffGraphBuilder
+        .addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.EdgeTypes.connected_to)
+        .addEdge(newNodeY2, newNodeX3, testdomains.hierarchical.EdgeTypes.connected_to)
+        .addEdge(newNodeX3, newNodeY4, testdomains.hierarchical.EdgeTypes.connected_to)
+    )
+
+    val nodeX = hierarchical.nodeX.name("X1")
+    nodeX.repeat(_.connectedTo)(_.emit).name.l shouldBe List("X1", "Y2", "X3", "Y4")
   }
 
 }

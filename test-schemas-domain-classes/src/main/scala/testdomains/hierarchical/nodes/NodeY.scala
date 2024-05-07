@@ -1,0 +1,101 @@
+package testdomains.hierarchical.nodes
+
+import testdomains.hierarchical.Language.*
+import scala.collection.immutable.{IndexedSeq, ArraySeq}
+
+/** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
+  */
+trait NodeYEMT extends AnyRef with BaseNodeEMT
+
+trait NodeYBase extends AbstractNode with BaseNodeBase with StaticType[NodeYEMT] {
+
+  override def propertiesMap: java.util.Map[String, Any] = {
+    import testdomains.hierarchical.accessors.Lang.*
+    val res = new java.util.HashMap[String, Any]()
+    if (("<empty>": String) != this.name) res.put("name", this.name)
+    res
+  }
+}
+
+object NodeY {
+  val Label = "node_y"
+  object PropertyNames {
+
+    val Name = "name"
+  }
+  object PropertyKeys {
+    val Name = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "<empty>")
+  }
+  object PropertyDefaults {
+    val Name = "<empty>"
+  }
+}
+
+class NodeY(graph_4762: flatgraph.Graph, seq_4762: Int)
+    extends StoredNode(graph_4762, 1.toShort, seq_4762)
+    with NodeYBase
+    with BaseNode
+    with StaticType[NodeYEMT] {
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "name"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.name
+      case _ => null
+    }
+
+  override def productPrefix = "NodeY"
+  override def productArity  = 1
+
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NodeY]
+}
+
+object NewNodeY {
+  def apply(): NewNodeY                              = new NewNodeY
+  private val outNeighbors: Map[String, Set[String]] = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map()
+}
+class NewNodeY extends NewNode(1.toShort) with NodeYBase with BaseNodeNew {
+  override type StoredNodeType = NodeY
+  override def label: String = "node_y"
+
+  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewNodeY.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+    NewNodeY.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+  }
+
+  var name: String                   = "<empty>": String
+  def name(value: String): this.type = { this.name = value; this }
+  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
+    interface.insertProperty(this, 0, Iterator(this.name))
+  }
+
+  override def copy(): this.type = {
+    val newInstance = new NewNodeY
+    newInstance.name = this.name
+    newInstance.asInstanceOf[this.type]
+  }
+
+  override def productElementName(n: Int): String =
+    n match {
+      case 0 => "name"
+      case _ => ""
+    }
+
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => this.name
+      case _ => null
+    }
+
+  override def productPrefix                = "NewNodeY"
+  override def productArity                 = 1
+  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NewNodeY]
+}
