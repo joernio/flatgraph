@@ -6,10 +6,10 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
 import flatgraph.util.DiffTool
-import flatgraph.testdomains.generic.GenericDomain
-import flatgraph.testdomains.generic.Language.*
-import flatgraph.testdomains.generic.edges.ConnectedTo
-import flatgraph.testdomains.generic.nodes.NodeA
+import testdomains.generic.GenericDomain
+import testdomains.generic.Language.*
+import testdomains.generic.edges.ConnectedTo
+import testdomains.generic.nodes.NodeA
 
 import java.io.FileNotFoundException
 import java.nio.file.Paths
@@ -162,7 +162,7 @@ class Neo4jCsvTests extends AnyWordSpec {
       exportedFiles.length shouldBe 6
 
       // use importer for round trip
-      val importerMain       = ImporterMain(flatgraph.testdomains.generic.GraphSchema)
+      val importerMain       = ImporterMain(testdomains.generic.GraphSchema)
       val reimportPath       = tmpDir / "reimported.fg"
       val relevantInputFiles = exportedFiles.filterNot(_.name.contains(CypherFileSuffix)).map(_.pathAsString)
       importerMain(Array("--format=neo4jcsv", s"--out=${reimportPath.pathAsString}") ++ relevantInputFiles)

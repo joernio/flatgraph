@@ -2,12 +2,12 @@ package flatgraph.formats.graphson
 
 import better.files.File
 import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphs}
-import flatgraph.testdomains.generic.Language.*
-import flatgraph.testdomains.generic.nodes.NodeA
 import flatgraph.misc.TestUtils.applyDiff
-import flatgraph.testdomains.generic.GenericDomain
-import flatgraph.testdomains.generic.nodes.NewNodeB
 import flatgraph.util.DiffTool
+import testdomains.generic.Language.*
+import testdomains.generic.nodes.NodeA
+import testdomains.generic.GenericDomain
+import testdomains.generic.nodes.NewNodeB
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 

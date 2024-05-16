@@ -18,12 +18,13 @@ object GraphSchema extends flatgraph.Schema {
     (s, d, subseq, p) => new edges.Sungby(s, d, subseq, p),
     (s, d, subseq, p) => new edges.Writtenby(s, d, subseq, p)
   )
-  val nodePropertyAllocators: Array[Int => Array[?]] = Array(size => new Array[String](size), size => new Array[String](size))
-  val normalNodePropertyNames                        = Array("name", "songType")
-  val nodePropertyByLabel                            = normalNodePropertyNames.zipWithIndex.toMap
+  val nodePropertyAllocators: Array[Int => Array[?]] =
+    Array(size => new Array[String](size), size => new Array[Int](size), size => new Array[String](size))
+  val normalNodePropertyNames = Array("name", "performances", "songType")
+  val nodePropertyByLabel     = normalNodePropertyNames.zipWithIndex.toMap
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
-    val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](8)
-    for (idx <- Range(0, 8)) {
+    val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](12)
+    for (idx <- Range(0, 12)) {
       nodePropertyDescriptors(idx) =
         if ((idx & 1) == 0) FormalQtyType.NothingType
         else FormalQtyType.QtyNone
@@ -33,8 +34,10 @@ object GraphSchema extends flatgraph.Schema {
     nodePropertyDescriptors(1) = FormalQtyType.QtyOne
     nodePropertyDescriptors(2) = FormalQtyType.StringType // song.name
     nodePropertyDescriptors(3) = FormalQtyType.QtyOne
-    nodePropertyDescriptors(6) = FormalQtyType.StringType // song.songType
+    nodePropertyDescriptors(6) = FormalQtyType.IntType // song.performances
     nodePropertyDescriptors(7) = FormalQtyType.QtyOption
+    nodePropertyDescriptors(10) = FormalQtyType.StringType // song.songType
+    nodePropertyDescriptors(11) = FormalQtyType.QtyOption
     nodePropertyDescriptors
   }
   override def getNumberOfNodeKinds: Int                          = 2
@@ -46,7 +49,7 @@ object GraphSchema extends flatgraph.Schema {
   override def getNodePropertyNames(nodeLabel: String): Set[String] = {
     nodeLabel match {
       case "artist" => Set("name")
-      case "song"   => Set("name", "songType")
+      case "song"   => Set("name", "performances", "songType")
       case _        => Set.empty
     }
   }
@@ -58,12 +61,12 @@ object GraphSchema extends flatgraph.Schema {
   }
 
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
-    if (propertyKind < 2) normalNodePropertyNames(propertyKind)
+    if (propertyKind < 3) normalNodePropertyNames(propertyKind)
     else null
   }
 
   override def getPropertyKindByName(label: String): Int = nodePropertyByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
-  override def getNumberOfPropertyKinds: Int             = 2
+  override def getNumberOfPropertyKinds: Int             = 3
   override def makeNode(graph: flatgraph.Graph, nodeKind: Short, seq: Int): nodes.StoredNode = nodeFactories(nodeKind)(graph, seq)
   override def makeEdge(src: flatgraph.GNode, dst: flatgraph.GNode, edgeKind: Short, subSeq: Int, property: Any): flatgraph.Edge =
     edgeFactories(edgeKind)(src, dst, subSeq, property)

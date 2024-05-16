@@ -13,8 +13,8 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 class GraphMLTests extends AnyWordSpec {
 
   "import minified gratefuldead graph" in {
-    import flatgraph.testdomains.gratefuldead.GratefulDead
-    import flatgraph.testdomains.gratefuldead.Language.*
+    import testdomains.gratefuldead.GratefulDead
+    import testdomains.gratefuldead.Language.*
     val gratefulDead = GratefulDead.empty
     val graph        = gratefulDead.graph
     graph.nodeCount shouldBe 0
@@ -40,10 +40,10 @@ class GraphMLTests extends AnyWordSpec {
   }
 
   "Exporter should export valid xml" when {
-    import flatgraph.testdomains.generic.GenericDomain
-    import flatgraph.testdomains.generic.Language.*
-    import flatgraph.testdomains.generic.edges.ConnectedTo
-    import flatgraph.testdomains.generic.nodes.NewNodeA
+    import testdomains.generic.GenericDomain
+    import testdomains.generic.Language.*
+    import testdomains.generic.edges.ConnectedTo
+    import testdomains.generic.nodes.NewNodeA
 
     "not using (unsupported) list properties" in {
       val graph = GenericDomain.empty.graph
