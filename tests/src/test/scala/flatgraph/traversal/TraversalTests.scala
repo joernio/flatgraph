@@ -2,13 +2,13 @@ package flatgraph.traversal
 
 import flatgraph.help.Table.AvailableWidthProvider
 import flatgraph.help.{DocSearchPackages, Table}
-import flatgraph.testdomains.generic.GenericDomain
-import flatgraph.testdomains.generic.Language.*
-import flatgraph.testdomains.generic.edges.ConnectedTo
-import flatgraph.testdomains.generic.nodes.NodeA
 import flatgraph.{GNode, TestGraphs}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+import testdomains.generic.GenericDomain
+import testdomains.generic.Language.*
+import testdomains.generic.edges.ConnectedTo
+import testdomains.generic.nodes.NodeA
 
 import scala.collection.mutable
 

@@ -4,10 +4,10 @@ import flatgraph.Edge.Direction
 import flatgraph.TestGraphs
 import flatgraph.TestGraphs.FlatlineGraphFixture
 import flatgraph.algorithm.PathFinder.*
-import flatgraph.testdomains.generic.Language.*
-import flatgraph.testdomains.generic.edges.ConnectedTo
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+import testdomains.generic.Language.*
+import testdomains.generic.edges.ConnectedTo
 
 /* uses 'flat line' sample graph:
  * L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5

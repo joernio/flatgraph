@@ -2,11 +2,11 @@ package flatgraph.traversal
 
 import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode}
 import flatgraph.TestGraphs.FlatlineGraphFixture
-import flatgraph.testdomains.generic.GenericDomain
-import flatgraph.testdomains.generic.Language.*
-import flatgraph.testdomains.generic.PropertyKeys.StringMandatory
-import flatgraph.testdomains.generic.edges.ConnectedTo
-import flatgraph.testdomains.generic.nodes.{NewNodeA, NodeA}
+import testdomains.generic.GenericDomain
+import testdomains.generic.Language.*
+import testdomains.generic.PropertyKeys.StringMandatory
+import testdomains.generic.edges.ConnectedTo
+import testdomains.generic.nodes.{NewNodeA, NodeA}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 

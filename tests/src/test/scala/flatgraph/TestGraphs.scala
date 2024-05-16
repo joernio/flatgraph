@@ -1,9 +1,9 @@
 package flatgraph
 
-import flatgraph.testdomains.generic.GenericDomain
-import flatgraph.testdomains.generic.edges.ConnectedTo
-import flatgraph.testdomains.generic.nodes.NewNodeA
-import flatgraph.testdomains.generic.Language.*
+import testdomains.generic.GenericDomain
+import testdomains.generic.edges.ConnectedTo
+import testdomains.generic.nodes.NewNodeA
+import testdomains.generic.Language.*
 
 import java.nio.file.Path
 

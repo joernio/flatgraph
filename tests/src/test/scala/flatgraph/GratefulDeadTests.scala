@@ -1,17 +1,17 @@
 package flatgraph
 
 import flatgraph.misc.SchemaViolationReporter
+import flatgraph.testdomains.generic.GenericDomain
+import flatgraph.testdomains.generic.Language.*
+import flatgraph.testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA}
 import flatgraph.testutils.TestHelpers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-import testdomains.generic.GenericDomain
-import testdomains.generic.Language.*
-import testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA}
 
 import scala.jdk.CollectionConverters.MapHasAsScala
 
-class GraphTests extends AnyWordSpec with MockFactory {
+class GratefulDeadTests extends AnyWordSpec with MockFactory {
 
   "node property: log warning for schema-unconform property usage" in {
     // unknown node properties often root in deserialising an old storage format,
