@@ -1,44 +1,33 @@
 package flatgraph
 
-import flatgraph.misc.SchemaViolationReporter
-import flatgraph.testdomains.generic.GenericDomain
-import flatgraph.testdomains.generic.Language.*
-import flatgraph.testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA}
-import flatgraph.testutils.TestHelpers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+import testdomains.gratefuldead.GratefulDead
+import testdomains.gratefuldead.Language.*
+import testdomains.gratefuldead.edges.{Sungby, Writtenby}
+import testdomains.gratefuldead.nodes.{NewArtist, NewSong}
 
-import scala.jdk.CollectionConverters.MapHasAsScala
-
+/** some tests to show the api of the generated domain classes - documentation driven development :) */
 class GratefulDeadTests extends AnyWordSpec with MockFactory {
 
-  "node property: log warning for schema-unconform property usage" in {
-    // unknown node properties often root in deserialising an old storage format,
-    // so we don't want to error out but rather log a warning
-    val genericDomain     = GenericDomain.empty
-    val graph             = genericDomain.graph
-    val schema            = graph.schema
-    val Seq(nodeA, nodeB) = TestHelpers.addNodes(graph, Seq(NewNodeA(), NewNodeB()))
+  "usage of generated domain specific api" in {
+    val gratefulDead = GratefulDead.empty
 
-    val mockSchemaViolationReporter = mock[SchemaViolationReporter]
-    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeA.nodeKind: Int, "UNKNOWN", schema)
-    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeA.nodeKind: Int, 999, schema)
-    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, NodeA.PropertyKeys.IntOptional.kind, schema)
-    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, 998, schema)
+    // create a simple graph with two nodes and two edges
+    val diffGraph    = GratefulDead.newDiffGraphBuilder
+    val garcia       = NewArtist().name("Garcia")
+    val boDiddley    = NewArtist().name("Bo_Diddley")
+    val heyBoDiddley = NewSong().name("HEY BO DIDDLEY").songtype("cover").performances(5)
+    // n.b. if nodes are referenced in edges, they don't need to be added separately via `diffGraph.addNode`
+    diffGraph.addEdge(src = heyBoDiddley, dst = boDiddley, Writtenby.Label)
+    diffGraph.addEdge(src = heyBoDiddley, dst = garcia, Sungby.Label)
+    DiffGraphApplier.applyDiff(gratefulDead.graph, diffGraph)
 
-    val setProperties = new DiffGraphBuilder(schema, mockSchemaViolationReporter)
-      // this is fine
-      .setNodeProperty(nodeA, NodeA.PropertyNames.IntOptional, 100)
-      // these are not schema conform...
-      .setNodeProperty(nodeA, "UNKNOWN", "value1")
-      ._setNodeProperty(nodeA, 999, "value2")
-      .setNodeProperty(nodeB, NodeA.PropertyNames.IntOptional, 101)
-      ._setNodeProperty(nodeB, 998, 102)
-    new DiffGraphApplier(graph, setProperties, mockSchemaViolationReporter).applyUpdate()
-
-    genericDomain.nodeA.head.propertiesMap.asScala shouldBe Map("int_optional" -> 100)
-    genericDomain.nodeB.head.propertiesMap.asScala shouldBe Map()
+    // now query it in the typesafe domain-specific query language
+    gratefulDead.artist.name.sorted shouldBe List("Bo_Diddley", "Garcia")
+    gratefulDead.artist.name("Garcia").sang.name.l shouldBe List("HEY BO DIDDLEY")
+    gratefulDead.song.writtenBy.name.l shouldBe List("Bo_Diddley")
   }
 
 }

@@ -18,14 +18,8 @@ object GratefulDead {
     val weight       = builder.addProperty("weight", ValueType.Long).mandatory(default = 0)
 
     // nodes
-    val artist = builder
-      .addNodeType("artist")
-      .addProperty(name)
-
-    val song = builder
-      .addNodeType("song")
-      .addProperty(name)
-      .addProperty(songType)
+    val artist = builder.addNodeType("artist").addProperty(name)
+    val song   = builder.addNodeType("song").addProperty(name).addProperty(songType).addProperty(performances)
 
     // edges
     val sungBy     = builder.addEdgeType("sungBy")
