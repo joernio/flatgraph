@@ -15,7 +15,9 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
     val generateDomainClassesCheck = taskKey[Unit](
       "Fails if domain classes are not generated with the latest versions. Analogous to `scalafmtCheck`, i.e. run this on PRs."
     )
-    val outputDir       = settingKey[File]("target directory for the generated domain classes, e.g. `Projects.domainClasses/scalaSource`")
+    val outputDir = settingKey[File]("target directory for the generated domain classes, e.g. `Projects.domainClasses/scalaSource`")
+    val invalidateOnChangesIn =
+      settingKey[Seq[File]]("if any of the configured files/directories changed, we will regenerate the domain classes")
     val classWithSchema = settingKey[String]("class with schema field, e.g. `org.example.MyDomain$`")
     val fieldName = settingKey[String](
       "(static) field name for schema within the specified `classWithSchema` with schema field, e.g. `org.example.MyDomain$`"
@@ -30,6 +32,8 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
   }
   import autoImport._
 
+  override lazy val globalSettings: Seq[Setting[_]] = Seq(invalidateOnChangesIn := Seq())
+
   override def requires = JvmPlugin && ScalafmtPlugin
 
   // This plugin needs to be enabled manually via `enablePlugins`
@@ -40,9 +44,10 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
 
   lazy val generateDomainClassesTask = {
     Def.taskDyn {
-      val classWithSchemaValue = (generateDomainClasses / classWithSchema).value
-      val fieldNameValue       = (generateDomainClasses / fieldName).value
-      val outputDirValue       = (generateDomainClasses / outputDir).value
+      val classWithSchemaValue       = (generateDomainClasses / classWithSchema).value
+      val fieldNameValue             = (generateDomainClasses / fieldName).value
+      val outputDirValue             = (generateDomainClasses / outputDir).value
+      val invalidateOnChangesInValue = (generateDomainClasses / invalidateOnChangesIn).value
 
       val disableFormattingParamMaybe =
         if ((generateDomainClasses / disableFormatting).value) "--noformat"
@@ -57,8 +62,17 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       val schemaAndDependenciesHashFile = target.value / "flatgraph-schema-and-dependencies.md5"
       val dependenciesFile              = target.value / "dependenciesCP.txt" // includes codegen version!
       IO.write(dependenciesFile, dependencyClasspath.value.mkString(System.lineSeparator))
-      lazy val currentSchemaAndDependenciesHash =
-        FileUtils.md5(sourceDirectory.value, baseDirectory.value / "build.sbt", dependenciesFile)
+      // directories / files that we want to monitor for changes - if none of these changed, we don't need to regenerate the domain classes
+      val inputs =
+        invalidateOnChangesInValue ++ // <- configurable in the build, e.g. `generateDomainClasses/invalidateOnChangesIn += file("foo.bar")`
+          Seq(
+            // sourceDirectory.value,
+            // baseDirectory.value / "build.sbt",
+            // (ThisBuild/baseDirectory).value / "build.sbt",
+            dependenciesFile
+          )
+      // inputs.foreach(println)
+      lazy val currentSchemaAndDependenciesHash = FileUtils.md5(inputs)
       lazy val lastSchemaAndDependenciesHash: Option[String] =
         Try(IO.read(schemaAndDependenciesHashFile)).toOption
 
