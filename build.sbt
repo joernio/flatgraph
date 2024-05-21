@@ -62,7 +62,6 @@ lazy val tests = project
       "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
       "org.scalamock" %% "scalamock" % "6.0.0" % Test
     ),
-    Test/compile := (Test/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
   )
 
 
