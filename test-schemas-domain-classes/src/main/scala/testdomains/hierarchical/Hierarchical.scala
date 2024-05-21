@@ -1,5 +1,5 @@
 package testdomains.hierarchical
-import flatgraph.DiffGraphBuilder
+import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
 import flatgraph.help.DocSearchPackages
 import flatgraph.help.Table.AvailableWidthProvider
 import Language.*
@@ -24,6 +24,12 @@ object Hierarchical {
     flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = true)
 
   def empty: Hierarchical = new Hierarchical(new flatgraph.Graph(GraphSchema))
+
+  def from(initialElements: DiffGraphBuilder => DiffGraphBuilder): Hierarchical = {
+    val graph = new flatgraph.Graph(GraphSchema)
+    DiffGraphApplier.applyDiff(graph, initialElements(new DiffGraphBuilder(GraphSchema)))
+    new Hierarchical(graph)
+  }
 
   /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
     * serialise graph to that given file (and override whatever was there before), unless you specify `persistOnClose = false`.

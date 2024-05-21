@@ -908,7 +908,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     val domainMain =
       s"""package $basePackage
-         |import flatgraph.DiffGraphBuilder
+         |import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
          |import flatgraph.help.DocSearchPackages
          |import flatgraph.help.Table.AvailableWidthProvider
          |import Language.*
@@ -935,6 +935,12 @@ class DomainClassesGenerator(schema: Schema) {
          |    flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = true)
          |
          |  def empty: $domainShortName = new $domainShortName(new flatgraph.Graph(GraphSchema))
+         |
+         |  def from(initialElements: DiffGraphBuilder => DiffGraphBuilder): $domainShortName = {
+         |    val graph = new flatgraph.Graph(GraphSchema)
+         |    DiffGraphApplier.applyDiff(graph, initialElements(new DiffGraphBuilder(GraphSchema)))
+         |    new $domainShortName(graph)
+         |  }
          |
          |  /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory.
          |   * `Graph.close` will serialise graph to that given file (and override whatever was there before), unless you

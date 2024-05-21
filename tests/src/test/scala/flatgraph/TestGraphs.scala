@@ -35,9 +35,6 @@ object TestGraphs {
 
   /** L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5 */
   def createFlatlineGraph(): GenericDomain = {
-    val genericDomain = GenericDomain.empty
-    val diffGraph     = GenericDomain.newDiffGraphBuilder
-
     val center = NewNodeA().stringMandatory("Center")
     val l1     = NewNodeA().stringMandatory("L1")
     val l2     = NewNodeA().stringMandatory("L2")
@@ -58,10 +55,8 @@ object TestGraphs {
     // r3 --- (Connection.Label, Connection.Properties.Distance.of(13)) --> r4
     // r4 --- (Connection.Label, Connection.Properties.Distance.of(14)) --> r5
 
-    DiffGraphApplier.applyDiff(
-      genericDomain.graph,
-      GenericDomain.newDiffGraphBuilder
-        .addEdge(center, l1, ConnectedTo.Label)
+    GenericDomain.from(
+      _.addEdge(center, l1, ConnectedTo.Label)
         .addEdge(l1, l2, ConnectedTo.Label)
         .addEdge(l2, l3, ConnectedTo.Label)
         .addEdge(center, r1, ConnectedTo.Label)
@@ -70,8 +65,6 @@ object TestGraphs {
         .addEdge(r3, r4, ConnectedTo.Label)
         .addEdge(r4, r5, ConnectedTo.Label)
     )
-
-    genericDomain
   }
 
   /** L3 <- L2 <- L1 <- Center -> R1 -> R2 -> R3 -> R4 -> R5 */

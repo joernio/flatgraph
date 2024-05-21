@@ -46,17 +46,16 @@ class GraphMLTests extends AnyWordSpec {
     import testdomains.generic.nodes.NewNodeA
 
     "not using (unsupported) list properties" in {
-      val graph = GenericDomain.empty.graph
       val node1 = NewNodeA().stringOptional("node 1 opt")
       val node2 = NewNodeA().stringMandatory("node 2 mandatory").stringOptional("node 2 opt")
       val node3 = NewNodeA().intMandatory(1).intOptional(2)
 
-      DiffGraphApplier.applyDiff(
-        graph,
-        GenericDomain.newDiffGraphBuilder
-          .addEdge(node1, node2, ConnectedTo.Label)
-          .addEdge(node2, node3, ConnectedTo.Label)
-      )
+      val graph = GenericDomain
+        .from(
+          _.addEdge(node1, node2, ConnectedTo.Label)
+            .addEdge(node2, node3, ConnectedTo.Label)
+        )
+        .graph
 
       File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
         val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
@@ -79,17 +78,11 @@ class GraphMLTests extends AnyWordSpec {
     }
 
     "using list properties" in {
-      val graph = GenericDomain.empty.graph
-
       // exporter  will discard the list properties, but inform the user about it
       val node1 = NewNodeA().stringMandatory("node 2 a").stringOptional("node 2 b").stringList(Seq("node 3 c1", "node 3 c2"))
       val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
 
-      DiffGraphApplier.applyDiff(
-        graph,
-        GenericDomain.newDiffGraphBuilder
-          .addEdge(node1, node2, ConnectedTo.Label)
-      )
+      val graph = GenericDomain.from(_.addEdge(node1, node2, ConnectedTo.Label)).graph
 
       File.usingTemporaryDirectory(this.getClass.getName) { exportRootDirectory =>
         val exportResult = GraphMLExporter.runExport(graph, exportRootDirectory.pathAsString)
