@@ -66,9 +66,9 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       val inputs =
         invalidateOnChangesInValue ++ // <- configurable in the build, e.g. `generateDomainClasses/invalidateOnChangesIn += file("foo.bar")`
           Seq(
-            // sourceDirectory.value,
-            // baseDirectory.value / "build.sbt",
-            // (ThisBuild/baseDirectory).value / "build.sbt",
+            sourceDirectory.value,
+            baseDirectory.value / "build.sbt",
+            (ThisBuild/baseDirectory).value / "build.sbt",
             dependenciesFile
           )
       // inputs.foreach(println)
