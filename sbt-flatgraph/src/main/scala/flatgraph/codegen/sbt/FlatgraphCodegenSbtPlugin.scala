@@ -65,12 +65,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       // directories / files that we want to monitor for changes - if none of these changed, we don't need to regenerate the domain classes
       val inputs =
         invalidateOnChangesInValue ++ // <- configurable in the build, e.g. `generateDomainClasses/invalidateOnChangesIn += file("foo.bar")`
-          Seq(
-            sourceDirectory.value,
-            baseDirectory.value / "build.sbt",
-            (ThisBuild/baseDirectory).value / "build.sbt",
-            dependenciesFile
-          )
+          Seq(sourceDirectory.value, baseDirectory.value / "build.sbt", (ThisBuild / baseDirectory).value / "build.sbt", dependenciesFile)
       // inputs.foreach(println)
       lazy val currentSchemaAndDependenciesHash = FileUtils.md5(inputs)
       lazy val lastSchemaAndDependenciesHash: Option[String] =

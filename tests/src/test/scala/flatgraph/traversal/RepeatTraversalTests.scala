@@ -1,6 +1,6 @@
 package flatgraph.traversal
 
-import flatgraph.{DiffGraphApplier, DiffGraphBuilder, GNode}
+import flatgraph.GNode
 import flatgraph.TestGraphs.FlatlineGraphFixture
 import testdomains.generic.GenericDomain
 import testdomains.generic.Language.*
@@ -317,19 +317,15 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
 
   "supports large amount of iterations" in {
     // create circular graph so that we can repeat any number of times
-    val genericDomain = GenericDomain.empty
-    val graph         = genericDomain.graph
-    val diffGraph     = GenericDomain.newDiffGraphBuilder
-
     val newA = NewNodeA().stringMandatory("a")
     val newB = NewNodeA().stringMandatory("b")
     val newC = NewNodeA().stringMandatory("c")
 
-    val diff = DiffGraphBuilder(graph.schema)
-      .addEdge(newA, newB, ConnectedTo.Label)
-      .addEdge(newB, newC, ConnectedTo.Label)
-      .addEdge(newC, newA, ConnectedTo.Label)
-    DiffGraphApplier.applyDiff(graph, diff)
+    val genericDomain = GenericDomain.from(
+      _.addEdge(newA, newB, ConnectedTo.Label)
+        .addEdge(newB, newC, ConnectedTo.Label)
+        .addEdge(newC, newA, ConnectedTo.Label)
+    )
 
     val repeatCount = 100000
 
@@ -413,17 +409,13 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     /** Using hierarchical domain to verify that repeat derives the correct types. Graph setup: NodeX <: BaseType NodeY <: BaseType X1 -->
       * Y2 --> X3 --> X4
       */
+    val newNodeX1 = NewNodeX().name("X1")
+    val newNodeY2 = NewNodeY().name("Y2")
+    val newNodeX3 = NewNodeX().name("X3")
+    val newNodeY4 = NewNodeY().name("Y4")
 
-    val hierarchical = Hierarchical.empty
-    val newNodeX1    = NewNodeX().name("X1")
-    val newNodeY2    = NewNodeY().name("Y2")
-    val newNodeX3    = NewNodeX().name("X3")
-    val newNodeY4    = NewNodeY().name("Y4")
-
-    DiffGraphApplier.applyDiff(
-      hierarchical.graph,
-      Hierarchical.newDiffGraphBuilder
-        .addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.EdgeTypes.connected_to)
+    val hierarchical = Hierarchical.from(
+      _.addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.EdgeTypes.connected_to)
         .addEdge(newNodeY2, newNodeX3, testdomains.hierarchical.EdgeTypes.connected_to)
         .addEdge(newNodeX3, newNodeY4, testdomains.hierarchical.EdgeTypes.connected_to)
     )

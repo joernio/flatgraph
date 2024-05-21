@@ -1,5 +1,5 @@
 package testdomains.generic
-import flatgraph.DiffGraphBuilder
+import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
 import flatgraph.help.DocSearchPackages
 import flatgraph.help.Table.AvailableWidthProvider
 import Language.*
@@ -24,6 +24,12 @@ object GenericDomain {
     flatgraph.help.TraversalHelp(searchPackageNames).forTraversalSources(verbose = true)
 
   def empty: GenericDomain = new GenericDomain(new flatgraph.Graph(GraphSchema))
+
+  def from(initialElements: DiffGraphBuilder => DiffGraphBuilder): GenericDomain = {
+    val graph = new flatgraph.Graph(GraphSchema)
+    DiffGraphApplier.applyDiff(graph, initialElements(new DiffGraphBuilder(GraphSchema)))
+    new GenericDomain(graph)
+  }
 
   /** Instantiate a new graph with storage. If the file already exists, this will deserialize the given file into memory. `Graph.close` will
     * serialise graph to that given file (and override whatever was there before), unless you specify `persistOnClose = false`.
