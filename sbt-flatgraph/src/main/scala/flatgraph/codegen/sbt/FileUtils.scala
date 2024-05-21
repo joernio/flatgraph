@@ -20,9 +20,12 @@ object FileUtils {
       file.delete()
   }
 
-  def md5(roots: File*): String = {
+  def md5(root: File): String =
+    md5(Seq(root))
+
+  def md5(roots: Seq[File]): String = {
     val md = MessageDigest.getInstance("MD5")
-    roots.foreach { root =>
+    roots.filter(_.exists).foreach { root =>
       Files.walk(root.toPath).filter(!_.toFile.isDirectory).forEach { path =>
         val dis = new DigestInputStream(Files.newInputStream(path), md)
         // fully consume the inputstream
