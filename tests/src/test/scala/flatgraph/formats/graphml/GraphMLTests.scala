@@ -14,7 +14,7 @@ class GraphMLTests extends AnyWordSpec {
 
   "import minified gratefuldead graph" in {
     import testdomains.gratefuldead.GratefulDead
-    import testdomains.gratefuldead.Language.*
+    import testdomains.gratefuldead.language.*
     val gratefulDead = GratefulDead.empty
     val graph        = gratefulDead.graph
     graph.nodeCount shouldBe 0
@@ -41,7 +41,7 @@ class GraphMLTests extends AnyWordSpec {
 
   "Exporter should export valid xml" when {
     import testdomains.generic.GenericDomain
-    import testdomains.generic.Language.*
+    import testdomains.generic.language.*
     import testdomains.generic.edges.ConnectedTo
     import testdomains.generic.nodes.NewNodeA
 

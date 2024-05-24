@@ -6,7 +6,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import testdomains.generic.GenericDomain
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 import testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA}
 
 import scala.jdk.CollectionConverters.MapHasAsScala

@@ -62,7 +62,6 @@ lazy val tests = project
       "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
       "org.scalamock" %% "scalamock" % "6.0.0" % Test
     ),
-    Test/compile := (Test/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
   )
 
 
@@ -133,7 +132,11 @@ lazy val testSchemas = project
        */
       val lastKnownHashsumFile = target.value / "codegen-inputs-hash.md5"
       def lastKnownHashsum: Option[String] = scala.util.Try(IO.read(lastKnownHashsumFile)).toOption
-      val inputsHashsum = FileUtils.md5(sourceDirectory.value, file("build.sbt"), (domainClassesGenerator_3/sourceDirectory).value)
+      val inputsHashsum = FileUtils.md5(
+        sourceDirectory.value,
+        file("build.sbt"),
+        (ThisBuild / baseDirectory).value / "domain-classes-generator/src",
+      )
 
       if (lastKnownHashsum == Some(inputsHashsum)) {
         Def.task {
@@ -153,7 +156,8 @@ lazy val testSchemasDomainClasses = project
   .dependsOn(core)
   .settings(
     name := "test-schemas-domain-classes",
-    publish / skip := true
+    Compile/compile := (Compile/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
+    publish / skip := true,
   )
 
 // currently relies on a self-published version of codepropertygraph and joern based on the respective `michael/flatgraph` branches

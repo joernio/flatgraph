@@ -6,7 +6,7 @@ import scala.collection.{mutable, Iterator}
 object RepeatStep {
 
   /** @see
-    *   [[Language.repeat]] for a detailed overview
+    *   [[language.repeat]] for a detailed overview
     *
     * Implementation note: using recursion results in nicer code, but uses the JVM stack, which only has enough space for ~10k steps. So
     * instead, this uses a programmatic Stack which is semantically identical. The RepeatTraversalTests cover this case.

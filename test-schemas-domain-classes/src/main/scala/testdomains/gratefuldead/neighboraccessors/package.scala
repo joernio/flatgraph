@@ -1,6 +1,6 @@
 package testdomains.gratefuldead
 
-import flatgraph.traversal.Language.*
+import flatgraph.traversal.language.*
 import testdomains.gratefuldead.nodes
 
 package object neighboraccessors {

@@ -2,7 +2,7 @@ package flatgraph.algorithm
 
 import flatgraph.Edge.Direction
 import flatgraph.GNode
-import flatgraph.traversal.Language.*
+import flatgraph.traversal.language.*
 
 object PathFinder {
   def apply(nodeA: GNode, nodeB: GNode, maxDepth: Int = -1): Seq[Path] = {

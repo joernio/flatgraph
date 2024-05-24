@@ -1,7 +1,7 @@
 package testdomains.generic.neighboraccessors
 
 import testdomains.generic.nodes
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 
 final class AccessNeighborsForNodeA(val node: nodes.NodeA) extends AnyVal {
 

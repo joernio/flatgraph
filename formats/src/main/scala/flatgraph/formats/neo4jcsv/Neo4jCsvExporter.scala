@@ -68,7 +68,7 @@ object Neo4jCsvExporter extends Exporter {
 
     Using.resource(CSVWriter.open(dataFile.toFile, append = false)) { writer =>
       nodes.iterator.foreach { node =>
-        import flatgraph.traversal.Language.*
+        import flatgraph.traversal.language.*
         if (columnDefinitions == null) {
           columnDefinitions = new ColumnDefinitions(schema.getNodePropertyNames(label))
         }

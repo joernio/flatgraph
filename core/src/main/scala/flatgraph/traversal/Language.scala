@@ -9,9 +9,9 @@ import scala.collection.immutable.ArraySeq
 import scala.collection.{Iterator, mutable}
 import scala.reflect.ClassTag
 
-object Language extends Language
+object language extends language
 
-trait Language {
+trait language {
   implicit def iterableOnceToIterator[A](iter: IterableOnce[A]): Iterator[A] =
     iter.iterator
 
@@ -401,7 +401,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
 }
 
 class NodeMethods(node: GNode) extends AnyVal {
-  import Language.*
+  import flatgraph.traversal.language.*
 
   /** follow _all_ OUT edges to their adjacent nodes */
   def out: Iterator[GNode] =
@@ -488,7 +488,7 @@ class NodeMethods(node: GNode) extends AnyVal {
 
 @Traversal(elementType = classOf[GNode])
 class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
-  import Language.*
+  import flatgraph.traversal.language.*
 
   /** `id` combines nodeKind and seq into a unique id Mostly for backwards compatibility with overflowdb v1 where nodes have a `id: Long`
     */

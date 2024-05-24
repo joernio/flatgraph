@@ -2,7 +2,7 @@ package testdomains.generic
 import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
 import flatgraph.help.DocSearchPackages
 import flatgraph.help.Table.AvailableWidthProvider
-import Language.*
+import testdomains.generic.language.*
 
 object GenericDomain {
   val defaultDocSearchPackage = DocSearchPackages.default.withAdditionalPackage(getClass.getPackage.getName)

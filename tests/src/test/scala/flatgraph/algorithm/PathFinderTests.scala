@@ -6,7 +6,7 @@ import flatgraph.TestGraphs.FlatlineGraphFixture
 import flatgraph.algorithm.PathFinder.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 import testdomains.generic.edges.ConnectedTo
 
 /* uses 'flat line' sample graph:

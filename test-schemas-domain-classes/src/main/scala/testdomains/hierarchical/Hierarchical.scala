@@ -2,7 +2,7 @@ package testdomains.hierarchical
 import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
 import flatgraph.help.DocSearchPackages
 import flatgraph.help.Table.AvailableWidthProvider
-import Language.*
+import testdomains.hierarchical.language.*
 
 object Hierarchical {
   val defaultDocSearchPackage = DocSearchPackages.default.withAdditionalPackage(getClass.getPackage.getName)

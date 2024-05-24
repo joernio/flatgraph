@@ -1,7 +1,7 @@
 package testdomains.hierarchical.neighboraccessors
 
 import testdomains.hierarchical.nodes
-import testdomains.hierarchical.Language.*
+import testdomains.hierarchical.language.*
 
 final class AccessNeighborsForBaseNode(val node: nodes.BaseNode) extends AnyVal {
 
