@@ -2,7 +2,7 @@ package testdomains.gratefuldead
 import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
 import flatgraph.help.DocSearchPackages
 import flatgraph.help.Table.AvailableWidthProvider
-import Language.*
+import testdomains.gratefuldead.language.*
 
 object GratefulDead {
   val defaultDocSearchPackage = DocSearchPackages.default.withAdditionalPackage(getClass.getPackage.getName)

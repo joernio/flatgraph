@@ -5,7 +5,7 @@ import flatgraph.TestSchema.testSerialization
 import flatgraph.misc.DebugDump.debugDump
 import flatgraph.storage.Deserialization
 import flatgraph.storage.Deserialization.DeserializationException
-import flatgraph.traversal.Language.*
+import flatgraph.traversal.language.*
 import flatgraph.util.DiffToolTests
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe

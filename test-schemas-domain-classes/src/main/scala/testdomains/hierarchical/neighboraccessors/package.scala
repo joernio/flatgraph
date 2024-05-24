@@ -1,6 +1,6 @@
 package testdomains.hierarchical
 
-import flatgraph.traversal.Language.*
+import flatgraph.traversal.language.*
 import testdomains.hierarchical.nodes
 
 package object neighboraccessors {

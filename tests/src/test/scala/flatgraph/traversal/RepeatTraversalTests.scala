@@ -3,7 +3,7 @@ package flatgraph.traversal
 import flatgraph.GNode
 import flatgraph.TestGraphs.FlatlineGraphFixture
 import testdomains.generic.GenericDomain
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 import testdomains.generic.PropertyKeys.StringMandatory
 import testdomains.generic.edges.ConnectedTo
 import testdomains.generic.nodes.{NewNodeA, NodeA}
@@ -403,7 +403,7 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
 
   "type resolution in hierarchical domain schema" in {
     import testdomains.hierarchical.Hierarchical
-    import testdomains.hierarchical.Language.*
+    import testdomains.hierarchical.language.*
     import testdomains.hierarchical.nodes.*
 
     /** Using hierarchical domain to verify that repeat derives the correct types. Graph setup: NodeX <: BaseType NodeY <: BaseType X1 -->

@@ -4,7 +4,7 @@ import better.files.File
 import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphs}
 import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.util.DiffTool
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 import testdomains.generic.nodes.NodeA
 import testdomains.generic.GenericDomain
 import testdomains.generic.nodes.NewNodeB

@@ -3,7 +3,7 @@ package flatgraph
 import testdomains.generic.GenericDomain
 import testdomains.generic.edges.ConnectedTo
 import testdomains.generic.nodes.NewNodeA
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 
 import java.nio.file.Path
 

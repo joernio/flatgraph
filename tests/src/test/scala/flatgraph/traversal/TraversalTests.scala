@@ -6,7 +6,7 @@ import flatgraph.{GNode, TestGraphs}
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import testdomains.generic.GenericDomain
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 import testdomains.generic.edges.ConnectedTo
 import testdomains.generic.nodes.NodeA
 

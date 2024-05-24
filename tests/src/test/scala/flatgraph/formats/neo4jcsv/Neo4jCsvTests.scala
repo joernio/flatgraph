@@ -7,7 +7,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import flatgraph.formats.{ExportResult, ExporterMain, ImporterMain}
 import flatgraph.util.DiffTool
 import testdomains.generic.GenericDomain
-import testdomains.generic.Language.*
+import testdomains.generic.language.*
 import testdomains.generic.edges.ConnectedTo
 import testdomains.generic.nodes.NodeA
 

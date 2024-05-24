@@ -486,7 +486,7 @@ class DomainClassesGenerator(schema: Schema) {
       val nodeSource = {
         s"""package $basePackage.nodes
            |
-           |import $basePackage.Language.*
+           |import $basePackage.language.*
            |import scala.collection.immutable.{IndexedSeq, ArraySeq}
            |
            |$erasedMarkerType
@@ -911,7 +911,7 @@ class DomainClassesGenerator(schema: Schema) {
          |import flatgraph.{DiffGraphApplier, DiffGraphBuilder}
          |import flatgraph.help.DocSearchPackages
          |import flatgraph.help.Table.AvailableWidthProvider
-         |import Language.*
+         |import $basePackage.language.*
          |
          |object $domainShortName {
          |  val defaultDocSearchPackage = DocSearchPackages.default.withAdditionalPackage(getClass.getPackage.getName)
@@ -981,20 +981,20 @@ class DomainClassesGenerator(schema: Schema) {
     // domain object and starters: end
 
     os.write(
-      outputDir0 / "Language.scala",
+      outputDir0 / "language.scala",
       s"""package $basePackage
          |
          |/** combining all implicits into one trait that can be mixed in further downstream */
-         |trait Language
+         |trait language
          |  extends accessors.ConcreteStoredConversions
          |  with traversals.ConcreteStoredConversions
          |  with neighboraccessors.Conversions
-         |  with flatgraph.traversal.Language
+         |  with flatgraph.traversal.language
          |  with flatgraph.Implicits {
          |    implicit def toGeneratedNodeStarters(domain: $domainShortName): ${domainShortName}NodeStarters = ${domainShortName}NodeStarters(domain)
          |  }
          |
-         |object Language extends Language
+         |object language extends language
          |""".stripMargin
     )
 
@@ -1236,7 +1236,7 @@ class DomainClassesGenerator(schema: Schema) {
              |package $basePackage.neighboraccessors
              |
              |import $basePackage.nodes
-             |import $basePackage.Language.*
+             |import $basePackage.language.*
              |
              |$forSingleNode
              |$forTraversal
@@ -1249,7 +1249,7 @@ class DomainClassesGenerator(schema: Schema) {
       neighborAccessorsRootDir / "package.scala",
       s"""package $basePackage
          |
-         |import flatgraph.traversal.Language.*
+         |import flatgraph.traversal.language.*
          |import $basePackage.nodes
          |
          |package object neighboraccessors {

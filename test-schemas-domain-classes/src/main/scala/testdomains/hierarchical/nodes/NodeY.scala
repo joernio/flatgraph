@@ -1,6 +1,6 @@
 package testdomains.hierarchical.nodes
 
-import testdomains.hierarchical.Language.*
+import testdomains.hierarchical.language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime

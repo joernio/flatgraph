@@ -4,7 +4,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import testdomains.gratefuldead.GratefulDead
-import testdomains.gratefuldead.Language.*
+import testdomains.gratefuldead.language.*
 import testdomains.gratefuldead.edges.{Sungby, Writtenby}
 import testdomains.gratefuldead.nodes.{NewArtist, NewSong}
 

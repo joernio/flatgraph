@@ -1,7 +1,7 @@
 package testdomains.gratefuldead.neighboraccessors
 
 import testdomains.gratefuldead.nodes
-import testdomains.gratefuldead.Language.*
+import testdomains.gratefuldead.language.*
 
 final class AccessNeighborsForArtist(val node: nodes.Artist) extends AnyVal {
 
