@@ -1,10 +1,10 @@
 package testdomains.hierarchical.traversals
 import testdomains.hierarchical.nodes
 
-object Lang extends ConcreteStoredConversions
+object language extends ConcreteStoredConversions
 
 object Accessors {
-  import testdomains.hierarchical.accessors.Lang.*
+  import testdomains.hierarchical.accessors.language.*
 
   /* accessors for concrete stored nodes start */
   final class Traversal_Property_name[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](val traversal: Iterator[NodeType])

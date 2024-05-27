@@ -477,7 +477,7 @@ class DomainClassesGenerator(schema: Schema) {
 
       val propDictItemsSource = propDictItems.mkString(
         s"""override def propertiesMap: java.util.Map[String, Any] = {
-           | import $basePackage.accessors.Lang.*
+           | import $basePackage.accessors.language.*
            | val res = new java.util.HashMap[String, Any]()
            |""".stripMargin,
         "\n",
@@ -816,7 +816,7 @@ class DomainClassesGenerator(schema: Schema) {
          |import $basePackage.nodes
          |import scala.collection.immutable.IndexedSeq
          |
-         |object Lang extends ConcreteStoredConversions
+         |object language extends ConcreteStoredConversions
          |
          |object Accessors {
          |  /* accessors for concrete stored nodes start */
@@ -837,10 +837,10 @@ class DomainClassesGenerator(schema: Schema) {
       s"""package $basePackage.traversals
          |import $basePackage.nodes
          |
-         |object Lang extends ConcreteStoredConversions
+         |object language extends ConcreteStoredConversions
          |
          |object Accessors {
-         |  import $basePackage.accessors.Lang.*
+         |  import $basePackage.accessors.language.*
          |
          |  /* accessors for concrete stored nodes start */
          |  ${accessorsForConcreteNodeTraversals.mkString("\n")}

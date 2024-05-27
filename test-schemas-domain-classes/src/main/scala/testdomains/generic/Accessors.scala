@@ -2,7 +2,7 @@ package testdomains.generic.accessors
 import testdomains.generic.nodes
 import scala.collection.immutable.IndexedSeq
 
-object Lang extends ConcreteStoredConversions
+object language extends ConcreteStoredConversions
 
 object Accessors {
   /* accessors for concrete stored nodes start */
