@@ -162,4 +162,10 @@ class TraversalTests extends AnyWordSpec {
 
   }
 
+  "generic graph steps" in {
+    centerTrav.out.size shouldBe 2
+    centerTrav.out(ConnectedTo.Label).size shouldBe 2
+    centerTrav.out("does not exist").size shouldBe 0
+  }
+
 }

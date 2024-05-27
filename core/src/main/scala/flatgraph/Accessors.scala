@@ -101,6 +101,7 @@ object Accessors {
    * https://github.com/ShiftLeftSecurity/overflowdbv2/pull/89#discussion_r1377682980
    */
   private def getNeighbors(g: Graph, pos: Int, seq: Int): Iterator[GNode] = {
+    if (pos < 0) return Iterator.empty
     val qty = g.neighbors(pos).asInstanceOf[Array[Int]]
     if (qty == null) return Iterator.empty // ISeq.empty
     if (seq + 1 < qty.length) {

@@ -538,6 +538,26 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
     traversal.filterNot(node => unwanted.contains(node.label()))
   }
 
+  /** Filter elements by existence of property (irrespective of value) */
+  def has(name: String): Iterator[A] =
+    traversal.filter(_.propertyOption(name).isDefined)
+
+  /** Filter elements by (non-)existence of property (irrespective of value) */
+  def hasNot(name: String): Iterator[A] =
+    traversal.filterNot(_.propertyOption(name).isDefined)
+
+  /** Filter elements by property value */
+  def has(key: String, value: Any): Iterator[A] = {
+    val wrappedValue = Option(value)
+    traversal.filter(_.propertyOption(key) == wrappedValue)
+  }
+
+  /** Filter elements by property value */
+  def hasNot(key: String, value: Any): Iterator[A] = {
+    val wrappedValue = Option(value)
+    traversal.filterNot(_.propertyOption(key) == wrappedValue)
+  }
+
   /** follow _all_ OUT edges to their adjacent nodes */
   def out: Iterator[GNode] =
     traversal.flatMap(_.out)
