@@ -419,6 +419,15 @@ class NodeMethods(node: GNode) extends AnyVal {
   def in(edgeLabel: String): Iterator[GNode] =
     Accessors.getNeighborsIn(node, edgeKind = edgeKind(edgeLabel))
 
+  /** follow _all_ OUT and IN edges to their adjacent nodes */
+  def both: Iterator[GNode] =
+    out ++ in
+    
+  /** follow the given IN and OUT edge(s) to their adjacent nodes */
+  @Doc("follow the given OUT and IN edge(s) to their adjacent nodes")
+  def both(edgeLabel: String): Iterator[GNode] =
+    out(edgeLabel) ++ in(edgeLabel)
+
   /** lookup all OUT edge(s) */
   def outE: Iterator[Edge] =
     Accessors.getEdgesOut(node)
@@ -434,7 +443,7 @@ class NodeMethods(node: GNode) extends AnyVal {
   /** lookup the given IN edge(s) */
   def inE(edgeLabel: String): Iterator[Edge] =
     Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
-
+    
   // the "property" accessors have somewhat special behavior. They don't throw if the property is not present,
   // and they distinguish whether the property formally exists on the node-type as multi-valued thing.
   // the static info from the propertyKey is ignored.
