@@ -10,7 +10,7 @@ trait NodeXEMT extends AnyRef with BaseNodeEMT
 trait NodeXBase extends AbstractNode with BaseNodeBase with StaticType[NodeXEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import testdomains.hierarchical.accessors.language.*
+    import testdomains.hierarchical.accessors.languagebootstrap.*
     val res = new java.util.HashMap[String, Any]()
     if (("<empty>": String) != this.name) res.put("name", this.name)
     res

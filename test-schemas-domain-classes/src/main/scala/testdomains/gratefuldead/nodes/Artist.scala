@@ -10,7 +10,7 @@ trait ArtistEMT extends AnyRef with HasNameEMT
 trait ArtistBase extends AbstractNode with StaticType[ArtistEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import testdomains.gratefuldead.accessors.language.*
+    import testdomains.gratefuldead.accessors.languagebootstrap.*
     val res = new java.util.HashMap[String, Any]()
     if (("": String) != this.name) res.put("name", this.name)
     res

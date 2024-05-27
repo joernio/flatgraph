@@ -17,7 +17,7 @@ trait NodeAEMT
 trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
   def node_b: Option[NodeBBase]
   override def propertiesMap: java.util.Map[String, Any] = {
-    import testdomains.generic.accessors.language.*
+    import testdomains.generic.accessors.languagebootstrap.*
     val res        = new java.util.HashMap[String, Any]()
     val tmpIntList = this.intList; if (tmpIntList.nonEmpty) res.put("int_list", tmpIntList)
     if ((42: Int) != this.intMandatory) res.put("int_mandatory", this.intMandatory)

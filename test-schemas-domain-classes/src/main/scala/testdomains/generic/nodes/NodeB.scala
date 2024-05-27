@@ -10,7 +10,7 @@ trait NodeBEMT extends AnyRef with HasStringOptionalEMT
 trait NodeBBase extends AbstractNode with StaticType[NodeBEMT] {
 
   override def propertiesMap: java.util.Map[String, Any] = {
-    import testdomains.generic.accessors.language.*
+    import testdomains.generic.accessors.languagebootstrap.*
     val res = new java.util.HashMap[String, Any]()
     this.stringOptional.foreach { p => res.put("string_optional", p) }
     res

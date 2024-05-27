@@ -1,10 +1,11 @@
 package testdomains.generic.traversals
 import testdomains.generic.nodes
 
-object language extends ConcreteStoredConversions
+/** not supposed to be used directly by users, hence the `bootstrap` in the name */
+object languagebootstrap extends ConcreteStoredConversions
 
 object Accessors {
-  import testdomains.generic.accessors.language.*
+  import testdomains.generic.accessors.languagebootstrap.*
 
   /* accessors for concrete stored nodes start */
   final class Traversal_Property_int_list[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasIntListEMT]](

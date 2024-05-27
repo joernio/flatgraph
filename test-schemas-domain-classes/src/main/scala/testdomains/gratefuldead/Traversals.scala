@@ -1,10 +1,11 @@
 package testdomains.gratefuldead.traversals
 import testdomains.gratefuldead.nodes
 
-object language extends ConcreteStoredConversions
+/** not supposed to be used directly by users, hence the `bootstrap` in the name */
+object languagebootstrap extends ConcreteStoredConversions
 
 object Accessors {
-  import testdomains.gratefuldead.accessors.language.*
+  import testdomains.gratefuldead.accessors.languagebootstrap.*
 
   /* accessors for concrete stored nodes start */
   final class Traversal_Property_name[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](val traversal: Iterator[NodeType])

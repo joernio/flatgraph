@@ -2,7 +2,8 @@ package testdomains.gratefuldead.accessors
 import testdomains.gratefuldead.nodes
 import scala.collection.immutable.IndexedSeq
 
-object language extends ConcreteStoredConversions
+/** not supposed to be used directly by users, hence the `bootstrap` in the name */
+object languagebootstrap extends ConcreteStoredConversions
 
 object Accessors {
   /* accessors for concrete stored nodes start */
