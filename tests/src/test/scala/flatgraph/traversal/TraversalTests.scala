@@ -45,7 +45,7 @@ class TraversalTests extends AnyWordSpec {
 
   ".sideEffect step should apply provided function and do nothing else" in {
     val sack = mutable.ListBuffer.empty[NodeA]
-    centerTrav.connectedTo.sideEffect(sack.addOne).connectedTo.stringMandatory.toSetMutable shouldBe Set("L2", "R2")
+    centerTrav.connectedTo.sideEffect(sack.addOne).connectedTo.stringMandatory.toSet shouldBe Set("L2", "R2")
     sack.map(_.stringMandatory).toSet shouldBe Set("L1", "R1")
   }
 

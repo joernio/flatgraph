@@ -22,39 +22,39 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
   def centerTrav = Iterator.single(center)
 
   "typical case for both generic graph steps" in {
-    centerTrav.repeat(_.out)(_.maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
+    centerTrav.repeat(_.out)(_.maxDepth(2)).toSet shouldBe Set(l2, r2)
   }
 
   "repeat given traversal up to depth 2" should {
     "return only the final elements" in {
       val expectedResults = Set(l2, r2)
-      centerTrav.repeat(_.out)(_.maxDepth(2)).toSetMutable shouldBe expectedResults
-      centerTrav.repeat(_.out)(_.maxDepth(2).breadthFirstSearch).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(2)).toSet shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(2).breadthFirstSearch).toSet shouldBe expectedResults
     }
 
     "return only the final elements - if any" in {
       val expectedResults = Set(r4) // there is no L4
-      centerTrav.repeat(_.out)(_.maxDepth(4)).toSetMutable shouldBe expectedResults
-      centerTrav.repeat(_.out)(_.maxDepth(4).breadthFirstSearch).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(4)).toSet shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(4).breadthFirstSearch).toSet shouldBe expectedResults
     }
 
     "return everything along the way also, if used in combination with emit" in {
       val expectedResults = Set(center, l1, l2, r1, r2)
-      centerTrav.repeat(_.out)(_.maxDepth(2).emit).toSetMutable shouldBe expectedResults
-      centerTrav.repeat(_.out)(_.maxDepth(2).emit.breadthFirstSearch).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(2).emit).toSet shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.maxDepth(2).emit.breadthFirstSearch).toSet shouldBe expectedResults
     }
   }
 
   "emit everything along the way if so configured" in {
     val expectedResults = Set(l3, l2, l1, center, r1, r2, r3, r4, r5)
-    centerTrav.repeat(_.out)(_.emit).toSetMutable shouldBe expectedResults
-    centerTrav.repeat(_.out)(_.emit.breadthFirstSearch).toSetMutable shouldBe expectedResults
+    centerTrav.repeat(_.out)(_.emit).toSet shouldBe expectedResults
+    centerTrav.repeat(_.out)(_.emit.breadthFirstSearch).toSet shouldBe expectedResults
   }
 
   "emit everything but the first element (starting point)" in {
     val expectedResults = Set(l3, l2, l1, r1, r2, r3, r4, r5)
-    centerTrav.repeat(_.out)(_.emitAllButFirst).toSetMutable shouldBe expectedResults
-    centerTrav.repeat(_.out)(_.emitAllButFirst.breadthFirstSearch).toSetMutable shouldBe expectedResults
+    centerTrav.repeat(_.out)(_.emitAllButFirst).toSet shouldBe expectedResults
+    centerTrav.repeat(_.out)(_.emitAllButFirst.breadthFirstSearch).toSet shouldBe expectedResults
   }
 
   "emit nodes that meet given condition" in {
@@ -62,13 +62,13 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     centerTrav
       .repeat(_.out)(_.emit(_.where(_.property(StringMandatory).filter(_.startsWith("L")))).breadthFirstSearch)
       .property(StringMandatory)
-      .toSetMutable shouldBe expectedResults
+      .toSet shouldBe expectedResults
 
     // with domain specific language
     centerTrav
       .repeat(_.connectedTo)(_.emit(_.where(_.stringMandatory("L.*"))).breadthFirstSearch)
       .stringMandatory
-      .toSetMutable shouldBe expectedResults
+      .toSet shouldBe expectedResults
   }
 
   "going through multiple steps in repeat traversal" in {
@@ -83,12 +83,12 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
       centerTrav
         .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))))
         .property(StringMandatory)
-        .toSetMutable shouldBe expectedResults
+        .toSet shouldBe expectedResults
 
       centerTrav
         .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))).breadthFirstSearch)
         .property(StringMandatory)
-        .toSetMutable shouldBe expectedResults
+        .toSet shouldBe expectedResults
     }
 
     "work in combination with emit" in {
@@ -96,36 +96,36 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
       centerTrav
         .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))).emit)
         .property(StringMandatory)
-        .toSetMutable shouldBe expectedResults
+        .toSet shouldBe expectedResults
       centerTrav
         .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.matches(".*2"))).emit.breadthFirstSearch)
         .property(StringMandatory)
-        .toSetMutable shouldBe expectedResults
+        .toSet shouldBe expectedResults
     }
 
     "result in 'repeat/until' behaviour, i.e. `until` condition is only evaluated after one iteration" in {
       val expectedResults = Set("L1", "R1")
-      centerTrav.repeat(_.out)(_.until(_.hasLabel(NodeA.Label))).property(StringMandatory).toSetMutable shouldBe expectedResults
+      centerTrav.repeat(_.out)(_.until(_.hasLabel(NodeA.Label))).property(StringMandatory).toSet shouldBe expectedResults
       centerTrav
         .repeat(_.out)(_.until(_.hasLabel(NodeA.Label)).breadthFirstSearch)
         .property(StringMandatory)
-        .toSetMutable shouldBe expectedResults
+        .toSet shouldBe expectedResults
     }
 
     "be combinable with `.maxDepth`" in {
       centerTrav
         .repeat(_.out)(_.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(3))
         .property(StringMandatory)
-        .toSetMutable shouldBe Set("L3", "R2")
+        .toSet shouldBe Set("L3", "R2")
     }
   }
 
   "until and maxDepth" should {
     "work in combination" in {
-      centerTrav.repeat(_.out)(_.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(2)).toSetMutable shouldBe Set(l2, r2)
+      centerTrav.repeat(_.out)(_.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(2)).toSet shouldBe Set(l2, r2)
       centerTrav
         .repeat(_.out)(_.breadthFirstSearch.until(_.property(StringMandatory).filter(_ == "R2")).maxDepth(2))
-        .toSetMutable shouldBe Set(l2, r2)
+        .toSet shouldBe Set(l2, r2)
     }
 
     "work in combination with path" in {
@@ -139,11 +139,11 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
 
   "support repeat/while behaviour" should {
     "base case: given `whilst` condition is also evaluated for first iteration" in {
-      centerTrav.repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "does not exist"))).toSetMutable shouldBe Set(center)
+      centerTrav.repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "does not exist"))).toSet shouldBe Set(center)
     }
 
     "walk one iteration" in {
-      centerTrav.repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSetMutable shouldBe Set(l1, r1)
+      centerTrav.repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSet shouldBe Set(l1, r1)
     }
 
     "walk two iterations" in {
@@ -151,51 +151,45 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
         .repeat(_.out)(
           _.whilst(_.or(_.property(StringMandatory).filter(_.endsWith("1")), _.property(StringMandatory).filter(_ == "Center")))
         )
-        .toSetMutable shouldBe Set(l2, r2)
+        .toSet shouldBe Set(l2, r2)
     }
 
     "emitting nodes along the way" in {
-      centerTrav.repeat(_.out)(_.emit.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSetMutable shouldBe Set(center, l1, r1)
-      centerTrav.repeat(_.out)(_.emitAllButFirst.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSetMutable shouldBe Set(
-        l1,
-        r1
-      )
+      centerTrav.repeat(_.out)(_.emit.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSet shouldBe Set(center, l1, r1)
+      centerTrav.repeat(_.out)(_.emitAllButFirst.whilst(_.property(StringMandatory).filter(_ == "Center"))).toSet shouldBe Set(l1, r1)
     }
 
     "with path tracking enabled" in {
       centerTrav.enablePathTracking
         .repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ == "Center")))
         .path
-        .toSetMutable shouldBe Set(Seq(center, r1), Seq(center, l1))
+        .toSet shouldBe Set(Seq(center, r1), Seq(center, l1))
     }
 
     "be combinable with `.maxDepth`" in {
       centerTrav
         .repeat(_.out)(_.whilst(_.property(StringMandatory).filter(_ != "R2")).maxDepth(3))
         .property(StringMandatory)
-        .toSetMutable shouldBe Set("L3", "R2")
+        .toSet shouldBe Set("L3", "R2")
     }
   }
 
   ".dedup should apply to all repeat iterations - e.g. to avoid cycles" when {
 
     "path tracking is not enabled" in {
-      centerTrav.repeat(_.both)(_.maxDepth(2).dedup).toSetMutable shouldBe Set(l2, r2)
-      centerTrav.repeat(_.both)(_.maxDepth(3).dedup).toSetMutable shouldBe Set(l3, r3)
-      centerTrav.repeat(_.both)(_.maxDepth(4).dedup).toSetMutable shouldBe Set(r4)
+      centerTrav.repeat(_.both)(_.maxDepth(2).dedup).toSet shouldBe Set(l2, r2)
+      centerTrav.repeat(_.both)(_.maxDepth(3).dedup).toSet shouldBe Set(l3, r3)
+      centerTrav.repeat(_.both)(_.maxDepth(4).dedup).toSet shouldBe Set(r4)
 
       // for reference, without dedup (order is irrelevant, only using .l to show duplicate `center`)
       centerTrav.repeat(_.both)(_.maxDepth(2)).l shouldBe Seq(l2, center, r2, center)
     }
 
     "path tracking is enabled" in {
-      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).dedup).path.toSetMutable shouldBe Set(
-        Seq(center, l1, l2),
-        Seq(center, r1, r2)
-      )
+      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).dedup).path.toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
 
       // for reference, without dedup:
-      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2)).path.toSetMutable shouldBe Set(
+      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2)).path.toSet shouldBe Set(
         Seq(center, l1, l2),
         Seq(center, l1, center),
         Seq(center, r1, r2),
@@ -209,7 +203,7 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     }
 
     "used with emit and path" in {
-      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).emit.dedup).path.toSetMutable shouldBe Set(
+      centerTrav.enablePathTracking.repeat(_.both)(_.maxDepth(2).emit.dedup).path.toSet shouldBe Set(
         Seq(center),
         Seq(center, l1),
         Seq(center, l1, l2),
@@ -234,7 +228,7 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     "path tracking is not enabled" in {
       val trav = centerTrav.repeat(_.out)(_.maxDepth(2))
       trav.hasNext shouldBe true
-      trav.toSetMutable shouldBe Set(l2, r2)
+      trav.toSet shouldBe Set(l2, r2)
     }
 
     "path tracking is enabled" in {
@@ -242,8 +236,8 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
       val trav2 = centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2)).path
       trav1.hasNext shouldBe true
       trav2.hasNext shouldBe true
-      trav1.toSetMutable shouldBe Set(l2, r2)
-      trav2.toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
+      trav1.toSet shouldBe Set(l2, r2)
+      trav2.toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
     }
   }
 
@@ -346,11 +340,11 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
 
   "support .path step" when {
     "using `maxDepth` modulator" in {
-      centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2)).path.toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
+      centerTrav.enablePathTracking.repeat(_.out)(_.maxDepth(2)).path.toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
     }
 
     "using `emit` modulator" in {
-      centerTrav.enablePathTracking.repeat(_.out)(_.emit).path.toSetMutable shouldBe Set(
+      centerTrav.enablePathTracking.repeat(_.out)(_.emit).path.toSet shouldBe Set(
         Seq(center),
         Seq(center, l1),
         Seq(center, l1, l2),
@@ -367,26 +361,23 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
       centerTrav.enablePathTracking
         .repeat(_.out)(_.until(_.property(StringMandatory).filter(_.endsWith("2"))))
         .path
-        .toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
+        .toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
     }
 
     "using breadth first search" in {
       centerTrav.enablePathTracking
         .repeat(_.out)(_.breadthFirstSearch.maxDepth(2))
         .path
-        .toSetMutable shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
+        .toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
     }
 
     "doing multiple steps: should track every single step along the way" in {
-      centerTrav.enablePathTracking.repeat(_.out.out)(_.maxDepth(1)).path.toSetMutable shouldBe Set(
-        Seq(center, l1, l2),
-        Seq(center, r1, r2)
-      )
+      centerTrav.enablePathTracking.repeat(_.out.out)(_.maxDepth(1)).path.toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
 
       r1.start.enablePathTracking
         .repeat(_.out.out.out)(_.maxDepth(1))
         .path
-        .toSetMutable shouldBe Set(Seq(r1, r2, r3, r4))
+        .toSet shouldBe Set(Seq(r1, r2, r3, r4))
 
       r1.start.enablePathTracking.repeat(_.out.out)(_.maxDepth(2)).l shouldBe Seq(r5)
       r1.start.enablePathTracking.repeat(_.out.out)(_.maxDepth(2)).path.next() shouldBe List(r1, r2, r3, r4, r5)
@@ -396,7 +387,7 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
       centerTrav.enablePathTracking.out
         .repeat(_.out.out)(_.maxDepth(1))
         .path
-        .toSetMutable shouldBe Set(Seq(center, l1, l2, l3), Seq(center, r1, r2, r3))
+        .toSet shouldBe Set(Seq(center, l1, l2, l3), Seq(center, r1, r2, r3))
     }
 
   }
