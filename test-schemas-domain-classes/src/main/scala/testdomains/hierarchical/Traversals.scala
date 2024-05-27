@@ -1,10 +1,11 @@
 package testdomains.hierarchical.traversals
 import testdomains.hierarchical.nodes
 
-object Lang extends ConcreteStoredConversions
+/** not supposed to be used directly by users, hence the `bootstrap` in the name */
+object languagebootstrap extends ConcreteStoredConversions
 
 object Accessors {
-  import testdomains.hierarchical.accessors.Lang.*
+  import testdomains.hierarchical.accessors.languagebootstrap.*
 
   /* accessors for concrete stored nodes start */
   final class Traversal_Property_name[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](val traversal: Iterator[NodeType])
