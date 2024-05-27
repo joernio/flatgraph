@@ -1,7 +1,5 @@
 package testdomains.gratefuldead
 
-import testdomains.gratefuldead.nodes
-import testdomains.gratefuldead.edges
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {
@@ -10,7 +8,7 @@ object GraphSchema extends flatgraph.Schema {
   val edgeLabels         = Array("followedBy", "sungBy", "writtenBy")
   val edgeKindByLabel    = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
-    Array(size => Array.fill(size)(0: Long) /* label = followedBy, id = 0 */, size => null, size => null)
+    Array(size => Array.fill(size)(0: Int) /* label = followedBy, id = 0 */, size => null, size => null)
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
     Array((g, seq) => new nodes.Artist(g, seq), (g, seq) => new nodes.Song(g, seq))
   val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array(

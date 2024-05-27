@@ -1,7 +1,5 @@
 package testdomains.generic
 
-import testdomains.generic.nodes
-import testdomains.generic.edges
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {

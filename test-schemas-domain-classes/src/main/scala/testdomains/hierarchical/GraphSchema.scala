@@ -1,7 +1,5 @@
 package testdomains.hierarchical
 
-import testdomains.hierarchical.nodes
-import testdomains.hierarchical.edges
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {

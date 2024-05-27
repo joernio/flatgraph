@@ -44,7 +44,7 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
           _.out // -> L2
         }
         .property(StringMandatory)
-        .toSetMutable shouldBe Set("L2")
+        .toSet shouldBe Set("L2")
     }
 
     "provide if/elseif semantics" in {
@@ -54,7 +54,7 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
           case "R1" => _.repeat(_.out)(_.maxDepth(3)) // -> R4
         }
         .property(StringMandatory)
-        .toSetMutable shouldBe Set("L2", "R4")
+        .toSet shouldBe Set("L2", "R4")
     }
 
     "provide if/else semantics" in {
@@ -65,7 +65,7 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
           case _    => _.in
         }
         .property(StringMandatory)
-        .toSetMutable shouldBe Set("L2", "L1", "R1", "R2", "R3", "R4")
+        .toSet shouldBe Set("L2", "L1", "R1", "R2", "R3", "R4")
     }
 
     "handle empty `on` traversal: if semantics" in {
@@ -84,12 +84,12 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
           case _    => _.out
         }
         .property(StringMandatory)
-        .toSetMutable shouldBe Set("L3", "L2", "L1", "R1", "R2", "R3", "R4", "R5")
+        .toSet shouldBe Set("L3", "L2", "L1", "R1", "R2", "R3", "R4", "R5")
     }
   }
 
   "coalesce step takes arbitrary number of traversals and follows the first one that returns at least one element" in {
-    centerTrav.coalesce(_.out).property(StringMandatory).toSetMutable shouldBe Set("L1", "R1")
+    centerTrav.coalesce(_.out).property(StringMandatory).toSet shouldBe Set("L1", "R1")
 
     centerTrav.coalesce().size shouldBe 0
     centerTrav.coalesce(_.out("doesn't exist")).size shouldBe 0
@@ -99,17 +99,17 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
     centerTrav
       .coalesce(_.out("doesn't exist"), _.out, _.sideEffect(_ => thirdTraversalInvoked = true).out)
       .property(StringMandatory)
-      .toSetMutable shouldBe Set("L1", "R1")
+      .toSet shouldBe Set("L1", "R1")
     thirdTraversalInvoked shouldBe false
 
     centerTrav
       .coalesce(_.stringMandatory("doesn't exist"), _.connectedTo)
       .stringMandatory
-      .toSetMutable shouldBe Set("L1", "R1")
+      .toSet shouldBe Set("L1", "R1")
 
     // we can even mix generic graph steps (.out) and domain-specific steps (.followedBy), but need to help the type
     // inferencer by specifying `[GNode]` as the result type
-    centerTrav.coalesce[GNode](_.out, _.connectedTo).property(StringMandatory).toSetMutable shouldBe Set("L1", "R1")
+    centerTrav.coalesce[GNode](_.out, _.connectedTo).property(StringMandatory).toSet shouldBe Set("L1", "R1")
   }
 
 }
