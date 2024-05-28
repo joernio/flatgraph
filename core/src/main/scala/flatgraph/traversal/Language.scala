@@ -23,6 +23,9 @@ trait language {
 
   implicit def iteratorToNodeSteps[A <: GNode](iter: IterableOnce[A]): NodeSteps[A] =
     new NodeSteps[A](iter.iterator)
+
+  implicit def iteratorToEdgeSteps[A <: Edge](iter: IterableOnce[A]): EdgeSteps[A] =
+    new EdgeSteps[A](iter.iterator)
 }
 
 @Traversal(elementType = classOf[AnyRef])
@@ -419,21 +422,40 @@ class NodeMethods(node: GNode) extends AnyVal {
   def in(edgeLabel: String): Iterator[GNode] =
     Accessors.getNeighborsIn(node, edgeKind = edgeKind(edgeLabel))
 
-  /** lookup all OUT edge(s) */
+  /** follow _all_ OUT and IN edges to their adjacent nodes */
+  def both: Iterator[GNode] =
+    out ++ in
+
+  /** follow the given IN and OUT edge(s) to their adjacent nodes */
+  @Doc("follow the given OUT and IN edge(s) to their adjacent nodes")
+  def both(edgeLabel: String): Iterator[GNode] =
+    out(edgeLabel) ++ in(edgeLabel)
+
+  /** follow all OUT edge(s) */
   def outE: Iterator[Edge] =
     Accessors.getEdgesOut(node)
 
-  /** lookup all IN edge(s) */
+  /** follow all IN edge(s) */
   def inE: Iterator[Edge] =
     Accessors.getEdgesIn(node)
 
-  /** lookup the given OUT edge(s) */
+  /** follow the given OUT edge(s) */
   def outE(edgeLabel: String): Iterator[Edge] =
     Accessors.getEdgesOut(node, edgeKind = edgeKind(edgeLabel))
 
-  /** lookup the given IN edge(s) */
+  /** follow the given IN edge(s) */
   def inE(edgeLabel: String): Iterator[Edge] =
     Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
+
+  /** follow _all_ OUT and IN edge(s) */
+  @Doc("follow all OUT and IN edge(s)")
+  def bothE: Iterator[Edge] =
+    outE ++ inE
+
+  /** follow the given OUT and IN edge(s) */
+  @Doc("follow the given OUT and IN edge(s)")
+  def bothE(edgeLabel: String): Iterator[Edge] =
+    outE(edgeLabel) ++ inE(edgeLabel)
 
   // the "property" accessors have somewhat special behavior. They don't throw if the property is not present,
   // and they distinguish whether the property formally exists on the node-type as multi-valued thing.
@@ -460,6 +482,10 @@ class NodeMethods(node: GNode) extends AnyVal {
   //  to make that change after joern's transition to flatgraph - see https://github.com/joernio/joern/pull/4382
   def propertyOption[ValueType](propertyKey: MultiPropertyKey[ValueType]): Option[IndexedSeq[ValueType]] =
     Option(Accessors.getNodePropertyMulti(node.graph, node.nodeKind, propertyKey.kind, node.seq()))
+
+  /** lookup property value by name - warning, this may return `null` if property is unset */
+  def property[ValueType >: Null](name: String): ValueType =
+    propertyOption(name).orNull
 
   def propertyOption[ValueType](name: String): Option[ValueType] = {
     node.graph.schema.getPropertyKindByName(name) match {
@@ -583,23 +609,33 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
   /** follow the given IN and OUT edge(s) to their adjacent nodes */
   @Doc("follow the given OUT and IN edge(s) to their adjacent nodes")
   def both(edgeLabel: String): Iterator[GNode] =
-    out(edgeLabel) ++ in(edgeLabel)
+    traversal.flatMap(node => node.out(edgeLabel) ++ node.in(edgeLabel))
 
-  /** lookup all OUT edge(s) */
+  /** follow all OUT edge(s) */
   def outE: Iterator[Edge] =
     traversal.flatMap(_.outE)
 
-  /** lookup all IN edge(s) */
+  /** follow all IN edge(s) */
   def inE: Iterator[Edge] =
     traversal.flatMap(_.inE)
 
-  /** lookup the given OUT edge(s) */
+  /** follow the given OUT edge(s) */
   def outE(edgeLabel: String): Iterator[Edge] =
     traversal.flatMap(_.outE(edgeLabel))
 
-  /** lookup the given IN edge(s) */
+  /** follow the given IN edge(s) */
   def inE(edgeLabel: String): Iterator[Edge] =
     traversal.flatMap(_.inE(edgeLabel))
+
+  /** follow _all_ IN and OUT edge(s) */
+  @Doc("follow all given OUT and IN edge(s)")
+  def bothE: Iterator[Edge] =
+    traversal.flatMap(node => node.outE ++ node.inE)
+
+  /** follow the given IN and OUT edge(s) */
+  @Doc("follow the given OUT and IN edge(s)")
+  def bothE(edgeLabel: String): Iterator[Edge] =
+    traversal.flatMap(node => node.outE(edgeLabel) ++ node.inE(edgeLabel))
 
   @Doc("lookup a property value")
   def property[@specialized T](name: String): Iterator[T] =
@@ -623,4 +659,18 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
 
   def propertiesMap: Iterator[java.util.Map[String, AnyRef]] =
     traversal.map(_.propertiesMap)
+}
+
+@Traversal(elementType = classOf[Edge])
+class EdgeSteps[A <: Edge](traversal: Iterator[A]) extends AnyVal {
+
+  /** traverse to source node: [A] --- edge --> B
+    */
+  def src: Iterator[GNode] =
+    traversal.map(_.src)
+
+  /** traverse to destination node A --- edge --> [B] */
+  def dst: Iterator[GNode] =
+    traversal.map(_.dst)
+
 }

@@ -8,38 +8,20 @@ final class AccessNeighborsForSong(val node: nodes.Song) extends AnyVal {
   /** Traverse to artist via sungBy OUT edge.
     */
   @deprecated("please use sungBy instead")
-  def artistViaSungbyOut: nodes.Artist = sungBy
+  def artistViaSungbyOut: Iterator[nodes.Artist] = sungBy
 
   /** Traverse to artist via sungBy OUT edge.
     */
-  def sungBy: nodes.Artist = {
-    try { sungbyOut.collectAll[nodes.Artist].next() }
-    catch {
-      case e: java.util.NoSuchElementException =>
-        throw new flatgraph.SchemaViolationException(
-          "OUT edge with label sungBy to an adjacent artist is mandatory, but not defined for this song node with seq=" + node.seq,
-          e
-        )
-    }
-  }
+  def sungBy: Iterator[nodes.Artist] = sungbyOut.collectAll[nodes.Artist]
 
   /** Traverse to artist via writtenBy OUT edge.
     */
   @deprecated("please use writtenBy instead")
-  def artistViaWrittenbyOut: nodes.Artist = writtenBy
+  def artistViaWrittenbyOut: Iterator[nodes.Artist] = writtenBy
 
   /** Traverse to artist via writtenBy OUT edge.
     */
-  def writtenBy: nodes.Artist = {
-    try { writtenbyOut.collectAll[nodes.Artist].next() }
-    catch {
-      case e: java.util.NoSuchElementException =>
-        throw new flatgraph.SchemaViolationException(
-          "OUT edge with label writtenBy to an adjacent artist is mandatory, but not defined for this song node with seq=" + node.seq,
-          e
-        )
-    }
-  }
+  def writtenBy: Iterator[nodes.Artist] = writtenbyOut.collectAll[nodes.Artist]
 
   /** Traverse to song via followedBy IN edge.
     */
@@ -48,20 +30,11 @@ final class AccessNeighborsForSong(val node: nodes.Song) extends AnyVal {
   /** Traverse to song via followedBy OUT edge.
     */
   @deprecated("please use followedBy instead")
-  def songViaFollowedbyOut: nodes.Song = followedBy
+  def songViaFollowedbyOut: Iterator[nodes.Song] = followedBy
 
   /** Traverse to song via followedBy OUT edge.
     */
-  def followedBy: nodes.Song = {
-    try { followedbyOut.collectAll[nodes.Song].next() }
-    catch {
-      case e: java.util.NoSuchElementException =>
-        throw new flatgraph.SchemaViolationException(
-          "OUT edge with label followedBy to an adjacent song is mandatory, but not defined for this song node with seq=" + node.seq,
-          e
-        )
-    }
-  }
+  def followedBy: Iterator[nodes.Song] = followedbyOut.collectAll[nodes.Song]
 
   def followedbyIn: Iterator[nodes.Song] = node._followedbyIn.cast[nodes.Song]
 
@@ -76,21 +49,21 @@ final class AccessNeighborsForSongTraversal(val traversal: Iterator[nodes.Song])
 
   /** Traverse to artist via sungBy OUT edge.
     */
-  def sungBy: Iterator[nodes.Artist] = traversal.map(_.sungBy)
+  def sungBy: Iterator[nodes.Artist] = traversal.flatMap(_.sungBy)
 
   /** Traverse to artist via sungBy OUT edge.
     */
   @deprecated("please use sungBy instead")
-  def artistViaSungbyOut: Iterator[nodes.Artist] = traversal.map(_.artistViaSungbyOut)
+  def artistViaSungbyOut: Iterator[nodes.Artist] = traversal.flatMap(_.artistViaSungbyOut)
 
   /** Traverse to artist via writtenBy OUT edge.
     */
-  def writtenBy: Iterator[nodes.Artist] = traversal.map(_.writtenBy)
+  def writtenBy: Iterator[nodes.Artist] = traversal.flatMap(_.writtenBy)
 
   /** Traverse to artist via writtenBy OUT edge.
     */
   @deprecated("please use writtenBy instead")
-  def artistViaWrittenbyOut: Iterator[nodes.Artist] = traversal.map(_.artistViaWrittenbyOut)
+  def artistViaWrittenbyOut: Iterator[nodes.Artist] = traversal.flatMap(_.artistViaWrittenbyOut)
 
   /** Traverse to song via followedBy IN edge.
     */
@@ -98,12 +71,12 @@ final class AccessNeighborsForSongTraversal(val traversal: Iterator[nodes.Song])
 
   /** Traverse to song via followedBy OUT edge.
     */
-  def followedBy: Iterator[nodes.Song] = traversal.map(_.followedBy)
+  def followedBy: Iterator[nodes.Song] = traversal.flatMap(_.followedBy)
 
   /** Traverse to song via followedBy OUT edge.
     */
   @deprecated("please use followedBy instead")
-  def songViaFollowedbyOut: Iterator[nodes.Song] = traversal.map(_.songViaFollowedbyOut)
+  def songViaFollowedbyOut: Iterator[nodes.Song] = traversal.flatMap(_.songViaFollowedbyOut)
 
   def followedbyIn: Iterator[nodes.Song] = traversal.flatMap(_.followedbyIn)
 

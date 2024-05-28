@@ -7,6 +7,7 @@ import flatgraph.misc.{ISeq, MultiDictIndex}
 object Accessors {
 
   def getEdgesOut(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
+    if (edgeKind == Schema.UndefinedKind) return IndexedSeq.empty[Edge]
     val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, Edge.Direction.Outgoing, edgeKind)
     val offsets = node.graph.neighbors(pos).asInstanceOf[Array[Int]]
     if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]
@@ -22,6 +23,7 @@ object Accessors {
   }
 
   def getEdgesIn(node: GNode, edgeKind: Int): IndexedSeq[Edge] = {
+    if (edgeKind == Schema.UndefinedKind) return IndexedSeq.empty[Edge]
     val pos     = node.graph.schema.neighborOffsetArrayIndex(node.nodeKind, Incoming, edgeKind)
     val offsets = node.graph.neighbors(pos).asInstanceOf[Array[Int]]
     if (offsets == null || node.seq() + 1 >= offsets.length) return IndexedSeq.empty[Edge]

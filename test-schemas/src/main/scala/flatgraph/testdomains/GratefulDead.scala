@@ -15,7 +15,7 @@ object GratefulDead {
     val name         = builder.addProperty("name", ValueType.String).mandatory(default = "")
     val songType     = builder.addProperty("songType", ValueType.String)
     val performances = builder.addProperty("performances", ValueType.Int)
-    val weight       = builder.addProperty("weight", ValueType.Long).mandatory(default = 0)
+    val weight       = builder.addProperty("weight", ValueType.Int).mandatory(default = 0)
 
     // nodes
     val artist = builder.addNodeType("artist").addProperty(name)
@@ -25,9 +25,9 @@ object GratefulDead {
     val sungBy     = builder.addEdgeType("sungBy")
     val writtenBy  = builder.addEdgeType("writtenBy")
     val followedBy = builder.addEdgeType("followedBy").withProperty(weight)
-    song.addOutEdge(sungBy, inNode = artist, cardinalityOut = Cardinality.One, stepNameOut = "sungBy", stepNameIn = "sang")
-    song.addOutEdge(writtenBy, inNode = artist, cardinalityOut = Cardinality.One, stepNameOut = "writtenBy", stepNameIn = "wrote")
-    song.addOutEdge(followedBy, inNode = song, cardinalityOut = Cardinality.One, stepNameOut = "followedBy")
+    song.addOutEdge(sungBy, inNode = artist, stepNameOut = "sungBy", stepNameIn = "sang")
+    song.addOutEdge(writtenBy, inNode = artist, stepNameOut = "writtenBy", stepNameIn = "wrote")
+    song.addOutEdge(followedBy, inNode = song, stepNameOut = "followedBy")
 
     builder.build
   }

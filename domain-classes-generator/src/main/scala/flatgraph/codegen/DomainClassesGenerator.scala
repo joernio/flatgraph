@@ -638,8 +638,6 @@ class DomainClassesGenerator(schema: Schema) {
       // format: off
       s"""package $basePackage
          |
-         |import $basePackage.nodes
-         |import $basePackage.edges
          |import flatgraph.FormalQtyType
          |
          |object GraphSchema extends flatgraph.Schema {

@@ -31,8 +31,8 @@ class GraphMLTests extends AnyWordSpec {
     val Seq(boDiddley, garcia) = gratefulDead.artist.sortBy(_.name).l
     val Seq(heyBoDiddley)      = gratefulDead.song.l
 
-    heyBoDiddley.sungBy shouldBe garcia
-    heyBoDiddley.writtenBy shouldBe boDiddley
+    heyBoDiddley.sungBy.l shouldBe List(garcia)
+    heyBoDiddley.writtenBy.l shouldBe List(boDiddley)
     garcia.sang.l shouldBe List(heyBoDiddley)
     boDiddley.wrote.l shouldBe List(heyBoDiddley)
 
