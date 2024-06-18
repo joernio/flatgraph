@@ -67,8 +67,9 @@ object RepeatBehaviour {
       this
     }
 
-    /** Emit intermediate elements (along the way), if they meet the given condition. Note that this does not apply a filter on the final
-      * elements of the traversal.
+    /** Emit intermediate elements (along the way), if they meet the given condition. Note: this does not apply a filter on the final
+      * elements of the traversal! Quite likely that you want to reuse the given condition as a filter step at the end of your traversal...
+      * See `RepeatTraversalTests` for an example.
       */
     def emit(condition: Traversal[A] => Traversal[?]): Builder[A] = {
       _shouldEmit = (element, _) => condition(Iterator.single(element)).hasNext
