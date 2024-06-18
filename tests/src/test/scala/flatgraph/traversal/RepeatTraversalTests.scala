@@ -51,24 +51,31 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     centerTrav.repeat(_.out)(_.emit.breadthFirstSearch).toSet shouldBe expectedResults
   }
 
-  "emit everything but the first element (starting point)" in {
+  "emit everything along the way but the first element (starting point)" in {
     val expectedResults = Set(l3, l2, l1, r1, r2, r3, r4, r5)
     centerTrav.repeat(_.out)(_.emitAllButFirst).toSet shouldBe expectedResults
     centerTrav.repeat(_.out)(_.emitAllButFirst.breadthFirstSearch).toSet shouldBe expectedResults
   }
 
-  "emit nodes that meet given condition" in {
-    val expectedResults = Set("L1", "L2", "L3")
+  "emit nodes along the way that meet given condition" in {
     centerTrav
-      .repeat(_.out)(_.emit(_.where(_.property(StringMandatory).filter(_.startsWith("L")))).breadthFirstSearch)
+      .repeat(_.out)(_.emit(_.where(_.property(StringMandatory).filter(_.startsWith("L")))))
       .property(StringMandatory)
-      .toSet shouldBe expectedResults
+      .toSet shouldBe Set("L1", "L2", "L3")
 
     // with domain specific language
     centerTrav
-      .repeat(_.connectedTo)(_.emit(_.where(_.stringMandatory("L.*"))).breadthFirstSearch)
+      .repeat(_.connectedTo)(_.emit(_.stringMandatory("L.*")))
       .stringMandatory
-      .toSet shouldBe expectedResults
+      .toSet shouldBe Set("L1", "L2", "L3")
+
+    // note: the emit condition only applies as a filter to what's emitted _along the way_, i.e. if the repeat
+    // traversal ends somewhere with results (e.g. because of `maxDepth` or `until`), you'll get those results also
+    // example: this traversal ends at `L2/R2` due to `maxDepth=2` and it emitted `L1` along the way
+    centerTrav
+      .repeat(_.connectedTo)(_.maxDepth(2).emit(_.stringMandatory("L.*")))
+      .stringMandatory
+      .toSet shouldBe Set("L1", "L2", "R2")
   }
 
   "going through multiple steps in repeat traversal" in {
