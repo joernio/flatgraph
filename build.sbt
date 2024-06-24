@@ -29,11 +29,16 @@ lazy val core = project
       "com.lihaoyi"     %% "ujson"  % "3.3.1",
       "com.github.luben" % "zstd-jni" % "1.5.6-3",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-
-      // for doc/help
-      "de.vandermeer" % "asciitable" % "0.3.2",
       "net.oneandone.reflections8" % "reflections8" % "0.11.7",
     )
+  )
+
+lazy val help = project
+  .in(file("help"))
+  .dependsOn(core)
+  .settings(
+    name := "flatgraph-help",
+    libraryDependencies += "de.vandermeer" % "asciitable" % "0.3.2",
   )
 
 lazy val formats = project
@@ -54,7 +59,7 @@ lazy val generateDomainClassesForTestSchemas = taskKey[Unit]("generate domain cl
 /** tests that make use of the sample schemas (and the corresponding generated domain classes) */
 lazy val tests = project
   .in(file("tests"))
-  .dependsOn(formats, testSchemasDomainClasses)
+  .dependsOn(core, formats, help, testSchemasDomainClasses)
   .settings(
     name := "flatgraph-tests",
     publish / skip := true,
@@ -153,7 +158,7 @@ lazy val testSchemas = project
 
 lazy val testSchemasDomainClasses = project
   .in(file("test-schemas-domain-classes"))
-  .dependsOn(core)
+  .dependsOn(core, help)
   .settings(
     name := "test-schemas-domain-classes",
     Compile/compile := (Compile/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
@@ -181,8 +186,8 @@ lazy val benchmarks = project
   )
 
 ThisBuild / libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+  "org.slf4j" % "slf4j-simple" % slf4jVersion % Test,
+  "org.scalatest" %% "scalatest" % "3.2.18" % Test,
 )
 
 ThisBuild / scalacOptions ++= Seq(

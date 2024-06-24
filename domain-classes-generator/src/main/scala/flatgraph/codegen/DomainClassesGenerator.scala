@@ -990,6 +990,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  with traversals.ConcreteStoredConversions
          |  with neighboraccessors.Conversions
          |  with flatgraph.traversal.language
+         |  with flatgraph.help.language
          |  with flatgraph.Implicits {
          |    implicit def toGeneratedNodeStarters(domain: $domainShortName): ${domainShortName}NodeStarters = ${domainShortName}NodeStarters(domain)
          |  }
