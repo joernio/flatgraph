@@ -2,6 +2,7 @@ package testdomains.generic.nodes
 
 import testdomains.generic.language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
+import scala.collection.mutable
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
   */
@@ -56,7 +57,36 @@ object NewNodeB {
   def apply(): NewNodeB                              = new NewNodeB
   private val outNeighbors: Map[String, Set[String]] = Map()
   private val inNeighbors: Map[String, Set[String]]  = Map()
+
+  object InsertionHelpers {
+    object NewNodeInserter_NodeB_stringOptional extends flatgraph.NewNodePropertyInsertionHelper {
+      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+        if (newNodes.isEmpty) return
+        val dstCast = dst.asInstanceOf[Array[String]]
+        val seq     = newNodes.head.storedRef.get.seq()
+        var offset  = offsets(seq)
+        var idx     = 0
+        while (idx < newNodes.length) {
+          val nn = newNodes(idx)
+          nn match {
+            case generated: NewNodeB =>
+              generated.stringOptional match {
+                case Some(item) =>
+                  dstCast(offset) = item
+                  offset += 1
+                case _ =>
+              }
+            case _ =>
+          }
+          assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+          idx += 1
+          offsets(idx) = offset
+        }
+      }
+    }
+  }
 }
+
 class NewNodeB extends NewNode(1.toShort) with NodeBBase {
   override type StoredNodeType = NodeB
   override def label: String = "node_b"
@@ -71,8 +101,8 @@ class NewNodeB extends NewNode(1.toShort) with NodeBBase {
   var stringOptional: Option[String]                   = None
   def stringOptional(value: Option[String]): this.type = { this.stringOptional = value; this }
   def stringOptional(value: String): this.type         = { this.stringOptional = Option(value); this }
-  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
-    if (stringOptional.nonEmpty) interface.insertProperty(this, 5, this.stringOptional)
+  override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
+    interface.countProperty(this, 5, stringOptional.size)
   }
 
   override def copy(): this.type = {

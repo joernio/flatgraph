@@ -2,6 +2,7 @@ package testdomains.gratefuldead.nodes
 
 import testdomains.gratefuldead.language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
+import scala.collection.mutable
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
   */
@@ -71,7 +72,82 @@ object NewSong {
   private val outNeighbors: Map[String, Set[String]] =
     Map("followedBy" -> Set("song"), "sungBy" -> Set("artist"), "writtenBy" -> Set("artist"))
   private val inNeighbors: Map[String, Set[String]] = Map("followedBy" -> Set("song"))
+
+  object InsertionHelpers {
+    object NewNodeInserter_Song_name extends flatgraph.NewNodePropertyInsertionHelper {
+      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+        if (newNodes.isEmpty) return
+        val dstCast = dst.asInstanceOf[Array[String]]
+        val seq     = newNodes.head.storedRef.get.seq()
+        var offset  = offsets(seq)
+        var idx     = 0
+        while (idx < newNodes.length) {
+          val nn = newNodes(idx)
+          nn match {
+            case generated: NewSong =>
+              dstCast(offset) = generated.name
+              offset += 1
+            case _ =>
+          }
+          assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+          idx += 1
+          offsets(idx) = offset
+        }
+      }
+    }
+    object NewNodeInserter_Song_performances extends flatgraph.NewNodePropertyInsertionHelper {
+      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+        if (newNodes.isEmpty) return
+        val dstCast = dst.asInstanceOf[Array[Int]]
+        val seq     = newNodes.head.storedRef.get.seq()
+        var offset  = offsets(seq)
+        var idx     = 0
+        while (idx < newNodes.length) {
+          val nn = newNodes(idx)
+          nn match {
+            case generated: NewSong =>
+              generated.performances match {
+                case Some(item) =>
+                  dstCast(offset) = item
+                  offset += 1
+                case _ =>
+              }
+            case _ =>
+          }
+          assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+          idx += 1
+          offsets(idx) = offset
+        }
+      }
+    }
+    object NewNodeInserter_Song_songtype extends flatgraph.NewNodePropertyInsertionHelper {
+      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+        if (newNodes.isEmpty) return
+        val dstCast = dst.asInstanceOf[Array[String]]
+        val seq     = newNodes.head.storedRef.get.seq()
+        var offset  = offsets(seq)
+        var idx     = 0
+        while (idx < newNodes.length) {
+          val nn = newNodes(idx)
+          nn match {
+            case generated: NewSong =>
+              generated.songtype match {
+                case Some(item) =>
+                  dstCast(offset) = item
+                  offset += 1
+                case _ =>
+              }
+            case _ =>
+          }
+          assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+          idx += 1
+          offsets(idx) = offset
+        }
+      }
+    }
+  }
 }
+
 class NewSong extends NewNode(1.toShort) with SongBase {
   override type StoredNodeType = Song
   override def label: String = "song"
@@ -91,10 +167,10 @@ class NewSong extends NewNode(1.toShort) with SongBase {
   def performances(value: Option[Int]): this.type = { this.performances = value; this }
   def songtype(value: Option[String]): this.type  = { this.songtype = value; this }
   def songtype(value: String): this.type          = { this.songtype = Option(value); this }
-  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
-    interface.insertProperty(this, 0, Iterator(this.name))
-    if (performances.nonEmpty) interface.insertProperty(this, 1, this.performances)
-    if (songtype.nonEmpty) interface.insertProperty(this, 2, this.songtype)
+  override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
+    interface.countProperty(this, 0, 1)
+    interface.countProperty(this, 1, performances.size)
+    interface.countProperty(this, 2, songtype.size)
   }
 
   override def copy(): this.type = {

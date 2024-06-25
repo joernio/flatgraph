@@ -2,6 +2,96 @@ package flatgraph.codegen
 
 object CodeSnippets {
 
+  object NewNodeInserters {
+    def forSingleItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
+      s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
+         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |     if(newNodes.isEmpty) return
+         |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
+         |     val seq = newNodes.head.storedRef.get.seq()
+         |     var offset = offsets(seq)
+         |     var idx = 0
+         |     while(idx < newNodes.length){
+         |        val nn = newNodes(idx)
+         |        nn match {
+         |          case generated: New${nodeType} =>
+         |            dstCast(offset) = ${
+          if (isNode)
+            s"generated.$nameCamelCase match {case newV:flatgraph.DNode => newV.storedRef.get; case oldV: flatgraph.GNode => oldV; case null => null}"
+          else s"generated.${nameCamelCase}"
+        }
+         |            offset += 1
+         |          case _ =>
+         |        }
+         |        assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+         |        idx += 1
+         |        offsets(idx) = offset
+         |     }
+         |  }
+         |}""".stripMargin
+    }
+    def forOptionalItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
+      s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
+         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |     if(newNodes.isEmpty) return
+         |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
+         |     val seq = newNodes.head.storedRef.get.seq()
+         |     var offset = offsets(seq)
+         |     var idx = 0
+         |     while(idx < newNodes.length){
+         |        val nn = newNodes(idx)
+         |        nn match {
+         |          case generated: New${nodeType} =>
+         |            generated.${nameCamelCase} match {
+         |              case Some(item) =>
+         |                dstCast(offset) = ${
+          if (isNode) s"item match {case newV:flatgraph.DNode => newV.storedRef.get; case oldV: flatgraph.GNode => oldV; case null => null}"
+          else "item"
+        }
+         |                offset += 1
+         |              case _ =>
+         |            }
+         |          case _ =>
+         |        }
+         |        assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+         |        idx += 1
+         |        offsets(idx) = offset
+         |     }
+         |  }
+         |}""".stripMargin
+    }
+
+    def forMultiItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
+      s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
+         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |     if(newNodes.isEmpty) return
+         |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
+         |     val seq = newNodes.head.storedRef.get.seq()
+         |     var offset = offsets(seq)
+         |     var idx = 0
+         |     while(idx < newNodes.length){
+         |        val nn = newNodes(idx)
+         |        nn match {
+         |          case generated: New${nodeType} =>
+         |            for(item <- generated.${nameCamelCase}){
+         |              dstCast(offset) = ${
+          if (isNode) s"item match {case newV:flatgraph.DNode => newV.storedRef.get; case oldV: flatgraph.GNode => oldV; case null => null}"
+          else "item"
+        }
+         |              offset += 1
+         |            }
+         |          case _ =>
+         |        }
+         |        assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+         |        idx += 1
+         |        offsets(idx) = offset
+         |     }
+         |  }
+         |}""".stripMargin
+    }
+
+  }
+
   object FilterSteps {
 
     def forSingleString(nameCamelCase: String, baseType: String, propertyId: Int) = {

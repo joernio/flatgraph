@@ -2,6 +2,7 @@ package testdomains.hierarchical.nodes
 
 import testdomains.hierarchical.language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
+import scala.collection.mutable
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
   */
@@ -59,7 +60,32 @@ object NewNodeX {
   def apply(): NewNodeX                              = new NewNodeX
   private val outNeighbors: Map[String, Set[String]] = Map()
   private val inNeighbors: Map[String, Set[String]]  = Map()
+
+  object InsertionHelpers {
+    object NewNodeInserter_NodeX_name extends flatgraph.NewNodePropertyInsertionHelper {
+      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+        if (newNodes.isEmpty) return
+        val dstCast = dst.asInstanceOf[Array[String]]
+        val seq     = newNodes.head.storedRef.get.seq()
+        var offset  = offsets(seq)
+        var idx     = 0
+        while (idx < newNodes.length) {
+          val nn = newNodes(idx)
+          nn match {
+            case generated: NewNodeX =>
+              dstCast(offset) = generated.name
+              offset += 1
+            case _ =>
+          }
+          assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
+          idx += 1
+          offsets(idx) = offset
+        }
+      }
+    }
+  }
 }
+
 class NewNodeX extends NewNode(0.toShort) with NodeXBase with BaseNodeNew {
   override type StoredNodeType = NodeX
   override def label: String = "node_x"
@@ -73,8 +99,8 @@ class NewNodeX extends NewNode(0.toShort) with NodeXBase with BaseNodeNew {
 
   var name: String                   = "<empty>": String
   def name(value: String): this.type = { this.name = value; this }
-  override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
-    interface.insertProperty(this, 0, Iterator(this.name))
+  override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
+    interface.countProperty(this, 0, 1)
   }
 
   override def copy(): this.type = {
