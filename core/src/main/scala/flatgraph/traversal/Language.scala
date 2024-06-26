@@ -26,6 +26,9 @@ trait language {
 
   implicit def iteratorToEdgeSteps[A <: Edge](iter: IterableOnce[A]): EdgeSteps[A] =
     new EdgeSteps[A](iter.iterator)
+
+  implicit def iteratorToNumericSteps[A: Numeric](iter: IterableOnce[A]): NumericSteps[A] =
+    new NumericSteps[A](iter)
 }
 
 @Traversal(elementType = classOf[AnyRef])
