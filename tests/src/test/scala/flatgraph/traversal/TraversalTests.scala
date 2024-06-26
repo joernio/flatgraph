@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import testdomains.generic.GenericDomain
 import testdomains.generic.language.*
 import testdomains.generic.edges.ConnectedTo
-import testdomains.generic.nodes.NodeA
+import testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA, NodeB}
 
 import scala.collection.mutable
 
@@ -94,7 +94,16 @@ class TraversalTests extends AnyWordSpec {
     oneToFour.without(Set(2, 4)).l shouldBe Seq(1, 3)
   }
 
-  ".help step" should {
+  "collectAll step should collect (and cast) all elements of the given type" in {
+    val anyIter: Iterator[Any] = Iterator("a", "b", 1, 2, 3)
+    val stringIter             = anyIter.collectAll[String]
+
+    // just verifying that we can assign it
+    val stringIter2: Iterator[String] = stringIter
+    stringIter2.size shouldBe 2
+  }
+
+  "help step" should {
     // a specific domain would provide it's own DocSearchPackage implementation, to specify where we're supposed to scan for @Doc annotations
     given DocSearchPackages      = DocSearchPackages.default
     given AvailableWidthProvider = new Table.ConstantWidth(120)
@@ -159,7 +168,6 @@ class TraversalTests extends AnyWordSpec {
       thingTraversalHelpVerbose should include("result to a list")
       thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSt")
     }
-
   }
 
   "generic graph steps" in {

@@ -77,6 +77,13 @@ class GratefulDeadTests extends AnyWordSpec {
       gratefulDead.song.performancesGte(1).size shouldBe 483
       gratefulDead.song.performancesLt(1).size shouldBe 101
       gratefulDead.song.performancesLte(1).size shouldBe 243
+
+      // numeric filter steps
+      gratefulDead.song.where(_.performances.equal(1)).size shouldBe 142
+      gratefulDead.song.where(_.performances.greaterThan(1)).size shouldBe 341
+      gratefulDead.song.where(_.performances.greaterThanEqual(1)).size shouldBe 483
+      gratefulDead.song.where(_.performances.lessThan(1)).size shouldBe 101
+      gratefulDead.song.where(_.performances.lessThanEqual(1)).size shouldBe 243
     }
 
     "throw useful exception when passing invalid regexp" in {
