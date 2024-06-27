@@ -1,7 +1,6 @@
 package flatgraph.traversal
 
-import flatgraph.help.{Doc, DocSearchPackages, Traversal, TraversalHelp}
-import flatgraph.help.Table.AvailableWidthProvider
+import flatgraph.help.{Doc, Traversal}
 import flatgraph.{Accessors, Edge, GNode, MultiPropertyKey, OptionalPropertyKey, PropertyKey, Schema, SinglePropertyKey}
 
 import scala.annotation.implicitNotFound
@@ -15,16 +14,16 @@ trait language {
   implicit def iterableOnceToIterator[A](iter: IterableOnce[A]): Iterator[A] =
     iter.iterator
 
-  implicit def iteratorToGenericSteps[A](iter: IterableOnce[A]): GenericSteps[A] =
+  implicit def iterableToGenericSteps[A](iter: IterableOnce[A]): GenericSteps[A] =
     new GenericSteps[A](iter.iterator)
 
   implicit def gNodeToNodeMethods(node: GNode): NodeMethods =
     new NodeMethods(node)
 
-  implicit def iteratorToNodeSteps[A <: GNode](iter: IterableOnce[A]): NodeSteps[A] =
+  implicit def iterableToNodeSteps[A <: GNode](iter: IterableOnce[A]): NodeSteps[A] =
     new NodeSteps[A](iter.iterator)
 
-  implicit def iteratorToEdgeSteps[A <: Edge](iter: IterableOnce[A]): EdgeSteps[A] =
+  implicit def iterableToEdgeSteps[A <: Edge](iter: IterableOnce[A]): EdgeSteps[A] =
     new EdgeSteps[A](iter.iterator)
 
   implicit def iteratorToNumericSteps[A: Numeric](iter: IterableOnce[A]): NumericSteps[A] =
@@ -33,36 +32,6 @@ trait language {
 
 @Traversal(elementType = classOf[AnyRef])
 class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
-
-  /** Print help/documentation based on the current elementType `A`. Relies on all step extensions being annotated with \@Traversal / @Doc
-    * Note that this works independently of tab completion and implicit conversions in scope - it will simply list all documented steps in
-    * the classpath
-    */
-  @Doc(info = "print help/documentation based on the current elementType `A`.")
-  @implicitNotFound("""If you're using flatgraph purely without a schema and associated generated domain classes, you can
-      |start with `given DocSearchPackages = DocSearchPackages.default`.
-      |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
-      |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
-      |""".stripMargin)
-  def help[B >: A](implicit
-    elementType: ClassTag[B],
-    searchPackages: DocSearchPackages,
-    availableWidthProvider: AvailableWidthProvider
-  ): String =
-    new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = false)
-
-  @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
-  @implicitNotFound("""If you're using flatgraph purely without a schema and associated generated domain classes, you can
-      |start with `given DocSearchPackages = DocSearchPackages.default`.
-      |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
-      |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
-      |""".stripMargin)
-  def helpVerbose[B >: A](implicit
-    elementType: ClassTag[B],
-    searchPackages: DocSearchPackages,
-    availableWidthProvider: AvailableWidthProvider
-  ): String =
-    new TraversalHelp(searchPackages).forElementSpecificSteps(elementType.runtimeClass, verbose = true)
 
   /** Execute the traversal and convert the result to a list - shorthand for `toList` */
   @Doc(info = "Execute the traversal and convert the result to a list - shorthand for `toList`")
