@@ -1118,7 +1118,7 @@ class DomainClassesGenerator(schema: Schema) {
               val neighborContexts = adjacentNodes.map { adjacentNode =>
                 val scaladoc = s"""/** ${adjacentNode.customStepDoc.getOrElse("")}
                                 | * Traverse to ${adjacentNode.neighbor.name} via ${edge.name} $direction edge. */""".stripMargin
-                val defaultMethodName = camelCase(s"${adjacentNode.neighbor.name}_Via_${edge.name}_$direction")
+                val defaultMethodName = "_" + camelCase(s"${adjacentNode.neighbor.name}_Via_${edge.name}_$direction")
                 NeighborContext(adjacentNode, scaladoc, defaultMethodName, adjacentNode.customStepName)
               }
               NeighborContextsByEdge(direction, edge, neighborContexts)
