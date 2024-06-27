@@ -10,16 +10,17 @@ val scala2_12 = "2.12.18"
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
   * internal repositories. */
 lazy val root = (project in file(".")).aggregate(
-    core,
-    formats,
-    domainClassesGenerator_3,
-    domainClassesGenerator_2_12,
-    sbtPlugin,
-    odbConvert,
-    testSchemas,
-    testSchemasDomainClasses,
-    tests,
-  )
+  core,
+  help,
+  formats,
+  domainClassesGenerator_3,
+  domainClassesGenerator_2_12,
+  sbtPlugin,
+  odbConvert,
+  testSchemas,
+  testSchemasDomainClasses,
+  tests,
+)
 
 lazy val core = project
   .in(file("core"))
