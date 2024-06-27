@@ -14,6 +14,7 @@ trait language {
 
 @Traversal(elementType = classOf[AnyRef])
 class HelpSteps[A](iterator: Iterator[A]) extends AnyVal {
+
   /** Print help/documentation based on the current elementType `A`. Relies on all step extensions being annotated with \@Traversal / @Doc
     * Note that this works independently of tab completion and implicit conversions in scope - it will simply list all documented steps in
     * the classpath
