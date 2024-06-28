@@ -589,7 +589,6 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val viaNewNode  = newNodeNewProperties(pos)
     val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
-    // if(viaNewNode != 0 && propertyBuf == null) propertyBuf = mutable.ArrayBuffer.empty
     if (setNodeProperties(pos) != null || viaNewNode > 0) {
       val setPropertyPositions =
         Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
