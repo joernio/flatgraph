@@ -25,7 +25,7 @@ object CodeSnippets {
          |        }
          |        assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
          |        idx += 1
-         |        offsets(idx) = offset
+         |        offsets(idx + seq) = offset
          |     }
          |  }
          |}""".stripMargin
@@ -55,7 +55,7 @@ object CodeSnippets {
          |        }
          |        assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
          |        idx += 1
-         |        offsets(idx) = offset
+         |        offsets(idx + seq) = offset
          |     }
          |  }
          |}""".stripMargin
@@ -84,7 +84,7 @@ object CodeSnippets {
          |        }
          |        assert(seq + idx == nn.storedRef.get.seq(), "internal consistency check")
          |        idx += 1
-         |        offsets(idx) = offset
+         |        offsets(idx + seq) = offset
          |     }
          |  }
          |}""".stripMargin

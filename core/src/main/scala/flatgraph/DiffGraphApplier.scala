@@ -588,14 +588,18 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val schema      = graph.schema
     val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val viaNewNode  = newNodeNewProperties(pos)
-    val propertyBuf = setNodeProperties(pos)
+    val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
     // if(viaNewNode != 0 && propertyBuf == null) propertyBuf = mutable.ArrayBuffer.empty
-    if (propertyBuf != null || viaNewNode > 0) {
+    if (setNodeProperties(pos) != null || viaNewNode > 0) {
       val setPropertyPositions =
         Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
       setPropertyPositions.sortInPlaceBy(_.node.seq())
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
+      val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+      val lengthDelta = setPropertyPositions.iterator.map { setP =>
+        setP.length - (get(oldQty, setP.node.seq()) - get(oldQty, setP.node.seq() + 1))
+      }.sum
       val nodeCount = graph.nodesArray(nodeKind).length
 
       val setPropertyValues = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
@@ -604,7 +608,6 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       } else {
         copyToArray(propertyBuf, setPropertyValues)
 
-        val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
         val oldProperty = Option(graph.properties(pos + 1))
           .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
           .asInstanceOf[Array[?]]
@@ -612,7 +615,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
         val newQty = new Array[Int](nodeCount + 1)
         val newProperty =
-          schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size + viaNewNode)
+          schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + lengthDelta + viaNewNode)
 
         val insertionIter = setPropertyPositions.iterator
         var copyStartSeq  = 0

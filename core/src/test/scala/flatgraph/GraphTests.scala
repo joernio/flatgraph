@@ -685,6 +685,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V0_0.storedRef.get, 1, V0_2 :: V0_0 :: Nil)
         ._setNodeProperty(V1_1.storedRef.get, 0, 0.toShort :: 1.toShort :: Nil)
     )
+    println(debugDump(g))
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
@@ -715,6 +716,8 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V1_0.storedRef.get, 0, null)
         ._setNodeProperty(V0_1.storedRef.get, 1, null :: Nil)
     )
+
+    println(debugDump(g))
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):

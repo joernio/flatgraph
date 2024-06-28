@@ -2,9 +2,9 @@ package flatgraph.codegen
 
 import java.nio.file.Path
 import flatgraph.codegen.CodeSnippets.{FilterSteps, NewNodeInserters}
-import flatgraph.codegen.Helpers.*
+import flatgraph.codegen.Helpers._
 import flatgraph.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
-import flatgraph.schema.Helpers.*
+import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 
 import scala.collection.mutable
@@ -641,6 +641,29 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.addOne("}")
         sourceLines.result()
       }
+      val newNodePropertyHelpers = {
+        val inserters = mutable.ArrayBuffer.empty[String]
+        for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
+          for (property <- node.properties) {
+            val propertyKind = propertyKindByProperty(property)
+            val pos          = 2 * (nodeKind + nodeTypes.length * propertyKind)
+            val name         = s"nodes.New${node.className}.InsertionHelpers.NewNodeInserter_${node.className}_${camelCase(property.name)}"
+            inserters.append(s"_newNodeInserters(${pos}) = $name")
+          }
+          for (cn <- node.containedNodes) {
+            val localName = cn.localName
+            val index     = relevantProperties.size + containedIndexByName(localName)
+            val pos       = 2 * (nodeKind + nodeTypes.length * index)
+            val name      = s"nodes.New${node.className}.InsertionHelpers.NewNodeInserter_${node.className}_${localName}"
+            inserters.append(s"_newNodeInserters(${pos}) = $name")
+          }
+        }
+        s"""private val newNodeInsertionHelpers: Array[flatgraph.NewNodePropertyInsertionHelper] = {
+           |  val _newNodeInserters = new Array[flatgraph.NewNodePropertyInsertionHelper](${2 * nodeTypes.length * (relevantProperties.length + containedIndexByName.size)})
+           |  ${inserters.mkString("\n")}
+           |  _newNodeInserters
+           |}""".stripMargin
+      }
 
       val nodePropertyNameCases = for {
         nodeType <- nodeTypes
@@ -669,6 +692,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
          |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource.mkString("\n")}
+         |  ${newNodePropertyHelpers}
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
@@ -702,7 +726,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
          |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
          |
-         |  override def getNewNodePropertyInserter (ndoeKind: Int, propertyKind: Int): flatgraph.NewNodePropertyInsertionHelper = ???
+         |  override def getNewNodePropertyInserter (nodeKind: Int, propertyKind: Int): flatgraph.NewNodePropertyInsertionHelper = newNodeInsertionHelpers(propertyOffsetArrayIndex(nodeKind, propertyKind))
          |}""".stripMargin
       // format: on
     }
