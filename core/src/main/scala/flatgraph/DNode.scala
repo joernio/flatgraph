@@ -9,13 +9,14 @@ trait DNode extends DiffGraphBuilder.RawUpdate with DNodeOrNode {
   def storedRef: Option[StoredNodeType]
   def storedRef_=(ref: Option[GNode]): Unit
 
-  def flattenProperties(interface: BatchedUpdateInterface): Unit
+  def countAndVisitProperties(interface: BatchedUpdateInterface): Unit
 }
 
 trait BatchedUpdateInterface {
-  def insertProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit
+  def countProperty(node: DNode, propertyKind: Int, num: Int): Unit
+  def visitContainedNode(contained: DNodeOrNode): Unit
 }
-class GenericDNode(val nodeKind: Short, var storedRef: Option[GNode] = None) extends DNode {
+final class GenericDNode(val nodeKind: Short, var storedRef: Option[GNode] = None) extends DNode {
   override type StoredNodeType = GNode
-  override def flattenProperties(interface: BatchedUpdateInterface): Unit = {}
+  override def countAndVisitProperties(interface: BatchedUpdateInterface): Unit = {}
 }

@@ -148,6 +148,7 @@ abstract class Schema {
   def allocateEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int, size: Int): Array[?]
   def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType
   def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity
+  def getNewNodePropertyInserter(ndoeKind: Int, propertyKind: Int): NewNodePropertyInsertionHelper
 
   def verifyNodeKindIsValid(kind: Int): Unit = {
     assert(
@@ -156,6 +157,8 @@ abstract class Schema {
     )
   }
 }
+
+object FreeSchemaInsertionHelper extends NewNodePropertyInsertionHelper
 
 class FreeSchema(
   nodeLabels: Array[String],
@@ -212,4 +215,5 @@ class FreeSchema(
     }
     else formalQuantities(propertyOffsetArrayIndex(nodeKind, propertyKind))
 
+  override def getNewNodePropertyInserter(ndoeKind: Int, propertyKind: Int): NewNodePropertyInsertionHelper = FreeSchemaInsertionHelper
 }

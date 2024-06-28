@@ -19,24 +19,29 @@ object DiffGraphApplier {
   }
 }
 
+abstract class NewNodePropertyInsertionHelper {
+  def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[DNode], dst: AnyRef, idxs: Array[Int]): Unit = {}
+}
+
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
 private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, schemaViolationReporter: SchemaViolationReporter) {
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
-  val newEdges          = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
-  val delEdges          = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
-  val setEdgeProperties = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
-  val deferred          = new mutable.ArrayDeque[DNode]()
-  val delNodes          = new mutable.ArrayBuffer[GNode]()
-  val setNodeProperties = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
+  val newEdges             = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
+  val delEdges             = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
+  val setEdgeProperties    = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
+  val deferred             = new mutable.ArrayDeque[DNode]()
+  val delNodes             = new mutable.ArrayBuffer[GNode]()
+  val setNodeProperties    = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
+  val newNodeNewProperties = new Array[Int](graph.properties.size)
 
   object NewNodeInterface extends BatchedUpdateInterface {
-    override def insertProperty(node: DNode, propertyKind: Int, propertyValues: IterableOnce[Any]): Unit = {
-      val iter = propertyValues.iterator
-      if (iter.hasNext) {
-        insertProperty0(node.storedRef.get, propertyKind, iter)
-      }
+    override def visitContainedNode(contained: DNodeOrNode): Unit = { if (contained != null) getGNode(contained) }
+
+    override def countProperty(node: DNode, propertyKind: Int, num: Int): Unit = {
+      val pos = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
+      newNodeNewProperties(pos) += num
     }
   }
 
@@ -67,7 +72,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def drainDeferred(): Unit = {
     while (deferred.nonEmpty) {
-      deferred.removeHead().flattenProperties(NewNodeInterface)
+      deferred.removeHead().countAndVisitProperties(NewNodeInterface)
     }
   }
 
@@ -582,12 +587,18 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
     val schema      = graph.schema
     val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val propertyBuf = setNodeProperties(pos)
-    if (propertyBuf != null) {
-      val setPropertyPositions = setNodeProperties(pos + 1).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
+    val viaNewNode  = newNodeNewProperties(pos)
+    val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
+    if (setNodeProperties(pos) != null || viaNewNode > 0) {
+      val setPropertyPositions =
+        Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
       setPropertyPositions.sortInPlaceBy(_.node.seq())
       dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
+      val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+      val lengthDelta = setPropertyPositions.iterator.map { setP =>
+        setP.length - (get(oldQty, setP.node.seq()) - get(oldQty, setP.node.seq() + 1))
+      }.sum
       val nodeCount = graph.nodesArray(nodeKind).length
 
       val setPropertyValues = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
@@ -596,14 +607,14 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       } else {
         copyToArray(propertyBuf, setPropertyValues)
 
-        val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
         val oldProperty = Option(graph.properties(pos + 1))
           .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
           .asInstanceOf[Array[?]]
         if (oldProperty == null) schemaViolationReporter.illegalNodeProperty(nodeKind, propertyKind, schema)
 
-        val newQty      = new Array[Int](nodeCount + 1)
-        val newProperty = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + propertyBuf.size)
+        val newQty = new Array[Int](nodeCount + 1)
+        val newProperty =
+          schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(get(oldQty, nodeCount) + lengthDelta + viaNewNode)
 
         val insertionIter = setPropertyPositions.iterator
         var copyStartSeq  = 0
@@ -631,6 +642,11 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
           copyStartSeq = insertionSeq + 1
         }
         newQty(nodeCount) = outIndex
+        // now need to write the newproperties
+        if (viaNewNode > 0) {
+          val inserter = schema.getNewNodePropertyInserter(nodeKind, propertyKind)
+          inserter.insertNewNodeProperties(newNodes(nodeKind), newProperty, newQty)
+        }
 
         graph.properties(pos) = newQty
         // fixme: need to support graphs with unknown schema. Then we need to homogenize the array here.
