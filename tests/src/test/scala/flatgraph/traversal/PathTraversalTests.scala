@@ -124,7 +124,7 @@ class PathTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
 
         center.start.enablePathTracking.out
           .sideEffectPF {
-            case node if node.property(NodeA.PropertyKeys.StringMandatory).startsWith("L") =>
+            case node if node.property(NodeA.Properties.StringMandatory).startsWith("L") =>
               sack.addOne(node)
           }
           .out

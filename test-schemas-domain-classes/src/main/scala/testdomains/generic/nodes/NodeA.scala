@@ -47,7 +47,7 @@ object NodeA {
     val StringOptional = "string_optional"
     val NodeB          = "node_b"
   }
-  object PropertyKeys {
+  object Properties {
     val IntList         = flatgraph.MultiPropertyKey[Int](kind = 0, name = "int_list")
     val IntMandatory    = flatgraph.SinglePropertyKey[Int](kind = 1, name = "int_mandatory", default = 42: Int)
     val IntOptional     = flatgraph.OptionalPropertyKey[Int](kind = 2, name = "int_optional")

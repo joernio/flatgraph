@@ -24,7 +24,7 @@ class GraphTests extends AnyWordSpec with MockFactory {
     val mockSchemaViolationReporter = mock[SchemaViolationReporter]
     mockSchemaViolationReporter.illegalNodeProperty.expects(nodeA.nodeKind: Int, "UNKNOWN", schema)
     mockSchemaViolationReporter.illegalNodeProperty.expects(nodeA.nodeKind: Int, 999, schema)
-    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, NodeA.PropertyKeys.IntOptional.kind, schema)
+    mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, NodeA.Properties.IntOptional.kind, schema)
     mockSchemaViolationReporter.illegalNodeProperty.expects(nodeB.nodeKind: Int, 998, schema)
 
     val setProperties = new DiffGraphBuilder(schema, mockSchemaViolationReporter)

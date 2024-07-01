@@ -4,7 +4,7 @@ import flatgraph.GNode
 import flatgraph.TestGraphs.FlatlineGraphFixture
 import testdomains.generic.GenericDomain
 import testdomains.generic.language.*
-import testdomains.generic.PropertyKeys.StringMandatory
+import testdomains.generic.Properties.StringMandatory
 import testdomains.generic.edges.ConnectedTo
 import testdomains.generic.nodes.{NewNodeA, NodeA}
 import org.scalatest.matchers.should.Matchers.*
