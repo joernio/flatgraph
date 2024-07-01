@@ -23,7 +23,7 @@ object NodeB {
 
     val StringOptional = "string_optional"
   }
-  object PropertyKeys {
+  object Properties {
     val StringOptional = flatgraph.OptionalPropertyKey[String](kind = 5, name = "string_optional")
   }
   object PropertyDefaults {}

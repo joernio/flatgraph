@@ -1,6 +1,6 @@
 package testdomains.generic
 
-object PropertyKeys {
+object Properties {
   val IntList = flatgraph.MultiPropertyKey[Int](kind = 0, name = "int_list")
 
   val IntMandatory = flatgraph.SinglePropertyKey[Int](kind = 1, name = "int_mandatory", default = 42: Int)
