@@ -29,6 +29,12 @@ object GraphSchema extends flatgraph.Schema {
     nodePropertyDescriptors(3) = FormalQtyType.QtyOne
     nodePropertyDescriptors
   }
+  private val newNodeInsertionHelpers: Array[flatgraph.NewNodePropertyInsertionHelper] = {
+    val _newNodeInserters = new Array[flatgraph.NewNodePropertyInsertionHelper](4)
+    _newNodeInserters(0) = nodes.NewNodeX.InsertionHelpers.NewNodeInserter_NodeX_name
+    _newNodeInserters(2) = nodes.NewNodeY.InsertionHelpers.NewNodeInserter_NodeY_name
+    _newNodeInserters
+  }
   override def getNumberOfNodeKinds: Int                          = 2
   override def getNumberOfEdgeKinds: Int                          = 1
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
@@ -67,4 +73,7 @@ object GraphSchema extends flatgraph.Schema {
   override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(
     1 + propertyOffsetArrayIndex(nodeKind, propertyKind)
   ).asInstanceOf[FormalQtyType.FormalQuantity]
+
+  override def getNewNodePropertyInserter(nodeKind: Int, propertyKind: Int): flatgraph.NewNodePropertyInsertionHelper =
+    newNodeInsertionHelpers(propertyOffsetArrayIndex(nodeKind, propertyKind))
 }

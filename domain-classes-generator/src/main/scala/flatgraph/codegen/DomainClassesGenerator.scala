@@ -1,12 +1,12 @@
 package flatgraph.codegen
 
 import java.nio.file.Path
-
-import flatgraph.codegen.CodeSnippets.FilterSteps
+import flatgraph.codegen.CodeSnippets.{FilterSteps, NewNodeInserters}
 import flatgraph.codegen.Helpers._
 import flatgraph.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
 import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
+
 import scala.collection.mutable
 
 class DomainClassesGenerator(schema: Schema) {
@@ -276,13 +276,14 @@ class DomainClassesGenerator(schema: Schema) {
         s"""class ${nodeType.className}(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, $kind.toShort , seq_4762)""" +: mixins
       }.mkString(" with ")
 
-      val newNodeProps    = mutable.ArrayBuffer.empty[String]
-      val newNodeFluent   = mutable.ArrayBuffer.empty[String]
-      val storedNodeProps = mutable.ArrayBuffer.empty[String]
-      val baseNodeProps   = mutable.ArrayBuffer.empty[String]
-      val propDictItems   = mutable.ArrayBuffer.empty[String]
-      val flattenItems    = mutable.ArrayBuffer.empty[String]
-      val productElements = mutable.ArrayBuffer.empty[String]
+      val newNodeProps       = mutable.ArrayBuffer.empty[String]
+      val newNodeFluent      = mutable.ArrayBuffer.empty[String]
+      val storedNodeProps    = mutable.ArrayBuffer.empty[String]
+      val baseNodeProps      = mutable.ArrayBuffer.empty[String]
+      val propDictItems      = mutable.ArrayBuffer.empty[String]
+      val flattenItems       = mutable.ArrayBuffer.empty[String]
+      val newNodeHelpersCode = mutable.ArrayBuffer.empty[String]
+      val productElements    = mutable.ArrayBuffer.empty[String]
 
       for (p <- nodeType.properties) {
         val pname = camelCase(p.name)
@@ -295,7 +296,8 @@ class DomainClassesGenerator(schema: Schema) {
             propDictItems.append(
               s"""val tmp${p.className} = this.$pname; if(tmp${p.className}.nonEmpty) res.put("${p.name}", tmp${p.className})"""
             )
-            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
+            flattenItems.append(s"interface.countProperty(this, ${propertyKindByProperty(p)}, ${pname}.size)")
+            newNodeHelpersCode.append(NewNodeInserters.forMultiItem(pname, nodeType.className, ptyp, false))
           case Cardinality.ZeroOrOne =>
             newNodeProps.append(s"var $pname: Option[$ptyp] = None")
             newNodeFluent.append(s"def $pname(value: Option[$ptyp]): this.type = {this.$pname = value; this }")
@@ -303,13 +305,15 @@ class DomainClassesGenerator(schema: Schema) {
               s"def $pname(value: ${unpackTypeUnboxed(p.valueType, false, false)}): this.type = {this.$pname = Option(value); this }"
             )
             propDictItems.append(s"""this.$pname.foreach{p => res.put("${p.name}", p )}""")
-            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, ${propertyKindByProperty(p)}, this.$pname)""")
+            flattenItems.append(s"interface.countProperty(this, ${propertyKindByProperty(p)}, ${pname}.size)")
+            newNodeHelpersCode.append(NewNodeInserters.forOptionalItem(pname, nodeType.className, ptyp, false))
 
           case one: Cardinality.One[?] =>
             newNodeProps.append(s"var $pname: $ptyp = ${unpackDefault(p.valueType, one.default)}")
             newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
             propDictItems.append(s"""if ((${unpackDefault(p.valueType, one.default)}) != this.$pname) res.put("${p.name}", this.$pname )""")
-            flattenItems.append(s"""interface.insertProperty(this, ${propertyKindByProperty(p)}, Iterator(this.$pname))""")
+            flattenItems.append(s"interface.countProperty(this, ${propertyKindByProperty(p)}, 1)")
+            newNodeHelpersCode.append(NewNodeInserters.forSingleItem(pname, nodeType.className, ptyp, false))
         }
       }
 
@@ -329,7 +333,10 @@ class DomainClassesGenerator(schema: Schema) {
               s"def $pname: IndexedSeq[${styp}] = flatgraph.Accessors.getNodePropertyMulti[$styp](graph, nodeKind, $index, seq)"
             )
             propDictItems.append(s"""val tmp$pname = this.$pname; if(tmp$pname.nonEmpty) res.put("$pname", tmp$pname)""")
-            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
+            // flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
+            flattenItems.append(s"interface.countProperty(this, $pid, ${pname}.size)")
+            flattenItems.append(s"${pname}.foreach(interface.visitContainedNode)")
+            newNodeHelpersCode.append(NewNodeInserters.forMultiItem(pname, nodeType.className, "flatgraph.GNode", true))
 
           case Cardinality.ZeroOrOne =>
             newNodeProps.append(s"var $pname: Option[$ptyp] = None")
@@ -340,8 +347,9 @@ class DomainClassesGenerator(schema: Schema) {
               s"def $pname: Option[${styp}] = flatgraph.Accessors.getNodePropertyOption[$styp](graph, nodeKind, $index, seq)"
             )
             propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
-            flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
-
+            flattenItems.append(s"interface.countProperty(this, $pid, ${pname}.size)")
+            flattenItems.append(s"${pname}.foreach(interface.visitContainedNode)")
+            newNodeHelpersCode.append(NewNodeInserters.forOptionalItem(pname, nodeType.className, "flatgraph.GNode", true))
           case _: Cardinality.One[?] =>
             newNodeProps.append(s"var $pname: $ptyp = null")
             newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
@@ -350,7 +358,10 @@ class DomainClassesGenerator(schema: Schema) {
               s"def $pname: ${styp} = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind, $index, seq, null: ${styp})"
             )
             propDictItems.append(s"""res.put("$pname", this.$pname )""")
-            flattenItems.append(s"""interface.insertProperty(this, $pid, Iterator(this.$pname))""")
+            flattenItems.append(s"interface.countProperty(this, $pid, 1)")
+            flattenItems.append(s"interface.visitContainedNode($pname)")
+            newNodeHelpersCode.append(NewNodeInserters.forSingleItem(pname, nodeType.className, "flatgraph.GNode", true))
+
         }
       }
 
@@ -432,7 +443,12 @@ class DomainClassesGenerator(schema: Schema) {
            |  def apply(): New${nodeType.className} = new New${nodeType.className}
            |  private val outNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(outEdges)})
            |  private val inNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(inEdges)})
+           |
+           |  object InsertionHelpers {
+           |      ${newNodeHelpersCode.mkString("\n")}
+           |  }
            |}
+           |
            |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) $newNodeMixins {
            |  override type StoredNodeType = ${nodeType.className}
            |  override def label: String = "${nodeType.name}"
@@ -447,7 +463,7 @@ class DomainClassesGenerator(schema: Schema) {
            |  ${newNodeProps.sorted.mkString("\n")}
            |  ${newNodeFluent.sorted.mkString("\n")}
            |  ${flattenItems.mkString(
-            "override def flattenProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {\n",
+            "override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {\n",
             "\n",
             "\n}"
           )}
@@ -488,6 +504,7 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |import $basePackage.language.*
            |import scala.collection.immutable.{IndexedSeq, ArraySeq}
+           |import scala.collection.mutable
            |
            |$erasedMarkerType
            |
@@ -624,6 +641,29 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.addOne("}")
         sourceLines.result()
       }
+      val newNodePropertyHelpers = {
+        val inserters = mutable.ArrayBuffer.empty[String]
+        for ((node, nodeKind) <- nodeTypes.zipWithIndex) {
+          for (property <- node.properties) {
+            val propertyKind = propertyKindByProperty(property)
+            val pos          = 2 * (nodeKind + nodeTypes.length * propertyKind)
+            val name         = s"nodes.New${node.className}.InsertionHelpers.NewNodeInserter_${node.className}_${camelCase(property.name)}"
+            inserters.append(s"_newNodeInserters(${pos}) = $name")
+          }
+          for (cn <- node.containedNodes) {
+            val localName = cn.localName
+            val index     = relevantProperties.size + containedIndexByName(localName)
+            val pos       = 2 * (nodeKind + nodeTypes.length * index)
+            val name      = s"nodes.New${node.className}.InsertionHelpers.NewNodeInserter_${node.className}_${localName}"
+            inserters.append(s"_newNodeInserters(${pos}) = $name")
+          }
+        }
+        s"""private val newNodeInsertionHelpers: Array[flatgraph.NewNodePropertyInsertionHelper] = {
+           |  val _newNodeInserters = new Array[flatgraph.NewNodePropertyInsertionHelper](${2 * nodeTypes.length * (relevantProperties.length + containedIndexByName.size)})
+           |  ${inserters.mkString("\n")}
+           |  _newNodeInserters
+           |}""".stripMargin
+      }
 
       val nodePropertyNameCases = for {
         nodeType <- nodeTypes
@@ -652,6 +692,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
          |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource.mkString("\n")}
+         |  ${newNodePropertyHelpers}
          |  override def getNumberOfNodeKinds: Int = ${nodeTypes.length}
          |  override def getNumberOfEdgeKinds: Int = ${edgeTypes.length}
          |  override def getNodeLabel(nodeKind: Int): String = nodeLabels(nodeKind)
@@ -684,6 +725,8 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def allocateEdgeProperty(nodeKind: Int, direction: flatgraph.Edge.Direction, edgeKind: Int, size: Int): Array[?] = edgePropertyAllocators(edgeKind)(size)
          |  override def getNodePropertyFormalType(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalType = nodePropertyDescriptors(propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalType]
          |  override def getNodePropertyFormalQuantity(nodeKind: Int, propertyKind: Int): FormalQtyType.FormalQuantity = nodePropertyDescriptors(1 + propertyOffsetArrayIndex(nodeKind, propertyKind)).asInstanceOf[FormalQtyType.FormalQuantity]
+         |
+         |  override def getNewNodePropertyInserter (nodeKind: Int, propertyKind: Int): flatgraph.NewNodePropertyInsertionHelper = newNodeInsertionHelpers(propertyOffsetArrayIndex(nodeKind, propertyKind))
          |}""".stripMargin
       // format: on
     }
