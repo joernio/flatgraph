@@ -15,7 +15,6 @@ object DiffGraphApplier {
   ): Unit = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
     new DiffGraphApplier(graph, diff, schemaViolationReporter).applyUpdate()
-    diff.buffer = null
   }
 }
 
@@ -192,6 +191,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private[flatgraph] def applyUpdate(): Unit = {
     splitUpdate()
+    diff.buffer = null
 
     // set edge properties
     for {
@@ -224,11 +224,13 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     } addEdges(nodeKind, direction, edgeKind)
 
     // set node properties
-    for {
-      nodeKind     <- graph.schema.nodeKinds
-      propertyKind <- graph.schema.propertyKinds
-    } setNodeProperties(nodeKind, propertyKind)
-
+    for (nodeKind <- graph.schema.nodeKinds) {
+      for (propertyKind <- graph.schema.propertyKinds) {
+        setNodeProperties(nodeKind, propertyKind)
+      }
+      // we can now clear the newnodes
+      newNodes(nodeKind) = null
+    }
   }
 
   private def deleteNodes(): Unit = {
@@ -433,7 +435,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
     }
     graph.neighbors(pos + 2) = edgeProp
-
+    setEdgeProperties(pos) == null
   }
 
   private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
@@ -508,6 +510,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       case null  => graph.neighbors(pos + 2)
       case other => other
     }
+    delEdges(pos) = null
   }
 
   private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
@@ -582,6 +585,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       case null  => graph.neighbors(pos + 2)
       case other => other
     }
+    newEdges(pos) = null
   }
 
   private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
@@ -651,6 +655,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         graph.properties(pos) = newQty
         // fixme: need to support graphs with unknown schema. Then we need to homogenize the array here.
         graph.properties(pos + 1) = newProperty
+        setNodeProperties(pos) = null
+        setNodeProperties(pos + 1) = null
       }
     }
   }
