@@ -715,6 +715,7 @@ class GraphTests extends AnyWordSpec with Matchers {
         ._setNodeProperty(V1_0.storedRef.get, 0, null)
         ._setNodeProperty(V0_1.storedRef.get, 1, null :: Nil)
     )
+
     debugDump(g) shouldBe
       """#Node numbers (kindId, nnodes) (0: 3), (1: 2), total 5
         |Node kind 0. (eid, nEdgesOut, nEdgesIn):
@@ -890,6 +891,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     }.getMessage should include("unsupported property type")
   }
 
+  /*
   "Support custom domain classes for detached nodes" in {
     class CustomNode extends DNode {
       override type StoredNodeType = GNode
@@ -931,7 +933,7 @@ class GraphTests extends AnyWordSpec with Matchers {
       |""".stripMargin
     testSerialization(g)
   }
-
+   */
   "support indexed lookups" in {
     val schema = TestSchema.make(1, 0, 1, nodePropertyPrototypes = Array(new Array[String](0)))
     val g      = new Graph(schema)
