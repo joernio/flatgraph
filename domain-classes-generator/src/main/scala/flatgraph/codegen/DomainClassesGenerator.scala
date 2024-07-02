@@ -387,7 +387,7 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.result().mkString("\n")
       }
 
-      val propertyKeys = {
+      val properties = {
         val sourceLines = Seq.newBuilder[String]
         nodeType.properties.map { property =>
           propertyKeySource(property, propertyKindByProperty(property))
@@ -518,8 +518,8 @@ class DomainClassesGenerator(schema: Schema) {
            |  object PropertyNames {
            |    $propertyNames
            |  }
-           |  object PropertyKeys {
-           |    $propertyKeys
+           |  object Properties {
+           |    $properties
            |  }
            |  object PropertyDefaults {
            |    $propertyDefaults
@@ -1121,12 +1121,12 @@ class DomainClassesGenerator(schema: Schema) {
         propertyKeySource(property, propertyKind = kindContexts.propertyKindByProperty(property))
       }
     }.mkString("\n\n")
-    val file = outputDir / "PropertyKeys.scala"
+    val file = outputDir / "Properties.scala"
     os.write(
       file,
       s"""package ${schema.basePackage}
          |
-         |object PropertyKeys {
+         |object Properties {
          |$propertyKeysConstantsSource
          |}""".stripMargin
     )
