@@ -63,6 +63,11 @@ class GenericDomainNodeStarters(val wrappedGenericDomain: GenericDomain) {
   @flatgraph.help.Doc(info = "all nodes")
   def all: Iterator[nodes.StoredNode] = wrappedGenericDomain.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
 
+  def id(nodeId: Long): Iterator[nodes.StoredNode] =
+    Option(wrappedGenericDomain.graph.node(nodeId)).iterator.asInstanceOf[Iterator[nodes.StoredNode]]
+
+  def ids(nodeIds: Long*): Iterator[nodes.StoredNode] = nodeIds.iterator.flatMap(id)
+
   /** */
   @flatgraph.help.Doc(info = """""")
   def nodeA: Iterator[nodes.NodeA] = wrappedGenericDomain.graph._nodes(0).asInstanceOf[Iterator[nodes.NodeA]]
