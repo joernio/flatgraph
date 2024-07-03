@@ -167,6 +167,7 @@ lazy val testSchemasDomainClasses = project
   )
 
 // currently relies on a self-published version of codepropertygraph and joern based on the respective `michael/flatgraph` branches
+/*
 lazy val benchmarks = project
   .in(file("benchmarks"))
   .enablePlugins(JavaAppPackaging, JmhPlugin)
@@ -185,6 +186,8 @@ lazy val benchmarks = project
     ),
     publish / skip := true
   )
+*/
+
 
 ThisBuild / libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % slf4jVersion % Test,
