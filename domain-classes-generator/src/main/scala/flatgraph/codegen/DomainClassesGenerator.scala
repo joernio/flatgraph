@@ -1042,8 +1042,8 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
-    val lastSeparatorIdx = basePackage.lastIndexOf('.')
-    val packageParent = basePackage.take(lastSeparatorIdx)
+    val lastSeparatorIdx  = basePackage.lastIndexOf('.')
+    val packageParent     = basePackage.take(lastSeparatorIdx)
     val packageSimpleName = basePackage.drop(lastSeparatorIdx + 1)
     os.write(
       outputDir0 / "package.scala",
