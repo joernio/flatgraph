@@ -1042,6 +1042,26 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
+    val lastSeparatorIdx  = basePackage.lastIndexOf('.')
+    val packageParent     = basePackage.take(lastSeparatorIdx)
+    val packageSimpleName = basePackage.drop(lastSeparatorIdx + 1)
+    os.write(
+      outputDir0 / "package.scala",
+      s"""package $packageParent
+         |
+         |package object $packageSimpleName {
+         |  // some type aliases so that the domain-specific code can avoid referencing the `flatgraph` namespace
+         |  type DiffGraphBuilder = _root_.flatgraph.DiffGraphBuilder
+         |  
+         |  object help {
+         |    type Doc = _root_.flatgraph.help.Doc
+         |    type Traversal = _root_.flatgraph.help.Traversal
+         |    type TraversalSource = _root_.flatgraph.help.TraversalSource
+         |  }
+         |}
+         |""".stripMargin
+    )
+
     writeConstants(outputDir0, schema, KindContexts(nodeKindByNodeType, edgeKindByEdgeType, propertyKindByProperty))
     // end `run`
 
