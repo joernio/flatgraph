@@ -63,6 +63,11 @@ class HierarchicalNodeStarters(val wrappedHierarchical: Hierarchical) {
   @flatgraph.help.Doc(info = "all nodes")
   def all: Iterator[nodes.StoredNode] = wrappedHierarchical.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
 
+  def id(nodeId: Long): Iterator[nodes.StoredNode] =
+    Option(wrappedHierarchical.graph.node(nodeId)).iterator.asInstanceOf[Iterator[nodes.StoredNode]]
+
+  def ids(nodeIds: Long*): Iterator[nodes.StoredNode] = nodeIds.iterator.flatMap(id)
+
   /** */
   @flatgraph.help.Doc(info = """""")
   def nodeX: Iterator[nodes.NodeX] = wrappedHierarchical.graph._nodes(0).asInstanceOf[Iterator[nodes.NodeX]]

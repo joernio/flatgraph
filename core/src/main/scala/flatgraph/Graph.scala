@@ -74,8 +74,9 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def node(id: Long): GNode =
     node(GNode.extractKind(id), GNode.extractSeq(id))
 
-  /** Lookup node by kind and seq - note: this may return null or throw an exception if the referenced node doesn't exist */
+  /** Lookup node by kind and seq - note: this may return null if the referenced node doesn't exist */
   def node(kind: Int, seq: Int): GNode = {
+    if (kind < 0 || kind >= nodesArray.length || seq < 0 || seq >= nodesArray(kind).length) return null
     val node = nodesArray(kind)(seq)
     if (node._isDeleted) null
     else node

@@ -973,6 +973,10 @@ class DomainClassesGenerator(schema: Schema) {
          |
          |  @flatgraph.help.Doc(info = "all nodes")
          |  def all: Iterator[nodes.StoredNode] = wrapped$domainShortName.graph.allNodes.asInstanceOf[Iterator[nodes.StoredNode]]
+         |  
+         |  def id(nodeId: Long):Iterator[nodes.StoredNode] = Option(wrapped$domainShortName.graph.node(nodeId)).iterator.asInstanceOf[Iterator[nodes.StoredNode]]
+         |
+         |  def ids(nodeIds: Long*):Iterator[nodes.StoredNode] = nodeIds.iterator.flatMap(id)
          |
          |${starters.mkString("\n\n")}
          |}
