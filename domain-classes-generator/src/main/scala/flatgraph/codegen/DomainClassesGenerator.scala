@@ -37,6 +37,11 @@ class DomainClassesGenerator(schema: Schema) {
       os.makeDir.all(outputDirForBasePackage)
       outputDirForBasePackage
     }
+    val nodesOutputDir = outputDir0 / "nodes"
+    val accessorsOutputDir = outputDir0 / "accessors"
+    val traversalsOutputDir = outputDir0 / "traversals"
+    val neighborAccessorsOutputDir = outputDir0 / "neighboraccessors"
+    Seq(nodesOutputDir, accessorsOutputDir, traversalsOutputDir, neighborAccessorsOutputDir).foreach(os.makeDir)
 
     val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
@@ -206,7 +211,7 @@ class DomainClassesGenerator(schema: Schema) {
         "\n\n",
         s"\n$schemaDefinedMarkerTraits\n$markerTraitsForProperties\n"
       )
-    os.write(outputDir0 / "BaseTypes.scala", basetypefile)
+    os.write(nodesOutputDir / "BaseTypes.scala", basetypefile)
 
     val edgeKindByEdgeType = edgeTypes.iterator.zipWithIndex.toMap
     val edgeTypesSource = edgeTypes.iterator
@@ -253,8 +258,6 @@ class DomainClassesGenerator(schema: Schema) {
       )
     os.write(outputDir0 / "EdgeTypes.scala", edgeTypesSource)
 
-    val nodesRootDir = outputDir0 / "nodes"
-    os.makeDir(nodesRootDir)
     nodeTypes.iterator.zipWithIndex.foreach { case (nodeType, kind) =>
       val newExtendz    = newExtendzMap(nodeType)
       val newProperties = newPropsAtNodeList(nodeType)
@@ -550,7 +553,7 @@ class DomainClassesGenerator(schema: Schema) {
            |$newNode
            |""".stripMargin
       }
-      os.write(nodesRootDir / s"${nodeType.className}.scala", nodeSource)
+      os.write(nodesOutputDir / s"${nodeType.className}.scala", nodeSource)
     }
 
     val schemaFile = {
@@ -858,9 +861,6 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin)
     }
 
-
-    val accessorsOutputDir = outputDir0 / "accessors"
-    os.makeDir(accessorsOutputDir)
     os.write(accessorsOutputDir / "Accessors.scala",
       s"""package $basePackage.accessors
          |import $basePackage.nodes
@@ -884,8 +884,6 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
-    val traversalsOutputDir = outputDir0 / "traversals"
-    os.makeDir(traversalsOutputDir)
     os.write(
       traversalsOutputDir / "package.scala",
       s"""package $basePackage
@@ -915,7 +913,7 @@ class DomainClassesGenerator(schema: Schema) {
       )
     }
 
-    writeNeighborAccessors(outputDir0, basePackage)
+    writeNeighborAccessors(neighborAccessorsOutputDir, basePackage)
     // Accessors and traversals: end
 
     // domain object and starters: start
@@ -1180,9 +1178,6 @@ class DomainClassesGenerator(schema: Schema) {
   def writeNeighborAccessors(outputDir: os.Path, basePackage: String): Unit = {
     val conversions = Seq.newBuilder[String]
 
-    val neighborAccessorsRootDir = outputDir / "neighboraccessors"
-    os.makeDir(neighborAccessorsRootDir)
-
     case class NeighborContext(adjacentNode: AdjacentNode, scaladoc: String, defaultMethodName: String, customStepName: Option[String])
     case class NeighborContextsByEdge(direction: Direction.Value, edge: EdgeType, neighborContexts: Seq[NeighborContext]) {
       lazy val edgeAccessorName = camelCase(edge.name + "_" + direction)
@@ -1317,7 +1312,7 @@ class DomainClassesGenerator(schema: Schema) {
 
       if (forSingleNode.trim.size + forTraversal.trim.size > 0) {
         os.write(
-          neighborAccessorsRootDir / s"${nodeType.className}.scala",
+          outputDir / s"${nodeType.className}.scala",
           s"""
              |package $basePackage.neighboraccessors
              |
@@ -1332,7 +1327,7 @@ class DomainClassesGenerator(schema: Schema) {
     }
 
     os.write(
-      neighborAccessorsRootDir / "package.scala",
+      outputDir / "package.scala",
       s"""package $basePackage
          |
          |import flatgraph.traversal.language.*
