@@ -42,11 +42,11 @@ class DomainClassesGenerator(schema: Schema) {
       os.makeDir(subdir)
       subdir
     }
-    val accessorsOutputDir = makeSubdirectory("accessors")
-    val edgesOutputDir = makeSubdirectory("edges")
+    val accessorsOutputDir         = makeSubdirectory("accessors")
+    val edgesOutputDir             = makeSubdirectory("edges")
     val neighborAccessorsOutputDir = makeSubdirectory("neighboraccessors")
-    val nodesOutputDir = makeSubdirectory("nodes")
-    val traversalsOutputDir = makeSubdirectory("traversals")
+    val nodesOutputDir             = makeSubdirectory("nodes")
+    val traversalsOutputDir        = makeSubdirectory("traversals")
 
     val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
@@ -105,7 +105,8 @@ class DomainClassesGenerator(schema: Schema) {
       .sorted
       .mkString("\n")
 
-    val rootTypes =
+    os.write(
+      nodesOutputDir / "RootTypes.scala",
       s"""package $basePackage.nodes
          |
          |trait StaticType[+T]
@@ -128,10 +129,9 @@ class DomainClassesGenerator(schema: Schema) {
          |  def copy(): this.type
          |}
          |""".stripMargin
+    )
 
-    os.write(outputDir0 / "RootTypes.scala", rootTypes)
-
-    os.write(outputDir0 / "RootTypesTraversals.scala", generateRootTypesTraversals(schema))
+    os.write(nodesOutputDir / "RootTypesTraversals.scala", generateRootTypesTraversals(schema))
 
     val markerTraitsForProperties = relevantProperties
       .map { p =>
@@ -866,7 +866,8 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin)
     }
 
-    os.write(accessorsOutputDir / "Accessors.scala",
+    os.write(
+      accessorsOutputDir / "Accessors.scala",
       s"""package $basePackage.accessors
          |import $basePackage.nodes
          |import scala.collection.immutable.IndexedSeq
