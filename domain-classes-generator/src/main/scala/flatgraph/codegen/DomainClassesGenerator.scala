@@ -785,7 +785,9 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin
       )
       concreteStoredConv.addOne(
-        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]): ${propertyAccessorClassname(p.name)} = new ${propertyAccessorClassname(p.name)}(node)""".stripMargin
+        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]): ${propertyAccessorClassname(
+            p.name
+          )} = new ${propertyAccessorClassname(p.name)}(node)""".stripMargin
       )
 
       val concreteNodeTravClassname = traversalPropertyClassname(p.name)
@@ -797,13 +799,15 @@ class DomainClassesGenerator(schema: Schema) {
         )
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): ${traversalPropertyClassname(p.name)}[NodeType] = new ${traversalPropertyClassname(p.name)}(traversal.iterator)""".stripMargin
+        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): ${traversalPropertyClassname(
+            p.name
+          )}[NodeType] = new ${traversalPropertyClassname(p.name)}(traversal.iterator)""".stripMargin
       )
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
-        val extensionClass = s"${accessorClassname(baseType.className)}Base"
+        val extensionClass     = s"${accessorClassname(baseType.className)}Base"
         val implicitMethodName = camelCase(s"access_${baseType.className}Base")
         convertForStage.addOne(
           s"implicit def $implicitMethodName(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
@@ -826,7 +830,7 @@ class DomainClassesGenerator(schema: Schema) {
 
     for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
-        val extensionClass = camelCaseCaps(s"Traversal_${baseType.className}_Base")
+        val extensionClass     = camelCaseCaps(s"Traversal_${baseType.className}_Base")
         val implicitMethodName = camelCase(s"traversal_${baseType.className}_Base")
         convertForStage.addOne(
           s"implicit def $implicitMethodName[NodeType <: nodes.${baseType.className}Base](traversal: IterableOnce[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal.iterator)"
@@ -1140,19 +1144,31 @@ class DomainClassesGenerator(schema: Schema) {
     writeConstants(
       "PropertyNames",
       schema.properties.map { property =>
-        ConstantContext(property.name.toUpperCase, s"""public static final String ${property.name.toUpperCase} = "${property.name}";""", property.comment)
+        ConstantContext(
+          property.name.toUpperCase,
+          s"""public static final String ${property.name.toUpperCase} = "${property.name}";""",
+          property.comment
+        )
       }
     )
     writeConstants(
       "NodeTypes",
       schema.nodeTypes.map { nodeType =>
-        ConstantContext(nodeType.name.toUpperCase, s"""public static final String ${nodeType.name.toUpperCase} = "${nodeType.name}";""", nodeType.comment)
+        ConstantContext(
+          nodeType.name.toUpperCase,
+          s"""public static final String ${nodeType.name.toUpperCase} = "${nodeType.name}";""",
+          nodeType.comment
+        )
       }
     )
     writeConstants(
       "EdgeTypes",
       schema.edgeTypes.map { edgeType =>
-        ConstantContext(edgeType.name.toUpperCase, s"""public static final String ${edgeType.name.toUpperCase} = "${edgeType.name}";""", edgeType.comment)
+        ConstantContext(
+          edgeType.name.toUpperCase,
+          s"""public static final String ${edgeType.name.toUpperCase} = "${edgeType.name}";""",
+          edgeType.comment
+        )
       }
     )
     schema.constantsByCategory.foreach { case (category, constants) =>
@@ -1538,13 +1554,13 @@ class DomainClassesGenerator(schema: Schema) {
   def edgeNeighborToMap(xs: Set[(String, String)]): Map[String, Set[String]] =
     xs.groupBy(_._1).map { case (edge, edgeNeighbors) => edge -> edgeNeighbors.map(_._2) }
 
-  def accessorClassname(nodeType: String): String = 
+  def accessorClassname(nodeType: String): String =
     camelCaseCaps(s"Access_$nodeType")
 
-  def propertyAccessorClassname(propertyName: String): String = 
+  def propertyAccessorClassname(propertyName: String): String =
     camelCaseCaps(s"Access_Property_$propertyName")
 
-  def traversalPropertyClassname(propertyName: String): String = 
+  def traversalPropertyClassname(propertyName: String): String =
     camelCaseCaps(s"Traversal_Property_$propertyName")
 
   /** Useful string extensions to avoid Scala version incompatible interpolations.
