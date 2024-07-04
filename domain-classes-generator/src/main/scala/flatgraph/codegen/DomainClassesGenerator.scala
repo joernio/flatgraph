@@ -37,11 +37,16 @@ class DomainClassesGenerator(schema: Schema) {
       os.makeDir.all(outputDirForBasePackage)
       outputDirForBasePackage
     }
-    val nodesOutputDir = outputDir0 / "nodes"
-    val accessorsOutputDir = outputDir0 / "accessors"
-    val traversalsOutputDir = outputDir0 / "traversals"
-    val neighborAccessorsOutputDir = outputDir0 / "neighboraccessors"
-    Seq(nodesOutputDir, accessorsOutputDir, traversalsOutputDir, neighborAccessorsOutputDir).foreach(os.makeDir)
+    def makeSubdirectory(name: String): os.Path = {
+      val subdir = outputDir0 / name
+      os.makeDir(subdir)
+      subdir
+    }
+    val accessorsOutputDir = makeSubdirectory("accessors")
+    val edgesOutputDir = makeSubdirectory("edges")
+    val neighborAccessorsOutputDir = makeSubdirectory("neighboraccessors")
+    val nodesOutputDir = makeSubdirectory("nodes")
+    val traversalsOutputDir = makeSubdirectory("traversals")
 
     val propertyContexts   = relevantPropertyContexts(schema)
     val relevantProperties = propertyContexts.properties
@@ -256,7 +261,7 @@ class DomainClassesGenerator(schema: Schema) {
         "\n",
         "\n"
       )
-    os.write(outputDir0 / "EdgeTypes.scala", edgeTypesSource)
+    os.write(edgesOutputDir / "EdgeTypes.scala", edgeTypesSource)
 
     nodeTypes.iterator.zipWithIndex.foreach { case (nodeType, kind) =>
       val newExtendz    = newExtendzMap(nodeType)
