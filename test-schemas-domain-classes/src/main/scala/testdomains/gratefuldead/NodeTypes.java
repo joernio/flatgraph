@@ -6,14 +6,14 @@ import java.util.Set;
 public class NodeTypes {
 
 
-public static final String artist = "artist";
+public static final String ARTIST = "artist";
 
 
-public static final String song = "song";
+public static final String SONG = "song";
 
 public static Set<String> ALL = new HashSet<String>() {{
-add(artist);
-add(song);
+add(ARTIST);
+add(SONG);
 }};
 
 }

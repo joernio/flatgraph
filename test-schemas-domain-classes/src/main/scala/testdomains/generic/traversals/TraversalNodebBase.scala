@@ -3,7 +3,7 @@ package testdomains.generic.traversals
 import testdomains.generic.nodes
 import testdomains.generic.accessors.languagebootstrap.*
 
-final class Traversal_NodeBBase[NodeType <: nodes.NodeBBase](val traversal: Iterator[NodeType]) extends AnyVal {
+final class TraversalNodebBase[NodeType <: nodes.NodeBBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
   /** Traverse to stringOptional property */
   def stringOptional: Iterator[String] =

@@ -10,19 +10,19 @@ package object traversals {
   trait ConcreteStoredConversions extends ConcreteBaseConversions {
     implicit def accessPropertyNameTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](
       traversal: IterableOnce[NodeType]
-    ): Traversal_Property_name[NodeType] = new Traversal_Property_name(traversal.iterator)
+    ): TraversalPropertyName[NodeType] = new TraversalPropertyName(traversal.iterator)
     implicit def accessPropertyPerformancesTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasPerformancesEMT]](
       traversal: IterableOnce[NodeType]
-    ): Traversal_Property_performances[NodeType] = new Traversal_Property_performances(traversal.iterator)
+    ): TraversalPropertyPerformances[NodeType] = new TraversalPropertyPerformances(traversal.iterator)
     implicit def accessPropertySongtypeTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasSongtypeEMT]](
       traversal: IterableOnce[NodeType]
-    ): Traversal_Property_songType[NodeType] = new Traversal_Property_songType(traversal.iterator)
+    ): TraversalPropertySongtype[NodeType] = new TraversalPropertySongtype(traversal.iterator)
   }
 
   trait ConcreteBaseConversions {
-    implicit def traversal_ArtistBase[NodeType <: nodes.ArtistBase](traversal: IterableOnce[NodeType]): Traversal_ArtistBase[NodeType] =
-      new Traversal_ArtistBase(traversal.iterator)
-    implicit def traversal_SongBase[NodeType <: nodes.SongBase](traversal: IterableOnce[NodeType]): Traversal_SongBase[NodeType] =
-      new Traversal_SongBase(traversal.iterator)
+    implicit def traversalArtistBase[NodeType <: nodes.ArtistBase](traversal: IterableOnce[NodeType]): TraversalArtistBase[NodeType] =
+      new TraversalArtistBase(traversal.iterator)
+    implicit def traversalSongBase[NodeType <: nodes.SongBase](traversal: IterableOnce[NodeType]): TraversalSongBase[NodeType] =
+      new TraversalSongBase(traversal.iterator)
   }
 }

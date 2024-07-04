@@ -6,10 +6,10 @@ import java.util.Set;
 public class PropertyNames {
 
 
-public static final String name = "name";
+public static final String NAME = "name";
 
 public static Set<String> ALL = new HashSet<String>() {{
-add(name);
+add(NAME);
 }};
 
 }

@@ -3,8 +3,7 @@ package testdomains.hierarchical.traversals
 import testdomains.hierarchical.nodes
 import testdomains.hierarchical.accessors.languagebootstrap.*
 
-final class Traversal_Property_name[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](val traversal: Iterator[NodeType])
-    extends AnyVal {
+final class TraversalBasenodeBase[NodeType <: nodes.BaseNodeBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
   /** Traverse to name property */
   def name: Iterator[String] =

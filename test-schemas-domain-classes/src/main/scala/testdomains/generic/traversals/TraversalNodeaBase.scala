@@ -3,7 +3,7 @@ package testdomains.generic.traversals
 import testdomains.generic.nodes
 import testdomains.generic.accessors.languagebootstrap.*
 
-final class Traversal_NodeABase[NodeType <: nodes.NodeABase](val traversal: Iterator[NodeType]) extends AnyVal {
+final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Iterator[NodeType]) extends AnyVal {
 
   /** Traverse to intList property */
   def intList: Iterator[Int] =

@@ -6,18 +6,18 @@ import java.util.Set;
 public class EdgeTypes {
 
 
-public static final String followedBy = "followedBy";
+public static final String FOLLOWEDBY = "followedBy";
 
 
-public static final String sungBy = "sungBy";
+public static final String SUNGBY = "sungBy";
 
 
-public static final String writtenBy = "writtenBy";
+public static final String WRITTENBY = "writtenBy";
 
 public static Set<String> ALL = new HashSet<String>() {{
-add(followedBy);
-add(sungBy);
-add(writtenBy);
+add(FOLLOWEDBY);
+add(SUNGBY);
+add(WRITTENBY);
 }};
 
 }
