@@ -6,10 +6,10 @@ import java.util.Set;
 public class EdgeTypes {
 
 
-public static final String connected_to = "connected_to";
+public static final String CONNECTED_TO = "connected_to";
 
 public static Set<String> ALL = new HashSet<String>() {{
-add(connected_to);
+add(CONNECTED_TO);
 }};
 
 }

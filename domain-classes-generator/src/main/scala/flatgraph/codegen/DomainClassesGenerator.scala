@@ -1138,19 +1138,19 @@ class DomainClassesGenerator(schema: Schema) {
     writeConstants(
       "PropertyNames",
       schema.properties.map { property =>
-        ConstantContext(property.name, s"""public static final String ${property.name} = "${property.name}";""", property.comment)
+        ConstantContext(property.name.toUpperCase, s"""public static final String ${property.name.toUpperCase} = "${property.name}";""", property.comment)
       }
     )
     writeConstants(
       "NodeTypes",
       schema.nodeTypes.map { nodeType =>
-        ConstantContext(nodeType.name, s"""public static final String ${nodeType.name} = "${nodeType.name}";""", nodeType.comment)
+        ConstantContext(nodeType.name.toUpperCase, s"""public static final String ${nodeType.name.toUpperCase} = "${nodeType.name}";""", nodeType.comment)
       }
     )
     writeConstants(
       "EdgeTypes",
       schema.edgeTypes.map { edgeType =>
-        ConstantContext(edgeType.name, s"""public static final String ${edgeType.name} = "${edgeType.name}";""", edgeType.comment)
+        ConstantContext(edgeType.name.toUpperCase, s"""public static final String ${edgeType.name.toUpperCase} = "${edgeType.name}";""", edgeType.comment)
       }
     )
     schema.constantsByCategory.foreach { case (category, constants) =>

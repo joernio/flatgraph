@@ -413,9 +413,9 @@ class RepeatTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     val newNodeY4 = NewNodeY().name("Y4")
 
     val hierarchical = Hierarchical.from(
-      _.addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.EdgeTypes.connected_to)
-        .addEdge(newNodeY2, newNodeX3, testdomains.hierarchical.EdgeTypes.connected_to)
-        .addEdge(newNodeX3, newNodeY4, testdomains.hierarchical.EdgeTypes.connected_to)
+      _.addEdge(newNodeX1, newNodeY2, testdomains.hierarchical.edges.ConnectedTo.Label)
+        .addEdge(newNodeY2, newNodeX3, testdomains.hierarchical.edges.ConnectedTo.Label)
+        .addEdge(newNodeX3, newNodeY4, testdomains.hierarchical.edges.ConnectedTo.Label)
     )
 
     val nodeX = hierarchical.nodeX.name("X1")
