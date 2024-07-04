@@ -757,9 +757,9 @@ class DomainClassesGenerator(schema: Schema) {
     val accessorsForBaseNodes           = mutable.ArrayBuffer.empty[String]
     val baseConvert                     = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
-    val accessorsForConcreteNodeTraversals = mutable.ArrayBuffer.empty[String]
+    val accessorsForConcreteNodeTraversals = mutable.ArrayBuffer.empty[ClassnameAndSource]
     val concreteStoredConvTrav             = mutable.ArrayBuffer.empty[String]
-    val accessorsForBaseNodeTraversals     = mutable.ArrayBuffer.empty[String]
+    val accessorsForBaseNodeTraversals     = mutable.ArrayBuffer.empty[ClassnameAndSource]
     val baseConvertTrav                    = Seq.fill(prioStages.length + 1)(mutable.ArrayBuffer.empty[String])
 
     for (p <- relevantProperties) {
@@ -779,9 +779,14 @@ class DomainClassesGenerator(schema: Schema) {
       concreteStoredConv.addOne(
         s"""implicit def accessProperty${p.className}(node: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
       )
+
+      val concreteNodeTravClassname = s"Traversal_Property_${p.name}"
       accessorsForConcreteNodeTraversals.addOne(
-        s"""final class Traversal_Property_${p.name}[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
-          generatePropertyTraversals(p, propertyKindByProperty(p)) + "}"
+        ClassnameAndSource(
+          concreteNodeTravClassname,
+          s"""final class $concreteNodeTravClassname[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](val traversal: Iterator[NodeType]) extends AnyVal {""".stripMargin +
+            generatePropertyTraversals(p, propertyKindByProperty(p)) + "}"
+        )
       )
       concreteStoredConvTrav.addOne(
         s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal.iterator)""".stripMargin
@@ -821,10 +826,13 @@ class DomainClassesGenerator(schema: Schema) {
           elems.addOne(generatePropertyTraversals(p, propertyKindByProperty(p)))
         }
         accessorsForBaseNodeTraversals.addOne(
-          elems.mkString(
-            s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
-            "\n",
-            "}"
+          ClassnameAndSource(
+            extensionClass,
+            elems.mkString(
+              s"final class $extensionClass[NodeType <: nodes.${baseType.className}Base](val traversal: Iterator[NodeType]) extends AnyVal { ",
+              "\n",
+              "}"
+            )
           )
         )
       }
@@ -843,11 +851,9 @@ class DomainClassesGenerator(schema: Schema) {
           (s"AbstractBaseConversions${idx - 2}", if (idx < baseConvert.length) Some(s"AbstractBaseConversions${idx - 1}") else None)
       }
       conversionsForProperties.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
-           |import Accessors.*
            |${convBuffer(idx).mkString("\n")}
            |}""".stripMargin)
       conversionsForTraversals.addOne(s"""trait $tname ${tparent.map { p => s" extends $p" }.getOrElse("")} {
-           |import Accessors.*
            |${convBufferTrav(idx).mkString("\n")}
            |}""".stripMargin)
     }
@@ -870,32 +876,42 @@ class DomainClassesGenerator(schema: Schema) {
          |  /* accessors for base nodes end */
          |}
          |
+         |import Accessors.*
          |${conversionsForProperties.mkString("\n\n")}
          |""".stripMargin
 
     os.write(outputDir0 / "Accessors.scala", accessors)
 
-    val traversals =
-      s"""package $basePackage.traversals
+    val traversalsOutputDir = outputDir0 / "traversals"
+    os.makeDir(traversalsOutputDir)
+    os.write(
+      traversalsOutputDir / "package.scala",
+      s"""package $basePackage
+         |
          |import $basePackage.nodes
          |
-         |/** not supposed to be used directly by users, hence the `bootstrap` in the name */
-         |object languagebootstrap extends ConcreteStoredConversions
-         |
-         |object Accessors {
-         |  import $basePackage.accessors.languagebootstrap.*
-         |
-         |  /* accessors for concrete stored nodes start */
-         |  ${accessorsForConcreteNodeTraversals.mkString("\n")}
-         |  /* accessors for concrete stored nodes end */
-         |
-         |  /* accessors for base nodes start */
-         |  ${accessorsForBaseNodeTraversals.mkString("\n")}
-         |  /* accessors for base nodes end */
+         |package object traversals {
+         |  
+         |  /** not supposed to be used directly by users, hence the `bootstrap` in the name */
+         |  object languagebootstrap extends ConcreteStoredConversions
+         |  
+         |  ${conversionsForTraversals.mkString("\n\n")}
          |}
-         |${conversionsForTraversals.mkString("\n\n")}
          |""".stripMargin
-    os.write(outputDir0 / "Traversals.scala", traversals)
+    )
+
+    (accessorsForConcreteNodeTraversals ++ accessorsForBaseNodeTraversals).foreach { case ClassnameAndSource(classname, source) =>
+      os.write(
+        traversalsOutputDir / s"$classname.scala",
+        s"""package $basePackage.traversals
+           |
+           |import $basePackage.nodes
+           |import $basePackage.accessors.languagebootstrap.*
+           |
+           |$source
+           |""".stripMargin
+      )
+    }
 
     writeNeighborAccessors(outputDir0, basePackage)
     // Accessors and traversals: end
@@ -1465,6 +1481,8 @@ class DomainClassesGenerator(schema: Schema) {
     s"""${scaladocMaybe(property.comment)}
        |val ${camelCaseCaps(property.name)} = $propertyKeyImpl""".stripMargin.trim
   }
+
+  private case class ClassnameAndSource(classname: String, source: String)
 
   private case class PropertyContexts(properties: Array[Property[?]], containedNodesByName: Map[String, mutable.HashSet[NodeType]])
 

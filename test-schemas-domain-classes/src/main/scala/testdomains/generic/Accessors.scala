@@ -63,8 +63,8 @@ object Accessors {
   /* accessors for base nodes end */
 }
 
+import Accessors.*
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors.*
   implicit def accessPropertyIntList(node: nodes.StoredNode & nodes.StaticType[nodes.HasIntListEMT]): Access_Property_int_list =
     new Access_Property_int_list(node)
   implicit def accessPropertyIntMandatory(
@@ -83,7 +83,6 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 }
 
 trait ConcreteBaseConversions {
-  import Accessors.*
   implicit def access_NodeABase(node: nodes.NodeABase): Access_NodeABase = new Access_NodeABase(node)
   implicit def access_NodeBBase(node: nodes.NodeBBase): Access_NodeBBase = new Access_NodeBBase(node)
 }

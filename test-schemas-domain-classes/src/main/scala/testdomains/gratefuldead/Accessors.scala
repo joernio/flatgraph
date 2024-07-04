@@ -42,8 +42,8 @@ object Accessors {
   /* accessors for base nodes end */
 }
 
+import Accessors.*
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors.*
   implicit def accessPropertyName(node: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]): Access_Property_name =
     new Access_Property_name(node)
   implicit def accessPropertyPerformances(
@@ -54,7 +54,6 @@ trait ConcreteStoredConversions extends ConcreteBaseConversions {
 }
 
 trait ConcreteBaseConversions {
-  import Accessors.*
   implicit def access_ArtistBase(node: nodes.ArtistBase): Access_ArtistBase = new Access_ArtistBase(node)
   implicit def access_SongBase(node: nodes.SongBase): Access_SongBase       = new Access_SongBase(node)
 }

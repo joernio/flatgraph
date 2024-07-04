@@ -24,19 +24,17 @@ object Accessors {
   /* accessors for base nodes end */
 }
 
+import Accessors.*
 trait ConcreteStoredConversions extends ConcreteBaseConversions {
-  import Accessors.*
   implicit def accessPropertyName(node: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]): Access_Property_name =
     new Access_Property_name(node)
 }
 
 trait ConcreteBaseConversions extends AbstractBaseConversions0 {
-  import Accessors.*
   implicit def access_NodeXBase(node: nodes.NodeXBase): Access_NodeXBase = new Access_NodeXBase(node)
   implicit def access_NodeYBase(node: nodes.NodeYBase): Access_NodeYBase = new Access_NodeYBase(node)
 }
 
 trait AbstractBaseConversions0 {
-  import Accessors.*
   implicit def access_BaseNodeBase(node: nodes.BaseNodeBase): Access_BaseNodeBase = new Access_BaseNodeBase(node)
 }
