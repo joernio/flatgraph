@@ -3,7 +3,7 @@ package testdomains.gratefuldead.traversals
 import testdomains.gratefuldead.nodes
 import testdomains.gratefuldead.accessors.languagebootstrap.*
 
-final class Traversal_SongBase[NodeType <: nodes.SongBase](val traversal: Iterator[NodeType]) extends AnyVal {
+final class TraversalSongBase[NodeType <: nodes.SongBase](val traversal: Iterator[NodeType]) extends AnyVal {
 
   /** Traverse to name property */
   def name: Iterator[String] =

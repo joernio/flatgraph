@@ -3,7 +3,7 @@ package testdomains.generic.traversals
 import testdomains.generic.nodes
 import testdomains.generic.accessors.languagebootstrap.*
 
-final class Traversal_Property_string_mandatory[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasStringMandatoryEMT]](
+final class TraversalPropertyStringMandatory[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasStringMandatoryEMT]](
   val traversal: Iterator[NodeType]
 ) extends AnyVal {
 

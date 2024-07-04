@@ -3,7 +3,7 @@ package testdomains.gratefuldead.traversals
 import testdomains.gratefuldead.nodes
 import testdomains.gratefuldead.accessors.languagebootstrap.*
 
-final class Traversal_Property_songType[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasSongtypeEMT]](
+final class TraversalPropertySongtype[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasSongtypeEMT]](
   val traversal: Iterator[NodeType]
 ) extends AnyVal {
 

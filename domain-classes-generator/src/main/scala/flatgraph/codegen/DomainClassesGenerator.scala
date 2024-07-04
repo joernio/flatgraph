@@ -773,7 +773,7 @@ class DomainClassesGenerator(schema: Schema) {
     for (p <- relevantProperties) {
       val funName = camelCase(p.name)
       accessorsForConcreteStoredNodes.addOne(
-        s"""final class Access_Property_${p.name}(val node: nodes.StoredNode) extends AnyVal {
+        s"""final class ${propertyAccessorClassname(p.name)}(val node: nodes.StoredNode) extends AnyVal {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
               s"flatgraph.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq)"
@@ -785,10 +785,10 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin
       )
       concreteStoredConv.addOne(
-        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]): Access_Property_${p.name} = new Access_Property_${p.name}(node)""".stripMargin
+        s"""implicit def accessProperty${p.className}(node: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]): ${propertyAccessorClassname(p.name)} = new ${propertyAccessorClassname(p.name)}(node)""".stripMargin
       )
 
-      val concreteNodeTravClassname = s"Traversal_Property_${p.name}"
+      val concreteNodeTravClassname = traversalPropertyClassname(p.name)
       accessorsForConcreteNodeTraversals.addOne(
         ClassnameAndSource(
           concreteNodeTravClassname,
@@ -797,15 +797,16 @@ class DomainClassesGenerator(schema: Schema) {
         )
       )
       concreteStoredConvTrav.addOne(
-        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): Traversal_Property_${p.name}[NodeType] = new Traversal_Property_${p.name}(traversal.iterator)""".stripMargin
+        s"""implicit def accessProperty${p.className}Traversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.Has${p.className}EMT]](traversal: IterableOnce[NodeType]): ${traversalPropertyClassname(p.name)}[NodeType] = new ${traversalPropertyClassname(p.name)}(traversal.iterator)""".stripMargin
       )
     }
 
     for ((convertForStage, stage) <- baseConvert.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
-        val extensionClass = s"Access_${baseType.className}Base"
+        val extensionClass = s"${accessorClassname(baseType.className)}Base"
+        val implicitMethodName = camelCase(s"access_${baseType.className}Base")
         convertForStage.addOne(
-          s"implicit def access_${baseType.className}Base(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
+          s"implicit def $implicitMethodName(node: nodes.${baseType.className}Base): $extensionClass = new $extensionClass(node)"
         )
         val newName = if (baseType.isInstanceOf[NodeBaseType]) { baseType.className + "New" }
         else { "New" + baseType.className }
@@ -813,7 +814,7 @@ class DomainClassesGenerator(schema: Schema) {
         for (p <- newPropsAtNodeList(baseType)) {
           val funName = camelCase(p.name)
           accessors.addOne(s"""def ${funName}: ${typeForProperty(p)}  = node match {
-          | case stored: nodes.StoredNode => new Access_Property_${p.name}(stored).${funName}
+          | case stored: nodes.StoredNode => new ${propertyAccessorClassname(p.name)}(stored).${funName}
           | case newNode: nodes.${newName} => newNode.${funName}
           |}""".stripMargin)
         }
@@ -825,9 +826,10 @@ class DomainClassesGenerator(schema: Schema) {
 
     for ((convertForStage, stage) <- baseConvertTrav.iterator.zip(Iterator(nodeTypes) ++ prioStages.iterator)) {
       stage.foreach { baseType =>
-        val extensionClass = s"Traversal_${baseType.className}Base"
+        val extensionClass = camelCaseCaps(s"Traversal_${baseType.className}_Base")
+        val implicitMethodName = camelCase(s"traversal_${baseType.className}_Base")
         convertForStage.addOne(
-          s"implicit def traversal_${baseType.className}Base[NodeType <: nodes.${baseType.className}Base](traversal: IterableOnce[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal.iterator)"
+          s"implicit def $implicitMethodName[NodeType <: nodes.${baseType.className}Base](traversal: IterableOnce[NodeType]): $extensionClass[NodeType] = new $extensionClass(traversal.iterator)"
         )
         val elems = mutable.ArrayBuffer.empty[String]
         for (p <- newPropsAtNodeList(baseType)) {
@@ -1535,6 +1537,15 @@ class DomainClassesGenerator(schema: Schema) {
 
   def edgeNeighborToMap(xs: Set[(String, String)]): Map[String, Set[String]] =
     xs.groupBy(_._1).map { case (edge, edgeNeighbors) => edge -> edgeNeighbors.map(_._2) }
+
+  def accessorClassname(nodeType: String): String = 
+    camelCaseCaps(s"Access_$nodeType")
+
+  def propertyAccessorClassname(propertyName: String): String = 
+    camelCaseCaps(s"Access_Property_$propertyName")
+
+  def traversalPropertyClassname(propertyName: String): String = 
+    camelCaseCaps(s"Traversal_Property_$propertyName")
 
   /** Useful string extensions to avoid Scala version incompatible interpolations.
     */

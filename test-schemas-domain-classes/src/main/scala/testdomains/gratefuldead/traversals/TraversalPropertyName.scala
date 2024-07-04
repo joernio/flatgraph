@@ -1,9 +1,10 @@
-package testdomains.hierarchical.traversals
+package testdomains.gratefuldead.traversals
 
-import testdomains.hierarchical.nodes
-import testdomains.hierarchical.accessors.languagebootstrap.*
+import testdomains.gratefuldead.nodes
+import testdomains.gratefuldead.accessors.languagebootstrap.*
 
-final class Traversal_BaseNodeBase[NodeType <: nodes.BaseNodeBase](val traversal: Iterator[NodeType]) extends AnyVal {
+final class TraversalPropertyName[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasNameEMT]](val traversal: Iterator[NodeType])
+    extends AnyVal {
 
   /** Traverse to name property */
   def name: Iterator[String] =
