@@ -858,7 +858,10 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin)
     }
 
-    val accessors =
+
+    val accessorsOutputDir = outputDir0 / "accessors"
+    os.makeDir(accessorsOutputDir)
+    os.write(accessorsOutputDir / "Accessors.scala",
       s"""package $basePackage.accessors
          |import $basePackage.nodes
          |import scala.collection.immutable.IndexedSeq
@@ -879,8 +882,7 @@ class DomainClassesGenerator(schema: Schema) {
          |import Accessors.*
          |${conversionsForProperties.mkString("\n\n")}
          |""".stripMargin
-
-    os.write(outputDir0 / "Accessors.scala", accessors)
+    )
 
     val traversalsOutputDir = outputDir0 / "traversals"
     os.makeDir(traversalsOutputDir)
