@@ -126,7 +126,7 @@ class DomainClassesGenerator(schema: Schema) {
          |  override def storedRef_=(stored: Option[flatgraph.GNode]): Unit = this._storedRef = stored.orNull.asInstanceOf[StoredNodeType]
          |  def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean
          |  def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean
-         |  def copy(): this.type
+         |  def copy: this.type
          |}
          |""".stripMargin
     )
@@ -476,7 +476,7 @@ class DomainClassesGenerator(schema: Schema) {
             "\n}"
           )}
            |
-           |  override def copy(): this.type = {
+           |  override def copy: this.type = {
            |    val newInstance = new New${nodeType.className}
            |    $copyFieldsImpl
            |    newInstance.asInstanceOf[this.type]
