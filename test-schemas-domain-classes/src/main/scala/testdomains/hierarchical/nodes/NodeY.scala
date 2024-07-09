@@ -103,7 +103,7 @@ class NewNodeY extends NewNode(1.toShort) with NodeYBase with BaseNodeNew {
     interface.countProperty(this, 0, 1)
   }
 
-  override def copy(): this.type = {
+  override def copy: this.type = {
     val newInstance = new NewNodeY
     newInstance.name = this.name
     newInstance.asInstanceOf[this.type]

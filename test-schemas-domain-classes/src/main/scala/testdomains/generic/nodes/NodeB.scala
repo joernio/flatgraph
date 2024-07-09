@@ -105,7 +105,7 @@ class NewNodeB extends NewNode(1.toShort) with NodeBBase {
     interface.countProperty(this, 5, stringOptional.size)
   }
 
-  override def copy(): this.type = {
+  override def copy: this.type = {
     val newInstance = new NewNodeB
     newInstance.stringOptional = this.stringOptional
     newInstance.asInstanceOf[this.type]

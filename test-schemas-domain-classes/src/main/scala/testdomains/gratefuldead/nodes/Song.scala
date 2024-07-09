@@ -173,7 +173,7 @@ class NewSong extends NewNode(1.toShort) with SongBase {
     interface.countProperty(this, 2, songtype.size)
   }
 
-  override def copy(): this.type = {
+  override def copy: this.type = {
     val newInstance = new NewSong
     newInstance.name = this.name
     newInstance.performances = this.performances

@@ -102,7 +102,7 @@ class NewArtist extends NewNode(0.toShort) with ArtistBase {
     interface.countProperty(this, 0, 1)
   }
 
-  override def copy(): this.type = {
+  override def copy: this.type = {
     val newInstance = new NewArtist
     newInstance.name = this.name
     newInstance.asInstanceOf[this.type]
