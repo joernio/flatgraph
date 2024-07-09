@@ -311,7 +311,7 @@ class NewNodeA extends NewNode(0.toShort) with NodeABase {
     node_b.foreach(interface.visitContainedNode)
   }
 
-  override def copy(): this.type = {
+  override def copy: this.type = {
     val newInstance = new NewNodeA
     newInstance.intList = this.intList
     newInstance.intMandatory = this.intMandatory

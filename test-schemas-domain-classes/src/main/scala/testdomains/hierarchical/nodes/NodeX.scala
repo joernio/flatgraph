@@ -103,7 +103,7 @@ class NewNodeX extends NewNode(0.toShort) with NodeXBase with BaseNodeNew {
     interface.countProperty(this, 0, 1)
   }
 
-  override def copy(): this.type = {
+  override def copy: this.type = {
     val newInstance = new NewNodeX
     newInstance.name = this.name
     newInstance.asInstanceOf[this.type]
