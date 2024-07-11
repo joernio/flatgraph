@@ -13,30 +13,48 @@ import java.nio.file.{Path, Paths}
 import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
+import scala.util.Using
 
 object Convert {
   val ANON_EDGE_PROPERTY = "EDGE_PROPERTY"
 
   def main(args: Array[String]): Unit = {
-    if (args.length == 2) {
-      convertOdbToFlatgraph(overflowDbFile = Paths.get(args(0)), outputFile = Paths.get(args(1)))
-    } else if (args.length == 3 && args(0) == "-r") {
-      convertFlatgraphToOdb(fgFile = Paths.get(args(1)), outputFile = Paths.get(args(2)))
-    } else {
-      System.err.println("Usage: convert [inputfileOdb] [outputfileFlatGraph]")
-      System.err.println("Usage: convert -r [inputfileFlatGraph] [outputfileOdb]")
-      System.err.println(s"""Seen: ${args.mkString(",")}""")
+    var dstFile: Path = null
+    var srcFile: Path = null
+    var reverse       = false
+    var verbose       = false
+    var tooMany       = false
+    for (arg <- args) {
+      if (arg == "-r") reverse = true
+      else if (arg == "--verbose") verbose = true
+      else if (srcFile == null) srcFile = Paths.get(arg)
+      else if (dstFile == null) dstFile = Paths.get(arg)
+      else tooMany = true
+    }
+    if (tooMany || dstFile == null || srcFile == null) {
+      System.err.println("Usage: convert [--verbose] [inputfileOdb] [outputfileFlatGraph]")
+      System.err.println("Usage: convert -r [--verbose] [inputfileFlatGraph] [outputfileOdb]")
       System.err.println("Error: missing input and/or output file - exiting.")
+    } else if (reverse) {
+      convertFlatgraphToOdb(srcFile, dstFile, verbose = verbose, debug = true)
+    } else {
+      convertOdbToFlatgraph(srcFile, dstFile, verbose = verbose)
     }
   }
 
-  def convertOdbToFlatgraph(overflowDbFile: Path, outputFile: Path): Unit = {
+  def convertOdbToFlatgraph(overflowDbFile: Path, outputFile: Path, verbose: Boolean = false): Unit = {
     val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(overflowDbFile.toFile, new overflowdb.util.StringInterner)
     val (nodes, strings) = readOdb(storage)
-    writeData(outputFile.toFile, nodes, strings)
+    writeData(outputFile.toFile, nodes, strings, verbose = verbose)
   }
 
-  def convertFlatgraphToOdb(fgFile: Path, outputFile: Path, debug: Boolean = false): Unit = {
+  def convertFlatgraphToOdb(fgFile: Path, outputFile: Path, debug: Boolean = false, verbose: Boolean = false): Unit = {
+    if (verbose) {
+      Using(new java.io.RandomAccessFile(fgFile.toAbsolutePath.toFile, "r").getChannel) { channel =>
+        val manifest = flatgraph.storage.Deserialization.readManifest(channel)
+        println(manifest.render(indent = 2))
+      }
+    }
     val fg = flatgraph.storage.Deserialization.readGraph(fgFile, None, false)
 
     val dst = outputFile.toFile
@@ -53,7 +71,7 @@ object Convert {
           readNode(legacyIdToNewId, stringInterner, node.id(), bytes, byLabel, storage)
         } catch {
           case exc: Throwable =>
-            println(s"fuck ${node.seq()} / ${node.nodeKind} / ${node.label()} / ${node.id()}")
+            println(s"Inconsistency encountered ${node.seq()} / ${node.nodeKind} / ${node.label()} / ${node.id()}")
             println(exc)
             throw exc
         }
@@ -61,7 +79,6 @@ object Convert {
       storage.persist(node.id(), packNode(node, storage))
     }
     storage.close()
-
   }
 
   class NodeRefTmp(val legacyId: Long) {
@@ -107,7 +124,7 @@ object Convert {
     }
   }
 
-  private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String]): Unit = {
+  private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String], verbose: Boolean = false): Unit = {
     val fileAbsolute = filename.getAbsoluteFile
     val filePtr      = new AtomicLong(16)
     if (!fileAbsolute.exists()) {
@@ -175,15 +192,14 @@ object Convert {
       }
       val manifest    = new Manifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
       val manifestObj = Manifest.GraphItem.write(manifest)
-      val buf         = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
+      if (verbose) {
+        println(manifestObj.render(indent = 2))
+      }
+      val buf = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
       while (buf.hasRemaining()) {
         pos += fileChannel.write(buf, pos)
       }
       fileChannel.truncate(pos)
-
-      // tmp debug
-      // println(manifestObj.render(indent = 4))
-
     } finally { fileChannel.close() }
   }
 
@@ -216,16 +232,13 @@ object Convert {
     val graph  = node.graph
     val schema = graph.schema
     packer.packLong(node.id())
-    //  println(s"node id: ${node.id()}")
     packer.packInt(storage.lookupOrCreateStringToIntMapping(schema.getNodeLabel(node.nodeKind)))
-    //   println(s"label: ${storage.lookupOrCreateStringToIntMapping(schema.getNodeLabel(node.nodeKind))}")
 
     var nprops = 0
     for (propertyId <- Range(0, schema.getNumberOfPropertyKinds) if Accessors.getNodeProperty(node, propertyId).nonEmpty) {
       nprops += 1
     }
     packer.packMapHeader(nprops)
-    //   println(s"map header: ${nprops}")
     for (propertyId <- Range(0, schema.getNumberOfPropertyKinds)) {
       val values  = Accessors.getNodeProperty(graph, node.nodeKind, propertyId, node.seq())
       val rawVals = graph.properties(schema.propertyOffsetArrayIndex(node.nodeKind, propertyId) + 1)
@@ -290,10 +303,7 @@ object Convert {
   def packProperty(rawVals: Any, values: ISeq[Any], packer: MessageBufferPacker, storageId: Int): Unit = {
     if (values.nonEmpty) {
       packer.packInt(storageId)
-      //    println(s"storage id: ${storageId}")
       packer.packArrayHeader(2)
-      //    println(s"array header: 2")
-      //     println(s""""<skip 2, data: ${values.mkString(",")}>""")
 
       rawVals match {
         case null => ???
@@ -405,11 +415,9 @@ object Convert {
   ): Unit = {
     val unpacker  = MessagePack.newDefaultUnpacker(bytes)
     val legacyId2 = unpacker.unpackLong()
-//    println(s"unpack node id: ${legacyId2}")
     assert(legacyId2 == legacyId)
 
     val label = storage.reverseLookupStringToIntMapping(unpacker.unpackInt())
-    //   println(s"unpack node type: ${label}")
 
     val sz        = byLabel.size
     val nodeStuff = byLabel.getOrElseUpdate(label, new NodeStuff(label, sz))
@@ -418,10 +426,8 @@ object Convert {
     nodeStuff.nextId += 1
     // nodeStuff.addX(NodeStuff.NODEPROPERTY, NodeStuff.legacyId, legacyId)
     val nprops = unpacker.unpackMapHeader()
-    //   println(s"unpack map header: ${nprops}")
     for (_ <- Range(0, nprops)) {
       val key = storage.reverseLookupStringToIntMapping(unpacker.unpackInt())
-      //    println(s"unpack property: ${key}")
       for (v <- unpackValue(legacyIdToNewId, stringInterner, unpacker.unpackValue().asArrayValue())) {
         nodeStuff.addX(NodeStuff.NODEPROPERTY, key, v)
       }
