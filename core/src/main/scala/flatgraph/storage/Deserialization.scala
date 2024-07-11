@@ -17,7 +17,7 @@ object Deserialization {
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "r").getChannel
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
-      val manifest = readManifest(fileChannel)
+      val manifest = GraphItem.read(readManifest(fileChannel))
       val pool     = readPool(manifest, fileChannel)
       val schema   = schemaMaybe.getOrElse(freeSchemaFromManifest(manifest))
       val storagePathMaybe =
@@ -140,7 +140,7 @@ object Deserialization {
     }
   }
 
-  private def readManifest(channel: FileChannel): GraphItem = {
+  def readManifest(channel: FileChannel): ujson.Value = {
     if (channel.size() < HeaderSize)
       throw new DeserializationException(s"corrupt file, expected at least $HeaderSize bytes, but only found ${channel.size()}")
 
@@ -162,8 +162,8 @@ object Deserialization {
       readBytes += channel.read(manifestBytes, readBytes + manifestOffset)
     }
     manifestBytes.flip()
-    val jsonObj = ujson.read(manifestBytes)
-    GraphItem.read(jsonObj)
+    ujson.read(manifestBytes)
+
   }
 
   private def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
