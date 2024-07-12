@@ -17,15 +17,11 @@ object Serialization {
 
   def writeGraph(g: Graph, storagePath: Path): Unit = {
     val fileOffset = new AtomicLong(16)
-
-    // else null
     val stringPool = mutable.LinkedHashMap[String, Int]()
 
     val fileChannel =
-      new java.io.RandomAccessFile(
-        storagePath.toAbsolutePath.toFile,
-        "rw"
-      ).getChannel // if (conf.filename != null) { new java.io.RandomAccessFile("/tmp/foo.fg", "w").getChannel }}
+      new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
+
     try {
       innerWriteGraph(g, stringPool, fileOffset, fileChannel)
     } finally {
@@ -50,7 +46,6 @@ object Serialization {
         .collect {
           case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
         }
-        .toArray
       val size = g.nodeCountByKind(nodeKind)
       nodes.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
     }
@@ -102,7 +97,7 @@ object Serialization {
     var pos       = filePtr.get()
     val header    = new Array[Byte](16)
     val headerBuf = ByteBuffer.wrap(header)
-    headerBuf.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(Keys.Header).put(pos)
+    headerBuf.order(ByteOrder.LITTLE_ENDIAN).put(Keys.Header).asLongBuffer().put(pos)
     headerBuf.position(0)
     var headPos = 0L
     while (headerBuf.hasRemaining()) {

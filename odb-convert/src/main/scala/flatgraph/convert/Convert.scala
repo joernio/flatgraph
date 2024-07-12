@@ -184,7 +184,7 @@ object Convert {
       var pos       = filePtr.get()
       val header    = new Array[Byte](16)
       val headerBuf = ByteBuffer.wrap(header)
-      headerBuf.order(ByteOrder.LITTLE_ENDIAN).asLongBuffer().put(Keys.Header).put(pos)
+      headerBuf.order(ByteOrder.LITTLE_ENDIAN).put(Keys.Header).asLongBuffer().put(pos)
       headerBuf.position(0)
       var headPos = 0L
       while (headerBuf.hasRemaining()) {

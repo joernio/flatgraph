@@ -9,6 +9,7 @@ import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.nio.{ByteBuffer, ByteOrder}
+import java.util.Arrays
 import scala.collection.mutable
 
 object Deserialization {
@@ -151,7 +152,9 @@ object Deserialization {
     }
     header.flip()
 
-    if (header.getLong() != Keys.Header)
+    val headerBytes = new Array[Byte](Keys.Header.length)
+    header.get(headerBytes)
+    if (!Arrays.equals(headerBytes, Keys.Header))
       throw new DeserializationException(s"expected header (`${Keys.Header}`), but found ${header.getLong}")
 
     val manifestOffset = header.getLong()

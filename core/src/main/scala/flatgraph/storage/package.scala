@@ -1,6 +1,13 @@
 package flatgraph
 
+import java.nio.charset.StandardCharsets
+
 package object storage {
+
+  /** file header in order to be able to detect the file type */
+  val HeaderSize       = 16 // size for  than enough space for the MagicBytes
+  val MagicBytesString = "FLT GRPH"
+  val MagicBytes       = MagicBytesString.getBytes(StandardCharsets.UTF_8)
 
   object StorageType {
     val Bool   = "bool"
@@ -34,8 +41,7 @@ package object storage {
     val Properties         = "properties"
     val StringPoolLength   = "stringPoolLength"
     val StringPoolBytes    = "stringPoolBytes"
-    val Header             = 0xdeadbeefdeadbeefL
+    val Header             = MagicBytes
   }
 
-  val HeaderSize = 16
 }
