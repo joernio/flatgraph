@@ -155,7 +155,9 @@ object Deserialization {
     val headerBytes = new Array[Byte](Keys.Header.length)
     header.get(headerBytes)
     if (!Arrays.equals(headerBytes, Keys.Header))
-      throw new DeserializationException(s"expected header '$MagicBytesString' (`${Keys.Header.mkString("")}`), but found '${headerBytes.mkString("")}'")
+      throw new DeserializationException(
+        s"expected header '$MagicBytesString' (`${Keys.Header.mkString("")}`), but found '${headerBytes.mkString("")}'"
+      )
 
     val manifestOffset = header.getLong()
     val manifestSize   = channel.size() - manifestOffset
