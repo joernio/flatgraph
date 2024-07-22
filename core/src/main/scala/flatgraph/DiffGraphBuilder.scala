@@ -9,6 +9,11 @@ import scala.collection.mutable
 class DiffGraphBuilder(schema: Schema, schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter) {
   private[flatgraph] var buffer = mutable.ArrayDeque[RawUpdate]()
 
+  /** @return
+    *   an immutable array of the updates contained within this object.
+    */
+  def getBuffer: Array[RawUpdate] = buffer.toArray
+
   def addNode(newNode: DNode): this.type = {
     this.buffer.append(newNode)
     this
