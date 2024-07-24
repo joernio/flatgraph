@@ -3,9 +3,42 @@ package flatgraph.misc
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.{AccessHelpers, Accessors, GNode, Graph}
 
+import scala.annotation.unchecked.uncheckedVariance
 import scala.collection.mutable
 
 object DebugDump {
+
+  private def unpack(s: Any): Option[Object] = {
+    s match {
+      case iter: IterableOnce[AnyRef @uncheckedVariance] =>
+        val res = iter.iterator.toSeq
+        if (res.isEmpty) None
+        else if (res.size == 1) Some(res.head)
+        else Some(res)
+      case obj: java.lang.Object => Some(obj)
+      case _                     => null
+    }
+  }
+  def debugChildrenScala(n: GNode): Array[Object] = {
+    import java.util.Map.Entry
+    val res = mutable.ArrayBuffer[(String, Object)]()
+    res.addOne(("label", n.label()))
+    res.addOne("kind", java.lang.Integer.valueOf(n.nodeKind.toInt))
+    res.addOne("seq", java.lang.Integer.valueOf(n.seq()))
+    res.addOne("id", java.lang.Long.valueOf(n.id()))
+
+    for (pid <- n.graph.schema.propertyKinds) {
+      val propertyname = n.graph.schema.getPropertyLabel(n.nodeKind, pid)
+      unpack(Accessors.getNodeProperty(n, pid)).foreach { obj => res.addOne((propertyname, obj)) }
+    }
+
+    for (eid <- n.graph.schema.edgeKinds) {
+      val edgename = n.graph.schema.getEdgeLabel(n.nodeKind, eid)
+      unpack(Accessors.getNeighborsOut(n, eid)).foreach { obj => res.addOne((edgename + "_out", obj)) }
+      unpack(Accessors.getNeighborsIn(n, eid)).foreach { obj => res.addOne((edgename + "_in", obj)) }
+    }
+    res.map { t => new java.util.AbstractMap.SimpleEntry[String, Object](t._1, t._2) }.toArray
+  }
 
   def printNode(n: GNode): String = printNode(n, null)
 
