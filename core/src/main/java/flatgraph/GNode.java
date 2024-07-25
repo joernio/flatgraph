@@ -2,8 +2,6 @@ package flatgraph;
 
 import flatgraph.misc.DebugDump;
 
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
 
 /**
