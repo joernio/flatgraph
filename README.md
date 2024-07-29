@@ -486,3 +486,8 @@ linked above). They exist only at compile time. Hence, it's safe to cast a given
 
 (n.b. these marker traits do not define any members or functions, otherwise their usage would result in a ClasscastException at runtime)
 
+## This looks so bad in the debugger / object inspector!
+
+Yes, properties are no longer fields of stored nodes. Hence the debugger cannot find them.
+
+But despair not! We have attached the `_debugChildren()` method to the GNode class. In order to see anything useful, you need to tell your debugger to use that in its object inspector. So in intellij, you need to add a custom java type renderer, make it apply to all `flatgraph.GNode` instances, and then tell it to use the expression `_debugChildren()` when expanding a node. See e.g. https://www.jetbrains.com/help/idea/customizing-views.html#renderers .

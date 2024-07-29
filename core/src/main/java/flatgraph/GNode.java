@@ -1,5 +1,7 @@
 package flatgraph;
 
+import flatgraph.misc.DebugDump;
+
 import java.util.Objects;
 
 /**
@@ -47,7 +49,7 @@ public class GNode implements DNodeOrNode {
 
     @Override
     public String toString() {
-        return getClass().getName() + "[label=" + label() + "; id=" + id() + "]";
+        return getClass().getName() + "[label=" + label() + "; seq=" + seq() + "; id=" + id() + "]";
     }
 
     @Override
@@ -83,5 +85,11 @@ public class GNode implements DNodeOrNode {
             this.kind = kind;
             this.seq = seq;
         }
+    }
+
+    /** This creates a representation of the node that is suitable for debugging, e.g. in intellij.
+     * This function corresponds to the childrenArray() API in intellij.*/
+    public Object[] _debugChildren(){
+        return DebugDump.debugChildrenScala(this);
     }
 }

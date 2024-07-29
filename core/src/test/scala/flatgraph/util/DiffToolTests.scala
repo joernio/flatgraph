@@ -86,7 +86,7 @@ class DiffToolTests extends AnyWordSpec {
 
     val diff = DiffTool.compare(graph0, graph1).asScala
     diff should contain("node count differs: graph1=2, graph2=1")
-    diff should contain("node flatgraph.GNode[label=V0; id=0] only exists in graph1")
+    diff should contain("node flatgraph.GNode[label=V0; seq=0; id=0] only exists in graph1")
   }
 
 }
