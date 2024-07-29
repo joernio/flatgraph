@@ -87,6 +87,8 @@ public class GNode implements DNodeOrNode {
         }
     }
 
+    /** This creates a representation of the node that is suitable for debugging, e.g. in intellij.
+     * This function corresponds to the childrenArray() API in intellij.*/
     public Object[] _debugChildren(){
         return DebugDump.debugChildrenScala(this);
     }
