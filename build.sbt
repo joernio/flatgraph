@@ -30,7 +30,6 @@ lazy val core = project
       "com.lihaoyi"     %% "ujson"  % "3.3.1",
       "com.github.luben" % "zstd-jni" % "1.5.6-3",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "net.oneandone.reflections8" % "reflections8" % "0.11.7",
     )
   )
 
@@ -39,7 +38,10 @@ lazy val help = project
   .dependsOn(core)
   .settings(
     name := "flatgraph-help",
-    libraryDependencies += "de.vandermeer" % "asciitable" % "0.3.2",
+    libraryDependencies ++= Seq(
+      "de.vandermeer" % "asciitable" % "0.3.2",
+      "net.oneandone.reflections8" % "reflections8" % "0.11.7",
+    )
   )
 
 lazy val formats = project
