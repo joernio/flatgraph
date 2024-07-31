@@ -1,8 +1,8 @@
-package flatgraph.benchmark
+package flatgraph
 
-import io.shiftleft.codepropertygraph.generated.*
-import io.shiftleft.codepropertygraph.generated.nodes.*
-import io.shiftleft.codepropertygraph.generated.language.*
+import testdomains.codepropertygraphminified.*
+import testdomains.codepropertygraphminified.nodes.*
+import testdomains.codepropertygraphminified.language.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -18,7 +18,7 @@ class CompileTests extends AnyWordSpec with Matchers {
 
   "starter steps" in {
     lazy val compiles = {
-      val cpg: Cpg = ???
+      val cpg: CpgMinified = ???
       cpg.all
       cpg.method
     }
@@ -38,10 +38,8 @@ class CompileTests extends AnyWordSpec with Matchers {
       val _: Call & StaticType[IsStaticEMT] = isStaticIter.next()
 
       // edge accessors
-      iter.next.blockViaArgumentOut
-      iter.blockViaArgumentOut
-      iter.next.referencedMember
-      iter.referencedMember
+      iter.next.method
+      iter.method
     }
   }
 
@@ -80,16 +78,10 @@ class CompileTests extends AnyWordSpec with Matchers {
   }
 
   "abstract stored class" in {
-    lazy val iter: Iterator[CfgNode] = ???
+    lazy val iter: Iterator[Declaration] = ???
     lazy val compiles = {
-      iter.code("a")
-      iter.order
-      iter.next.order
-
-      // edge accessors
-      import io.shiftleft.codepropertygraph.generated.neighboraccessors.Lang.*
-      iter.next.blockViaCfgIn
-      iter.blockViaCfgIn
+      iter.name("a")
+      iter.next.name
     }
 
   }
