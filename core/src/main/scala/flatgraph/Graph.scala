@@ -26,7 +26,7 @@ object Graph {
     */
   def withStorage(schema: Schema, storagePath: Path, persistOnClose: Boolean = true): Graph = {
     if (Files.exists(storagePath) && Files.size(storagePath) > 0) {
-      println(s"initialising from existing storage ($storagePath)")
+      logger.info(s"initialising from existing storage ($storagePath)")
       Deserialization.readGraph(storagePath, Option(schema), persistOnClose)
     } else {
       val storagePathMaybe =
