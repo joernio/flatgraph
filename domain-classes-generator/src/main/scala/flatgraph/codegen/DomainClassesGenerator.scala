@@ -137,7 +137,9 @@ class DomainClassesGenerator(schema: Schema) {
          |""".stripMargin
     )
 
-    os.write(nodesOutputDir / "RootTypesTraversals.scala", generateRootTypesTraversals(schema))
+    generateRootTypesTraversals(schema).foreach { source =>
+      os.write(nodesOutputDir / "RootTypesTraversals.scala", source)
+    }
 
     val markerTraitsForProperties = relevantProperties
       .map { p =>
@@ -146,74 +148,73 @@ class DomainClassesGenerator(schema: Schema) {
          |trait Has${p.className}EMT""".stripMargin
       }
       .mkString("\n")
-    val basetypefile = schema.nodeBaseTypes
-      .map { baseType =>
-        val newExtendz = newExtendzMap(baseType)
-        val mixinsBase = List("AbstractNode") ++ newExtendz.map(_.className + "Base") ++ baseType.markerTraits.map(_.name)
+    val basetypefile = schema.nodeBaseTypes.map { baseType =>
+      val newExtendz = newExtendzMap(baseType)
+      val mixinsBase = List("AbstractNode") ++ newExtendz.map(_.className + "Base") ++ baseType.markerTraits.map(_.name)
 
-        val mixinsStored =
-          List("StoredNode", s"${baseType.className}Base") ++ newExtendz.map(_.className) ++ baseType.markerTraits.map(_.name)
-        val mixinsNew =
-          List("NewNode", s"${baseType.className}Base") ++ baseType.extendz.map(_.className + "New") ++ baseType.markerTraits.map(_.name)
-        val newProperties = newPropsAtNodeList(baseType)
-        val propertyDefaults = newProperties
-          .collect {
-            case p if p.hasDefault =>
-              s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
-          }
-          .mkString("\n")
-        val mixinsEMT =
-          (List("AnyRef") ++ newExtendz.map { p => s"${p.className}EMT" } ++ newProperties.map { p => s"Has${p.className}EMT" })
-            .mkString(" with ")
-        val oldProperties = baseType.properties.toSet.diff(newProperties.toSet).toList.sortBy(_.name)
-        val oldExtendz    = baseType.extendzRecursively.toSet.diff(newExtendz.toSet).toList.sortBy(_.name)
+      val mixinsStored =
+        List("StoredNode", s"${baseType.className}Base") ++ newExtendz.map(_.className) ++ baseType.markerTraits.map(_.name)
+      val mixinsNew =
+        List("NewNode", s"${baseType.className}Base") ++ baseType.extendz.map(_.className + "New") ++ baseType.markerTraits.map(_.name)
+      val newProperties = newPropsAtNodeList(baseType)
+      val propertyDefaults = newProperties
+        .collect {
+          case p if p.hasDefault =>
+            s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
+        }
+        .mkString("\n")
+      val mixinsEMT =
+        (List("AnyRef") ++ newExtendz.map { p => s"${p.className}EMT" } ++ newProperties.map { p => s"Has${p.className}EMT" })
+          .mkString(" with ")
+      val oldProperties = baseType.properties.toSet.diff(newProperties.toSet).toList.sortBy(_.name)
+      val oldExtendz    = baseType.extendzRecursively.toSet.diff(newExtendz.toSet).toList.sortBy(_.name)
 
-        val newNodeDefs: Seq[String] = {
-          for {
-            property <- newProperties
-            pname = camelCase(property.name)
-            ptyp  = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
-          } yield property.cardinality match {
-            case Cardinality.List =>
-              Seq(
-                s"def ${pname}: IndexedSeq[$ptyp]",
-                s"def ${pname}_=(value: IndexedSeq[$ptyp]): Unit",
-                s"def ${pname}(value: IterableOnce[$ptyp]): this.type"
-              )
-            case Cardinality.ZeroOrOne =>
-              Seq(
-                s"def ${pname}: Option[$ptyp]",
-                s"def ${pname}_=(value: Option[$ptyp]): Unit",
-                s"def ${pname}(value: Option[$ptyp]): this.type",
-                s"def ${pname}(value: $ptyp): this.type"
-              )
-            case one: Cardinality.One[?] =>
-              Seq(s"def ${pname}: $ptyp", s"def ${pname}_=(value: $ptyp): Unit", s"def ${pname}(value: $ptyp): this.type")
-          }
-        }.flatten
+      val newNodeDefs: Seq[String] = {
+        for {
+          property <- newProperties
+          pname = camelCase(property.name)
+          ptyp  = unpackTypeUnboxed(property.valueType, isStored = false, raised = false)
+        } yield property.cardinality match {
+          case Cardinality.List =>
+            Seq(
+              s"def ${pname}: IndexedSeq[$ptyp]",
+              s"def ${pname}_=(value: IndexedSeq[$ptyp]): Unit",
+              s"def ${pname}(value: IterableOnce[$ptyp]): this.type"
+            )
+          case Cardinality.ZeroOrOne =>
+            Seq(
+              s"def ${pname}: Option[$ptyp]",
+              s"def ${pname}_=(value: Option[$ptyp]): Unit",
+              s"def ${pname}(value: Option[$ptyp]): this.type",
+              s"def ${pname}(value: $ptyp): this.type"
+            )
+          case one: Cardinality.One[?] =>
+            Seq(s"def ${pname}: $ptyp", s"def ${pname}_=(value: $ptyp): Unit", s"def ${pname}(value: $ptyp): this.type")
+        }
+      }.flatten
 
-        s"""trait ${baseType.className}EMT extends $mixinsEMT
-           |
-           |trait ${baseType.className}Base extends ${mixinsBase.mkString(" with ")} with StaticType[${baseType.className}EMT]
-           | // new properties: ${newProperties.map { _.name }.mkString(", ")}
-           | // inherited properties: ${oldProperties.map { _.name }.mkString(", ")}
-           | // inherited interfaces: ${oldExtendz.map(_.name).mkString(", ")}
-           | // implementing nodes: ${nodeTypes
-            .filter { n => n.extendzRecursively.contains(baseType) }
-            .map(_.name)
-            .mkString(", ")}
-           |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}EMT]
-           |
-           |object ${baseType.className} {
-           |  object PropertyDefaults {
-           |    $propertyDefaults
-           |  }
-           |}
-           |
-           |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
-           |  ${newNodeDefs.mkString("\n")}
-           |}
-           |""".stripMargin
+      s"""trait ${baseType.className}EMT extends $mixinsEMT
+          |
+          |trait ${baseType.className}Base extends ${mixinsBase.mkString(" with ")} with StaticType[${baseType.className}EMT]
+          | // new properties: ${newProperties.map { _.name }.mkString(", ")}
+          | // inherited properties: ${oldProperties.map { _.name }.mkString(", ")}
+          | // inherited interfaces: ${oldExtendz.map(_.name).mkString(", ")}
+          | // implementing nodes: ${nodeTypes
+          .filter { n => n.extendzRecursively.contains(baseType) }
+          .map(_.name)
+          .mkString(", ")}
+          |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}EMT]
+          |
+          |object ${baseType.className} {
+          |  object PropertyDefaults {
+          |    $propertyDefaults
+          |  }
+          |}
+          |
+          |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
+          |  ${newNodeDefs.mkString("\n")}
+          |}
+          |""".stripMargin
       }
       .mkString(
         s"""package $basePackage.nodes
@@ -225,49 +226,50 @@ class DomainClassesGenerator(schema: Schema) {
     os.write(nodesOutputDir / "BaseTypes.scala", basetypefile)
 
     val edgeKindByEdgeType = edgeTypes.iterator.zipWithIndex.toMap
-    val edgeTypesSource = edgeTypes.iterator
-      .map { edgeType =>
-        // format: off
-        val propertyAccessorMaybe: Option[String] = edgeType.property.map { p =>
-          p.cardinality match {
-            case _: Cardinality.One[?] =>
-              s"""def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} =
-                 |  this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]""".stripMargin
-            case Cardinality.ZeroOrOne =>
-              s"""def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] =
-                 |  Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])""".stripMargin
-            case Cardinality.List =>
-              throw new RuntimeException("edge properties are only supported with cardinality one or optional")
-          }
+    // format: off
+    val edgeTypesSource = edgeTypes.iterator.map { edgeType =>
+      val propertyAccessorMaybe: Option[String] = edgeType.property.map { p =>
+        p.cardinality match {
+          case _: Cardinality.One[?] =>
+            s"""def ${camelCase(p.name)}: ${unpackTypeUnboxed(p.valueType, true )} =
+                |  this.property.asInstanceOf[${unpackTypeUnboxed(p.valueType, true)}]""".stripMargin
+          case Cardinality.ZeroOrOne =>
+            s"""def ${camelCase(p.name)}: Option[${unpackTypeUnboxed(p.valueType, true)}] =
+                |  Option(this.property.asInstanceOf[${unpackTypeBoxed(p.valueType, true)}])""".stripMargin
+          case Cardinality.List =>
+            throw new RuntimeException("edge properties are only supported with cardinality one or optional")
         }
-
-        val propertyNameImplForObject = edgeType.property.map { property=>
-          s"""val propertyName: Option[String] = Some("${property.name}")"""
-        }
-        val propertyNameImplForClass = propertyNameImplForObject.map { _ =>
-          s"override def propertyName: Option[String] = ${edgeType.className}.propertyName"
-        }
-
-        s"""object ${edgeType.className} {
-           |  val Label = "${edgeType.name}"
-           |  ${propertyNameImplForObject.getOrElse("")}
-           |}
-           |
-           |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
-           |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) {
-           |  ${propertyNameImplForClass.getOrElse("")}
-           |}
-           |""".stripMargin
-        // format: on
       }
-      .mkString(
-        s"""package $basePackage.edges
-           |
-           |""".stripMargin,
-        "\n",
-        "\n"
-      )
-    os.write(edgesOutputDir / "EdgeTypes.scala", edgeTypesSource)
+
+      val propertyNameImplForObject = edgeType.property.map { property=>
+        s"""val propertyName: Option[String] = Some("${property.name}")"""
+      }
+      val propertyNameImplForClass = propertyNameImplForObject.map { _ =>
+        s"override def propertyName: Option[String] = ${edgeType.className}.propertyName"
+      }
+
+      s"""object ${edgeType.className} {
+          |  val Label = "${edgeType.name}"
+          |  ${propertyNameImplForObject.getOrElse("")}
+          |}
+          |
+          |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
+          |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) {
+          |  ${propertyNameImplForClass.getOrElse("")}
+          |}
+          |""".stripMargin
+      // format: on
+    }
+    .mkString(
+      s"""package $basePackage.edges
+          |
+          |""".stripMargin,
+      "\n",
+      "\n"
+    )
+    if (edgeTypes.nonEmpty) {
+      os.write(edgesOutputDir / "EdgeTypes.scala", edgeTypesSource)
+    }
 
     nodeTypes.iterator.zipWithIndex.foreach { case (nodeType, kind) =>
       val newExtendz    = newExtendzMap(nodeType)
@@ -697,13 +699,13 @@ class DomainClassesGenerator(schema: Schema) {
          |object GraphSchema extends flatgraph.Schema {
          |  private val nodeLabels = IndexedSeq($nodeLabelsSrc)
          |  val nodeKindByLabel = nodeLabels.zipWithIndex.toMap
-         |  val edgeLabels = Array(${edgeTypes.map { e => s""""${e.name}"""" }.mkString(", ")})
+         |  val edgeLabels: Array[String] = Array(${edgeTypes.map { e => s""""${e.name}"""" }.mkString(", ")})
          |  val edgeKindByLabel = edgeLabels.zipWithIndex.toMap
          |  val edgePropertyAllocators: Array[Int => Array[?]] = Array($edgePropertyAllocatorsSrc)
          |  val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] = Array($nodeFactoriesSrc)
          |  val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] = Array($edgeFactoriesSrc)
          |  val nodePropertyAllocators: Array[Int => Array[?]] = Array($nodePropertyAllocatorsSrc)
-         |  val normalNodePropertyNames = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
+         |  val normalNodePropertyNames: Array[String] = Array(${relevantProperties.map { p => s""""${p.name}"""" }.mkString(", ")})
          |  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap$nodePropertyByLabelSrc
          |  val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = ${nodePropertyDescriptorsSource.mkString("\n")}
          |  ${newNodePropertyHelpers}
@@ -1392,24 +1394,28 @@ class DomainClassesGenerator(schema: Schema) {
 
   /** Generate accessors for all edge types on all Traversals for each node type. Analogous to the steps directly on StoredNode
     */
-  def generateRootTypesTraversals(schema: Schema): String = {
-    val neighborSteps = schema.edgeTypes
-      .map { edgeType =>
-        val stepNameBase = s"_${camelCase(edgeType.name)}"
-        s"""
-         |final def ${stepNameBase}Out: Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}Out)
-         |final def ${stepNameBase}In:  Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}In)
-         |""".stripMargin
-      }
-      .mkString("\n")
+  def generateRootTypesTraversals(schema: Schema): Option[String] = {
+    val neighborSteps = schema.edgeTypes.map { edgeType =>
+      val stepNameBase = s"_${camelCase(edgeType.name)}"
+      s"""
+      |final def ${stepNameBase}Out: Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}Out)
+      |final def ${stepNameBase}In:  Iterator[StoredNode] = iterator.flatMap(_.${stepNameBase}In)
+      |""".stripMargin
+    }
 
-    s"""
-       |package ${schema.basePackage}.nodes
-       |
-       |extension (iterator: Iterator[StoredNode]) {
-       |  $neighborSteps
-       |}
-       |""".stripMargin
+    if (neighborSteps.isEmpty) {
+      None
+    } else {
+      Some(
+        s"""
+          |package ${schema.basePackage}.nodes
+          |
+          |extension (iterator: Iterator[StoredNode]) {
+          |  ${neighborSteps.mkString("\n")}
+          |}
+          |""".stripMargin
+      )
+    }
   }
 
   def generatePropertyTraversals(property: Property[?], propertyId: Int): String = {

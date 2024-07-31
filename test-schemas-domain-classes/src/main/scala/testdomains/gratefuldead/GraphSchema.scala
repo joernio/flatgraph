@@ -3,10 +3,10 @@ package testdomains.gratefuldead
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {
-  private val nodeLabels = IndexedSeq("artist", "song")
-  val nodeKindByLabel    = nodeLabels.zipWithIndex.toMap
-  val edgeLabels         = Array("followedBy", "sungBy", "writtenBy")
-  val edgeKindByLabel    = edgeLabels.zipWithIndex.toMap
+  private val nodeLabels        = IndexedSeq("artist", "song")
+  val nodeKindByLabel           = nodeLabels.zipWithIndex.toMap
+  val edgeLabels: Array[String] = Array("followedBy", "sungBy", "writtenBy")
+  val edgeKindByLabel           = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] =
     Array(size => Array.fill(size)(0: Int) /* label = followedBy, id = 0 */, size => null, size => null)
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
@@ -18,8 +18,8 @@ object GraphSchema extends flatgraph.Schema {
   )
   val nodePropertyAllocators: Array[Int => Array[?]] =
     Array(size => new Array[String](size), size => new Array[Int](size), size => new Array[String](size))
-  val normalNodePropertyNames = Array("name", "performances", "songType")
-  val nodePropertyByLabel     = normalNodePropertyNames.zipWithIndex.toMap
+  val normalNodePropertyNames: Array[String] = Array("name", "performances", "songType")
+  val nodePropertyByLabel                    = normalNodePropertyNames.zipWithIndex.toMap
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
     val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](12)
     for (idx <- Range(0, 12)) {

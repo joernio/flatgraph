@@ -5,7 +5,7 @@ import flatgraph.FormalQtyType
 object GraphSchema extends flatgraph.Schema {
   private val nodeLabels                             = IndexedSeq("node_a", "node_b")
   val nodeKindByLabel                                = nodeLabels.zipWithIndex.toMap
-  val edgeLabels                                     = Array("connected_to")
+  val edgeLabels: Array[String]                      = Array("connected_to")
   val edgeKindByLabel                                = edgeLabels.zipWithIndex.toMap
   val edgePropertyAllocators: Array[Int => Array[?]] = Array(size => Array.fill(size)("<empty>") /* label = connected_to, id = 0 */ )
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
@@ -21,8 +21,9 @@ object GraphSchema extends flatgraph.Schema {
     size => new Array[String](size),
     size => new Array[flatgraph.GNode](size)
   )
-  val normalNodePropertyNames = Array("int_list", "int_mandatory", "int_optional", "string_list", "string_mandatory", "string_optional")
-  val nodePropertyByLabel     = normalNodePropertyNames.zipWithIndex.toMap.updated("node_b", 6)
+  val normalNodePropertyNames: Array[String] =
+    Array("int_list", "int_mandatory", "int_optional", "string_list", "string_mandatory", "string_optional")
+  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap.updated("node_b", 6)
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
     val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](28)
     for (idx <- Range(0, 28)) {
