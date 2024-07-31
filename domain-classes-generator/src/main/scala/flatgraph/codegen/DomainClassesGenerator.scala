@@ -148,6 +148,7 @@ class DomainClassesGenerator(schema: Schema) {
          |trait Has${p.className}EMT""".stripMargin
       }
       .mkString("\n")
+    // format: off
     val basetypefile = schema.nodeBaseTypes.map { baseType =>
       val newExtendz = newExtendzMap(baseType)
       val mixinsBase = List("AbstractNode") ++ newExtendz.map(_.className + "Base") ++ baseType.markerTraits.map(_.name)
@@ -216,6 +217,7 @@ class DomainClassesGenerator(schema: Schema) {
           |}
           |""".stripMargin
       }
+      // format: on
       .mkString(
         s"""package $basePackage.nodes
            |
@@ -259,14 +261,14 @@ class DomainClassesGenerator(schema: Schema) {
           |}
           |""".stripMargin
       // format: on
-    }
-    .mkString(
-      s"""package $basePackage.edges
+      }
+      .mkString(
+        s"""package $basePackage.edges
           |
           |""".stripMargin,
-      "\n",
-      "\n"
-    )
+        "\n",
+        "\n"
+      )
     if (edgeTypes.nonEmpty) {
       os.write(edgesOutputDir / "EdgeTypes.scala", edgeTypesSource)
     }
@@ -1406,15 +1408,13 @@ class DomainClassesGenerator(schema: Schema) {
     if (neighborSteps.isEmpty) {
       None
     } else {
-      Some(
-        s"""
+      Some(s"""
           |package ${schema.basePackage}.nodes
           |
           |extension (iterator: Iterator[StoredNode]) {
           |  ${neighborSteps.mkString("\n")}
           |}
-          |""".stripMargin
-      )
+          |""".stripMargin)
     }
   }
 
