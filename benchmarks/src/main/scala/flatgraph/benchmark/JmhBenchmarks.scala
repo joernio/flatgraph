@@ -100,8 +100,7 @@ class FlatgraphGenerated {
         if (shuffled)
           fullnames = new Random(1234).shuffle(new CpgNodeStarters(cpg).method.fullName.iterator).toArray
         else
-          fullnames =
-            new Random(1234).shuffle(new CpgNodeStarters(cpg).method.fullName.iterator.map { name => name + "lolnope" }).toArray
+          fullnames = new Random(1234).shuffle(new CpgNodeStarters(cpg).method.fullName.iterator.map { name => name + "lolnope" }).toArray
         fullnames = fullnames.slice(0, math.min(1000, fullnames.length))
         JmhBenchmarks.setOps(params, fullnames.length)
     }
