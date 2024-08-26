@@ -162,14 +162,20 @@ object Accessors {
     new ISeq(vals, qty(seq), qty(seq + 1))
   }
 
-  def getNodeProperties(node: GNode): IterableOnce[(String, IndexedSeq[Any])] = {
+  def _getNodeProperties(node: GNode): IterableOnce[(Int, IndexedSeq[Any])] = {
     val schema = node.graph.schema
     for {
       propertyKind <- schema.propertyKinds
       property = Accessors.getNodeProperty(node, propertyKind)
       if property.nonEmpty
-      propertyLabel = schema.getPropertyLabel(node.nodeKind, propertyKind)
-    } yield propertyLabel -> property
+    } yield propertyKind -> property
+  }
+
+  def getNodeProperties(node: GNode): IterableOnce[(String, IndexedSeq[Any])] = {
+    for {
+      (propertyKind, value) <- _getNodeProperties(node)
+      schema = node.graph.schema
+    } yield schema.getPropertyLabel(node.nodeKind, propertyKind) -> value
   }
 
   def getInverseIndex(graph: Graph, nodeKind: Int, propertyKind: Int): MultiDictIndex[GNode] = {
