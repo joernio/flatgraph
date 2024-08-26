@@ -60,7 +60,24 @@ object TestUtils {
 
       newGraph
     }
+  }
 
+  /** copies a single GNode into a different graph, including all properties, but excluding edges */
+  def copyNode(node: GNode, targetGraph: Graph): GNode = {
+    assert(node.graph.schema == targetGraph.schema, "schemas of the two graphs must be identical, but they are not...")
+    // first pass: create raw node
+    val newNode = new GenericDNode(node.nodeKind)
+    DiffGraphApplier.applyDiff(targetGraph, new DiffGraphBuilder(targetGraph.schema).addNode(newNode))
+    val nodeInTargetGraph = newNode.storedRef.get // this is set by `applyDiff`
+
+    // second pass: set node properties
+    val diffGraphForProperties = new DiffGraphBuilder(targetGraph.schema)
+    for {
+      (propertyKind, value) <- Accessors._getNodeProperties(node)
+    } diffGraphForProperties._setNodeProperty(nodeInTargetGraph, propertyKind, value)
+
+    DiffGraphApplier.applyDiff(targetGraph, diffGraphForProperties)
+    nodeInTargetGraph
   }
 
 }
