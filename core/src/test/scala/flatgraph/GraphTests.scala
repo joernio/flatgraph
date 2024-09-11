@@ -426,6 +426,44 @@ class GraphTests extends AnyWordSpec with Matchers {
     debugDump(g) shouldBe expectation
   }
 
+  "permit edge deletions with unfortunate ordering" in {
+    val g  = new Graph(schema)
+    val v0 = new GenericDNode(0)
+    val v1 = new GenericDNode(0)
+
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        .addNode(v0)
+        .addNode(v1)
+        ._addEdge(v0, v0, 0)
+        ._addEdge(v0, v0, 0)
+        ._addEdge(v1, v1, 0)
+        ._addEdge(v1, v1, 0)
+    )
+    debugDump(g) shouldBe """#Node numbers (kindId, nnodes) (0: 2), total 2
+                            |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 4 [dense], 4 [dense]),
+                            |   V0_0   [0] -> V0_0, V0_0
+                            |   V0_0   [0] <- V0_0, V0_0
+                            |   V0_1   [0] -> V0_1, V0_1
+                            |   V0_1   [0] <- V0_1, V0_1
+                            |""".stripMargin
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        .removeEdge(Accessors.getEdgesOut(v0.storedRef.get, 0)(0))
+        .removeEdge(Accessors.getEdgesOut(v1.storedRef.get, 0)(1))
+    )
+    debugDump(g) shouldBe """#Node numbers (kindId, nnodes) (0: 2), total 2
+                            |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
+                            |   V0_0   [0] -> V0_0
+                            |   V0_0   [0] <- V0_0
+                            |   V0_1   [0] -> V0_1
+                            |   V0_1   [0] <- V0_1
+                            |""".stripMargin
+
+  }
+
   "permit node deletion" in {
     var g = mkGraph()
     debugDump(g) shouldBe

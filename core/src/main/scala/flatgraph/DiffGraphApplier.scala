@@ -488,12 +488,13 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         var idx      = 0
         while (idx < deletionSeqIndexEnd - deletionSeqIndexStart) {
           if (deletion != null && idx == deletion.subSeq - 1) {
-            deletionCounter += 1
             assert(
               deletion.dst == oldNeighbors(deletionSeqIndexStart + idx),
               s"deletion.dst was supposed to be `${oldNeighbors(deletionSeqIndexStart + idx)}`, but instead is ${deletion.dst}"
             )
+            deletionCounter += 1
             deletion = if (deletionCounter < deletions.size) deletions(deletionCounter) else null
+            if (deletion != null && deletion.src.seq() != deletionSeq) deletion = null
           } else {
             newNeighbors(deletionSeqIndexStart + idx - deletionCounter) = oldNeighbors(deletionSeqIndexStart + idx)
             if (oldProperty != null)
