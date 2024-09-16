@@ -11,7 +11,7 @@ import testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA}
 
 import scala.jdk.CollectionConverters.MapHasAsScala
 
-class GraphTests extends AnyWordSpec with MockFactory {
+class GraphTestsWithSchema extends AnyWordSpec with MockFactory {
 
   "node property: log warning for schema-unconform property usage" in {
     // unknown node properties often root in deserialising an old storage format,
@@ -41,4 +41,23 @@ class GraphTests extends AnyWordSpec with MockFactory {
     genericDomain.nodeB.head.propertiesMap.asScala shouldBe Map()
   }
 
+  "diffgraph with contained nodes: Produce the correct node order when merged" in {
+    import testdomains.generic.nodes
+    val genDomain = GenericDomain.empty
+    val nodeB_implicit = nodes.NewNodeB().stringOptional("implicit")
+    val nodeB_explicit = nodes.NewNodeB().stringOptional("explicit")
+    val nodeA = nodes.NewNodeA().node_b(nodeB_implicit)
+    DiffGraphApplier.applyDiff(genDomain.graph, GenericDomain.newDiffGraphBuilder.addNode(nodeA).addNode(nodeB_explicit))
+    genDomain.nodeB.stringOptional.l shouldBe List("implicit", "explicit")
+  }
+  "diffgraph with contained nodes: Produce the correct node order when split" in {
+    import testdomains.generic.nodes
+    val genDomain = GenericDomain.empty
+    val nodeB_implicit = nodes.NewNodeB().stringOptional("implicit")
+    val nodeB_explicit = nodes.NewNodeB().stringOptional("explicit")
+    val nodeA = nodes.NewNodeA().node_b(nodeB_implicit)
+    DiffGraphApplier.applyDiff(genDomain.graph, GenericDomain.newDiffGraphBuilder.addNode(nodeA))
+    DiffGraphApplier.applyDiff(genDomain.graph, GenericDomain.newDiffGraphBuilder.addNode(nodeB_explicit))
+    genDomain.nodeB.stringOptional.l shouldBe List("implicit", "explicit")
+  }
 }

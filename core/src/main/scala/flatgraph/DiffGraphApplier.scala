@@ -12,7 +12,7 @@ object DiffGraphApplier {
     graph: Graph,
     diff: DiffGraphBuilder,
     schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter
-  ): Unit = {
+  ): Int = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
     new DiffGraphApplier(graph, diff, schemaViolationReporter).applyUpdate()
   }
