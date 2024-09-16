@@ -8,15 +8,15 @@ import flatgraph.misc.SchemaViolationReporter
 import scala.collection.{Iterator, mutable}
 
 object DiffGraphApplier {
+
   /** Apply a diff to a graph. This returns the number of successfully applied changes.
-   * 
-   * Since this applies all changes that are reachable from the DiffGraphBuilder, the number of applied changes can be
-   * vastly larger than the size of the diffgraphBuilder, e.g. if there are newNodes that have properties / contained nodes
-   * that are themselves newNodes.
-   *
-   * This function destroys the diff, in order to permit fast freeing of memory (in cases where we run close to exhausting 
-   * the heap with the diff, the old graph, the new graph, and the temporaries during diff application).
-   */
+    *
+    * Since this applies all changes that are reachable from the DiffGraphBuilder, the number of applied changes can be vastly larger than
+    * the size of the diffgraphBuilder, e.g. if there are newNodes that have properties / contained nodes that are themselves newNodes.
+    *
+    * This function destroys the diff, in order to permit fast freeing of memory (in cases where we run close to exhausting the heap with
+    * the diff, the old graph, the new graph, and the temporaries during diff application).
+    */
   def applyDiff(
     graph: Graph,
     diff: DiffGraphBuilder,
