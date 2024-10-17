@@ -2,15 +2,16 @@ package flatgraph.formats.neo4jcsv
 
 import com.github.tototoshi.csv.*
 import flatgraph.formats.{ExportResult, Exporter, writeFile}
-import flatgraph.{Edge, GNode, Graph, Schema}
+import flatgraph.{Edge, GNode, Schema}
 
 import java.nio.file.Path
+import java.util.regex.Pattern
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
 import scala.util.Using
 
 object Neo4jCsvExporter extends Exporter {
+  val BackslashRegex = Pattern.compile("""\\""") // matches `\`
 
   override def defaultFileExtension = "csv"
 
@@ -74,7 +75,7 @@ object Neo4jCsvExporter extends Exporter {
         }
 
         val specialColumns       = Seq(node.id.toString, node.label)
-        val propertyValueColumns = columnDefinitions.propertyValues(node.propertyOption)
+        val propertyValueColumns = columnDefinitions.propertyValues(node.propertyOption).map(escapeSpecialCharacters)
         writer.writeRow(specialColumns ++ propertyValueColumns)
         nodeCount += 1
       }
@@ -160,6 +161,11 @@ object Neo4jCsvExporter extends Exporter {
     Using.resource(CSVWriter.open(outputFile.toFile, append = false)) { writer =>
       writer.writeRow(entries)
     }
+  }
+
+  private def escapeSpecialCharacters(propertyValue: String): String = {
+    // replace `\` with `\\` - otherwise neo4j import complains
+    BackslashRegex.matcher(propertyValue).replaceAll("""\\\\""")
   }
 
   private case class EdgeFilesContext(
