@@ -1261,7 +1261,8 @@ class DomainClassesGenerator(schema: Schema) {
                 s"""def $primaryMethodName: nodes.${adjacentNode.neighbor.className} = {
                    |  try { $accessorImpl0.next() } catch {
                    |    case e: java.util.NoSuchElementException =>
-                   |      throw new flatgraph.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${adjacentNode.neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with seq=" + node.seq, e)
+                   |      val nodeInfo = String.format("id=%d, (seq=%d)", node.id, node.seq)
+                   |      throw new flatgraph.SchemaViolationException("$direction edge with label ${edge.name} to an adjacent ${adjacentNode.neighbor.name} is mandatory, but not defined for this ${nodeType.name} node with " + nodeInfo, e)
                    |  }
                    |}""".stripMargin
             }
