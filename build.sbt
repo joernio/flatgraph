@@ -112,6 +112,9 @@ lazy val sbtPlugin = project
     scalaVersion := scala2_12,
     scalacOptions := scalacOptionsFor2_12,
     addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2"),
+    // the default sbt naming convention for plugins does not conform to the
+    // maven specification - see https://github.com/sbt/sbt/issues/3410
+    sbtPluginPublishLegacyMavenStyle := false,
   )
 
 lazy val odbConvert = project
