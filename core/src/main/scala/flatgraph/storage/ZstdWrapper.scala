@@ -9,24 +9,24 @@ import scala.util.{Properties, Try}
 object ZstdWrapper {
   private val logger = LoggerFactory.getLogger(getClass)
 
-  /**
-   * zstd-jni ships system libraries that are being unpacked, loaded and executed from the system tmp directory.
-   * If that fails we get a rather obscure error message - this wrapper adds a check if the tmp dir is executable,
-   * and enhances the error message if the zstd invocation fails.
-   *
-   * This is where zstd-jni loads the system library:
-   * https://github.com/luben/zstd-jni/blob/9b08f1d0cdcf3b12b7a307cbba3d9f195149250b/src/main/java/com/github/luben/zstd/util/Native.java#L71
-   */
+  /** zstd-jni ships system libraries that are being unpacked, loaded and executed from the system tmp directory. If that fails we get a
+    * rather obscure error message - this wrapper adds a check if the tmp dir is executable, and enhances the error message if the zstd
+    * invocation fails.
+    *
+    * This is where zstd-jni loads the system library:
+    * https://github.com/luben/zstd-jni/blob/9b08f1d0cdcf3b12b7a307cbba3d9f195149250b/src/main/java/com/github/luben/zstd/util/Native.java#L71
+    */
   def apply[A](fun: => A): A = {
     probeTmpMountOptions()
 
     try {
       fun
-    } catch { case e =>
-      throw new JniInvocationException(
-        "Error while trying to invoke zstd, i.e. cannot compress or decompress, which is required for flatgraph's storage",
-        Option(e)
-      )
+    } catch {
+      case e =>
+        throw new JniInvocationException(
+          "Error while trying to invoke zstd, i.e. cannot compress or decompress, which is required for flatgraph's storage",
+          Option(e)
+        )
     }
   }
 
@@ -38,10 +38,10 @@ object ZstdWrapper {
     Try {
       if (Properties.isLinux || Properties.isMac) {
         val mounts = Files.readAllLines(Paths.get("/proc/mounts"))
-        if (mounts.asScala.exists { mountInfoLine => mountInfoLine.contains(s" $tmpDirPath ") && mountInfoLine.contains("noexec")})
+        if (mounts.asScala.exists { mountInfoLine => mountInfoLine.contains(s" $tmpDirPath ") && mountInfoLine.contains("noexec") })
           logger.warn(warnMessage)
-        }
       }
+    }
     // we're just probing here to warn the user and give some hints about fixing the situation
     // it's fairly brittle as well, so if this fails we won't bother
   }

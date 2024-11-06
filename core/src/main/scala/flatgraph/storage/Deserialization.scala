@@ -173,16 +173,20 @@ object Deserialization {
 
   private def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
     val stringPoolLength = ZstdWrapper(
-      Zstd.decompress(
-        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
-        manifest.stringPoolLength.decompressedLength
-      ).order(ByteOrder.LITTLE_ENDIAN)
+      Zstd
+        .decompress(
+          fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
+          manifest.stringPoolLength.decompressedLength
+        )
+        .order(ByteOrder.LITTLE_ENDIAN)
     )
     val stringPoolBytes = ZstdWrapper(
-      Zstd.decompress(
-        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
-        manifest.stringPoolBytes.decompressedLength
-      ).order(ByteOrder.LITTLE_ENDIAN)
+      Zstd
+        .decompress(
+          fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
+          manifest.stringPoolBytes.decompressedLength
+        )
+        .order(ByteOrder.LITTLE_ENDIAN)
     )
     val poolBytes = new Array[Byte](manifest.stringPoolBytes.decompressedLength)
     stringPoolBytes.get(poolBytes)
