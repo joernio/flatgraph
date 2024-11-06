@@ -172,19 +172,18 @@ object Deserialization {
   }
 
   private def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
-    val stringPoolLength = Zstd
-      .decompress(
+    val stringPoolLength = ZstdWrapper(
+      Zstd.decompress(
         fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
         manifest.stringPoolLength.decompressedLength
-      )
-      .order(ByteOrder.LITTLE_ENDIAN)
-    val stringPoolBytes = Zstd
-      .decompress(
-        fileChannel
-          .map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
+      ).order(ByteOrder.LITTLE_ENDIAN)
+    )
+    val stringPoolBytes = ZstdWrapper(
+      Zstd.decompress(
+        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
         manifest.stringPoolBytes.decompressedLength
-      )
-      .order(ByteOrder.LITTLE_ENDIAN)
+      ).order(ByteOrder.LITTLE_ENDIAN)
+    )
     val poolBytes = new Array[Byte](manifest.stringPoolBytes.decompressedLength)
     stringPoolBytes.get(poolBytes)
     val pool    = new Array[String](manifest.stringPoolLength.decompressedLength >> 2)
@@ -214,9 +213,9 @@ object Deserialization {
 
   private def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringPool: Array[String]): Array[?] = {
     if (ptr == null) return null
-    val dec = Zstd
-      .decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)
-      .order(ByteOrder.LITTLE_ENDIAN)
+    val dec = ZstdWrapper(
+      Zstd.decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)
+    ).order(ByteOrder.LITTLE_ENDIAN)
     ptr.typ match {
       case StorageType.Bool =>
         val bytes = new Array[Byte](dec.limit())

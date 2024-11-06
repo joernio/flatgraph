@@ -180,7 +180,7 @@ object Serialization {
 
   private[flatgraph] def write(bytes: Array[Byte], res: OutlineStorage, filePtr: AtomicLong, fileChannel: FileChannel): OutlineStorage = {
     res.decompressedLength = bytes.length
-    val compressed = Zstd.compress(bytes)
+    val compressed = ZstdWrapper(Zstd.compress(bytes))
 
     var outPos = filePtr.getAndAdd(compressed.length)
     res.startOffset = outPos
