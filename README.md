@@ -491,3 +491,13 @@ linked above). They exist only at compile time. Hence, it's safe to cast a given
 Yes, properties are no longer fields of stored nodes. Hence the debugger cannot find them.
 
 But despair not! We have attached the `_debugChildren()` method to the GNode class. In order to see anything useful, you need to tell your debugger to use that in its object inspector. So in intellij, you need to add a custom java type renderer, make it apply to all `flatgraph.GNode` instances, and then tell it to use the expression `_debugChildren()` when expanding a node. See e.g. https://www.jetbrains.com/help/idea/customizing-views.html#renderers .
+
+## I got this strange `UnsatisfiedLinkError` with zstd, what's that all about?
+We use https://github.com/luben/zstd-jni for storage compression, and that requires that you have not mounted your `tmp` partition with the `noexec` flag. If you really need that flag on your system tmp partition, you can workaround this by defining the java system property `-Djava.io.tmpdir=/path/to/tmp`. Before invoking zstd, flatgraph performs some basic checks and tries to help the user, should this go wrong. Here's how it looks like if it does (listed here for search engine indices): 
+```
+flatgraph.storage.ZstdWrapper$JniInvocationException: Error while trying to invoke zstd, i.e. cannot compress or decompress, which is required for flatgraph's storage
+...
+Cause: java.lang.ExceptionInInitializerError: Exception java.lang.UnsatisfiedLinkError: /tmp/libzstd-jni-1.5.6-77867291841665399714.so: /tmp/libzstd-jni-1.5.6-77867291841665399714.so: failed to map segment from shared object
+[info] no zstd-jni-1.5.6-7 in java.library.path: /usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+[info] Unsupported OS/arch, cannot find /linux/amd64/libzstd-jni-1.5.6-7.so or load zstd-jni-1.5.6-7 from system libraries.
+```
