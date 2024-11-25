@@ -28,7 +28,7 @@ lazy val core = project
     name := "flatgraph-core",
     libraryDependencies ++= Seq(
       "com.lihaoyi"     %% "ujson"  % "3.3.1",
-      "com.github.luben" % "zstd-jni" % "1.5.6-7",
+      "com.github.luben" % "zstd-jni" % "1.5.6-8",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
     )
   )
