@@ -2,7 +2,7 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val slf4jVersion = "2.0.7"
+val slf4jVersion = "2.0.16"
 val scala3 = "3.4.3"
 val scala2_12 = "2.12.20"
 
