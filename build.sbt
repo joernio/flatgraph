@@ -80,7 +80,7 @@ lazy val domainClassesGenerator_3 = project
     sourceDirectory := baseDirectory.value / "../domain-classes-generator/src",
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional,
-      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "com.lihaoyi" %% "os-lib" % "0.9.3",
       "org.apache.commons" % "commons-text" % "1.10.0",
       "com.github.scopt" %% "scopt" % "4.1.0",
       ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
@@ -96,7 +96,7 @@ lazy val domainClassesGenerator_2_12 = project
     scalacOptions := scalacOptionsFor2_12,
     libraryDependencies ++= Seq(
       "org.slf4j"% "slf4j-simple" % slf4jVersion % Optional,
-      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "com.lihaoyi" %% "os-lib" % "0.9.3",
       "org.apache.commons" % "commons-text" % "1.12.0",
       "com.github.scopt" %% "scopt" % "4.1.0",
       "org.scalameta" %% "scalafmt-dynamic" % "3.7.17",
