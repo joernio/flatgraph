@@ -124,7 +124,7 @@ lazy val odbConvert = project
   .settings(
     name := "flatgraph-odb-convert",
     libraryDependencies ++= Seq(
-      "io.shiftleft" %% "overflowdb-core" % "1.181",
+      "io.shiftleft" %% "overflowdb-core" % "1.193",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )
