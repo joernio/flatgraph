@@ -83,7 +83,7 @@ lazy val domainClassesGenerator_3 = project
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "org.apache.commons" % "commons-text" % "1.10.0",
       "com.github.scopt" %% "scopt" % "4.1.0",
-      ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
+      ("org.scalameta" %% "scalafmt-dynamic" % "3.8.3").cross(CrossVersion.for3Use2_13),
     ),
   )
 
@@ -99,7 +99,7 @@ lazy val domainClassesGenerator_2_12 = project
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "org.apache.commons" % "commons-text" % "1.12.0",
       "com.github.scopt" %% "scopt" % "4.1.0",
-      "org.scalameta" %% "scalafmt-dynamic" % "3.7.17",
+      "org.scalameta" %% "scalafmt-dynamic" % "3.8.3",
     ),
   )
 
