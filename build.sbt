@@ -50,7 +50,7 @@ lazy val formats = project
   .settings(
     name := "flatgraph-formats",
     libraryDependencies ++= Seq(
-      "com.github.tototoshi" %% "scala-csv" % "1.4.1",
+      "com.github.tototoshi" %% "scala-csv" % "2.0.0",
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       "io.spray" %% "spray-json" % "1.3.6",
       "com.github.scopt" %% "scopt" % "4.1.0",
