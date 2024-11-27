@@ -4,7 +4,7 @@ ThisBuild / scalaVersion := scala3
 
 val slf4jVersion = "2.0.7"
 val scala3 = "3.4.3"
-val scala2_12 = "2.12.20"
+val scala2_12 = "2.13.15"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
