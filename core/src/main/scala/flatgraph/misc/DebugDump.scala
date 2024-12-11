@@ -10,10 +10,10 @@ object DebugDump {
 
   private def unpack(s: Any): Option[Object] = {
     s match {
-      case iter: IterableOnce[AnyRef @uncheckedVariance] =>
+      case iter: IterableOnce[?] =>
         val res = iter.iterator.toSeq
         if (res.isEmpty) None
-        else if (res.size == 1) Some(res.head)
+        else if (res.size == 1) Some(res.head.asInstanceOf[AnyRef])
         else Some(res)
       case obj: java.lang.Object => Some(obj)
       case _                     => null

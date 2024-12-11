@@ -73,7 +73,7 @@ object TestUtils {
     // second pass: set node properties
     val diffGraphForProperties = new DiffGraphBuilder(targetGraph.schema)
     for {
-      (propertyKind, value) <- Accessors._getNodeProperties(node)
+      (propertyKind, value) <- Accessors._getNodeProperties(node).iterator
     } diffGraphForProperties._setNodeProperty(nodeInTargetGraph, propertyKind, value)
 
     DiffGraphApplier.applyDiff(targetGraph, diffGraphForProperties)
