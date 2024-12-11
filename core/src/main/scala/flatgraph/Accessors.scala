@@ -173,7 +173,7 @@ object Accessors {
 
   def getNodeProperties(node: GNode): IterableOnce[(String, IndexedSeq[Any])] = {
     for {
-      (propertyKind, value) <- _getNodeProperties(node)
+      (propertyKind, value) <- _getNodeProperties(node).iterator
       schema = node.graph.schema
     } yield schema.getPropertyLabel(node.nodeKind, propertyKind) -> value
   }

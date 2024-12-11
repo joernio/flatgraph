@@ -2,8 +2,8 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val slf4jVersion = "2.0.7"
-val scala3 = "3.4.3"
+val slf4jVersion = "2.0.16"
+val scala3 = "3.5.2"
 val scala2_12 = "2.12.20"
 
 /** Only the below listed projects are included in things like `sbt compile`.
@@ -27,7 +27,7 @@ lazy val core = project
   .settings(
     name := "flatgraph-core",
     libraryDependencies ++= Seq(
-      "com.lihaoyi"     %% "ujson"  % "3.3.1",
+      "com.lihaoyi"     %% "ujson"  % "4.0.2",
       "com.github.luben" % "zstd-jni" % "1.5.6-8",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
     )
@@ -50,7 +50,7 @@ lazy val formats = project
   .settings(
     name := "flatgraph-formats",
     libraryDependencies ++= Seq(
-      "com.github.tototoshi" %% "scala-csv" % "1.4.1",
+      "com.github.tototoshi" %% "scala-csv" % "2.0.0",
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       "io.spray" %% "spray-json" % "1.3.6",
       "com.github.scopt" %% "scopt" % "4.1.0",
