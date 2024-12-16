@@ -8,7 +8,7 @@ import flatgraph.storage.Manifest.*
 import java.io.ByteArrayOutputStream
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
-import java.nio.file.Path
+import java.nio.file.{Files, Path}
 import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
@@ -18,6 +18,10 @@ object Serialization {
   def writeGraph(g: Graph, storagePath: Path): Unit = {
     val fileOffset = new AtomicLong(16)
     val stringPool = mutable.LinkedHashMap[String, Int]()
+
+    // ensure parent directory exists
+    val parentDir = storagePath.getParent
+    if (Files.notExists(parentDir)) Files.createDirectories(parentDir)
 
     val fileChannel =
       new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
