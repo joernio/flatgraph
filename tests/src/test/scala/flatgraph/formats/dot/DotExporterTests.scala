@@ -5,7 +5,7 @@ import flatgraph.*
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
-class DotTests extends AnyWordSpec {
+class DotExporterTests extends AnyWordSpec {
 
   "Exporter should export valid dot" in {
     val graph = TestGraphs.createSimpleGraph().graph
