@@ -5,14 +5,14 @@ object CodeSnippets {
   object NewNodeInserters {
     def forSingleItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
       s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
-         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |  override def insertNewNodeProperties(newNodes: ArrayList[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
          |     if(newNodes.isEmpty) return
          |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
-         |     val seq = newNodes.head.storedRef.get.seq()
+         |     val seq = newNodes.get(0).storedRef.get.seq()
          |     var offset = offsets(seq)
          |     var idx = 0
-         |     while(idx < newNodes.length){
-         |        val nn = newNodes(idx)
+         |     while(idx < newNodes.size()){
+         |        val nn = newNodes.get(idx)
          |        nn match {
          |          case generated: New${nodeType} =>
          |            dstCast(offset) = ${
@@ -32,14 +32,14 @@ object CodeSnippets {
     }
     def forOptionalItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
       s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
-         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |  override def insertNewNodeProperties(newNodes: ArrayList[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
          |     if(newNodes.isEmpty) return
          |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
-         |     val seq = newNodes.head.storedRef.get.seq()
+         |     val seq = newNodes.get(0).storedRef.get.seq()
          |     var offset = offsets(seq)
          |     var idx = 0
-         |     while(idx < newNodes.length){
-         |        val nn = newNodes(idx)
+         |     while(idx < newNodes.size()){
+         |        val nn = newNodes.get(idx)
          |        nn match {
          |          case generated: New${nodeType} =>
          |            generated.${nameCamelCase} match {
@@ -63,14 +63,14 @@ object CodeSnippets {
 
     def forMultiItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
       s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
-         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |  override def insertNewNodeProperties(newNodes: ArrayList[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
          |     if(newNodes.isEmpty) return
          |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
-         |     val seq = newNodes.head.storedRef.get.seq()
+         |     val seq = newNodes.get(0).storedRef.get.seq()
          |     var offset = offsets(seq)
          |     var idx = 0
-         |     while(idx < newNodes.length){
-         |        val nn = newNodes(idx)
+         |     while(idx < newNodes.size()){
+         |        val nn = newNodes.get(idx)
          |        nn match {
          |          case generated: New${nodeType} =>
          |            for(item <- generated.${nameCamelCase}){

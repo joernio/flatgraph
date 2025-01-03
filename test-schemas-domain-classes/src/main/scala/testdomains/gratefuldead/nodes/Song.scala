@@ -1,8 +1,8 @@
 package testdomains.gratefuldead.nodes
 
 import testdomains.gratefuldead.language.*
+import java.util.ArrayList
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
-import scala.collection.mutable
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
   */
@@ -75,14 +75,14 @@ object NewSong {
 
   object InsertionHelpers {
     object NewNodeInserter_Song_name extends flatgraph.NewNodePropertyInsertionHelper {
-      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+      override def insertNewNodeProperties(newNodes: ArrayList[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
         if (newNodes.isEmpty) return
         val dstCast = dst.asInstanceOf[Array[String]]
-        val seq     = newNodes.head.storedRef.get.seq()
+        val seq     = newNodes.get(0).storedRef.get.seq()
         var offset  = offsets(seq)
         var idx     = 0
-        while (idx < newNodes.length) {
-          val nn = newNodes(idx)
+        while (idx < newNodes.size()) {
+          val nn = newNodes.get(idx)
           nn match {
             case generated: NewSong =>
               dstCast(offset) = generated.name
@@ -96,14 +96,14 @@ object NewSong {
       }
     }
     object NewNodeInserter_Song_performances extends flatgraph.NewNodePropertyInsertionHelper {
-      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+      override def insertNewNodeProperties(newNodes: ArrayList[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
         if (newNodes.isEmpty) return
         val dstCast = dst.asInstanceOf[Array[Int]]
-        val seq     = newNodes.head.storedRef.get.seq()
+        val seq     = newNodes.get(0).storedRef.get.seq()
         var offset  = offsets(seq)
         var idx     = 0
-        while (idx < newNodes.length) {
-          val nn = newNodes(idx)
+        while (idx < newNodes.size()) {
+          val nn = newNodes.get(idx)
           nn match {
             case generated: NewSong =>
               generated.performances match {
@@ -121,14 +121,14 @@ object NewSong {
       }
     }
     object NewNodeInserter_Song_songtype extends flatgraph.NewNodePropertyInsertionHelper {
-      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+      override def insertNewNodeProperties(newNodes: ArrayList[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
         if (newNodes.isEmpty) return
         val dstCast = dst.asInstanceOf[Array[String]]
-        val seq     = newNodes.head.storedRef.get.seq()
+        val seq     = newNodes.get(0).storedRef.get.seq()
         var offset  = offsets(seq)
         var idx     = 0
-        while (idx < newNodes.length) {
-          val nn = newNodes(idx)
+        while (idx < newNodes.size()) {
+          val nn = newNodes.get(idx)
           nn match {
             case generated: NewSong =>
               generated.songtype match {
