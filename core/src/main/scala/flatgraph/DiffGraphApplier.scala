@@ -445,10 +445,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
     // grow array and insert GNodes
     val nodesArrayBefore = graph.nodesArray(nodeKind)
-    val newNodes0 = newNodes(nodeKind)
-    val newLength = nodesArrayBefore.length + newNodes0.size()
-    val nodesArrayNew = Arrays.copyOf(nodesArrayBefore, newLength)
-    var insertAt = nodesArrayBefore.length
+    val newNodes0        = newNodes(nodeKind)
+    val newLength        = nodesArrayBefore.length + newNodes0.size()
+    val nodesArrayNew    = Arrays.copyOf(nodesArrayBefore, newLength)
+    var insertAt         = nodesArrayBefore.length
     newNodes0.forEach { newNode =>
       nodesArrayNew.update(insertAt, newNode.storedRef.get)
       insertAt += 1
@@ -483,7 +483,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   }
 
   private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
-    val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    val pos          = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val deletionsRaw = delEdges(pos)
     if (deletionsRaw == null) return
     assert(
@@ -647,12 +647,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       val setPropertyPositionsRaw: ArrayList[SetPropertyDesc] =
         Option(setNodeProperties(pos + 1)).getOrElse(ArrayList[SetPropertyDesc]()).asInstanceOf[ArrayList[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
-      val setPropertyPositions = sortAndDedup(
-        setPropertyPositionsRaw,
-        _.node.seq(),
-        (p0, p1) => p0.node.seq().compareTo(p1.node.seq())
-      )
-      val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+      val setPropertyPositions = sortAndDedup(setPropertyPositionsRaw, _.node.seq(), (p0, p1) => p0.node.seq().compareTo(p1.node.seq()))
+      val oldQty               = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
       val lengthDelta = setPropertyPositions.iterator.asScala.map { setP =>
         setP.length - (get(oldQty, setP.node.seq()) - get(oldQty, setP.node.seq() + 1))
       }.sum
@@ -714,17 +710,15 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  /**
-   * note 1: we assume that the buffer has the correct element types and cast them...
-   *
-   * note 2: we need to do a slow copy here, copying element by element, rather than the fast System.arraycopy
-   * because `ArrayList` (just like the previously used `mutable.ArrayBuffer`) uses an
-   * underlying `Object[] / Array[AnyRef]`, i.e. a non-specialized array
-   */
+  /** note 1: we assume that the buffer has the correct element types and cast them...
+    *
+    * note 2: we need to do a slow copy here, copying element by element, rather than the fast System.arraycopy because `ArrayList` (just
+    * like the previously used `mutable.ArrayBuffer`) uses an underlying `Object[] / Array[AnyRef]`, i.e. a non-specialized array
+    */
   private def copyToArray[T](buf: ArrayList[Any], dst: Array[T]): Unit = {
     try {
       val len = buf.size()
-      var i = 0
+      var i   = 0
       while (i < len) {
         dst.update(i, buf.get(i).asInstanceOf[T])
         i += 1
@@ -738,8 +732,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last
 
-  /** Sorts the given list and removes all duplicates.
-   * Note: this sorts the input buffer in-place... */
+  /** Sorts the given list and removes all duplicates. Note: this sorts the input buffer in-place...
+    */
   private def sortAndDedup[A](buf: ArrayList[A], by: A => ?, comparator: Comparator[A]): AbstractList[A] & RandomAccess = {
     buf.sort(comparator)
     var outIdx = 0
