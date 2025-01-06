@@ -62,7 +62,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       schemaViolationReporter.illegalNodeProperty(node.nodeKind, propertyKind, graph.schema)
     } else {
       if (setNodeProperties(pos) == null)
-        setNodeProperties(pos) = ArrayList(propertyValues.size)
+        setNodeProperties(pos) = ArrayList(0) // empty list
       val buf   = setNodeProperties(pos)
       val start = buf.size
       propertyValues.iterator.foreach {
@@ -661,7 +661,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       if (setPropertyValues == null) {
         schemaViolationReporter.illegalNodeProperty(nodeKind, propertyKind, schema)
       } else {
-        propertyBuf.toArray(setPropertyValues.asInstanceOf[Array[Object]])
+        copyToArray(propertyBuf, setPropertyValues)
 
         val oldProperty = Option(graph.properties(pos + 1))
           .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
@@ -710,6 +710,28 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         setNodeProperties(pos) = null
         setNodeProperties(pos + 1) = null
       }
+    }
+  }
+
+  /**
+   * note 1: we assume that the buffer has the correct element types and cast them...
+   *
+   * note 2: we need to do a slow copy here, copying element by element, rather than the fast System.arraycopy
+   * because `ArrayList` (just like the previously used `mutable.ArrayBuffer`) uses an
+   * underlying `Object[] / Array[AnyRef]`, i.e. a non-specialized array
+   */
+  private def copyToArray[T](buf: ArrayList[Any], dst: Array[T]): Unit = {
+    try {
+      val len = buf.size()
+      var i = 0
+      while (i < len) {
+        dst.update(i, buf.get(i).asInstanceOf[T])
+        i += 1
+      }
+    } catch {
+      case _: ArrayStoreException =>
+        val typeMaybe = if (buf.isEmpty) "" else s": ${buf.get(0).getClass}"
+        throw new UnsupportedOperationException(s"unsupported property type$typeMaybe")
     }
   }
 
