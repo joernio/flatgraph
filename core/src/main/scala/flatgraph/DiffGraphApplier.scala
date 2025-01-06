@@ -6,7 +6,7 @@ import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
 import java.util
-import java.util.{ArrayDeque, ArrayList, Arrays, RandomAccess}
+import java.util.{ArrayDeque, ArrayList, Arrays, Comparator, RandomAccess}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -494,10 +494,11 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
     )
 
-    deletionsRaw.sort{ (e1: EdgeRepr, e2: EdgeRepr) =>
-      numberForEdgeComparison(e1).compareTo(numberForEdgeComparison(e2))
-    }
-    val deletions    = dedupBy(deletionsRaw, numberForEdgeComparison)
+    val deletions = sortAndDedup(
+      deletionsRaw,
+      numberForEdgeComparison,
+      (e0: EdgeRepr, e1: EdgeRepr) => numberForEdgeComparison(e0).compareTo(numberForEdgeComparison(e1))
+    )
     val nodeCount    = graph.nodeCountByKind(nodeKind)
     val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -647,10 +648,11 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       val setPropertyPositionsRaw: util.ArrayList[SetPropertyDesc] =
         Option(setNodeProperties(pos + 1)).getOrElse(ArrayList[SetPropertyDesc]()).asInstanceOf[ArrayList[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
-      setPropertyPositionsRaw.sort { (a, b) =>
-        a.node.seq().compareTo(b.node.seq())
-      }
-      val setPropertyPositions = dedupBy(setPropertyPositionsRaw, _.node.seq())
+      val setPropertyPositions = sortAndDedup(
+        setPropertyPositionsRaw,
+        _.node.seq(),
+        (p0, p1) => p0.node.seq().compareTo(p1.node.seq())
+      )
       val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
       val lengthDelta = setPropertyPositions.iterator.asScala.map { setP =>
         setP.length - (get(oldQty, setP.node.seq()) - get(oldQty, setP.node.seq() + 1))
@@ -737,8 +739,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last
 
-  /** Removes all subsequent duplicate items, with the last overwriting the previous ones. */
-  private def dedupBy[T, S](buf: ArrayList[T], by: T => S): util.AbstractList[T] & RandomAccess = {
+  /** Sorts the given list and removes all duplicates.
+   * Note: this sorts the input buffer in-place... */
+  private def sortAndDedup[A](buf: ArrayList[A], by: A => ?, comparator: Comparator[A]): util.AbstractList[A] & RandomAccess = {
+    buf.sort(comparator)
     var outIdx = 0
     var idx    = 0
     while (idx < buf.size()) {
@@ -755,7 +759,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val dropCount = idx - outIdx
     val keepUntil = buf.size() - dropCount
     // we cast here because SubList is an AbstractList & RandomAccess... it's not guaranteed by the api, but we only want to use it as long as it does have RandomAccess...
-    buf.subList(0, keepUntil).asInstanceOf[util.AbstractList[T] & RandomAccess]
+    buf.subList(0, keepUntil).asInstanceOf[util.AbstractList[A] & RandomAccess]
   }
 
   /** Creates a bitstring/integeger for fast comparison where
