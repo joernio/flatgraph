@@ -5,8 +5,7 @@ import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
-import java.util
-import java.util.{ArrayDeque, ArrayList, Arrays, Comparator, RandomAccess}
+import java.util.{AbstractList, ArrayDeque, ArrayList, Arrays, Comparator, RandomAccess}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -645,7 +644,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val viaNewNode  = newNodeNewProperties(pos)
     val propertyBuf = Option(setNodeProperties(pos)).getOrElse(ArrayList())
     if (setNodeProperties(pos) != null || viaNewNode > 0) {
-      val setPropertyPositionsRaw: util.ArrayList[SetPropertyDesc] =
+      val setPropertyPositionsRaw: ArrayList[SetPropertyDesc] =
         Option(setNodeProperties(pos + 1)).getOrElse(ArrayList[SetPropertyDesc]()).asInstanceOf[ArrayList[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
       val setPropertyPositions = sortAndDedup(
@@ -741,7 +740,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   /** Sorts the given list and removes all duplicates.
    * Note: this sorts the input buffer in-place... */
-  private def sortAndDedup[A](buf: ArrayList[A], by: A => ?, comparator: Comparator[A]): util.AbstractList[A] & RandomAccess = {
+  private def sortAndDedup[A](buf: ArrayList[A], by: A => ?, comparator: Comparator[A]): AbstractList[A] & RandomAccess = {
     buf.sort(comparator)
     var outIdx = 0
     var idx    = 0
@@ -759,7 +758,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val dropCount = idx - outIdx
     val keepUntil = buf.size() - dropCount
     // we cast here because SubList is an AbstractList & RandomAccess... it's not guaranteed by the api, but we only want to use it as long as it does have RandomAccess...
-    buf.subList(0, keepUntil).asInstanceOf[util.AbstractList[A] & RandomAccess]
+    buf.subList(0, keepUntil).asInstanceOf[AbstractList[A] & RandomAccess]
   }
 
   /** Creates a bitstring/integeger for fast comparison where
