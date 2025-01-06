@@ -6,7 +6,7 @@ import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
 import java.util
-import java.util.{ArrayDeque, ArrayList, Arrays}
+import java.util.{ArrayDeque, ArrayList, Arrays, RandomAccess}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -485,19 +485,19 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val deletions = delEdges(pos)
-    if (deletions == null) return
+    val deletionsRaw = delEdges(pos)
+    if (deletionsRaw == null) return
     assert(
-      deletions.asScala.forall { edge =>
+      deletionsRaw.asScala.forall { edge =>
         edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
       },
       s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
     )
 
-    deletions.sort{ (e1: EdgeRepr, e2: EdgeRepr) =>
+    deletionsRaw.sort{ (e1: EdgeRepr, e2: EdgeRepr) =>
       numberForEdgeComparison(e1).compareTo(numberForEdgeComparison(e2))
     }
-    dedupBy(deletions, numberForEdgeComparison)
+    val deletions    = dedupBy(deletionsRaw, numberForEdgeComparison)
     val nodeCount    = graph.nodeCountByKind(nodeKind)
     val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -644,13 +644,13 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val viaNewNode  = newNodeNewProperties(pos)
     val propertyBuf = Option(setNodeProperties(pos)).getOrElse(ArrayList())
     if (setNodeProperties(pos) != null || viaNewNode > 0) {
-      val setPropertyPositions: util.ArrayList[SetPropertyDesc] =
+      val setPropertyPositionsRaw: util.ArrayList[SetPropertyDesc] =
         Option(setNodeProperties(pos + 1)).getOrElse(ArrayList[SetPropertyDesc]()).asInstanceOf[ArrayList[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
-      setPropertyPositions.sort { (a, b) =>
+      setPropertyPositionsRaw.sort { (a, b) =>
         a.node.seq().compareTo(b.node.seq())
       }
-      dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
+      val setPropertyPositions = dedupBy(setPropertyPositionsRaw, _.node.seq())
       val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
       val lengthDelta = setPropertyPositions.iterator.asScala.map { setP =>
         setP.length - (get(oldQty, setP.node.seq()) - get(oldQty, setP.node.seq() + 1))
@@ -737,24 +737,25 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last
 
-  /** Removes in place all subsequent duplicate items, with the last overwriting the previous ones. */
-  private def dedupBy[T, S](buff: ArrayList[T], by: T => S): Unit = {
+  /** Removes all subsequent duplicate items, with the last overwriting the previous ones. */
+  private def dedupBy[T, S](buf: ArrayList[T], by: T => S): util.AbstractList[T] & RandomAccess = {
     var outIdx = 0
     var idx    = 0
-    while (idx < buff.size()) {
-      if (idx < buff.size() - 1 && by(buff.get(idx)) == by(buff.get(idx + 1))) {
-        buff.set(outIdx, buff.get(idx))
+    while (idx < buf.size()) {
+      if (idx < buf.size() - 1 && by(buf.get(idx)) == by(buf.get(idx + 1))) {
+        buf.set(outIdx, buf.get(idx))
         idx += 1
       } else {
-        if (outIdx != idx) buff.set(outIdx, buff.get(idx))
+        if (outIdx != idx) buf.set(outIdx, buf.get(idx))
         idx += 1
         outIdx += 1
       }
     }
 
     val dropCount = idx - outIdx
-    val keepUntil = buff.size() - dropCount
-    buff.subList(0, keepUntil)
+    val keepUntil = buf.size() - dropCount
+    // we cast here because SubList is an AbstractList & RandomAccess... it's not guaranteed by the api, but we only want to use it as long as it does have RandomAccess...
+    buf.subList(0, keepUntil).asInstanceOf[util.AbstractList[T] & RandomAccess]
   }
 
   /** Creates a bitstring/integeger for fast comparison where
