@@ -14,9 +14,9 @@ class DotExporterTests extends AnyWordSpec {
     val graph = GenericDomain.empty.graph
     val node1 = NewNodeA()
       .stringMandatory("regular string")
-      .stringOptional("<escapeMe>")
-      .stringList(Seq("node 1 c1", "<escapeMe2>"))
-    val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11, 12))
+      .stringOptional("""<escapeMe1> [escapeMe2] escape=Me3 escape"Me4 escape\Me5 """)
+      .stringList(Seq("one", "two"))
+    val node2 = NewNodeA().intMandatory(1).intOptional(2).intList(Seq(10, 11))
 
     DiffGraphApplier.applyDiff(
       graph,
@@ -32,21 +32,23 @@ class DotExporterTests extends AnyWordSpec {
 
       val result = better.files.File(exportedFile).contentAsString.trim
 
-      // TODO remove
-      better.files.File(exportedFile).copyTo(better.files.File("/home/mp/Projects/shiftleft/flatgraph/target/dot.dot"))
-      Thread.sleep(20000)
-
-
-
+      /* Export rules for dot format as per https: //github.com/joernio/joern/issues/5158 :
+       * 1) If the attribute value contains special characters such as spaces,<,>,=, etc., it must be enclosed in double quotation marks.
+       * Otherwise, it will cause syntax errors.
+       * 2) Graphviz requires that the node ID must be a valid identifier. If the node ID is a pure number (such as 120259084301),
+       * it needs to be enclosed in double quotation marks, otherwise it will be mistaken for an integer constant.
+       * 3) The attribute value contains special characters such as(such as CODE=""), which need to be enclosed in quotation marks or escaped in some cases.
+       * 4) In Graphviz's. dot file, it is best to use semicolons for each node definition, edge definition, and attribute definition; ending. Your file is missing semicolons.
+       */
 
       withClue(s"actual result was: `$result`") {
-        result.trim shouldBe
-          """digraph {
-            |  0[label=node_a int_mandatory="42" string_list="node 1 c1;node 1 c2" string_mandatory="regular string" string_optional=""]
-            |  1[label=node_a int_list="10;11;12" int_mandatory="1" int_optional="2" string_mandatory="<empty>"]
-            |  0 -> 1 [label=connected_to property="edge property"]
-            |}
-            |""".stripMargin.trim
+      result.trim shouldBe
+        """digraph {
+          |  "0" [label="node_a" int_mandatory="42" string_list="one;two" string_mandatory="regular string" string_optional="<escapeMe1> [escapeMe2] escape=Me3 escape\"Me4 escape\\Me5 "];
+          |  "1" [label="node_a" int_list="10;11" int_mandatory="1" int_optional="2" string_mandatory="<empty>"];
+          |  "0" -> "1" [label="connected_to" property="edge property"];
+          |}
+          |""".stripMargin.trim
       }
     }
   }
