@@ -8,9 +8,16 @@ jobs:
     concurrency: release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
       - name: apt-get update
         run: sudo apt-get update
       - name: Install gnupg
@@ -19,17 +26,6 @@ jobs:
         run: echo $PGP_SECRET | base64 --decode | gpg --batch --import
         env:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.sbt
-            ~/.coursier
-          key: ${{ runner.os }}-sbt-${{ hashfiles('**/build.sbt') }}
       - run: sbt +test ciReleaseTagNextVersion ciReleaseSonatype
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
