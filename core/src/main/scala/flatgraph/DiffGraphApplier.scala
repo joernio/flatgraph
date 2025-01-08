@@ -6,6 +6,7 @@ import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
 import scala.collection.{Iterator, mutable}
+import scala.reflect.ClassTag
 
 object DiffGraphApplier {
 
@@ -441,8 +442,42 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
       return
     }
-    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
+
+    val old = graph.nodesArray(nodeKind)
+    val additional = newNodes(nodeKind).map(_.storedRef.get)
+    val additionalAsArray = getUnderlyingArrayDirtyHack(additional)
+
+    // TODO as soon as our PR for scala/scala is merged and released, use that instead of our dirty hack: \
+    // see the notes on `getUnderlyingArrayDirtyHack`
+    // graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
+    val combined = new Array[GNode](old.length + additional.length)
+    System.arraycopy(old, 0, combined, 0, old.length)
+    System.arraycopy(additionalAsArray, 0, combined, old.length, additional.length)
+    graph.nodesArray(nodeKind) = combined
+
     graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
+  }
+
+  /**
+   * Gets the underlying `ArrayBuffer.array` instance via reflection
+   *
+   * This is obviously a dirty hack and should be removed as soon as the below referenced PR for scala/scala is
+   * merged and released.
+   *
+   * We previously used `old.appendedAll(additional)` from ArrayOps, which invokes `Array.copy`, however that
+   * suffers from poor performance due to an uninformed usage of `slowcopy` which copies arrays element by element.
+   * We provided a fix (https://github.com/scala/scala/pull/10962), but until that's merged and released
+   * we want to ensure that we use the fast System.arraycopy.
+   *
+   * Warning: do _not_ rely on the array's length - ArrayBuffer over-allocates for performance optimizations.
+   * Instead, use the original ArrayBuffer's length.
+   */
+  private def getUnderlyingArrayDirtyHack(buffer: mutable.ArrayBuffer[?]): Array[AnyRef] =
+    arrayBufferArrayField.get(buffer).asInstanceOf[Array[AnyRef]]
+  lazy val arrayBufferArrayField = {
+    val arrayField = classOf[mutable.ArrayBuffer[?]].getDeclaredField("array")
+    arrayField.setAccessible(true)
+    arrayField
   }
 
   private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
