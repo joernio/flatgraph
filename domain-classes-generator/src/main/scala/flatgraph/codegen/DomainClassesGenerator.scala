@@ -522,7 +522,6 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |import $basePackage.language.*
            |import scala.collection.immutable.{IndexedSeq, ArraySeq}
-           |import scala.collection.mutable
            |
            |$erasedMarkerType
            |

@@ -5,7 +5,7 @@ object CodeSnippets {
   object NewNodeInserters {
     def forSingleItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
       s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
-         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |  override def insertNewNodeProperties(newNodes: Array[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
          |     if(newNodes.isEmpty) return
          |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
          |     val seq = newNodes.head.storedRef.get.seq()
@@ -32,7 +32,7 @@ object CodeSnippets {
     }
     def forOptionalItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
       s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
-         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |  override def insertNewNodeProperties(newNodes: Array[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
          |     if(newNodes.isEmpty) return
          |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
          |     val seq = newNodes.head.storedRef.get.seq()
@@ -63,7 +63,7 @@ object CodeSnippets {
 
     def forMultiItem(nameCamelCase: String, nodeType: String, propertyType: String, isNode: Boolean): String = {
       s"""object NewNodeInserter_${nodeType}_${nameCamelCase} extends flatgraph.NewNodePropertyInsertionHelper {
-         |  override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+         |  override def insertNewNodeProperties(newNodes: Array[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
          |     if(newNodes.isEmpty) return
          |     val dstCast = dst.asInstanceOf[Array[${propertyType}]]
          |     val seq = newNodes.head.storedRef.get.seq()

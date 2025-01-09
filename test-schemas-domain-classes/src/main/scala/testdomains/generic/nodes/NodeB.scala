@@ -2,7 +2,6 @@ package testdomains.generic.nodes
 
 import testdomains.generic.language.*
 import scala.collection.immutable.{IndexedSeq, ArraySeq}
-import scala.collection.mutable
 
 /** Node base type for compiletime-only checks to improve type safety. EMT stands for: "erased marker trait", i.e. it is erased at runtime
   */
@@ -60,7 +59,7 @@ object NewNodeB {
 
   object InsertionHelpers {
     object NewNodeInserter_NodeB_stringOptional extends flatgraph.NewNodePropertyInsertionHelper {
-      override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
+      override def insertNewNodeProperties(newNodes: Array[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
         if (newNodes.isEmpty) return
         val dstCast = dst.asInstanceOf[Array[String]]
         val seq     = newNodes.head.storedRef.get.seq()

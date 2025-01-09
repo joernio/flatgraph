@@ -5,7 +5,8 @@ import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
-import scala.collection.{Iterator, mutable}
+import scala.collection.Iterator
+import scala.collection.mutable.{ArrayBuilder, ArrayDeque, ArraySeq}
 import scala.reflect.ClassTag
 
 object DiffGraphApplier {
@@ -29,20 +30,20 @@ object DiffGraphApplier {
 }
 
 abstract class NewNodePropertyInsertionHelper {
-  def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[DNode], dst: AnyRef, idxs: Array[Int]): Unit = {}
+  def insertNewNodeProperties(newNodes: Array[DNode], dst: AnyRef, idxs: Array[Int]): Unit = {}
 }
 
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
 private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, schemaViolationReporter: SchemaViolationReporter) {
-  val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
+  val newNodes = new Array[ArrayBuilder[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
-  val newEdges             = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
-  val delEdges             = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
-  val setEdgeProperties    = new Array[mutable.ArrayBuffer[EdgeRepr]](graph.neighbors.size)
-  val deferred             = new mutable.ArrayDeque[DNode]()
-  val delNodes             = new mutable.ArrayBuffer[GNode]()
-  val setNodeProperties    = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
+  val newEdges             = new Array[ArrayBuilder[AddEdgeProcessed]](graph.neighbors.size)
+  val delEdges             = new Array[ArrayBuilder[EdgeRepr]](graph.neighbors.size)
+  val setEdgeProperties    = new Array[ArrayBuilder[EdgeRepr]](graph.neighbors.size)
+  val deferred             = new ArrayDeque[DNode]()
+  val delNodes             = ArrayBuilder.ofRef[GNode]()
+  val setNodeProperties    = new Array[ArrayBuilder[Any]](graph.properties.size)
   val newNodeNewProperties = new Array[Int](graph.properties.size)
 
   object NewNodeInterface extends BatchedUpdateInterface {
@@ -60,23 +61,23 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       schemaViolationReporter.illegalNodeProperty(node.nodeKind, propertyKind, graph.schema)
     } else {
       if (setNodeProperties(pos) == null)
-        setNodeProperties(pos) = mutable.ArrayBuffer.empty
+        setNodeProperties(pos) = ArrayBuilder.make[Any]
       val buf   = setNodeProperties(pos)
-      val start = buf.size
+      val start = buf.length
       propertyValues.iterator.foreach {
         case dnode: DNode => buf.addOne(getGNode(dnode))
         case other        => buf.addOne(other)
       }
-      val bound = new SetPropertyDesc(node, start, buf.size)
+      val bound = new SetPropertyDesc(node, start, buf.length)
       insert(setNodeProperties, bound, pos + 1)
     }
   }
 
-  private def insert[T](a: Array[mutable.ArrayBuffer[T]], item: T, pos: Int): Unit = {
+  private def insert[T: ClassTag](a: Array[ArrayBuilder[T]], item: T, pos: Int): Unit = {
     if (a(pos) == null)
-      a(pos) = mutable.ArrayBuffer.empty[T]
+      a(pos) = ArrayBuilder.make[T]()
 
-    a(pos).append(item)
+    a(pos).addOne(item)
   }
 
   private def drainDeferred(): Int = {
@@ -102,7 +103,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
             val nodeKind = detached.nodeKind
             graph.schema.verifyNodeKindIsValid(nodeKind)
 
-            val seqId = graph.nodeCountByKind(nodeKind) + Option(newNodes(nodeKind)).map { _.size }.getOrElse(0)
+            val seqId = graph.nodeCountByKind(nodeKind) + Option(newNodes(nodeKind)).map { _.length }.getOrElse(0)
             val res   = graph.schema.makeNode(graph, nodeKind, seqId)
             detached.storedRef = Some(res)
             insert(newNodes, detached, nodeKind)
@@ -118,7 +119,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       case delNode: DelNode if !AccessHelpers.isDeleted(delNode.node) =>
         ndiff += 1
         AccessHelpers.markDeleted(delNode.node)
-        delNodes.append(delNode.node)
+        delNodes.addOne(delNode.node)
 
       case _ =>
     }
@@ -243,8 +244,9 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       addNodes(nodeKind)
 
     // delete nodes
-    if (delNodes.nonEmpty) {
-      deleteNodes()
+    val delNodesResult = delNodes.result()
+    if (delNodesResult.nonEmpty) {
+      deleteNodes(delNodesResult)
     }
 
     // add edges
@@ -265,7 +267,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     ndiff
   }
 
-  private def deleteNodes(): Unit = {
+  private def deleteNodes(delNodes: Array[GNode]): Unit = {
     for (del <- delNodes) {
       graph.livingNodeCountByKind(del.nodeKind) -= 1
     }
@@ -439,45 +441,25 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   }
 
   private def addNodes(nodeKind: Int): Unit = {
-    if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
+    if (newNodes(nodeKind) == null || newNodes(nodeKind).length == 0) {
       return
     }
 
-    val old = graph.nodesArray(nodeKind)
-    val additional = newNodes(nodeKind).map(_.storedRef.get)
-    val additionalAsArray = getUnderlyingArrayDirtyHack(additional)
+//    val old = graph.nodesArray(nodeKind)
+//    val additional = newNodes(nodeKind).map(_.storedRef.get)
+//    val additionalAsArray = getUnderlyingArrayDirtyHack(additional)
 
     // TODO as soon as our PR for scala/scala is merged and released, use that instead of our dirty hack: \
     // see the notes on `getUnderlyingArrayDirtyHack`
-    // graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
-    val combined = new Array[GNode](old.length + additional.length)
-    System.arraycopy(old, 0, combined, 0, old.length)
-    System.arraycopy(additionalAsArray, 0, combined, old.length, additional.length)
-    graph.nodesArray(nodeKind) = combined
+//    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
+    val newNodesResult = newNodes(nodeKind).result()
+    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodesResult.map(_.storedRef.get))
+//    val combined = new Array[GNode](old.length + additional.length)
+//    System.arraycopy(old, 0, combined, 0, old.length)
+//    System.arraycopy(additionalAsArray, 0, combined, old.length, additional.length)
+//    graph.nodesArray(nodeKind) = combined
 
-    graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
-  }
-
-  /**
-   * Gets the underlying `ArrayBuffer.array` instance via reflection
-   *
-   * This is obviously a dirty hack and should be removed as soon as the below referenced PR for scala/scala is
-   * merged and released.
-   *
-   * We previously used `old.appendedAll(additional)` from ArrayOps, which invokes `Array.copy`, however that
-   * suffers from poor performance due to an uninformed usage of `slowcopy` which copies arrays element by element.
-   * We provided a fix (https://github.com/scala/scala/pull/10962), but until that's merged and released
-   * we want to ensure that we use the fast System.arraycopy.
-   *
-   * Warning: do _not_ rely on the array's length - ArrayBuffer over-allocates for performance optimizations.
-   * Instead, use the original ArrayBuffer's length.
-   */
-  private def getUnderlyingArrayDirtyHack(buffer: mutable.ArrayBuffer[?]): Array[AnyRef] =
-    arrayBufferArrayField.get(buffer).asInstanceOf[Array[AnyRef]]
-  lazy val arrayBufferArrayField = {
-    val arrayField = classOf[mutable.ArrayBuffer[?]].getDeclaredField("array")
-    arrayField.setAccessible(true)
-    arrayField
+    graph.livingNodeCountByKind(nodeKind) += newNodesResult.size
   }
 
   private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
@@ -493,10 +475,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       // ^ change this once we switch away from full copy-on-write, see e.g.
       // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
     }
-    val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[mutable.ArraySeq[Any]]
+    val propview = ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[ArraySeq[Any]]
     // this will fail if the edge doesn't support properties. todo: better error message
     val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
-    for (edgeRepr <- setEdgeProperties(pos)) {
+    for (edgeRepr <- setEdgeProperties(pos).result()) {
       val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
       propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
     }
@@ -506,8 +488,9 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val deletions = delEdges(pos)
-    if (deletions == null) return
+    if (delEdges(pos) == null) return
+    // TODO refactor to `Option(delEdges(pos)).foreach { ... } to avoid c-style jumping around with return statements
+    val deletions = delEdges(pos).result()
     assert(
       deletions.forall { edge =>
         edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
@@ -515,8 +498,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
     )
 
-    deletions.sortInPlaceBy(numberForEdgeComparison)
-    dedupBy(deletions, numberForEdgeComparison)
+    sortAndDedup(deletions, numberForEdgeComparison)
     val nodeCount    = graph.nodeCountByKind(nodeKind)
     val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
     val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
@@ -582,11 +564,9 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos        = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val insertions = newEdges(pos)
-    if (insertions == null) {
-      return
-    }
-
+    if (newEdges(pos) == null) return
+    // TODO refactor to `Option(delEdges(pos)).foreach { ... } to avoid c-style jumping around with return statements
+    val insertions = newEdges(pos).result()
     insertions.sortInPlaceBy(_.src.seq)
 
     assert(insertions.nonEmpty, "insertions must be nonEmpty")
@@ -608,7 +588,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
     val newProperty =
       if (hasNewProp || oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size) else null
-    val newPropertyView = mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]]
+    val newPropertyView = ArraySeq.make(newProperty).asInstanceOf[ArraySeq[Any]]
 
     var insertionCounter = 0
     var copyStartSeq     = 0
@@ -659,24 +639,37 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val schema      = graph.schema
     val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val viaNewNode  = newNodeNewProperties(pos)
-    val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
+    // TODO refactor to `Option(...).foreach { ... } to avoid c-style jumping around with return statements
+    val propertyBuf = Option(setNodeProperties(pos)).getOrElse(ArrayBuilder.make[Any])
     if (setNodeProperties(pos) != null || viaNewNode > 0) {
-      val setPropertyPositions =
-        Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
-      setPropertyPositions.sortInPlaceBy(_.node.seq())
-      dedupBy(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
+
+      // TODO cleanup
+      val setPropertyPositions: Array[SetPropertyDesc] = {
+        val next = setNodeProperties(pos + 1)
+        if (next != null)
+          next.result().map(_.asInstanceOf[SetPropertyDesc])
+        else
+          Array.empty[SetPropertyDesc]
+      }
+
+//      val setPropertyPositions = Option(setNodeProperties(pos + 1)).map(_.result().asInstanceOf[Array[SetPropertyDesc]])
+//        .asInstanceOf[ArrayBuilder[SetPropertyDesc]]
+//            .getOrElse(ArrayBuilder.make[SetPropertyDesc])
+//            .asInstanceOf[ArrayBuilder[SetPropertyDesc]]
+//            .result()
+      sortAndDedup(setPropertyPositions, (setProp: SetPropertyDesc) => setProp.node.seq())
       val oldQty = Option(graph.properties(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
       val lengthDelta = setPropertyPositions.iterator.map { setP =>
         setP.length - (get(oldQty, setP.node.seq()) - get(oldQty, setP.node.seq() + 1))
       }.sum
       val nodeCount = graph.nodesArray(nodeKind).length
 
-      val setPropertyValues = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.size)
+      val setPropertyValues = schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(propertyBuf.length)
       if (setPropertyValues == null) {
         schemaViolationReporter.illegalNodeProperty(nodeKind, propertyKind, schema)
       } else {
-        copyToArray(propertyBuf, setPropertyValues)
+        copyToArray(propertyBuf.result(), setPropertyValues)
 
         val oldProperty = Option(graph.properties(pos + 1))
           .getOrElse(schema.getNodePropertyFormalType(nodeKind, propertyKind).allocate(0))
@@ -716,7 +709,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         // now need to write the newproperties
         if (viaNewNode > 0) {
           val inserter = schema.getNewNodePropertyInserter(nodeKind, propertyKind)
-          inserter.insertNewNodeProperties(newNodes(nodeKind), newProperty, newQty)
+          inserter.insertNewNodeProperties(newNodes(nodeKind).result(), newProperty, newQty)
         }
 
         graph.properties(pos) = newQty
@@ -728,10 +721,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  private def copyToArray[T](buf: mutable.ArrayBuffer[Any], dst: Array[T]): Unit = {
+  private def copyToArray[T](buf: Array[Any], dst: Array[T]): Unit = {
     try {
       // this is a dirty hack in order to make scala type system shut up
-      buf.asInstanceOf[mutable.ArrayBuffer[T]].copyToArray(dst)
+      buf.asInstanceOf[Array[T]].copyToArray(dst)
     } catch {
       case _: ArrayStoreException =>
         val typeMaybe = buf.headOption.map(property => s": ${property.getClass}").getOrElse("")
@@ -741,21 +734,31 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
 
   private def get(a: Array[Int], idx: Int): Int = if (idx < a.length) a(idx) else a.last
 
-  /** Removes in place all subsequent duplicate items, with the last overwriting the previous ones. */
-  private def dedupBy[T, S](buff: mutable.ArrayBuffer[T], by: T => S): Unit = {
+  /** Sorts the given list and removes all duplicates. */
+  private def sortAndDedup[A <: AnyRef, B](input: Array[A], by: A => B)(implicit ord: Ordering[B]): Array[A] = {
+    val buf = input.sortBy(by)
+
     var outIdx = 0
-    var idx    = 0
-    while (idx < buff.length) {
-      if (idx < buff.length - 1 && by(buff(idx)) == by(buff(idx + 1))) {
-        buff(outIdx) = buff(idx)
+    var idx = 0
+    while (idx < buf.length) {
+      if (idx < buf.length - 1 && by(buf(idx)) == by(buf(idx + 1))) {
+        buf(outIdx) = buf(idx)
         idx += 1
       } else {
-        if (outIdx != idx) buff(outIdx) = buff(idx)
+        if (outIdx != idx) buf(outIdx) = buf(idx)
         idx += 1
         outIdx += 1
       }
     }
-    buff.dropRightInPlace(idx - outIdx)
+
+    val dropCount = idx - outIdx
+//    val result = new Array[AnyRef](buf.length - dropCount)
+    java.util.Arrays.copyOfRange(buf, 0, buf.length - dropCount)
+//    result
+//    val x: Array[A] = buf.t
+//    buf.dropRight(5)
+    // we cast here because SubList is an AbstractList & RandomAccess... it's not guaranteed by the api, but we only want to use it as long as it does have RandomAccess...
+//    buf.subList(0, keepUntil).asInstanceOf[AbstractList[A] & RandomAccess]
   }
 
   /** Creates a bitstring/integeger for fast comparison where
