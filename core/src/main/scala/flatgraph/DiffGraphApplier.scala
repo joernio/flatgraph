@@ -227,10 +227,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     // fixme -- use another pool for logging / CPU attribution?
     val executor    = java.util.concurrent.ForkJoinPool.commonPool()
     val submissions = mutable.ArrayBuffer[java.util.concurrent.ForkJoinTask[Unit]]()
-    // submissions.append(executor.submit(()=> {println()},  "" ) )
 
     try {
-
       // set edge properties
       for {
         nodeKind  <- graph.schema.nodeKinds
