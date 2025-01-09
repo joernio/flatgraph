@@ -5,6 +5,7 @@ import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
+import java.util.concurrent.Callable
 import java.util.{AbstractList, ArrayDeque, ArrayList, Arrays, Comparator, RandomAccess}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
@@ -224,43 +225,70 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val ndiff = splitUpdate()
     diff.buffer = null
 
-    // set edge properties
-    for {
-      nodeKind  <- graph.schema.nodeKinds
-      edgeKind  <- graph.schema.edgeKinds
-      direction <- Edge.Direction.values
-    } setEdgeProperty(nodeKind, direction, edgeKind)
+    // fixme -- use another pool for logging / CPU attribution?
+    val executor    = java.util.concurrent.ForkJoinPool.commonPool()
+    val submissions = mutable.ArrayBuffer[java.util.concurrent.ForkJoinTask[Unit]]()
+    // submissions.append(executor.submit(()=> {println()},  "" ) )
 
-    // remove edges
-    for {
-      nodeKind  <- graph.schema.nodeKinds
-      edgeKind  <- graph.schema.edgeKinds
-      direction <- Edge.Direction.values
-    } deleteEdges(nodeKind, direction, edgeKind)
+    try {
 
-    // add nodes
-    for (nodeKind <- graph.schema.nodeKinds)
-      addNodes(nodeKind)
+      // set edge properties
+      for {
+        nodeKind  <- graph.schema.nodeKinds
+        edgeKind  <- graph.schema.edgeKinds
+        direction <- Edge.Direction.values
+        task      <- Option(setEdgeProperty(nodeKind, direction, edgeKind))
+      } submissions.addOne(executor.submit(task))
 
-    // delete nodes
-    if (!delNodes.isEmpty) {
-      deleteNodes()
-    }
+      submissions.foreach(_.get())
+      submissions.clear()
 
-    // add edges
-    for {
-      nodeKind  <- graph.schema.nodeKinds
-      edgeKind  <- graph.schema.edgeKinds
-      direction <- Direction.values
-    } addEdges(nodeKind, direction, edgeKind)
+      // remove edges
+      for {
+        nodeKind  <- graph.schema.nodeKinds
+        edgeKind  <- graph.schema.edgeKinds
+        direction <- Edge.Direction.values
+        task      <- Option(deleteEdges(nodeKind, direction, edgeKind))
+      } submissions.addOne(executor.submit(task))
 
-    // set node properties
-    for (nodeKind <- graph.schema.nodeKinds) {
-      for (propertyKind <- graph.schema.propertyKinds) {
-        setNodeProperties(nodeKind, propertyKind)
+      submissions.foreach(_.get())
+      submissions.clear()
+
+      // add nodes. If necessary, we can start this job earlier in a separate queue; then we must add some extra structures for node sizes at various stages
+      for {
+        nodeKind <- graph.schema.nodeKinds
+        task     <- Option(addNodes(nodeKind))
+      } submissions.addOne(executor.submit(task))
+
+      submissions.foreach(_.get())
+      submissions.clear()
+
+      // delete nodes
+      // this is harder to parallelize, only do if needed!
+      if (!delNodes.isEmpty) {
+        deleteNodes()
       }
-      // we can now clear the newnodes
-      newNodes(nodeKind) = null
+
+      // add edges
+      for {
+        nodeKind  <- graph.schema.nodeKinds
+        edgeKind  <- graph.schema.edgeKinds
+        direction <- Direction.values
+        task      <- Option(addEdges(nodeKind, direction, edgeKind))
+      } submissions.addOne(executor.submit(task))
+
+      // set node properties. This doesn't need to wait for add edges to be complete!
+      for {
+        nodeKind     <- graph.schema.nodeKinds
+        propertyKind <- graph.schema.propertyKinds
+        task         <- Option(setNodeProperties(nodeKind, propertyKind))
+      } submissions.addOne(executor.submit(task))
+
+      submissions.foreach(_.get())
+      submissions.clear()
+    } catch {
+      case ex: java.util.concurrent.ExecutionException =>
+        throw ex.getCause()
     }
     ndiff
   }
@@ -438,136 +466,154 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  private def addNodes(nodeKind: Int): Unit = {
+  private def addNodes(nodeKind: Int): Callable[Unit] = {
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
-      return
+      return null
     }
-
-    // grow array and insert GNodes
-    val nodesArrayBefore = graph.nodesArray(nodeKind)
-    val newNodes0        = newNodes(nodeKind)
-    val newLength        = nodesArrayBefore.length + newNodes0.size()
-    val nodesArrayNew    = Arrays.copyOf(nodesArrayBefore, newLength)
-    var insertAt         = nodesArrayBefore.length
-    // note: this is a slow element-by-element copy, but we need to iterate the newNodes list anyway because we need to get the gnodes out...
-    newNodes0.forEach { newNode =>
-      nodesArrayNew.update(insertAt, newNode.storedRef.get)
-      insertAt += 1
-    }
-    graph.nodesArray(nodeKind) = nodesArrayNew
-
-    graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
-  }
-
-  private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
-    val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    if (setEdgeProperties(pos) == null) return
-    val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
-    val oldQty = graph.neighbors(pos).asInstanceOf[Array[Int]]
-    val edgeProp = graph.neighbors(pos + 2) match {
-      case _: DefaultValue =>
-        graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size)
-      case other =>
-        other
-      // ^ change this once we switch away from full copy-on-write, see e.g.
-      // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
-    }
-    val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[mutable.ArraySeq[Any]]
-    // this will fail if the edge doesn't support properties. todo: better error message
-    val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
-    setEdgeProperties(pos).forEach { edgeRepr =>
-      val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
-      propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
-    }
-    graph.neighbors(pos + 2) = edgeProp
-    setEdgeProperties(pos) == null
-  }
-
-  private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
-    val pos          = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val deletionsRaw = delEdges(pos)
-    if (deletionsRaw == null) return
-    assert(
-      deletionsRaw.asScala.forall { edge =>
-        edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
-      },
-      s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
-    )
-
-    val deletions = sortAndDedup(
-      deletionsRaw,
-      numberForEdgeComparison,
-      (e0: EdgeRepr, e1: EdgeRepr) => numberForEdgeComparison(e0).compareTo(numberForEdgeComparison(e1))
-    )
-    val nodeCount    = graph.nodeCountByKind(nodeKind)
-    val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
-    val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
-
-    val newQty       = new Array[Int](nodeCount + 1)
-    val newNeighbors = new Array[GNode](get(oldQty, nodeCount) - deletions.size())
-
-    val oldProperty = graph.neighbors(pos + 2) match {
-      case _: DefaultValue => null
-      case other           => other
-    }
-    val newProperty =
-      if (oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size)
-      else null
-
-    var deletionCounter = 0
-    var copyStartSeq    = 0
-    while (copyStartSeq < nodeCount) {
-      val deletionSeq = if (deletionCounter < deletions.size) deletions.get(deletionCounter).src.seq else nodeCount
-      // we first copy unaffected neighbors
-      val copyStartIndex        = get(oldQty, copyStartSeq)
-      val deletionSeqIndexStart = get(oldQty, deletionSeq)
-      val deletionSeqIndexEnd   = get(oldQty, deletionSeq + 1)
-      System.arraycopy(oldNeighbors, copyStartIndex, newNeighbors, copyStartIndex - deletionCounter, deletionSeqIndexStart - copyStartIndex)
-      if (oldProperty != null)
-        System.arraycopy(oldProperty, copyStartIndex, newProperty, copyStartIndex - deletionCounter, deletionSeqIndexStart - copyStartIndex)
-
-      for (idx <- Range(copyStartSeq, deletionSeq + 1))
-        newQty(idx) = get(oldQty, idx) - deletionCounter
-
-      copyStartSeq = deletionSeq + 1
-      // we now copy over the non-deleted edges of the critical deletionSeq
-      if (deletionCounter < deletions.size) {
-        var deletion = deletions.get(deletionCounter)
-        var idx      = 0
-        while (idx < deletionSeqIndexEnd - deletionSeqIndexStart) {
-          if (deletion != null && idx == deletion.subSeq - 1) {
-            assert(
-              deletion.dst == oldNeighbors(deletionSeqIndexStart + idx),
-              s"deletion.dst was supposed to be `${oldNeighbors(deletionSeqIndexStart + idx)}`, but instead is ${deletion.dst}"
-            )
-            deletionCounter += 1
-            deletion = if (deletionCounter < deletions.size) deletions.get(deletionCounter) else null
-            if (deletion != null && deletion.src.seq() != deletionSeq) deletion = null
-          } else {
-            newNeighbors(deletionSeqIndexStart + idx - deletionCounter) = oldNeighbors(deletionSeqIndexStart + idx)
-            if (oldProperty != null)
-              System.arraycopy(oldProperty, deletionSeqIndexStart + idx, newProperty, deletionSeqIndexStart + idx - deletionCounter, 1)
-          }
-          idx += 1
-        }
-        newQty(deletionSeq + 1) = deletionSeqIndexStart + idx - deletionCounter
+    () => {
+      // grow array and insert GNodes
+      val nodesArrayBefore = graph.nodesArray(nodeKind)
+      val newNodes0        = newNodes(nodeKind)
+      val newLength        = nodesArrayBefore.length + newNodes0.size()
+      val nodesArrayNew    = Arrays.copyOf(nodesArrayBefore, newLength)
+      var insertAt         = nodesArrayBefore.length
+      // note: this is a slow element-by-element copy, but we need to iterate the newNodes list anyway because we need to get the gnodes out...
+      newNodes0.forEach { newNode =>
+        nodesArrayNew.update(insertAt, newNode.storedRef.get)
+        insertAt += 1
       }
+      graph.nodesArray(nodeKind) = nodesArrayNew
+
+      graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
     }
-    graph.neighbors(pos) = newQty
-    graph.neighbors(pos + 1) = newNeighbors
-    graph.neighbors(pos + 2) = newProperty match {
-      case null  => graph.neighbors(pos + 2)
-      case other => other
-    }
-    delEdges(pos) = null
   }
 
-  private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
+  private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
+    val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    if (setEdgeProperties(pos) == null) return null
+    () => {
+      val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
+      val oldQty = graph.neighbors(pos).asInstanceOf[Array[Int]]
+      val edgeProp = graph.neighbors(pos + 2) match {
+        case _: DefaultValue =>
+          graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size)
+        case other =>
+          other
+        // ^ change this once we switch away from full copy-on-write, see e.g.
+        // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
+      }
+      val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[mutable.ArraySeq[Any]]
+      // this will fail if the edge doesn't support properties. todo: better error message
+      val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
+      setEdgeProperties(pos).forEach { edgeRepr =>
+        val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
+        propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
+      }
+      graph.neighbors(pos + 2) = edgeProp
+      setEdgeProperties(pos) == null
+    }
+  }
+
+  private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
+    val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    val deletionsRaw = delEdges(pos)
+    if (deletionsRaw == null) return null
+    () => {
+      assert(
+        deletionsRaw.asScala.forall { edge =>
+          edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
+        },
+        s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
+      )
+
+      val deletions = sortAndDedup(
+        deletionsRaw,
+        numberForEdgeComparison,
+        (e0: EdgeRepr, e1: EdgeRepr) => numberForEdgeComparison(e0).compareTo(numberForEdgeComparison(e1))
+      )
+      val nodeCount    = graph.nodeCountByKind(nodeKind)
+      val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
+      val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
+
+      val newQty       = new Array[Int](nodeCount + 1)
+      val newNeighbors = new Array[GNode](get(oldQty, nodeCount) - deletions.size())
+
+      val oldProperty = graph.neighbors(pos + 2) match {
+        case _: DefaultValue => null
+        case other           => other
+      }
+      val newProperty =
+        if (oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size)
+        else null
+
+      var deletionCounter = 0
+      var copyStartSeq    = 0
+      while (copyStartSeq < nodeCount) {
+        val deletionSeq = if (deletionCounter < deletions.size) deletions.get(deletionCounter).src.seq else nodeCount
+        // we first copy unaffected neighbors
+        val copyStartIndex        = get(oldQty, copyStartSeq)
+        val deletionSeqIndexStart = get(oldQty, deletionSeq)
+        val deletionSeqIndexEnd   = get(oldQty, deletionSeq + 1)
+        System.arraycopy(
+          oldNeighbors,
+          copyStartIndex,
+          newNeighbors,
+          copyStartIndex - deletionCounter,
+          deletionSeqIndexStart - copyStartIndex
+        )
+        if (oldProperty != null)
+          System.arraycopy(
+            oldProperty,
+            copyStartIndex,
+            newProperty,
+            copyStartIndex - deletionCounter,
+            deletionSeqIndexStart - copyStartIndex
+          )
+
+        for (idx <- Range(copyStartSeq, deletionSeq + 1))
+          newQty(idx) = get(oldQty, idx) - deletionCounter
+
+        copyStartSeq = deletionSeq + 1
+        // we now copy over the non-deleted edges of the critical deletionSeq
+        if (deletionCounter < deletions.size) {
+          var deletion = deletions.get(deletionCounter)
+          var idx      = 0
+          while (idx < deletionSeqIndexEnd - deletionSeqIndexStart) {
+            if (deletion != null && idx == deletion.subSeq - 1) {
+              assert(
+                deletion.dst == oldNeighbors(deletionSeqIndexStart + idx),
+                s"deletion.dst was supposed to be `${oldNeighbors(deletionSeqIndexStart + idx)}`, but instead is ${deletion.dst}"
+              )
+              deletionCounter += 1
+              deletion = if (deletionCounter < deletions.size) deletions.get(deletionCounter) else null
+              if (deletion != null && deletion.src.seq() != deletionSeq) deletion = null
+            } else {
+              newNeighbors(deletionSeqIndexStart + idx - deletionCounter) = oldNeighbors(deletionSeqIndexStart + idx)
+              if (oldProperty != null)
+                System.arraycopy(oldProperty, deletionSeqIndexStart + idx, newProperty, deletionSeqIndexStart + idx - deletionCounter, 1)
+            }
+            idx += 1
+          }
+          newQty(deletionSeq + 1) = deletionSeqIndexStart + idx - deletionCounter
+        }
+      }
+      graph.neighbors(pos) = newQty
+      graph.neighbors(pos + 1) = newNeighbors
+      graph.neighbors(pos + 2) = newProperty match {
+        case null  => graph.neighbors(pos + 2)
+        case other => other
+      }
+      delEdges(pos) = null
+    }
+  }
+
+  private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
     val pos        = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     val insertions = newEdges(pos)
     if (insertions == null) {
-      return
+      return null
     }
+    () => {
 
     insertions.sort { (a, b) =>
       a.src.seq().compareTo(b.src.seq)
@@ -579,72 +625,75 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       s"something went wrong while adding edges - values for debugging: nodeKind=$nodeKind; edgeKind=$edgeKind"
     )
 
-    val nodeCount    = graph.nodesArray(nodeKind).length
-    val oldQty       = Option(graph.neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
-    val oldNeighbors = Option(graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
-    val newQty       = new Array[Int](nodeCount + 1)
-    val newNeighbors = new Array[GNode](get(oldQty, nodeCount) + insertions.size)
+      val nodeCount    = graph.nodesArray(nodeKind).length
+      val oldQty       = Option(graph.neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+      val oldNeighbors = Option(graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
+      val newQty       = new Array[Int](nodeCount + 1)
+      val newNeighbors = new Array[GNode](get(oldQty, nodeCount) + insertions.size)
 
-    val hasNewProp = insertions.asScala.exists(_.property != DefaultValue)
-    val oldProperty = graph.neighbors(pos + 2) match {
-      case _: DefaultValue => null
-      case other           => other
-    }
-    val newProperty =
-      if (hasNewProp || oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size) else null
-    val newPropertyView = mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]]
-
-    var insertionCounter = 0
-    var copyStartSeq     = 0
-    while (copyStartSeq < nodeCount) {
-      val insertionSeq = if (insertionCounter < insertions.size) insertions.get(insertionCounter).src.seq else nodeCount - 1
-
-      val copyStartIdx = get(oldQty, copyStartSeq)
-      val insertionIdx = get(oldQty, insertionSeq + 1)
-
-      // copy from  copyStartSeq -> insertionSeq inclusive
-      System.arraycopy(oldNeighbors, copyStartIdx, newNeighbors, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
-      if (oldProperty != null)
-        System.arraycopy(oldProperty, copyStartIdx, newProperty, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
-      for (idx <- Range(copyStartSeq, insertionSeq + 2))
-        newQty(idx) = get(oldQty, idx) + insertionCounter
-
-      // insert
-      val insertionBaseIndex = newQty(insertionSeq + 1) - insertionCounter
-      while (insertionCounter < insertions.size && insertions.get(insertionCounter).src.seq == insertionSeq) {
-        val insertion = insertions.get(insertionCounter)
-        newNeighbors(insertionBaseIndex + insertionCounter) = insertion.dst
-        if (newPropertyView != null && insertion.property != DefaultValue) {
-          try {
-            newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
-          } catch {
-            case _: ArrayStoreException | _: ClassCastException =>
-              val edgeType = graph.schema.getEdgeLabel(nodeKind, edgeKind)
-              throw new UnsupportedOperationException(
-                s"unsupported property type `${insertion.property.getClass}` for edge type `$edgeType`"
-              )
-          }
-        }
-        insertionCounter += 1
+      val hasNewProp = insertions.asScala.exists(_.property != DefaultValue)
+      val oldProperty = graph.neighbors(pos + 2) match {
+        case _: DefaultValue => null
+        case other           => other
       }
-      newQty(insertionSeq + 1) = insertionBaseIndex + insertionCounter
-      copyStartSeq = insertionSeq + 1
+      val newProperty =
+        if (hasNewProp || oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size) else null
+      val newPropertyView = mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]]
+
+      var insertionCounter = 0
+      var copyStartSeq     = 0
+      while (copyStartSeq < nodeCount) {
+        val insertionSeq = if (insertionCounter < insertions.size) insertions.get(insertionCounter).src.seq else nodeCount - 1
+
+        val copyStartIdx = get(oldQty, copyStartSeq)
+        val insertionIdx = get(oldQty, insertionSeq + 1)
+
+        // copy from  copyStartSeq -> insertionSeq inclusive
+        System.arraycopy(oldNeighbors, copyStartIdx, newNeighbors, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
+        if (oldProperty != null)
+          System.arraycopy(oldProperty, copyStartIdx, newProperty, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
+        for (idx <- Range(copyStartSeq, insertionSeq + 2))
+          newQty(idx) = get(oldQty, idx) + insertionCounter
+
+        // insert
+        val insertionBaseIndex = newQty(insertionSeq + 1) - insertionCounter
+        while (insertionCounter < insertions.size && insertions.get(insertionCounter).src.seq == insertionSeq) {
+          val insertion = insertions.get(insertionCounter)
+          newNeighbors(insertionBaseIndex + insertionCounter) = insertion.dst
+          if (newPropertyView != null && insertion.property != DefaultValue) {
+            try {
+              newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
+            } catch {
+              case _: ArrayStoreException | _: ClassCastException =>
+                val edgeType = graph.schema.getEdgeLabel(nodeKind, edgeKind)
+                throw new UnsupportedOperationException(
+                  s"unsupported property type `${insertion.property.getClass}` for edge type `$edgeType`"
+                )
+            }
+          }
+          insertionCounter += 1
+        }
+        newQty(insertionSeq + 1) = insertionBaseIndex + insertionCounter
+        copyStartSeq = insertionSeq + 1
+      }
+      graph.neighbors(pos) = newQty
+      graph.neighbors(pos + 1) = newNeighbors
+      graph.neighbors(pos + 2) = newProperty match {
+        case null  => graph.neighbors(pos + 2)
+        case other => other
+      }
+      newEdges(pos) = null
     }
-    graph.neighbors(pos) = newQty
-    graph.neighbors(pos + 1) = newNeighbors
-    graph.neighbors(pos + 2) = newProperty match {
-      case null  => graph.neighbors(pos + 2)
-      case other => other
-    }
-    newEdges(pos) = null
   }
 
-  private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
+  private def setNodeProperties(nodeKind: Int, propertyKind: Int): Callable[Unit] = {
     val schema      = graph.schema
     val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val viaNewNode  = newNodeNewProperties(pos)
     val propertyBuf = Option(setNodeProperties(pos)).getOrElse(ArrayList())
-    if (setNodeProperties(pos) != null || viaNewNode > 0) {
+    if (setNodeProperties(pos) == null && viaNewNode == 0) return null
+
+    () => {
       val setPropertyPositionsRaw: ArrayList[SetPropertyDesc] =
         Option(setNodeProperties(pos + 1)).getOrElse(ArrayList[SetPropertyDesc]()).asInstanceOf[ArrayList[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
