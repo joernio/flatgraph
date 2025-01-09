@@ -44,6 +44,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   val delNodes             = new mutable.ArrayBuffer[GNode]()
   val setNodeProperties    = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
   val newNodeNewProperties = new Array[Int](graph.properties.size)
+  val newNodeUsers         = new java.util.concurrent.atomic.AtomicIntegerArray(graph.schema.getNumberOfNodeKinds)
 
   object NewNodeInterface extends BatchedUpdateInterface {
     override def visitContainedNode(contained: DNodeOrNode): Unit = { if (contained != null) getGNode(contained) }
@@ -275,11 +276,19 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       } submissions.addOne(executor.submit(task))
 
       // set node properties. This doesn't need to wait for add edges to be complete!
-      for {
-        nodeKind     <- graph.schema.nodeKinds
-        propertyKind <- graph.schema.propertyKinds
-        task         <- Option(setNodeProperties(nodeKind, propertyKind))
-      } submissions.addOne(executor.submit(task))
+      for (nodeKind <- graph.schema.nodeKinds) {
+        for {
+          propertyKind <- graph.schema.propertyKinds
+          task         <- Option(setNodeProperties(nodeKind, propertyKind))
+        } {
+          newNodeUsers.incrementAndGet(nodeKind)
+          submissions.addOne(executor.submit(task))
+        }
+        if (newNodeUsers.decrementAndGet(nodeKind) == -1) {
+          // whoever reaches newNodeUsers(nodeKind) == -1 first is permitted to free it.
+          newNodes(nodeKind) = null
+        }
+      }
 
       submissions.foreach(_.get())
       submissions.clear()
@@ -500,10 +509,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   }
 
   private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
-    val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val deletions = delEdges(pos)
-    if (deletions == null) return null
+    val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    if (delEdges(pos) == null) return null
     () => {
+      val deletions = delEdges(pos)
       assert(
         deletions.forall { edge =>
           edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
@@ -590,12 +599,12 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   }
 
   private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
-    val pos        = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val insertions = newEdges(pos)
-    if (insertions == null) {
+    val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    if (newEdges(pos) == null) {
       return null
     }
     () => {
+      val insertions = newEdges(pos)
 
       insertions.sortInPlaceBy(_.src.seq)
 
@@ -667,13 +676,13 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   }
 
   private def setNodeProperties(nodeKind: Int, propertyKind: Int): Callable[Unit] = {
-    val schema      = graph.schema
-    val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val viaNewNode  = newNodeNewProperties(pos)
-    val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
+    val schema     = graph.schema
+    val pos        = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val viaNewNode = newNodeNewProperties(pos)
     if (setNodeProperties(pos) == null && viaNewNode == 0) return null
 
     () => {
+      val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
       val setPropertyPositions =
         Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
@@ -737,6 +746,11 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         graph.properties(pos + 1) = newProperty
         setNodeProperties(pos) = null
         setNodeProperties(pos + 1) = null
+        if (newNodeUsers.decrementAndGet(nodeKind) == -1) {
+          // whoever reaches newNodeUsers(nodeKind) == -1 first is permitted to free it.
+          newNodes(nodeKind) = null
+        }
+
       }
     }
   }
