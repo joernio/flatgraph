@@ -449,6 +449,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val newLength        = nodesArrayBefore.length + newNodes0.size()
     val nodesArrayNew    = Arrays.copyOf(nodesArrayBefore, newLength)
     var insertAt         = nodesArrayBefore.length
+    // note: this is a slow element-by-element copy, but we need to iterate the newNodes list anyway because we need to get the gnodes out...
     newNodes0.forEach { newNode =>
       nodesArrayNew.update(insertAt, newNode.storedRef.get)
       insertAt += 1
