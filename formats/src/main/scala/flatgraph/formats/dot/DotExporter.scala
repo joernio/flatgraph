@@ -16,24 +16,23 @@ import scala.util.Using
   * Note: GraphML doesn't natively support list property types, so we fake it by encoding it as a `;` delimited string. If you import this
   * into a different database, you'll need to parse that separately.
   *
-  * Export rules for dot format as per https: //github.com/joernio/joern/issues/5158
-  * 1) If the attribute value contains special characters such as spaces,<,>,=, etc., it must be enclosed in double quotation marks.
-  * Otherwise, it will cause syntax errors.
-  * 2) Graphviz requires that the node ID must be a valid identifier. If the node ID is a pure number (such as 120259084301),
-  * it needs to be enclosed in double quotation marks, otherwise it will be mistaken for an integer constant.
-  * 3) The attribute value contains special characters such as(such as CODE=""), which need to be enclosed in quotation marks or escaped in some cases.
-  * 4) In Graphviz's. dot file, it is best to use semicolons for each node definition, edge definition, and attribute definition; ending. Your file is missing semicolons.
+  * Export rules for dot format as per https: //github.com/joernio/joern/issues/5158 1) If the attribute value contains special characters
+  * such as spaces,<,>,=, etc., it must be enclosed in double quotation marks. Otherwise, it will cause syntax errors. 2) Graphviz requires
+  * that the node ID must be a valid identifier. If the node ID is a pure number (such as 120259084301), it needs to be enclosed in double
+  * quotation marks, otherwise it will be mistaken for an integer constant. 3) The attribute value contains special characters such as(such
+  * as CODE=""), which need to be enclosed in quotation marks or escaped in some cases. 4) In Graphviz's. dot file, it is best to use
+  * semicolons for each node definition, edge definition, and attribute definition; ending. Your file is missing semicolons.
   *
   * https://en.wikipedia.org/wiki/DOT_(graph_description_language) https://www.graphviz.org/doc/info/lang.html
   * http://magjac.com/graphviz-visual-editor/ https://www.slideshare.net/albazo/graphiz-using-the-dot-language
   */
 object DotExporter extends Exporter {
   override def defaultFileExtension = "dot"
-  val EndOfLine = ';'
+  val EndOfLine                     = ';'
 
   private val lookupMap = Map(
     """\""" -> """\\""", // \ -> \\
-    "\"" -> """\"""",    // " -> \"
+    "\""    -> """\""""  // " -> \"
   )
   val translator = new LookupTranslator(Collections.unmodifiableMap(lookupMap.asJava))
 

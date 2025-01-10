@@ -42,8 +42,8 @@ class DotExporterTests extends AnyWordSpec {
        */
 
       withClue(s"actual result was: `$result`") {
-      result.trim shouldBe
-        """digraph {
+        result.trim shouldBe
+          """digraph {
           |  "0" [label="node_a" int_mandatory="42" string_list="one;two" string_mandatory="regular string" string_optional="<escapeMe1> [escapeMe2] escape=Me3 escape\"Me4 escape\\Me5 "];
           |  "1" [label="node_a" int_list="10;11" int_mandatory="1" int_optional="2" string_mandatory="<empty>"];
           |  "0" -> "1" [label="connected_to" property="edge property"];
