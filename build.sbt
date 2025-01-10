@@ -2,9 +2,10 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val slf4jVersion = "2.0.16"
 val scala3 = "3.5.2"
 val scala2_12 = "2.12.20"
+val slf4jVersion = "2.0.16"
+val commonsTextVersion = "1.13.0"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
@@ -51,6 +52,7 @@ lazy val formats = project
     name := "flatgraph-formats",
     libraryDependencies ++= Seq(
       "com.github.tototoshi" %% "scala-csv" % "2.0.0",
+      "org.apache.commons" % "commons-text" % commonsTextVersion,
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       "io.spray" %% "spray-json" % "1.3.6",
       "com.github.scopt" %% "scopt" % "4.1.0",
@@ -81,7 +83,7 @@ lazy val domainClassesGenerator_3 = project
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional,
       "com.lihaoyi" %% "os-lib" % "0.9.1",
-      "org.apache.commons" % "commons-text" % "1.10.0",
+      "org.apache.commons" % "commons-text" % commonsTextVersion,
       "com.github.scopt" %% "scopt" % "4.1.0",
       ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
     ),
@@ -97,7 +99,7 @@ lazy val domainClassesGenerator_2_12 = project
     libraryDependencies ++= Seq(
       "org.slf4j"% "slf4j-simple" % slf4jVersion % Optional,
       "com.lihaoyi" %% "os-lib" % "0.9.1",
-      "org.apache.commons" % "commons-text" % "1.12.0",
+      "org.apache.commons" % "commons-text" % commonsTextVersion,
       "com.github.scopt" %% "scopt" % "4.1.0",
       "org.scalameta" %% "scalafmt-dynamic" % "3.7.17",
     ),

@@ -1,10 +1,14 @@
 package flatgraph.formats.dot
 
 import flatgraph.formats.{ExportResult, Exporter, iterableForList, resolveOutputFileSingle}
-import flatgraph.{Accessors, Edge, GNode, Graph, Schema}
+import flatgraph.{Accessors, Edge, GNode, Schema}
 
 import java.nio.file.{Files, Path}
-import scala.jdk.CollectionConverters.MapHasAsScala
+import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.translate.LookupTranslator
+
+import java.util.Collections
+import scala.jdk.CollectionConverters.MapHasAsJava
 import scala.util.Using
 
 /** Exports flatgraph to graphviz dot/gv file
@@ -12,11 +16,25 @@ import scala.util.Using
   * Note: GraphML doesn't natively support list property types, so we fake it by encoding it as a `;` delimited string. If you import this
   * into a different database, you'll need to parse that separately.
   *
+  * Export rules for dot format as per https: //github.com/joernio/joern/issues/5158 1) If the attribute value contains special characters
+  * such as spaces,<,>,=, etc., it must be enclosed in double quotation marks. Otherwise, it will cause syntax errors. 2) Graphviz requires
+  * that the node ID must be a valid identifier. If the node ID is a pure number (such as 120259084301), it needs to be enclosed in double
+  * quotation marks, otherwise it will be mistaken for an integer constant. 3) The attribute value contains special characters such as(such
+  * as CODE=""), which need to be enclosed in quotation marks or escaped in some cases. 4) In Graphviz's. dot file, it is best to use
+  * semicolons for each node definition, edge definition, and attribute definition; ending. Your file is missing semicolons.
+  *
   * https://en.wikipedia.org/wiki/DOT_(graph_description_language) https://www.graphviz.org/doc/info/lang.html
   * http://magjac.com/graphviz-visual-editor/ https://www.slideshare.net/albazo/graphiz-using-the-dot-language
   */
 object DotExporter extends Exporter {
   override def defaultFileExtension = "dot"
+  val EndOfLine                     = ';'
+
+  private val lookupMap = Map(
+    """\""" -> """\\""", // \ -> \\
+    "\""    -> """\""""  // " -> \"
+  )
+  val translator = new LookupTranslator(Collections.unmodifiableMap(lookupMap.asJava))
 
   override def runExport(schema: Schema, nodes: IterableOnce[GNode], edges: IterableOnce[Edge], outputFile: Path) = {
     val outFile              = resolveOutputFileSingle(outputFile, s"export.$defaultFileExtension")
@@ -34,31 +52,29 @@ object DotExporter extends Exporter {
         nodeCount += 1
         val line = new StringBuffer()
           .append("  ")
-          .append(node.id)
-          .append(s"[label=${node.label} ")
+          .append(s""""${node.id}" """)
+          .append(s"""[label="${node.label}" """)
           .append(
             Accessors
               .getNodeProperties(node)
               .iterator
               .map { case (key, value) =>
-                s"$key=${encodePropertyValue(value)}"
+                s"""$key="${encodePropertyValue(value)}""""
               }
               .mkString(" ")
           )
           .append("]")
+          .append(EndOfLine)
         writeLine(line.toString)
       }
 
       edges.iterator.foreach { edge =>
         edgeCount += 1
+        val propertyMaybe = Option(edge.property).map(property => s"""property="${encodePropertyValue(property)}"""").getOrElse("")
         val line = new StringBuffer()
-          .append(s"  ${edge.src.id()} -> ${edge.dst.id()} ")
-          .append(s"[label=${edge.label} ")
-
-        if (edge.property != null)
-          line.append(s"property=${encodePropertyValue(edge.property)}")
-
-        line.append("]")
+          .append(s"""  "${edge.src.id()}" -> "${edge.dst.id()}"""")
+          .append(s""" [label="${edge.label}" $propertyMaybe]""")
+          .append(EndOfLine)
         writeLine(line.toString)
       }
 
@@ -71,13 +87,9 @@ object DotExporter extends Exporter {
   private def encodePropertyValue(value: Any): String = {
     value match {
       case value: String =>
-        val escaped = value
-          .replace("""\""", """\\""") // escape escape chars - this should come first
-          .replace("\"", "\\\"")      // escape double quotes, because we use them to enclose strings
-        s"\"$escaped\""
+        StringEscapeUtils.builder(translator).escape(value).toString
       case list if iterableForList.isDefinedAt(list) =>
-        val values = iterableForList(list).mkString(";")
-        s"\"$values\""
+        iterableForList(list).map(encodePropertyValue).mkString(";")
       case value => value.toString
     }
   }
