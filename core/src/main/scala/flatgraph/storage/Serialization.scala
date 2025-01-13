@@ -20,8 +20,10 @@ object Serialization {
     val stringPool = mutable.LinkedHashMap[String, Int]()
 
     // ensure parent directory exists
-    val parentDir = storagePath.getParent
-    if (Files.notExists(parentDir)) Files.createDirectories(parentDir)
+    Option(storagePath.getParent) match {
+      case Some(dir) => if (Files.notExists(dir)) Files.createDirectories(dir)
+      case None      => // no parent, i.e. we're at the root dir already
+    }
 
     val fileChannel =
       new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel

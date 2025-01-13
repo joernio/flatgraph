@@ -1,6 +1,5 @@
 package flatgraph
 
-import flatgraph.TestSchema.testSerialization
 import flatgraph.misc.DebugDump.debugDump
 import flatgraph.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers
