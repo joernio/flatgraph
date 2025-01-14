@@ -250,7 +250,7 @@ object EdgeType {
   }
 }
 
-class Property[A](val name: String, val valueType: Property.ValueType[A], val comment: Option[String] = None, val schemaInfo: SchemaInfo)
+case class Property[A](name: String, valueType: Property.ValueType[A], comment: Option[String] = None, schemaInfo: SchemaInfo)
     extends HasClassName
     with HasOptionalProtoId
     with HasSchemaInfo {
