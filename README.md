@@ -501,3 +501,11 @@ Cause: java.lang.ExceptionInInitializerError: Exception java.lang.UnsatisfiedLin
 [info] no zstd-jni-1.5.6-7 in java.library.path: /usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
 [info] Unsupported OS/arch, cannot find /linux/amd64/libzstd-jni-1.5.6-7.so or load zstd-jni-1.5.6-7 from system libraries.
 ```
+
+# References
+
+## YourKit Java profiler endorsement
+YourKit supports open source projects with innovative and intelligent tools for monitoring and profiling Java and .NET applications.
+YourKit is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>,
+<a href="https://www.yourkit.com/.net/profiler/">YourKit .NET Profiler</a>, and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>. <br/>
+<img src="doc/images/yourkit.png" height="44" />
