@@ -477,7 +477,7 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       return null
     }
     () => {
-      graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
+      graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).iterator.map(_.storedRef.get))
       graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
     }
   }
