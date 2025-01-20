@@ -129,12 +129,12 @@ object CodeSnippets {
          |def ${nameCamelCase}Exact(values: $baseType*): Iterator[NodeType] = {
          |  if(values.length == 1) return ${nameCamelCase}Exact(values.head)
          |  traversal match {
-         |      case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
+         |    case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
          |      val someNode = init.next
-         |      values.iterator.flatMap{  v =>
-         |        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, v).asInstanceOf[Iterator[NodeType]]
+         |      values.iterator.flatMap { value =>
+         |        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, value).asInstanceOf[Iterator[NodeType]]
          |      }
-         |      case _ =>
+         |    case _ =>
          |      val valueSet = values.toSet
          |      traversal.filter{item => valueSet.contains(item.$nameCamelCase)}
          |    }
