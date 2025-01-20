@@ -6,6 +6,21 @@ Code formatting is maintained via
 sbt scalafmt Test/scalafmt
 ```
 
+## Diverse notes
+By default, diffgraph application, deserialization from storage, and serialization to storage are all multi-threaded.
+
+This can be globally disabled via `flatgraph.Misc.force_singlethreaded()`, for easier debugging. 
+
+In order to quickly glance the input of flatgraph files, you can extract the manifest json with `tail`, e.g. `tail someGraph.fg | jless`:
+Our output writer always places the manifest at the end, with a bunch of preceding newlines, such that this will not contain binary garbage.
+
+This is suitable for quick command-line debugging. However, that approach will fail if e.g. somebody appended two flatgraph files -- deserialization will
+read the file from the beginning, and find the offset of the true manifest from the header, and ignore trailing garbage like an appended fake manifest.
+So don't dare to do security checks with that!
+
+
+
+
 ## Core Features
 - [x] Access nodes and neighbors
 - [x] Add nodes and edges

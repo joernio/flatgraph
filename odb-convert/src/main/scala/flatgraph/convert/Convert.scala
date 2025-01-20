@@ -132,6 +132,7 @@ object Convert {
       fileAbsolute.createNewFile()
     }
     val fileChannel = new java.io.RandomAccessFile(fileAbsolute, "rw").getChannel
+    val writer      = storage.WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(null))
     try {
       val nodes      = nodeStuff.map { ns => new Manifest.NodeItem(ns.label, ns.nextId, null) }
       val edges      = mutable.ArrayBuffer[Manifest.EdgeItem]()
@@ -140,12 +141,12 @@ object Convert {
         node                      <- nodeStuff
         ((prefix, key), quantity) <- node.quantities.iterator
       } {
-        val deltaEncoded   = quantity.addOne(0).toArray
-        val qty            = Serialization.encodeAny(deltaEncoded, filePtr, null, fileChannel)
         val (valtyp, vals) = homogenize(node.values((prefix, key)))
         if (valtyp != null) {
-          val values = storage.Serialization.encodeAny(vals, filePtr, null, fileChannel)
-          values.typ = valtyp
+          val deltaEncoded = quantity.addOne(0).toArray
+          val qty          = writer.encodeAny(deltaEncoded)
+          val values       = writer.encodeAny(vals)
+          assert(values.typ == valtyp)
           prefix match {
             case NodeStuff.NODEPROPERTY =>
               properties.addOne(new Manifest.PropertyItem(node.label, key, qty, values))
@@ -160,47 +161,16 @@ object Convert {
                 case Some(propvalues) =>
                   val (ptype, pval) = homogenize(propvalues)
                   if (ptype != null) {
-                    val stored = storage.Serialization.encodeAny(pval, filePtr, null, fileChannel)
-                    stored.typ = ptype
+                    val stored = writer.encodeAny(pval)
                     edgeItem.property = stored
                   }
               }
           }
         }
       }
-      val poolLenBytes  = new Array[Byte](4 * strings.length)
-      val poolLenBuffer = ByteBuffer.wrap(poolLenBytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer()
-      val poolBytes     = new ByteArrayOutputStream()
-      for (s <- strings) {
-        val bytes = s.getBytes(StandardCharsets.UTF_8)
-        poolBytes.write(bytes)
-        poolLenBuffer.put(bytes.length)
-      }
-      val poolLensStored  = new Manifest.OutlineStorage(StorageType.Int)
-      val poolBytesStored = new Manifest.OutlineStorage(storage.StorageType.Byte)
-      storage.Serialization.write(poolLenBytes, poolLensStored, filePtr, fileChannel)
-      storage.Serialization.write(poolBytes.toByteArray, poolBytesStored, filePtr, fileChannel)
-
-      var pos       = filePtr.get()
-      val header    = new Array[Byte](16)
-      val headerBuf = ByteBuffer.wrap(header)
-      headerBuf.order(ByteOrder.LITTLE_ENDIAN).put(Keys.Header).asLongBuffer().put(pos)
-      headerBuf.position(0)
-      var headPos = 0L
-      while (headerBuf.hasRemaining()) {
-        headPos += fileChannel.write(headerBuf, headPos)
-      }
-      val manifest    = new Manifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray, poolLensStored, poolBytesStored)
-      val manifestObj = Manifest.GraphItem.write(manifest)
-      if (verbose) {
-        println(manifestObj.render(indent = 2))
-      }
-      val buf = ByteBuffer.wrap(manifestObj.render().getBytes(StandardCharsets.UTF_8))
-      while (buf.hasRemaining()) {
-        pos += fileChannel.write(buf, pos)
-      }
-      fileChannel.truncate(pos)
-    } finally { fileChannel.close() }
+      val manifest = new Manifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray)
+      writer.finish(manifest)
+    } finally { fileChannel.close(); writer.executor.shutdownNow(); writer.compressCtx.close(); }
   }
 
   private def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[?]) = {

@@ -5,7 +5,7 @@ import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.SchemaViolationReporter
 
-import java.util.concurrent.Callable
+import java.util.concurrent
 import scala.collection.{Iterator, mutable}
 
 object DiffGraphApplier {
@@ -21,10 +21,11 @@ object DiffGraphApplier {
   def applyDiff(
     graph: Graph,
     diff: DiffGraphBuilder,
-    schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter
+    schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter,
+    executor: concurrent.ExecutorService = null
   ): Int = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
-    new DiffGraphApplier(graph, diff, schemaViolationReporter).applyUpdate()
+    new DiffGraphApplier(graph, diff, schemaViolationReporter, executor).applyUpdate()
   }
 }
 
@@ -34,7 +35,13 @@ abstract class NewNodePropertyInsertionHelper {
 
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
-private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, schemaViolationReporter: SchemaViolationReporter) {
+private[flatgraph] class DiffGraphApplier(
+  graph: Graph,
+  diff: DiffGraphBuilder,
+  schemaViolationReporter: SchemaViolationReporter,
+  executor0: concurrent.ExecutorService = null
+) {
+  val executor = flatgraph.Misc.maybeOverrideExecutor(executor0)
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges             = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
@@ -44,7 +51,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   val delNodes             = new mutable.ArrayBuffer[GNode]()
   val setNodeProperties    = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
   val newNodeNewProperties = new Array[Int](graph.properties.size)
-  val newNodeUsers         = new java.util.concurrent.atomic.AtomicIntegerArray(graph.schema.getNumberOfNodeKinds)
+  val newNodeUsers         = new concurrent.atomic.AtomicIntegerArray(graph.schema.getNumberOfNodeKinds)
+  val jobQueue             = mutable.ArrayBuffer[concurrent.Future[Unit]]()
 
   object NewNodeInterface extends BatchedUpdateInterface {
     override def visitContainedNode(contained: DNodeOrNode): Unit = { if (contained != null) getGNode(contained) }
@@ -53,6 +61,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       val pos = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
       newNodeNewProperties(pos) += num
     }
+  }
+
+  def submitJob[T](block: => Unit): Unit = {
+    jobQueue.addOne(executor.submit(() => block))
   }
 
   private def insertProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
@@ -225,41 +237,32 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val ndiff = splitUpdate()
     diff.buffer = null
 
-    // fixme -- use another pool for logging / CPU attribution?
-    val executor    = java.util.concurrent.ForkJoinPool.commonPool()
-    val submissions = mutable.ArrayBuffer[java.util.concurrent.ForkJoinTask[Unit]]()
-
     try {
       // set edge properties
       for {
         nodeKind  <- graph.schema.nodeKinds
         edgeKind  <- graph.schema.edgeKinds
         direction <- Edge.Direction.values
-        task      <- Option(setEdgeProperty(nodeKind, direction, edgeKind))
-      } submissions.addOne(executor.submit(task))
+      } setEdgeProperty(nodeKind, direction, edgeKind)
 
-      submissions.foreach(_.get())
-      submissions.clear()
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
 
       // remove edges
       for {
         nodeKind  <- graph.schema.nodeKinds
         edgeKind  <- graph.schema.edgeKinds
         direction <- Edge.Direction.values
-        task      <- Option(deleteEdges(nodeKind, direction, edgeKind))
-      } submissions.addOne(executor.submit(task))
+      } deleteEdges(nodeKind, direction, edgeKind)
 
-      submissions.foreach(_.get())
-      submissions.clear()
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
 
       // add nodes. If necessary, we can start this job earlier in a separate queue; then we must add some extra structures for node sizes at various stages
-      for {
-        nodeKind <- graph.schema.nodeKinds
-        task     <- Option(addNodes(nodeKind))
-      } submissions.addOne(executor.submit(task))
+      for { nodeKind <- graph.schema.nodeKinds } addNodes(nodeKind)
 
-      submissions.foreach(_.get())
-      submissions.clear()
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
 
       // delete nodes
       // this is harder to parallelize, only do if needed!
@@ -272,26 +275,19 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         nodeKind  <- graph.schema.nodeKinds
         edgeKind  <- graph.schema.edgeKinds
         direction <- Direction.values
-        task      <- Option(addEdges(nodeKind, direction, edgeKind))
-      } submissions.addOne(executor.submit(task))
+      } addEdges(nodeKind, direction, edgeKind)
 
       // set node properties. This doesn't need to wait for add edges to be complete!
       for (nodeKind <- graph.schema.nodeKinds) {
-        for {
-          propertyKind <- graph.schema.propertyKinds
-          task         <- Option(setNodeProperties(nodeKind, propertyKind))
-        } {
-          newNodeUsers.incrementAndGet(nodeKind)
-          submissions.addOne(executor.submit(task))
-        }
+        for { propertyKind <- graph.schema.propertyKinds } setNodeProperties(nodeKind, propertyKind)
         if (newNodeUsers.decrementAndGet(nodeKind) == -1) {
           // whoever reaches newNodeUsers(nodeKind) == -1 first is permitted to free it.
           newNodes(nodeKind) = null
         }
       }
 
-      submissions.foreach(_.get())
-      submissions.clear()
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
     } catch {
       case ex: java.util.concurrent.ExecutionException =>
         throw ex.getCause()
@@ -472,20 +468,20 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  private def addNodes(nodeKind: Int): Callable[Unit] = {
+  private def addNodes(nodeKind: Int): Unit = {
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
-      return null
+      return
     }
-    () => {
+    submitJob {
       graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).iterator.map(_.storedRef.get))
       graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
     }
   }
 
-  private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
+  private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    if (setEdgeProperties(pos) == null) return null
-    () => {
+    if (setEdgeProperties(pos) == null) return
+    submitJob {
       val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
       val oldQty = graph.neighbors(pos).asInstanceOf[Array[Int]]
       val edgeProp = graph.neighbors(pos + 2) match {
@@ -508,10 +504,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
+  private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    if (delEdges(pos) == null) return null
-    () => {
+    if (delEdges(pos) == null) return
+    submitJob {
       val deletions = delEdges(pos)
       assert(
         deletions.forall { edge =>
@@ -598,12 +594,12 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Callable[Unit] = {
+  private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     if (newEdges(pos) == null) {
-      return null
+      return
     }
-    () => {
+    submitJob {
       val insertions = newEdges(pos)
 
       insertions.sortInPlaceBy(_.src.seq)
@@ -675,13 +671,14 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     }
   }
 
-  private def setNodeProperties(nodeKind: Int, propertyKind: Int): Callable[Unit] = {
+  private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
     val schema     = graph.schema
     val pos        = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
     val viaNewNode = newNodeNewProperties(pos)
-    if (setNodeProperties(pos) == null && viaNewNode == 0) return null
+    if (setNodeProperties(pos) == null && viaNewNode == 0) return
+    newNodeUsers.incrementAndGet(nodeKind)
 
-    () => {
+    submitJob {
       val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
       val setPropertyPositions =
         Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
@@ -760,9 +757,12 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       // this is a dirty hack in order to make scala type system shut up
       buf.asInstanceOf[mutable.ArrayBuffer[T]].copyToArray(dst)
     } catch {
-      case _: ArrayStoreException =>
+      case store: ArrayStoreException =>
         val typeMaybe = buf.headOption.map(property => s": ${property.getClass}").getOrElse("")
-        throw new UnsupportedOperationException(s"unsupported property type$typeMaybe")
+        throw new UnsupportedOperationException(
+          s"unsupported property type$typeMaybe on ${Option(dst).map { _.getClass.toString }.orNull}",
+          store
+        )
     }
   }
 
