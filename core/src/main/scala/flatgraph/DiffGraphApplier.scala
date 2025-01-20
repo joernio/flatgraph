@@ -22,10 +22,10 @@ object DiffGraphApplier {
     graph: Graph,
     diff: DiffGraphBuilder,
     schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter,
-    executor: concurrent.ExecutorService = null
+    requestedExecutor: Option[concurrent.ExecutorService] = None
   ): Int = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
-    new DiffGraphApplier(graph, diff, schemaViolationReporter, executor).applyUpdate()
+    new DiffGraphApplier(graph, diff, schemaViolationReporter, requestedExecutor).applyUpdate()
   }
 }
 
@@ -39,9 +39,9 @@ private[flatgraph] class DiffGraphApplier(
   graph: Graph,
   diff: DiffGraphBuilder,
   schemaViolationReporter: SchemaViolationReporter,
-  executor0: concurrent.ExecutorService = null
+  requestedExecutor: Option[concurrent.ExecutorService] = None
 ) {
-  val executor = flatgraph.Misc.maybeOverrideExecutor(executor0)
+  val executor = flatgraph.Misc.maybeOverrideExecutor(requestedExecutor)
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges             = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)

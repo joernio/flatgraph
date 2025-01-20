@@ -18,9 +18,9 @@ object Deserialization {
     storagePath: Path,
     schemaMaybe: Option[Schema],
     persistOnClose: Boolean = true,
-    executor0: concurrent.ExecutorService = null
+    requestedExecutor: Option[concurrent.ExecutorService] = None
   ): Graph = {
-    val executor    = flatgraph.Misc.maybeOverrideExecutor(executor0)
+    val executor    = flatgraph.Misc.maybeOverrideExecutor(requestedExecutor)
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "r").getChannel
     val queue       = mutable.ArrayBuffer[concurrent.Future[Any]]()
     val zstdCtx     = new ZstdWrapper.ZstdCtx

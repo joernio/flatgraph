@@ -132,7 +132,7 @@ object Convert {
       fileAbsolute.createNewFile()
     }
     val fileChannel = new java.io.RandomAccessFile(fileAbsolute, "rw").getChannel
-    val writer      = storage.WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(null))
+    val writer      = storage.WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(None))
     try {
       val nodes      = nodeStuff.map { ns => new Manifest.NodeItem(ns.label, ns.nextId, null) }
       val edges      = mutable.ArrayBuffer[Manifest.EdgeItem]()
@@ -170,7 +170,7 @@ object Convert {
       }
       val manifest = new Manifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray)
       writer.finish(manifest)
-    } finally { fileChannel.close(); writer.executor.shutdownNow(); writer.compressCtx.close(); }
+    } finally { fileChannel.close(); writer.compressCtx.close(); }
   }
 
   private def homogenize(items: mutable.ArrayBuffer[Any]): (String, Array[?]) = {

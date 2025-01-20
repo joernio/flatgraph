@@ -220,7 +220,7 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
 
 object Serialization {
 
-  def writeGraph(g: Graph, storagePath: Path, executor0: concurrent.ExecutorService = null): Unit = {
+  def writeGraph(g: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): Unit = {
 
     // ensure parent directory exists
     val parentDir = storagePath.getParent
@@ -228,7 +228,7 @@ object Serialization {
 
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
 
-    val writer = new WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(executor0))
+    val writer = new WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(requestedExecutor))
 
     try {
       innerWriteGraph(g, writer)
