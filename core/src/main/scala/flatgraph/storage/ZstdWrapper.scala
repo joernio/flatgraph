@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 
 import java.nio.{ByteBuffer, ByteOrder}
 import java.nio.file.{Files, Paths}
-import java.util.concurrent.locks.ReentrantLock
 import scala.jdk.CollectionConverters.*
 import scala.util.{Properties, Try}
 import scala.collection.mutable
@@ -19,7 +18,8 @@ object ZstdWrapper {
     val compressCtxs   = mutable.ArrayDeque[zstd.ZstdCompressCtx]()
     val decompressCtxs = mutable.ArrayDeque[zstd.ZstdDecompressCtx]()
 
-    def compress(bytes: Array[Byte]): Array[Byte] = ZstdWrapper.apply {
+    // cf library documentation: The resulting buffer is ready-to-go, i.e. comes pre-flipped / rewound.
+    def compress(bytes: Array[Byte]): ByteBuffer = ZstdWrapper.apply {
       val ctx0 = this.synchronized {
         compressCtxs.removeLastOption()
       }
@@ -29,7 +29,26 @@ object ZstdWrapper {
         res
       }
       try {
-        ctx.compress(bytes)
+
+        /** So, this allocateDirect thing may look somewhat awkward and is not the fastest. Sorry :(
+          *
+          * It is currently necessary, though, because the array-based zstdni methods have a very long JNI critical section, and this can
+          * lead to OOM-crashes when using G1GC before JVM-22 (until 22, GC is effectively disabled during crit sections; afterwards, only
+          * specific regions are pinned).
+          *
+          * The upstream code is
+          * https://github.com/luben/zstd-jni/blob/9b39b598313f639c817469cb4de500f767cec453/src/main/native/jni_fast_zstd.c#L488
+          *
+          * We may consider submitting a patch upstream that allocates a temp array and only holds the critical section during a memcopy
+          *
+          * Same issue holds for decompress.
+          *
+          * The result comes ready-to-read, i.e. is flipped/rewound by the zstd compress function
+          */
+        val buf = ByteBuffer.allocateDirect(bytes.length)
+        buf.put(bytes)
+        buf.flip()
+        ctx.compress(buf)
       } finally {
         this.synchronized {
           if (this.closed) ctx.close() else compressCtxs.append(ctx)

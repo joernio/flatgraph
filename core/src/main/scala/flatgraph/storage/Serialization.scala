@@ -19,13 +19,13 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
 
   val compressCtx      = new ZstdWrapper.ZstdCtx
   var fileOffset: Long = 16L
-  val compressQueue    = mutable.ArrayDeque[concurrent.Future[(OutlineStorage, Array[Byte])]]()
+  val compressQueue    = mutable.ArrayDeque[concurrent.Future[(OutlineStorage, ByteBuffer)]]()
   val writeQueue       = mutable.ArrayDeque[concurrent.Future[Any]]()
   val jobQueue         = mutable.ArrayBuffer[() => (OutlineStorage, Array[Byte])]()
   val stringQueue      = mutable.ArrayDeque[(OutlineStorage, Array[String])]()
   val stringpool       = mutable.LinkedHashMap[String, Int]()
 
-  def submitCompress(block: => (OutlineStorage, Array[Byte])): Unit = {
+  def submitCompress(block: => (OutlineStorage, ByteBuffer)): Unit = {
     compressQueue.addOne(executor.submit((() => block)))
   }
 
@@ -125,23 +125,21 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
     outlineStorage
   }
 
-  def compressItem(res: OutlineStorage, bytes: Array[Byte]): (OutlineStorage, Array[Byte]) = {
+  def compressItem(res: OutlineStorage, bytes: Array[Byte]): (OutlineStorage, ByteBuffer) = {
     res.decompressedLength = bytes.length
     val compressed = this.compressCtx.compress(bytes)
-    res.compressedLength = compressed.length
     (res, compressed)
   }
 
   // NOT threadsafe!
-  def writeItem(res: OutlineStorage, bytes: Array[Byte]): Unit = {
-    res.compressedLength = bytes.length
+  def writeItem(res: OutlineStorage, buf: ByteBuffer): Unit = {
+    res.compressedLength = buf.limit()
     val outPos0 = this.fileOffset
-    this.fileOffset += bytes.length
+    this.fileOffset += buf.limit()
     res.startOffset = outPos0
 
     this.writeQueue.addOne(this.executor.submit(() => {
       var outPos = outPos0
-      val buf    = ByteBuffer.wrap(bytes)
       while (buf.hasRemaining()) {
         outPos += this.fileChannel.write(buf, outPos)
       }
