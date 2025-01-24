@@ -76,8 +76,9 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
       case ints: Array[Int] =>
         outlineStorage.typ = StorageType.Int
         this.submitCompress {
-          val bytes = new Array[Byte](4 * ints.length)
-          ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(if (delta == -1) ints else deltaEncode(delta, ints))
+          val tmpInts = if (delta == -1) ints else deltaEncode(delta, ints)
+          val bytes   = new Array[Byte](4 * tmpInts.length)
+          ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(tmpInts)
           compressItem(outlineStorage, bytes)
         }
       case longs: Array[Long] =>
