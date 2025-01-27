@@ -2,6 +2,7 @@ package flatgraph.storage
 
 import flatgraph.{AccessHelpers, FreeSchema, GNode, Graph, Schema}
 import flatgraph.Edge.Direction
+import flatgraph.misc.Misc
 import flatgraph.storage.Manifest.{GraphItem, OutlineStorage}
 
 import java.nio.channels.FileChannel
@@ -20,7 +21,7 @@ object Deserialization {
     persistOnClose: Boolean = true,
     requestedExecutor: Option[concurrent.ExecutorService] = None
   ): Graph = {
-    val executor    = flatgraph.Misc.maybeOverrideExecutor(requestedExecutor)
+    val executor    = Misc.maybeOverrideExecutor(requestedExecutor)
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "r").getChannel
     val queue       = mutable.ArrayBuffer[concurrent.Future[Any]]()
     val zstdCtx     = new ZstdWrapper.ZstdCtx

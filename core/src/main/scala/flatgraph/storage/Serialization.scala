@@ -3,6 +3,7 @@ package flatgraph.storage
 import com.github.luben.zstd.Zstd
 import flatgraph.*
 import flatgraph.Edge.Direction
+import flatgraph.misc.Misc
 import flatgraph.storage.Manifest.*
 
 import java.io.ByteArrayOutputStream
@@ -227,7 +228,7 @@ object Serialization {
 
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
 
-    val writer = new WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(requestedExecutor))
+    val writer = new WriterContext(fileChannel, Misc.maybeOverrideExecutor(requestedExecutor))
 
     try {
       innerWriteGraph(g, writer)

@@ -3,7 +3,7 @@ package flatgraph
 import DiffGraphBuilder.*
 import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
-import flatgraph.misc.SchemaViolationReporter
+import flatgraph.misc.{Misc, SchemaViolationReporter}
 
 import java.util.concurrent
 import scala.collection.{Iterator, mutable}
@@ -41,7 +41,7 @@ private[flatgraph] class DiffGraphApplier(
   schemaViolationReporter: SchemaViolationReporter,
   requestedExecutor: Option[concurrent.ExecutorService] = None
 ) {
-  val executor = flatgraph.Misc.maybeOverrideExecutor(requestedExecutor)
+  val executor = Misc.maybeOverrideExecutor(requestedExecutor)
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges             = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)

@@ -1,6 +1,6 @@
 package flatgraph.convert
 
-import flatgraph.misc.ISeq
+import flatgraph.misc.{ISeq, Misc}
 import flatgraph.{AccessHelpers, Accessors, Edge, GNode, storage}
 import flatgraph.storage.{Keys, Manifest, Serialization, StorageType}
 import org.msgpack.core.{MessageBufferPacker, MessagePack}
@@ -132,7 +132,7 @@ object Convert {
       fileAbsolute.createNewFile()
     }
     val fileChannel = new java.io.RandomAccessFile(fileAbsolute, "rw").getChannel
-    val writer      = storage.WriterContext(fileChannel, flatgraph.Misc.maybeOverrideExecutor(None))
+    val writer      = storage.WriterContext(fileChannel, Misc.maybeOverrideExecutor(None))
     try {
       val nodes      = nodeStuff.map { ns => new Manifest.NodeItem(ns.label, ns.nextId, null) }
       val edges      = mutable.ArrayBuffer[Manifest.EdgeItem]()

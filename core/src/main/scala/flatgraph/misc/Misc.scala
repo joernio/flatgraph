@@ -1,4 +1,4 @@
-package flatgraph
+package flatgraph.misc
 
 import java.util.concurrent
 
