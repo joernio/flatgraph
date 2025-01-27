@@ -157,12 +157,19 @@ final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Itera
 
   /** Traverse to nodes where stringMandatory matches one of the elements in `values` exactly.
     */
-  def stringMandatoryExact(values: String*): Iterator[NodeType] =
-    if (values.length == 1) stringMandatoryExact(values.head)
-    else {
-      val valueSet = values.toSet
-      traversal.filter { item => valueSet.contains(item.stringMandatory) }
+  def stringMandatoryExact(values: String*): Iterator[NodeType] = {
+    if (values.length == 1) return stringMandatoryExact(values.head)
+    traversal match {
+      case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
+        val someNode = init.next
+        values.iterator.flatMap { v =>
+          flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, v).asInstanceOf[Iterator[NodeType]]
+        }
+      case _ =>
+        val valueSet = values.toSet
+        traversal.filter { item => valueSet.contains(item.stringMandatory) }
     }
+  }
 
   /** Traverse to nodes where stringMandatory does not match the regular expression `value`.
     */
