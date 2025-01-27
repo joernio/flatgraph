@@ -66,7 +66,8 @@ object ZstdWrapper {
           ctx.decompress(bytes, len).order(ByteOrder.LITTLE_ENDIAN)
         } finally {
           this.synchronized {
-            if (this.closed) ctx.close() else decompressCtxs.append(ctx)
+            if (this.closed) ctx.close() 
+            else decompressCtxs.append(ctx)
           }
         }
       }
