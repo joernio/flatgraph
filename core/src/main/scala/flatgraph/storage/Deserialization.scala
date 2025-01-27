@@ -41,13 +41,11 @@ object Deserialization {
       val g         = new Graph(schema, storagePathMaybe)
       val nodekinds = mutable.HashMap[String, Short]()
       for (nodeKind <- g.schema.nodeKinds) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
-      val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
       val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
       for {
         (nodeItem, idx) <- manifest.nodes.zipWithIndex
         nodeKind        <- nodekinds.get(nodeItem.nodeLabel)
       } {
-        kindRemapper(idx) = nodeKind
         val nodes = new Array[GNode](nodeItem.nnodes)
         for (seq <- Range(0, nodes.length)) nodes(seq) = g.schema.makeNode(g, nodeKind, seq)
         g.nodesArray(nodeKind) = nodes
