@@ -1,8 +1,8 @@
 package flatgraph.storage
 
-import com.github.luben.zstd.Zstd
-import flatgraph.*
+import flatgraph.{AccessHelpers, FreeSchema, GNode, Graph, Schema}
 import flatgraph.Edge.Direction
+import flatgraph.misc.Misc
 import flatgraph.storage.Manifest.{GraphItem, OutlineStorage}
 
 import java.nio.channels.FileChannel
@@ -11,15 +11,30 @@ import java.nio.file.Path
 import java.nio.{ByteBuffer, ByteOrder}
 import java.util.Arrays
 import scala.collection.mutable
+import java.util.concurrent
 
 object Deserialization {
 
-  def readGraph(storagePath: Path, schemaMaybe: Option[Schema], persistOnClose: Boolean = true): Graph = {
+  def readGraph(
+    storagePath: Path,
+    schemaMaybe: Option[Schema],
+    persistOnClose: Boolean = true,
+    requestedExecutor: Option[concurrent.ExecutorService] = None
+  ): Graph = {
+    val executor    = Misc.maybeOverrideExecutor(requestedExecutor)
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "r").getChannel
+    val queue       = mutable.ArrayBuffer[concurrent.Future[Any]]()
+    val zstdCtx     = new ZstdWrapper.ZstdCtx
+    def submitJob[T](block: => T): concurrent.Future[T] = {
+      val res = executor.submit((() => block))
+      queue.addOne(res.asInstanceOf[concurrent.Future[Any]])
+      res
+    }
+
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
       val manifest = GraphItem.read(readManifest(fileChannel))
-      val pool     = readPool(manifest, fileChannel)
+      val pool     = submitJob { readPool(manifest, fileChannel, zstdCtx) }
       val schema   = schemaMaybe.getOrElse(freeSchemaFromManifest(manifest))
       val storagePathMaybe =
         if (persistOnClose) Option(storagePath)
@@ -27,13 +42,11 @@ object Deserialization {
       val g         = new Graph(schema, storagePathMaybe)
       val nodekinds = mutable.HashMap[String, Short]()
       for (nodeKind <- g.schema.nodeKinds) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
-      val kindRemapper = Array.fill(manifest.nodes.size)(-1.toShort)
       val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
       for {
         (nodeItem, idx) <- manifest.nodes.zipWithIndex
         nodeKind        <- nodekinds.get(nodeItem.nodeLabel)
       } {
-        kindRemapper(idx) = nodeKind
         val nodes = new Array[GNode](nodeItem.nnodes)
         for (seq <- Range(0, nodes.length)) nodes(seq) = g.schema.makeNode(g, nodeKind, seq)
         g.nodesArray(nodeKind) = nodes
@@ -66,11 +79,17 @@ object Deserialization {
         val direction = Direction.fromOrdinal(edgeItem.inout)
         if (nodeKind.isDefined && edgeKind.isDefined) {
           val pos = g.schema.neighborOffsetArrayIndex(nodeKind.get, direction, edgeKind.get)
-          g.neighbors(pos) = deltaDecode(readArray(fileChannel, edgeItem.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
-          g.neighbors(pos + 1) = readArray(fileChannel, edgeItem.neighbors, nodeRemapper, pool)
-          val property = readArray(fileChannel, edgeItem.property, nodeRemapper, pool)
-          if (property != null)
-            g.neighbors(pos + 2) = property
+          submitJob {
+            g.neighbors(pos) = deltaDecode(readArray(fileChannel, edgeItem.qty, nodeRemapper, pool, zstdCtx).asInstanceOf[Array[Int]])
+          }
+          submitJob {
+            g.neighbors(pos + 1) = readArray(fileChannel, edgeItem.neighbors, nodeRemapper, pool, zstdCtx)
+          }
+          submitJob {
+            val property = readArray(fileChannel, edgeItem.property, nodeRemapper, pool, zstdCtx)
+            if (property != null)
+              g.neighbors(pos + 2) = property
+          }
         }
       }
 
@@ -91,12 +110,18 @@ object Deserialization {
         val propertyKind = propertykinds.get((property.nodeLabel, property.propertyLabel))
         if (nodeKind.isDefined && propertyKind.isDefined) {
           val pos = g.schema.propertyOffsetArrayIndex(nodeKind.get, propertyKind.get)
-          g.properties(pos) = deltaDecode(readArray(fileChannel, property.qty, nodeRemapper, pool).asInstanceOf[Array[Int]])
-          g.properties(pos + 1) = readArray(fileChannel, property.property, nodeRemapper, pool)
+          submitJob {
+            g.properties(pos) = deltaDecode(readArray(fileChannel, property.qty, nodeRemapper, pool, zstdCtx).asInstanceOf[Array[Int]])
+          }
+          submitJob { g.properties(pos + 1) = readArray(fileChannel, property.property, nodeRemapper, pool, zstdCtx) }
         }
       }
+      queue.foreach { _.get() }
       g
-    } finally fileChannel.close()
+    } catch {
+      case ex: java.util.concurrent.ExecutionException =>
+        throw ex.getCause()
+    } finally { fileChannel.close(); zstdCtx.close(); }
   }
 
   private def freeSchemaFromManifest(manifest: Manifest.GraphItem): FreeSchema = {
@@ -171,23 +196,17 @@ object Deserialization {
 
   }
 
-  private def readPool(manifest: GraphItem, fileChannel: FileChannel): Array[String] = {
-    val stringPoolLength = ZstdWrapper(
-      Zstd
-        .decompress(
-          fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
-          manifest.stringPoolLength.decompressedLength
-        )
-        .order(ByteOrder.LITTLE_ENDIAN)
-    )
-    val stringPoolBytes = ZstdWrapper(
-      Zstd
-        .decompress(
-          fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
-          manifest.stringPoolBytes.decompressedLength
-        )
-        .order(ByteOrder.LITTLE_ENDIAN)
-    )
+  private def readPool(manifest: GraphItem, fileChannel: FileChannel, zstdCtx: ZstdWrapper.ZstdCtx): Array[String] = {
+    val stringPoolLength = zstdCtx
+      .decompress(
+        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolLength.startOffset, manifest.stringPoolLength.compressedLength),
+        manifest.stringPoolLength.decompressedLength
+      )
+    val stringPoolBytes = zstdCtx
+      .decompress(
+        fileChannel.map(FileChannel.MapMode.READ_ONLY, manifest.stringPoolBytes.startOffset, manifest.stringPoolBytes.compressedLength),
+        manifest.stringPoolBytes.decompressedLength
+      )
     val poolBytes = new Array[Byte](manifest.stringPoolBytes.decompressedLength)
     stringPoolBytes.get(poolBytes)
     val pool    = new Array[String](manifest.stringPoolLength.decompressedLength >> 2)
@@ -215,11 +234,18 @@ object Deserialization {
     a
   }
 
-  private def readArray(channel: FileChannel, ptr: OutlineStorage, nodes: Array[Array[GNode]], stringPool: Array[String]): Array[?] = {
+  private def readArray(
+    channel: FileChannel,
+    ptr: OutlineStorage,
+    nodes: Array[Array[GNode]],
+    stringPoolFuture: concurrent.Future[Array[String]],
+    zstdCtx: ZstdWrapper.ZstdCtx
+  ): Array[?] = {
     if (ptr == null) return null
-    val dec = ZstdWrapper(
-      Zstd.decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)
-    ).order(ByteOrder.LITTLE_ENDIAN)
+    if (ptr.typ == StorageType.String) stringPoolFuture.get()
+
+    val dec =
+      zstdCtx.decompress(channel.map(FileChannel.MapMode.READ_ONLY, ptr.startOffset, ptr.compressedLength), ptr.decompressedLength)
     ptr.typ match {
       case StorageType.Bool =>
         val bytes = new Array[Byte](dec.limit())
@@ -253,9 +279,10 @@ object Deserialization {
         dec.asDoubleBuffer().get(res)
         res
       case StorageType.String =>
-        val res    = new Array[String](dec.limit() >> 2)
-        val intbuf = dec.asIntBuffer()
-        var idx    = 0
+        val stringPool = stringPoolFuture.get()
+        val res        = new Array[String](dec.limit() >> 2)
+        val intbuf     = dec.asIntBuffer()
+        var idx        = 0
         while (idx < res.length) {
           val offset = intbuf.get(idx)
           if (offset >= 0) res(idx) = stringPool(offset)

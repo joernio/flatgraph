@@ -34,8 +34,8 @@ object Manifest {
     var nodes: Array[NodeItem],
     var edges: Array[EdgeItem],
     var properties: Array[PropertyItem],
-    val stringPoolLength: OutlineStorage,
-    val stringPoolBytes: OutlineStorage
+    val stringPoolLength: OutlineStorage = new OutlineStorage(StorageType.Int),
+    val stringPoolBytes: OutlineStorage = new OutlineStorage(StorageType.Byte)
   ) {
     var version = 0
   }
@@ -96,9 +96,9 @@ object Manifest {
     val nodeLabel: String,
     val edgeLabel: String,
     val inout: Byte, // 0: Incoming, 1: Outgoing; see Edge.Direction enum
-    var qty: OutlineStorage,
-    var neighbors: OutlineStorage,
-    var property: OutlineStorage
+    var qty: OutlineStorage = new OutlineStorage,
+    var neighbors: OutlineStorage = new OutlineStorage,
+    var property: OutlineStorage = new OutlineStorage
   ) {
     Edge.Direction.verifyEncodingRange(inout)
   }
@@ -122,11 +122,20 @@ object Manifest {
     }
   }
 
-  class PropertyItem(val nodeLabel: String, val propertyLabel: String, var qty: OutlineStorage, var property: OutlineStorage)
+  class PropertyItem(
+    val nodeLabel: String,
+    val propertyLabel: String,
+    var qty: OutlineStorage = new OutlineStorage,
+    var property: OutlineStorage = new OutlineStorage
+  )
 
   object OutlineStorage {
     def write(item: OutlineStorage): ujson.Value = {
       if (item == null) return ujson.Null
+      if (item.typ == null) {
+        assert(item.startOffset == -1L && item.compressedLength == -1 && item.decompressedLength == -1, s"bad OutlineStorage ${item}")
+        return ujson.Null
+      }
       val res = ujson.Obj()
       res(Keys.Type) = item.typ
       res(Keys.StartOffset) = ujson.Num(item.startOffset.toDouble)
@@ -143,7 +152,8 @@ object Manifest {
 
     def read(item: ujson.Value): OutlineStorage = {
       if (item.isNull) return null
-      val res = new OutlineStorage(item.obj(Keys.Type).str)
+      val res = new OutlineStorage
+      res.typ = item.obj(Keys.Type).str
       res.startOffset = item.obj(Keys.StartOffset).num.toLong
       res.compressedLength = item.obj(Keys.CompressedLength).num.toInt
       res.decompressedLength = item.obj(Keys.DecompressedLength).num.toInt
@@ -151,9 +161,16 @@ object Manifest {
     }
   }
 
-  class OutlineStorage(var typ: String) {
+  class OutlineStorage {
+    var typ: String             = null
     var startOffset: Long       = -1L
     var compressedLength: Int   = -1
     var decompressedLength: Int = -1
+    def this(_typ: String) = {
+      this()
+      this.typ = _typ
+    }
+
+    override def toString: String = super.toString + s"($typ, $startOffset, $compressedLength, $decompressedLength)"
   }
 }

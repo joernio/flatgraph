@@ -3,8 +3,9 @@ package flatgraph
 import DiffGraphBuilder.*
 import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
-import flatgraph.misc.SchemaViolationReporter
+import flatgraph.misc.{Misc, SchemaViolationReporter}
 
+import java.util.concurrent
 import scala.collection.{Iterator, mutable}
 
 object DiffGraphApplier {
@@ -20,10 +21,11 @@ object DiffGraphApplier {
   def applyDiff(
     graph: Graph,
     diff: DiffGraphBuilder,
-    schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter
+    schemaViolationReporter: SchemaViolationReporter = new SchemaViolationReporter,
+    requestedExecutor: Option[concurrent.ExecutorService] = None
   ): Int = {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
-    new DiffGraphApplier(graph, diff, schemaViolationReporter).applyUpdate()
+    new DiffGraphApplier(graph, diff, schemaViolationReporter, requestedExecutor).applyUpdate()
   }
 }
 
@@ -33,7 +35,13 @@ abstract class NewNodePropertyInsertionHelper {
 
 /** The class that is responsible for applying diffgraphs. This is not supposed to be public API, users should stick to applyDiff
   */
-private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, schemaViolationReporter: SchemaViolationReporter) {
+private[flatgraph] class DiffGraphApplier(
+  graph: Graph,
+  diff: DiffGraphBuilder,
+  schemaViolationReporter: SchemaViolationReporter,
+  requestedExecutor: Option[concurrent.ExecutorService] = None
+) {
+  val executor = Misc.maybeOverrideExecutor(requestedExecutor)
   val newNodes = new Array[mutable.ArrayBuffer[DNode]](graph.schema.getNumberOfNodeKinds)
   // newEdges and delEdges are oversized, in order to permit usage of the same indexing function
   val newEdges             = new Array[mutable.ArrayBuffer[AddEdgeProcessed]](graph.neighbors.size)
@@ -43,6 +51,8 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
   val delNodes             = new mutable.ArrayBuffer[GNode]()
   val setNodeProperties    = new Array[mutable.ArrayBuffer[Any]](graph.properties.size)
   val newNodeNewProperties = new Array[Int](graph.properties.size)
+  val newNodeUsers         = new concurrent.atomic.AtomicIntegerArray(graph.schema.getNumberOfNodeKinds)
+  val jobQueue             = mutable.ArrayBuffer[concurrent.Future[Unit]]()
 
   object NewNodeInterface extends BatchedUpdateInterface {
     override def visitContainedNode(contained: DNodeOrNode): Unit = { if (contained != null) getGNode(contained) }
@@ -51,6 +61,10 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       val pos = graph.schema.propertyOffsetArrayIndex(node.nodeKind, propertyKind)
       newNodeNewProperties(pos) += num
     }
+  }
+
+  def submitJob[T](block: => Unit): Unit = {
+    jobQueue.addOne(executor.submit(() => block))
   }
 
   private def insertProperty0(node: GNode, propertyKind: Int, propertyValues: Iterator[Any]): Unit = {
@@ -223,43 +237,62 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     val ndiff = splitUpdate()
     diff.buffer = null
 
-    // set edge properties
-    for {
-      nodeKind  <- graph.schema.nodeKinds
-      edgeKind  <- graph.schema.edgeKinds
-      direction <- Edge.Direction.values
-    } setEdgeProperty(nodeKind, direction, edgeKind)
+    try {
+      // set edge properties
+      for {
+        nodeKind  <- graph.schema.nodeKinds
+        edgeKind  <- graph.schema.edgeKinds
+        direction <- Edge.Direction.values
+      } setEdgeProperty(nodeKind, direction, edgeKind)
 
-    // remove edges
-    for {
-      nodeKind  <- graph.schema.nodeKinds
-      edgeKind  <- graph.schema.edgeKinds
-      direction <- Edge.Direction.values
-    } deleteEdges(nodeKind, direction, edgeKind)
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
 
-    // add nodes
-    for (nodeKind <- graph.schema.nodeKinds)
-      addNodes(nodeKind)
+      // remove edges
+      for {
+        nodeKind  <- graph.schema.nodeKinds
+        edgeKind  <- graph.schema.edgeKinds
+        direction <- Edge.Direction.values
+      } deleteEdges(nodeKind, direction, edgeKind)
 
-    // delete nodes
-    if (delNodes.nonEmpty) {
-      deleteNodes()
-    }
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
 
-    // add edges
-    for {
-      nodeKind  <- graph.schema.nodeKinds
-      edgeKind  <- graph.schema.edgeKinds
-      direction <- Direction.values
-    } addEdges(nodeKind, direction, edgeKind)
+      // add nodes. If necessary, we can start this job earlier in a separate queue; then we must add some extra structures for node sizes at various stages
+      for { nodeKind <- graph.schema.nodeKinds } addNodes(nodeKind)
 
-    // set node properties
-    for (nodeKind <- graph.schema.nodeKinds) {
-      for (propertyKind <- graph.schema.propertyKinds) {
-        setNodeProperties(nodeKind, propertyKind)
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
+
+      // delete nodes
+      // this is harder to parallelize, only do if needed!
+      if (delNodes.nonEmpty) {
+        deleteNodes()
       }
-      // we can now clear the newnodes
-      newNodes(nodeKind) = null
+
+      // add edges
+      for {
+        nodeKind  <- graph.schema.nodeKinds
+        edgeKind  <- graph.schema.edgeKinds
+        direction <- Direction.values
+      } addEdges(nodeKind, direction, edgeKind)
+
+      // set node properties. This doesn't need to wait for add edges to be complete!
+      for (nodeKind <- graph.schema.nodeKinds) {
+        for { propertyKind <- graph.schema.propertyKinds } setNodeProperties(nodeKind, propertyKind)
+        if (newNodeUsers.decrementAndGet(nodeKind) == -1) {
+          // whoever reaches newNodeUsers(nodeKind) == -1 first is permitted to free it.
+          newNodes(nodeKind) = null
+        }
+      }
+
+      jobQueue.foreach(_.get())
+      jobQueue.clear()
+    } catch {
+      case ex: java.util.concurrent.ExecutionException =>
+        // the whole parallelization / executor stuff wraps exceptions
+        // we unwrap them again, in order to not break tests for e.g. SchemaViolationException
+        throw ex.getCause()
     }
     ndiff
   }
@@ -441,191 +474,214 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
     if (newNodes(nodeKind) == null || newNodes(nodeKind).isEmpty) {
       return
     }
-    graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).map(_.storedRef.get))
-    graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
+    submitJob {
+      graph.nodesArray(nodeKind) = graph.nodesArray(nodeKind).appendedAll(newNodes(nodeKind).iterator.map(_.storedRef.get))
+      graph.livingNodeCountByKind(nodeKind) += newNodes(nodeKind).size
+    }
   }
 
   private def setEdgeProperty(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
     val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
     if (setEdgeProperties(pos) == null) return
-    val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
-    val oldQty = graph.neighbors(pos).asInstanceOf[Array[Int]]
-    val edgeProp = graph.neighbors(pos + 2) match {
-      case _: DefaultValue =>
-        graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size)
-      case other =>
-        other
-      // ^ change this once we switch away from full copy-on-write, see e.g.
-      // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
+    submitJob {
+      val size   = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]].size
+      val oldQty = graph.neighbors(pos).asInstanceOf[Array[Int]]
+      val edgeProp = graph.neighbors(pos + 2) match {
+        case _: DefaultValue =>
+          graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, size)
+        case other =>
+          other
+        // ^ change this once we switch away from full copy-on-write, see e.g.
+        // https://github.com/joernio/flatgraph/pull/163#discussion_r1537246314
+      }
+      val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[mutable.ArraySeq[Any]]
+      // this will fail if the edge doesn't support properties. todo: better error message
+      val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
+      for (edgeRepr <- setEdgeProperties(pos)) {
+        val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
+        propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
+      }
+      graph.neighbors(pos + 2) = edgeProp
+      setEdgeProperties(pos) == null
     }
-    val propview = mutable.ArraySeq.make(edgeProp.asInstanceOf[Array[?]]).asInstanceOf[mutable.ArraySeq[Any]]
-    // this will fail if the edge doesn't support properties. todo: better error message
-    val default = graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind = edgeKind, size = 1)(0)
-    for (edgeRepr <- setEdgeProperties(pos)) {
-      val index = oldQty(edgeRepr.src.seq()) + edgeRepr.subSeq - 1
-      propview(index) = if (edgeRepr.property == DefaultValue) default else edgeRepr.property
-    }
-    graph.neighbors(pos + 2) = edgeProp
-    setEdgeProperties(pos) == null
   }
 
   private def deleteEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
-    val pos       = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val deletions = delEdges(pos)
-    if (deletions == null) return
-    assert(
-      deletions.forall { edge =>
-        edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
-      },
-      s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
-    )
+    val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    if (delEdges(pos) == null) return
+    submitJob {
+      val deletions = delEdges(pos)
+      assert(
+        deletions.forall { edge =>
+          edge.edgeKind == edgeKind && edge.src.nodeKind == nodeKind && edge.subSeq > 0
+        },
+        s"something went wrong when deleting edges - values for debugging: edgeKind=$edgeKind; nodeKind=$nodeKind"
+      )
 
-    deletions.sortInPlaceBy(numberForEdgeComparison)
-    dedupBy(deletions, numberForEdgeComparison)
-    val nodeCount    = graph.nodeCountByKind(nodeKind)
-    val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
-    val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
+      deletions.sortInPlaceBy(numberForEdgeComparison)
+      dedupBy(deletions, numberForEdgeComparison)
+      val nodeCount    = graph.nodeCountByKind(nodeKind)
+      val oldQty       = graph.neighbors(pos).asInstanceOf[Array[Int]]
+      val oldNeighbors = graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]
 
-    val newQty       = new Array[Int](nodeCount + 1)
-    val newNeighbors = new Array[GNode](get(oldQty, nodeCount) - deletions.length)
+      val newQty       = new Array[Int](nodeCount + 1)
+      val newNeighbors = new Array[GNode](get(oldQty, nodeCount) - deletions.length)
 
-    val oldProperty = graph.neighbors(pos + 2) match {
-      case _: DefaultValue => null
-      case other           => other
-    }
-    val newProperty =
-      if (oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size)
-      else null
-
-    var deletionCounter = 0
-    var copyStartSeq    = 0
-    while (copyStartSeq < nodeCount) {
-      val deletionSeq = if (deletionCounter < deletions.size) deletions(deletionCounter).src.seq else nodeCount
-      // we first copy unaffected neighbors
-      val copyStartIndex        = get(oldQty, copyStartSeq)
-      val deletionSeqIndexStart = get(oldQty, deletionSeq)
-      val deletionSeqIndexEnd   = get(oldQty, deletionSeq + 1)
-      System.arraycopy(oldNeighbors, copyStartIndex, newNeighbors, copyStartIndex - deletionCounter, deletionSeqIndexStart - copyStartIndex)
-      if (oldProperty != null)
-        System.arraycopy(oldProperty, copyStartIndex, newProperty, copyStartIndex - deletionCounter, deletionSeqIndexStart - copyStartIndex)
-
-      for (idx <- Range(copyStartSeq, deletionSeq + 1))
-        newQty(idx) = get(oldQty, idx) - deletionCounter
-
-      copyStartSeq = deletionSeq + 1
-      // we now copy over the non-deleted edges of the critical deletionSeq
-      if (deletionCounter < deletions.size) {
-        var deletion = deletions(deletionCounter)
-        var idx      = 0
-        while (idx < deletionSeqIndexEnd - deletionSeqIndexStart) {
-          if (deletion != null && idx == deletion.subSeq - 1) {
-            assert(
-              deletion.dst == oldNeighbors(deletionSeqIndexStart + idx),
-              s"deletion.dst was supposed to be `${oldNeighbors(deletionSeqIndexStart + idx)}`, but instead is ${deletion.dst}"
-            )
-            deletionCounter += 1
-            deletion = if (deletionCounter < deletions.size) deletions(deletionCounter) else null
-            if (deletion != null && deletion.src.seq() != deletionSeq) deletion = null
-          } else {
-            newNeighbors(deletionSeqIndexStart + idx - deletionCounter) = oldNeighbors(deletionSeqIndexStart + idx)
-            if (oldProperty != null)
-              System.arraycopy(oldProperty, deletionSeqIndexStart + idx, newProperty, deletionSeqIndexStart + idx - deletionCounter, 1)
-          }
-          idx += 1
-        }
-        newQty(deletionSeq + 1) = deletionSeqIndexStart + idx - deletionCounter
+      val oldProperty = graph.neighbors(pos + 2) match {
+        case _: DefaultValue => null
+        case other           => other
       }
+      val newProperty =
+        if (oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size)
+        else null
+
+      var deletionCounter = 0
+      var copyStartSeq    = 0
+      while (copyStartSeq < nodeCount) {
+        val deletionSeq = if (deletionCounter < deletions.size) deletions(deletionCounter).src.seq else nodeCount
+        // we first copy unaffected neighbors
+        val copyStartIndex        = get(oldQty, copyStartSeq)
+        val deletionSeqIndexStart = get(oldQty, deletionSeq)
+        val deletionSeqIndexEnd   = get(oldQty, deletionSeq + 1)
+        System.arraycopy(
+          oldNeighbors,
+          copyStartIndex,
+          newNeighbors,
+          copyStartIndex - deletionCounter,
+          deletionSeqIndexStart - copyStartIndex
+        )
+        if (oldProperty != null)
+          System.arraycopy(
+            oldProperty,
+            copyStartIndex,
+            newProperty,
+            copyStartIndex - deletionCounter,
+            deletionSeqIndexStart - copyStartIndex
+          )
+
+        for (idx <- Range(copyStartSeq, deletionSeq + 1))
+          newQty(idx) = get(oldQty, idx) - deletionCounter
+
+        copyStartSeq = deletionSeq + 1
+        // we now copy over the non-deleted edges of the critical deletionSeq
+        if (deletionCounter < deletions.size) {
+          var deletion = deletions(deletionCounter)
+          var idx      = 0
+          while (idx < deletionSeqIndexEnd - deletionSeqIndexStart) {
+            if (deletion != null && idx == deletion.subSeq - 1) {
+              assert(
+                deletion.dst == oldNeighbors(deletionSeqIndexStart + idx),
+                s"deletion.dst was supposed to be `${oldNeighbors(deletionSeqIndexStart + idx)}`, but instead is ${deletion.dst}"
+              )
+              deletionCounter += 1
+              deletion = if (deletionCounter < deletions.size) deletions(deletionCounter) else null
+              if (deletion != null && deletion.src.seq() != deletionSeq) deletion = null
+            } else {
+              newNeighbors(deletionSeqIndexStart + idx - deletionCounter) = oldNeighbors(deletionSeqIndexStart + idx)
+              if (oldProperty != null)
+                System.arraycopy(oldProperty, deletionSeqIndexStart + idx, newProperty, deletionSeqIndexStart + idx - deletionCounter, 1)
+            }
+            idx += 1
+          }
+          newQty(deletionSeq + 1) = deletionSeqIndexStart + idx - deletionCounter
+        }
+      }
+      graph.neighbors(pos) = newQty
+      graph.neighbors(pos + 1) = newNeighbors
+      graph.neighbors(pos + 2) = newProperty match {
+        case null  => graph.neighbors(pos + 2)
+        case other => other
+      }
+      delEdges(pos) = null
     }
-    graph.neighbors(pos) = newQty
-    graph.neighbors(pos + 1) = newNeighbors
-    graph.neighbors(pos + 2) = newProperty match {
-      case null  => graph.neighbors(pos + 2)
-      case other => other
-    }
-    delEdges(pos) = null
   }
 
   private def addEdges(nodeKind: Int, direction: Direction, edgeKind: Int): Unit = {
-    val pos        = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-    val insertions = newEdges(pos)
-    if (insertions == null) {
+    val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+    if (newEdges(pos) == null) {
       return
     }
+    submitJob {
+      val insertions = newEdges(pos)
 
-    insertions.sortInPlaceBy(_.src.seq)
+      insertions.sortInPlaceBy(_.src.seq)
 
-    assert(insertions.nonEmpty, "insertions must be nonEmpty")
-    assert(
-      insertions.forall(edge => edge.src.nodeKind == nodeKind && edge.edgeKind == edgeKind),
-      s"something went wrong while adding edges - values for debugging: nodeKind=$nodeKind; edgeKind=$edgeKind"
-    )
+      assert(insertions.nonEmpty, "insertions must be nonEmpty")
+      assert(
+        insertions.forall(edge => edge.src.nodeKind == nodeKind && edge.edgeKind == edgeKind),
+        s"something went wrong while adding edges - values for debugging: nodeKind=$nodeKind; edgeKind=$edgeKind"
+      )
 
-    val nodeCount    = graph.nodesArray(nodeKind).length
-    val oldQty       = Option(graph.neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
-    val oldNeighbors = Option(graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
-    val newQty       = new Array[Int](nodeCount + 1)
-    val newNeighbors = new Array[GNode](get(oldQty, nodeCount) + insertions.size)
+      val nodeCount    = graph.nodesArray(nodeKind).length
+      val oldQty       = Option(graph.neighbors(pos).asInstanceOf[Array[Int]]).getOrElse(new Array[Int](1))
+      val oldNeighbors = Option(graph.neighbors(pos + 1).asInstanceOf[Array[GNode]]).getOrElse(new Array[GNode](0))
+      val newQty       = new Array[Int](nodeCount + 1)
+      val newNeighbors = new Array[GNode](get(oldQty, nodeCount) + insertions.size)
 
-    val hasNewProp = insertions.exists(_.property != DefaultValue)
-    val oldProperty = graph.neighbors(pos + 2) match {
-      case _: DefaultValue => null
-      case other           => other
-    }
-    val newProperty =
-      if (hasNewProp || oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size) else null
-    val newPropertyView = mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]]
-
-    var insertionCounter = 0
-    var copyStartSeq     = 0
-    while (copyStartSeq < nodeCount) {
-      val insertionSeq = if (insertionCounter < insertions.size) insertions(insertionCounter).src.seq else nodeCount - 1
-
-      val copyStartIdx = get(oldQty, copyStartSeq)
-      val insertionIdx = get(oldQty, insertionSeq + 1)
-
-      // copy from  copyStartSeq -> insertionSeq inclusive
-      System.arraycopy(oldNeighbors, copyStartIdx, newNeighbors, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
-      if (oldProperty != null)
-        System.arraycopy(oldProperty, copyStartIdx, newProperty, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
-      for (idx <- Range(copyStartSeq, insertionSeq + 2))
-        newQty(idx) = get(oldQty, idx) + insertionCounter
-
-      // insert
-      val insertionBaseIndex = newQty(insertionSeq + 1) - insertionCounter
-      while (insertionCounter < insertions.size && insertions(insertionCounter).src.seq == insertionSeq) {
-        val insertion = insertions(insertionCounter)
-        newNeighbors(insertionBaseIndex + insertionCounter) = insertion.dst
-        if (newPropertyView != null && insertion.property != DefaultValue) {
-          try {
-            newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
-          } catch {
-            case _: ArrayStoreException | _: ClassCastException =>
-              val edgeType = graph.schema.getEdgeLabel(nodeKind, edgeKind)
-              throw new UnsupportedOperationException(
-                s"unsupported property type `${insertion.property.getClass}` for edge type `$edgeType`"
-              )
-          }
-        }
-        insertionCounter += 1
+      val hasNewProp = insertions.exists(_.property != DefaultValue)
+      val oldProperty = graph.neighbors(pos + 2) match {
+        case _: DefaultValue => null
+        case other           => other
       }
-      newQty(insertionSeq + 1) = insertionBaseIndex + insertionCounter
-      copyStartSeq = insertionSeq + 1
+      val newProperty =
+        if (hasNewProp || oldProperty != null) graph.schema.allocateEdgeProperty(nodeKind, direction, edgeKind, newNeighbors.size) else null
+      val newPropertyView = mutable.ArraySeq.make(newProperty).asInstanceOf[mutable.ArraySeq[Any]]
+
+      var insertionCounter = 0
+      var copyStartSeq     = 0
+      while (copyStartSeq < nodeCount) {
+        val insertionSeq = if (insertionCounter < insertions.size) insertions(insertionCounter).src.seq else nodeCount - 1
+
+        val copyStartIdx = get(oldQty, copyStartSeq)
+        val insertionIdx = get(oldQty, insertionSeq + 1)
+
+        // copy from  copyStartSeq -> insertionSeq inclusive
+        System.arraycopy(oldNeighbors, copyStartIdx, newNeighbors, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
+        if (oldProperty != null)
+          System.arraycopy(oldProperty, copyStartIdx, newProperty, copyStartIdx + insertionCounter, insertionIdx - copyStartIdx)
+        for (idx <- Range(copyStartSeq, insertionSeq + 2))
+          newQty(idx) = get(oldQty, idx) + insertionCounter
+
+        // insert
+        val insertionBaseIndex = newQty(insertionSeq + 1) - insertionCounter
+        while (insertionCounter < insertions.size && insertions(insertionCounter).src.seq == insertionSeq) {
+          val insertion = insertions(insertionCounter)
+          newNeighbors(insertionBaseIndex + insertionCounter) = insertion.dst
+          if (newPropertyView != null && insertion.property != DefaultValue) {
+            try {
+              newPropertyView(insertionBaseIndex + insertionCounter) = insertion.property
+            } catch {
+              case _: ArrayStoreException | _: ClassCastException =>
+                val edgeType = graph.schema.getEdgeLabel(nodeKind, edgeKind)
+                throw new UnsupportedOperationException(
+                  s"unsupported property type `${insertion.property.getClass}` for edge type `$edgeType`"
+                )
+            }
+          }
+          insertionCounter += 1
+        }
+        newQty(insertionSeq + 1) = insertionBaseIndex + insertionCounter
+        copyStartSeq = insertionSeq + 1
+      }
+      graph.neighbors(pos) = newQty
+      graph.neighbors(pos + 1) = newNeighbors
+      graph.neighbors(pos + 2) = newProperty match {
+        case null  => graph.neighbors(pos + 2)
+        case other => other
+      }
+      newEdges(pos) = null
     }
-    graph.neighbors(pos) = newQty
-    graph.neighbors(pos + 1) = newNeighbors
-    graph.neighbors(pos + 2) = newProperty match {
-      case null  => graph.neighbors(pos + 2)
-      case other => other
-    }
-    newEdges(pos) = null
   }
 
   private def setNodeProperties(nodeKind: Int, propertyKind: Int): Unit = {
-    val schema      = graph.schema
-    val pos         = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-    val viaNewNode  = newNodeNewProperties(pos)
-    val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
-    if (setNodeProperties(pos) != null || viaNewNode > 0) {
+    val schema     = graph.schema
+    val pos        = schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+    val viaNewNode = newNodeNewProperties(pos)
+    if (setNodeProperties(pos) == null && viaNewNode == 0) return
+    newNodeUsers.incrementAndGet(nodeKind)
+
+    submitJob {
+      val propertyBuf = Option(setNodeProperties(pos)).getOrElse(mutable.ArrayBuffer.empty)
       val setPropertyPositions =
         Option(setNodeProperties(pos + 1)).getOrElse(mutable.ArrayBuffer.empty).asInstanceOf[mutable.ArrayBuffer[SetPropertyDesc]]
       graph.inverseIndices.set(pos, null)
@@ -689,6 +745,11 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
         graph.properties(pos + 1) = newProperty
         setNodeProperties(pos) = null
         setNodeProperties(pos + 1) = null
+        if (newNodeUsers.decrementAndGet(nodeKind) == -1) {
+          // whoever reaches newNodeUsers(nodeKind) == -1 first is permitted to free it.
+          newNodes(nodeKind) = null
+        }
+
       }
     }
   }
@@ -698,9 +759,12 @@ private[flatgraph] class DiffGraphApplier(graph: Graph, diff: DiffGraphBuilder, 
       // this is a dirty hack in order to make scala type system shut up
       buf.asInstanceOf[mutable.ArrayBuffer[T]].copyToArray(dst)
     } catch {
-      case _: ArrayStoreException =>
+      case store: ArrayStoreException =>
         val typeMaybe = buf.headOption.map(property => s": ${property.getClass}").getOrElse("")
-        throw new UnsupportedOperationException(s"unsupported property type$typeMaybe")
+        throw new UnsupportedOperationException(
+          s"unsupported property type$typeMaybe on ${Option(dst).map { _.getClass.toString }.orNull}",
+          store
+        )
     }
   }
 
