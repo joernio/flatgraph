@@ -290,6 +290,8 @@ private[flatgraph] class DiffGraphApplier(
       jobQueue.clear()
     } catch {
       case ex: java.util.concurrent.ExecutionException =>
+        // the whole parallelization / executor stuff wraps exceptions
+        // we unwrap them again, in order to not break tests for e.g. SchemaViolationException
         throw ex.getCause()
     }
     ndiff
