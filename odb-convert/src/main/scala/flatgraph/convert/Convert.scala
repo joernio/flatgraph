@@ -1,6 +1,7 @@
 package flatgraph.convert
 
 import flatgraph.misc.{ISeq, Misc}
+import flatgraph.storage.Manifest.NodeItem
 import flatgraph.{AccessHelpers, Accessors, Edge, GNode, storage}
 import flatgraph.storage.{Keys, Manifest, Serialization, StorageType}
 import org.msgpack.core.{MessageBufferPacker, MessagePack}
@@ -44,8 +45,8 @@ object Convert {
 
   def convertOdbToFlatgraph(overflowDbFile: Path, outputFile: Path, verbose: Boolean = false): Unit = {
     val storage = overflowdb.storage.OdbStorage.createWithSpecificLocation(overflowDbFile.toFile, new overflowdb.util.StringInterner)
-    val (nodes, strings) = readOdb(storage)
-    writeData(outputFile.toFile, nodes, strings, verbose = verbose)
+    val nodes   = readOdb(storage)
+    writeData(outputFile.toFile, nodes, verbose = verbose)
   }
 
   def convertFlatgraphToOdb(fgFile: Path, outputFile: Path, debug: Boolean = false, verbose: Boolean = false): Unit = {
@@ -65,10 +66,9 @@ object Convert {
       val bytes = packNode(node, storage)
       if (debug) {
         val legacyIdToNewId = mutable.HashMap[Long, NodeRefTmp]()
-        val stringInterner  = mutable.LinkedHashMap[String, StringRef]()
         val byLabel         = mutable.LinkedHashMap[String, NodeStuff]()
         try {
-          readNode(legacyIdToNewId, stringInterner, node.id(), bytes, byLabel, storage)
+          readNode(legacyIdToNewId, node.id(), bytes, byLabel, storage)
         } catch {
           case exc: Throwable =>
             println(s"Inconsistency encountered ${node.seq()} / ${node.nodeKind} / ${node.label()} / ${node.id()}")
@@ -82,10 +82,8 @@ object Convert {
   }
 
   class NodeRefTmp(val legacyId: Long) {
-    var newId: Long = -1L
+    var newNode: flatgraph.GNode = null
   }
-
-  class StringRef(val idx: Int, val string: String)
 
   private object NodeStuff {
     val NODEPROPERTY        = "p"
@@ -124,7 +122,7 @@ object Convert {
     }
   }
 
-  private def writeData(filename: File, nodeStuff: Array[NodeStuff], strings: Array[String], verbose: Boolean = false): Unit = {
+  private def writeData(filename: File, nodeStuff: Array[NodeStuff], verbose: Boolean = false): Unit = {
     val fileAbsolute = filename.getAbsoluteFile
     val filePtr      = new AtomicLong(16)
     if (!fileAbsolute.exists()) {
@@ -168,7 +166,7 @@ object Convert {
           }
         }
       }
-      val manifest = new Manifest.GraphItem(nodes.toArray, edges.toArray, properties.toArray)
+      val manifest = new Manifest.GraphItem(nodes, edges.toArray, properties.toArray)
       writer.finish(manifest)
     } finally { fileChannel.close(); writer.compressCtx.close(); }
   }
@@ -183,15 +181,12 @@ object Convert {
       case Some(_: Long)    => (storage.StorageType.Long, items.asInstanceOf[mutable.ArrayBuffer[Long]].toArray)
       case Some(_: Float)   => (storage.StorageType.Float, items.asInstanceOf[mutable.ArrayBuffer[Float]].toArray)
       case Some(_: Double)  => (storage.StorageType.Double, items.asInstanceOf[mutable.ArrayBuffer[Double]].toArray)
-      case Some(_: StringRef) =>
-        (
-          storage.StorageType.String,
-          items.asInstanceOf[mutable.ArrayBuffer[StringRef]].map { ref => if (ref == null) -1 else ref.idx }.toArray
-        )
+      case Some(_: String) =>
+        (storage.StorageType.String, items.asInstanceOf[mutable.ArrayBuffer[String]].toArray)
       case Some(_: NodeRefTmp) =>
         (
           storage.StorageType.Ref,
-          items.asInstanceOf[mutable.ArrayBuffer[NodeRefTmp]].map { ref => if (ref == null) 0x0000ffffffffffffL else ref.newId }.toArray
+          items.asInstanceOf[mutable.ArrayBuffer[NodeRefTmp]].iterator.map { ref => if (ref == null) null else ref.newNode }.toArray
         )
       case Some(other) => throw new AssertionError(s"unexpected item found: other of type ${other.getClass}")
     }
@@ -377,7 +372,6 @@ object Convert {
 
   def readNode(
     legacyIdToNewId: mutable.HashMap[Long, NodeRefTmp],
-    stringInterner: mutable.LinkedHashMap[String, StringRef],
     legacyId: Long,
     bytes: Array[Byte],
     byLabel: mutable.LinkedHashMap[String, NodeStuff],
@@ -392,13 +386,13 @@ object Convert {
     val sz        = byLabel.size
     val nodeStuff = byLabel.getOrElseUpdate(label, new NodeStuff(label, sz))
     val ref       = legacyIdToNewId.getOrElseUpdate(legacyId, new NodeRefTmp(legacyId))
-    ref.newId = nodeStuff.nextId.toLong + (nodeStuff.kind.toLong << 32)
+    ref.newNode = new GNode(null, nodeStuff.kind.toShort, nodeStuff.nextId)
     nodeStuff.nextId += 1
     // nodeStuff.addX(NodeStuff.NODEPROPERTY, NodeStuff.legacyId, legacyId)
     val nprops = unpacker.unpackMapHeader()
     for (_ <- Range(0, nprops)) {
       val key = storage.reverseLookupStringToIntMapping(unpacker.unpackInt())
-      for (v <- unpackValue(legacyIdToNewId, stringInterner, unpacker.unpackValue().asArrayValue())) {
+      for (v <- unpackValue(legacyIdToNewId, unpacker.unpackValue().asArrayValue())) {
         nodeStuff.addX(NodeStuff.NODEPROPERTY, key, v)
       }
     }
@@ -414,7 +408,7 @@ object Convert {
             case 0 => (null, null) // no property
             case 1 =>
               val pkey  = storage.reverseLookupStringToIntMapping(unpacker.unpackInt())
-              val pvals = unpackValue(legacyIdToNewId, stringInterner, unpacker.unpackValue().asArrayValue())
+              val pvals = unpackValue(legacyIdToNewId, unpacker.unpackValue().asArrayValue())
               if (pvals.length == 0) (null, null)
               else if (pvals.length == 1) (pkey, pvals.head)
               else ???
@@ -427,25 +421,23 @@ object Convert {
 
   }
 
-  private def readOdb(storage: overflowdb.storage.OdbStorage): (Array[NodeStuff], Array[String]) = {
+  private def readOdb(storage: overflowdb.storage.OdbStorage): Array[NodeStuff] = {
     val legacyIdToNewId = mutable.HashMap[Long, NodeRefTmp]()
-    val stringInterner  = mutable.LinkedHashMap[String, StringRef]()
     val byLabel         = mutable.LinkedHashMap[String, NodeStuff]()
     val iter            = storage.allNodes().iterator
     while (iter.hasNext) {
       val e        = iter.next()
       val legacyId = e.getKey
       val bytes    = e.getValue
-      readNode(legacyIdToNewId, stringInterner, legacyId, bytes, byLabel, storage)
+      readNode(legacyIdToNewId, legacyId, bytes, byLabel, storage)
     }
 
     byLabel.valuesIterator.foreach { _.pad() }
-    (byLabel.valuesIterator.toArray, stringInterner.keysIterator.toArray)
+    byLabel.valuesIterator.toArray
   }
 
   def unpackValue(
     legacyIdToNewId: mutable.HashMap[Long, NodeRefTmp],
-    stringInterner: mutable.LinkedHashMap[String, StringRef],
     valueOrPair: org.msgpack.value.Value,
     res: mutable.ArrayBuffer[Any] = mutable.ArrayBuffer[Any](),
     typId: Option[ValueTypes] = None
@@ -467,9 +459,7 @@ object Convert {
       case ValueTypes.LONG    => res.addOne(v.asIntegerValue.asLong)
       case ValueTypes.FLOAT   => res.addOne(v.asFloatValue.toFloat)
       case ValueTypes.DOUBLE  => res.addOne(v.asFloatValue.toDouble)
-      case ValueTypes.STRING =>
-        val s = v.asStringValue().asString()
-        res.addOne(stringInterner.getOrElseUpdate(s, new StringRef(stringInterner.size, s)))
+      case ValueTypes.STRING  => res.addOne(v.asStringValue().asString())
       case ValueTypes.NODE_REF =>
         val legacyId = v.asIntegerValue.asLong
         res.addOne(legacyIdToNewId.get(legacyId) match {
@@ -482,7 +472,7 @@ object Convert {
       case ValueTypes.LIST | ValueTypes.ARRAY_OBJECT =>
         val iter = v.asArrayValue().iterator()
         while (iter.hasNext) {
-          unpackValue(legacyIdToNewId, stringInterner, iter.next().asArrayValue(), res)
+          unpackValue(legacyIdToNewId, iter.next().asArrayValue(), res)
         }
       case ValueTypes.ARRAY_BOOL | ValueTypes.ARRAY_BYTE | ValueTypes.ARRAY_SHORT | ValueTypes.ARRAY_INT | ValueTypes.ARRAY_LONG |
           ValueTypes.ARRAY_FLOAT | ValueTypes.ARRAY_DOUBLE =>
@@ -498,7 +488,7 @@ object Convert {
         }
         val iter = v.asArrayValue().iterator()
         while (iter.hasNext) {
-          unpackValue(legacyIdToNewId, stringInterner, iter.next().asArrayValue(), res, Some(elementType))
+          unpackValue(legacyIdToNewId, iter.next().asArrayValue(), res, Some(elementType))
         }
 
       case _ => ???
