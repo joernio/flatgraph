@@ -4,8 +4,10 @@ ThisBuild / scalaVersion := scala3
 
 val scala3 = "3.5.2"
 val scala2_12 = "2.12.20"
-val slf4jVersion = "2.0.16"
+val osLibVersion = "0.11.4"
 val commonsTextVersion = "1.13.0"
+val slf4jVersion = "2.0.17"
+val scalafmtVersion = "3.9.4"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft
@@ -28,8 +30,8 @@ lazy val core = project
   .settings(
     name := "flatgraph-core",
     libraryDependencies ++= Seq(
-      "com.lihaoyi"     %% "ujson"  % "4.0.2",
-      "com.github.luben" % "zstd-jni" % "1.5.6-8",
+      "com.lihaoyi"     %% "ujson"  % "4.1.0",
+      "com.github.luben" % "zstd-jni" % "1.5.7-2",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
     )
   )
@@ -70,7 +72,7 @@ lazy val tests = project
     publish / skip := true,
     libraryDependencies ++= Seq(
       "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
-      "org.scalamock" %% "scalamock" % "6.0.0" % Test
+      "org.scalamock" %% "scalamock" % "7.2.0" % Test
     ),
   )
 
@@ -82,10 +84,10 @@ lazy val domainClassesGenerator_3 = project
     sourceDirectory := baseDirectory.value / "../domain-classes-generator/src",
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional,
-      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "com.lihaoyi" %% "os-lib" % osLibVersion,
       "org.apache.commons" % "commons-text" % commonsTextVersion,
       "com.github.scopt" %% "scopt" % "4.1.0",
-      ("org.scalameta" %% "scalafmt-dynamic" % "3.7.17").cross(CrossVersion.for3Use2_13),
+      ("org.scalameta" %% "scalafmt-dynamic" % scalafmtVersion).cross(CrossVersion.for3Use2_13),
     ),
   )
 
@@ -98,10 +100,10 @@ lazy val domainClassesGenerator_2_12 = project
     scalacOptions := scalacOptionsFor2_12,
     libraryDependencies ++= Seq(
       "org.slf4j"% "slf4j-simple" % slf4jVersion % Optional,
-      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "com.lihaoyi" %% "os-lib" % osLibVersion,
       "org.apache.commons" % "commons-text" % commonsTextVersion,
       "com.github.scopt" %% "scopt" % "4.1.0",
-      "org.scalameta" %% "scalafmt-dynamic" % "3.7.17",
+      "org.scalameta" %% "scalafmt-dynamic" % scalafmtVersion,
     ),
   )
 
@@ -113,7 +115,7 @@ lazy val sbtPlugin = project
     name := "sbt-flatgraph",
     scalaVersion := scala2_12,
     scalacOptions := scalacOptionsFor2_12,
-    addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2"),
+    addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.4"),
     // the default sbt naming convention for plugins does not conform to the
     // maven specification - see https://github.com/sbt/sbt/issues/3410
     sbtPluginPublishLegacyMavenStyle := false,
@@ -126,7 +128,7 @@ lazy val odbConvert = project
   .settings(
     name := "flatgraph-odb-convert",
     libraryDependencies ++= Seq(
-      "io.shiftleft" %% "overflowdb-core" % "1.181",
+      "io.shiftleft" %% "overflowdb-core" % "1.193",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )
