@@ -220,7 +220,7 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
 
 object Serialization {
 
-  def writeGraph(g: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): Unit = {
+  def writeGraph(g: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): (Int, Int, Int) = {
 
     // ensure parent directory exists
     Option(storagePath.getParent) match {
@@ -243,7 +243,7 @@ object Serialization {
     }
   }
 
-  private def innerWriteGraph(g: Graph, writer: WriterContext): Unit = {
+  private def innerWriteGraph(g: Graph, writer: WriterContext): (Int, Int, Int) = {
     val nodes      = mutable.ArrayBuffer.empty[NodeItem]
     val edges      = mutable.ArrayBuffer.empty[EdgeItem]
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
@@ -288,9 +288,11 @@ object Serialization {
       }
     }
 
+    val counts   = (nodes.size, edges.size, properties.size)
     val manifest = new GraphItem(nodes.toArray, edges.toArray, properties.toArray)
     writer.finish(manifest)
 
+    counts
   }
 
   private[flatgraph] def write(bytes: Array[Byte], res: OutlineStorage, filePtr: AtomicLong, fileChannel: FileChannel): OutlineStorage = {
