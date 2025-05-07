@@ -4,6 +4,7 @@ import flatgraph.{AccessHelpers, FreeSchema, GNode, Graph, Schema}
 import flatgraph.Edge.Direction
 import flatgraph.misc.Misc
 import flatgraph.storage.Manifest.{GraphItem, OutlineStorage}
+import org.slf4j.LoggerFactory
 
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
@@ -14,6 +15,7 @@ import scala.collection.mutable
 import java.util.concurrent
 
 object Deserialization {
+  private val logger = LoggerFactory.getLogger(classOf[Deserialization.type])
 
   def readGraph(
     storagePath: Path,
@@ -34,8 +36,11 @@ object Deserialization {
     try {
       // fixme: Use convenience methods from schema to translate string->id. Fix after we get strict schema checking.
       val manifest = GraphItem.read(readManifest(fileChannel))
-      val pool     = submitJob { readPool(manifest, fileChannel, zstdCtx) }
-      val schema   = schemaMaybe.getOrElse(freeSchemaFromManifest(manifest))
+      logger.debug(
+        s"loading graph with ${manifest.nodes.length} nodes, ${manifest.edges.length} edges, ${manifest.properties.length} properties"
+      )
+      val pool   = submitJob { readPool(manifest, fileChannel, zstdCtx) }
+      val schema = schemaMaybe.getOrElse(freeSchemaFromManifest(manifest))
       val storagePathMaybe =
         if (persistOnClose) Option(storagePath)
         else None
