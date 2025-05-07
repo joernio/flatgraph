@@ -156,7 +156,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     this.closed = true
 
     storagePathMaybe.foreach { storagePath =>
-      logger.info(s"closing graph: writing to storage at `$storagePath`")
+      logger.info(s"closing graph: writing $nodeCount nodes and $edgeCount edges to storage at `$storagePath`")
       Serialization.writeGraph(this, storagePath)
     }
   }
