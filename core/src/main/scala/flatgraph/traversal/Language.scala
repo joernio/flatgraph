@@ -399,7 +399,7 @@ class NodeMethods(node: GNode) extends AnyVal {
     out ++ in
 
   /** follow the given IN and OUT edge(s) to their adjacent nodes */
-  @Doc("follow the given OUT and IN edge(s) to their adjacent nodes")
+  @Doc(info = "follow the given OUT and IN edge(s) to their adjacent nodes")
   def both(edgeLabel: String): Iterator[GNode] =
     out(edgeLabel) ++ in(edgeLabel)
 
@@ -420,12 +420,12 @@ class NodeMethods(node: GNode) extends AnyVal {
     Accessors.getEdgesIn(node, edgeKind = edgeKind(edgeLabel))
 
   /** follow _all_ OUT and IN edge(s) */
-  @Doc("follow all OUT and IN edge(s)")
+  @Doc(info = "follow all OUT and IN edge(s)")
   def bothE: Iterator[Edge] =
     outE ++ inE
 
   /** follow the given OUT and IN edge(s) */
-  @Doc("follow the given OUT and IN edge(s)")
+  @Doc(info = "follow the given OUT and IN edge(s)")
   def bothE(edgeLabel: String): Iterator[Edge] =
     outE(edgeLabel) ++ inE(edgeLabel)
 
@@ -569,17 +569,17 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
     traversal.flatMap(node => node.out ++ node.in)
 
   /** follow the given OUT edge(s) to their adjacent nodes */
-  @Doc("follow the given OUT edge(s) to their adjacent nodes")
+  @Doc(info = "follow the given OUT edge(s) to their adjacent nodes")
   def out(edgeLabel: String): Iterator[GNode] =
     traversal.flatMap(_.out(edgeLabel))
 
   /** follow the given IN edge(s) to their adjacent nodes */
-  @Doc("follow the given IN edge(s) to their adjacent nodes")
+  @Doc(info = "follow the given IN edge(s) to their adjacent nodes")
   def in(edgeLabel: String): Iterator[GNode] =
     traversal.flatMap(_.in(edgeLabel))
 
   /** follow the given IN and OUT edge(s) to their adjacent nodes */
-  @Doc("follow the given OUT and IN edge(s) to their adjacent nodes")
+  @Doc(info = "follow the given OUT and IN edge(s) to their adjacent nodes")
   def both(edgeLabel: String): Iterator[GNode] =
     traversal.flatMap(node => node.out(edgeLabel) ++ node.in(edgeLabel))
 
@@ -600,16 +600,16 @@ class NodeSteps[A <: GNode](traversal: Iterator[A]) extends AnyVal {
     traversal.flatMap(_.inE(edgeLabel))
 
   /** follow _all_ IN and OUT edge(s) */
-  @Doc("follow all given OUT and IN edge(s)")
+  @Doc(info = "follow all given OUT and IN edge(s)")
   def bothE: Iterator[Edge] =
     traversal.flatMap(node => node.outE ++ node.inE)
 
   /** follow the given IN and OUT edge(s) */
-  @Doc("follow the given OUT and IN edge(s)")
+  @Doc(info = "follow the given OUT and IN edge(s)")
   def bothE(edgeLabel: String): Iterator[Edge] =
     traversal.flatMap(node => node.outE(edgeLabel) ++ node.inE(edgeLabel))
 
-  @Doc("lookup a property value")
+  @Doc(info = "lookup a property value")
   def property[@specialized T](name: String): Iterator[T] =
     traversal.flatMap(_.propertyOption[T](name))
 
