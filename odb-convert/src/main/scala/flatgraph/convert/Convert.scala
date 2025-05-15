@@ -112,7 +112,7 @@ object Convert {
       }
     }
     def pad(): Unit = {
-      for (qq                 <- quantities.valuesIterator) { while (qq.length < nextId) qq.addOne(0) }
+      for (qq <- quantities.valuesIterator) { while (qq.length < nextId) qq.addOne(0) }
       for (((prefix, key), v) <- values.iterator if prefix.endsWith(NodeStuff.EDGEPROPERTY_SUFFIX)) {
         val stripped =
           if (prefix == NodeStuff.NEIGHBOR_IN + NodeStuff.EDGEPROPERTY_SUFFIX) NodeStuff.NEIGHBOR_IN else NodeStuff.NEIGHBOR_OUT

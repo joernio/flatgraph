@@ -265,7 +265,7 @@ object Neo4jCsvImporter extends Importer {
   }
 
   private def parseArrayProperty(rawValue: String, name: String, valueType: ColumnType.Value): Option[ParsedProperty] = {
-    val values = rawValue.split(';') // from the docs: "By default, array values are separated by ;"
+    val values         = rawValue.split(';') // from the docs: "By default, array values are separated by ;"
     if (values.nonEmpty && values.head != "") { // csv parser always adds one empty string entry...
       val parsedValues = values.map(parsePropertyValue(_, valueType))
       Some(ParsedProperty(name, parsedValues))
