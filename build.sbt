@@ -7,7 +7,7 @@ val scala2_12 = "2.12.20"
 val osLibVersion = "0.11.4"
 val commonsTextVersion = "1.13.0"
 val slf4jVersion = "2.0.17"
-val scalafmtVersion = "3.9.4"
+val scalafmtVersion = "3.9.6"
 
 /** Only the below listed projects are included in things like `sbt compile`.
   * We explicitly want to exclude `benchmarks` which requires qwiet.ai / shiftleft

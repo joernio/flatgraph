@@ -27,6 +27,10 @@ object DiffGraphApplier {
     if (graph.isClosed) throw new GraphClosedException(s"graph cannot be modified any longer since it's closed")
     new DiffGraphApplier(graph, diff, schemaViolationReporter, requestedExecutor).applyUpdate()
   }
+
+  /** java friendly api without the defaults */
+  def applyDiff(graph: Graph, diff: DiffGraphBuilder): Int =
+    applyDiff(graph, diff, new SchemaViolationReporter, None)
 }
 
 abstract class NewNodePropertyInsertionHelper {
