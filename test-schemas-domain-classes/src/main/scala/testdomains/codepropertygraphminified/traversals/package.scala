@@ -1,5 +1,6 @@
 package testdomains.codepropertygraphminified
 
+import scala.language.implicitConversions
 import testdomains.codepropertygraphminified.nodes
 
 package object traversals {

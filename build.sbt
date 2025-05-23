@@ -2,7 +2,9 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val scala3 = "3.6.4"
+val scala3 = "3.3.6"
+// ^ n.b. should always be the current scala LTS release, see
+// https://www.scala-lang.org/blog/2022/08/17/long-term-compatibility-plans.html#library-maintainers
 val scala2_12 = "2.12.20"
 val osLibVersion = "0.11.4"
 val commonsTextVersion = "1.13.0"
@@ -72,7 +74,7 @@ lazy val tests = project
     publish / skip := true,
     libraryDependencies ++= Seq(
       "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
-      "org.scalamock" %% "scalamock" % "7.2.0" % Test
+      "org.scalamock" %% "scalamock" % "7.3.2" % Test
     ),
   )
 
@@ -128,7 +130,7 @@ lazy val odbConvert = project
   .settings(
     name := "flatgraph-odb-convert",
     libraryDependencies ++= Seq(
-      "io.shiftleft" %% "overflowdb-core" % "1.193",
+      "io.shiftleft" %% "overflowdb-core" % "1.194",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )

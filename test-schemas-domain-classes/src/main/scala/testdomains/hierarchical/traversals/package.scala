@@ -1,5 +1,6 @@
 package testdomains.hierarchical
 
+import scala.language.implicitConversions
 import testdomains.hierarchical.nodes
 
 package object traversals {

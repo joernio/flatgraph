@@ -1,5 +1,6 @@
 package testdomains.generic
 
+import scala.language.implicitConversions
 import testdomains.generic.nodes
 
 package object traversals {
