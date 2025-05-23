@@ -910,6 +910,7 @@ class DomainClassesGenerator(schema: Schema) {
       traversalsOutputDir / "package.scala",
       s"""package $basePackage
          |
+         |import scala.language.implicitConversions
          |import $basePackage.nodes
          |
          |package object traversals {

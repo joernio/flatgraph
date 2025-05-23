@@ -1,5 +1,6 @@
 package testdomains.gratefuldead
 
+import scala.language.implicitConversions
 import testdomains.gratefuldead.nodes
 
 package object traversals {
