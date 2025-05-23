@@ -74,7 +74,7 @@ lazy val tests = project
     publish / skip := true,
     libraryDependencies ++= Seq(
       "com.github.pathikrit" %% "better-files" % "3.9.2" % Test,
-      "org.scalamock" %% "scalamock" % "7.2.0" % Test
+      "org.scalamock" %% "scalamock" % "7.3.2" % Test
     ),
   )
 
@@ -130,7 +130,7 @@ lazy val odbConvert = project
   .settings(
     name := "flatgraph-odb-convert",
     libraryDependencies ++= Seq(
-      "io.shiftleft" %% "overflowdb-core" % "1.193+1-df5812b8",
+      "io.shiftleft" %% "overflowdb-core" % "1.194",
       "org.slf4j" % "slf4j-simple" % slf4jVersion % Optional
     )
   )
