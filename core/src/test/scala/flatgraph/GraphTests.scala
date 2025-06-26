@@ -14,6 +14,9 @@ import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
 import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.security.MessageDigest
 
 class GraphTests extends AnyWordSpec with Matchers {
 
@@ -1152,5 +1155,49 @@ class GraphTests extends AnyWordSpec with Matchers {
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
         |   V0_0       : 0: [X, Y], 1: [50, 51]
         |""".stripMargin
+  }
+
+  "`close` should write to disk only if there are changes" in {
+    val tmpFile = Files.createTempFile("graphtests", ".tmp")
+    Files.delete(tmpFile) // we want flatgraph to create the file
+
+    val schema = TestSchema.make(1, 1)
+    val emptyGraph = new Graph(schema, Some(tmpFile))
+    emptyGraph.close()
+
+    withClue(s"file should exist at $tmpFile") {
+      Files.exists(tmpFile) shouldBe true
+    }
+    val hash0 = calculateHash(tmpFile)
+    println(hash0)
+    ???
+    // TODO also get the file details, like last modified etc.
+
+    // opening with a different schema, closing straight away -> should not write anything to file
+    new Graph(TestSchema.make(2, 2), Some(tmpFile)).close()
+    g2.close()
+    val hash1 = calculateHash(tmpFile)
+    println(hash1)
+
+
+    // // empty graph
+    // debugDump(g) shouldBe
+    //   """#Node numbers (kindId, nnodes) (0: 0), total 0
+    //     |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
+    //     |""".stripMargin
+    // // with some edges
+    // val diff0 = new DiffGraphBuilder(schema)
+    // val V0_0  = new GenericDNode(0)
+    // val V0_1  = new GenericDNode(0)
+    // diff0
+    //   ._addEdge(V0_0, V0_1, 0)
+    // DiffGraphApplier.applyDiff(g, diff0)
+    Files.deleteIfExists(tmpFile)
+  }
+
+  private def calculateHash(file: Path) = {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val bytes = Files.readAllBytes(file)
+    digest.digest(bytes).map("%02x".format(_)).mkString
   }
 }
