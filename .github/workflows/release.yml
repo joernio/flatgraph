@@ -1,9 +1,6 @@
 name: Release
 on:
-  workflow_dispatch:    # allow to manually trigger this workflow
-  push:
-    branches: [master, main]
-    tags: ["*"]
+  workflow_dispatch:  # manually trigger this workflow
 jobs:
   release:
     concurrency: release
@@ -27,7 +24,10 @@ jobs:
         run: echo $PGP_SECRET | base64 --decode | gpg --batch --import
         env:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-      - run: sbt +test ciReleaseTagNextVersion ciReleaseSonatype
+      - name: Build, test and tag
+        run: sbt -v clean test ciReleaseTagNextVersion
+      - name: Deploy to sonatype and release to maven central
+        run: sbt -v ciReleaseSonatype
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
