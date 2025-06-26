@@ -227,7 +227,7 @@ Global / cancelable           := true
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
-ThisBuild / sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeCentralHost
+ThisBuild/sonatypeCredentialHost := "central.sonatype.com"
 ThisBuild / scmInfo := Some(
   ScmInfo(url("https://github.com/joernio/flatgraph"), "scm:git@github.com:joernio/flatgraph.git")
 )
