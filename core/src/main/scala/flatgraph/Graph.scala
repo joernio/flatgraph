@@ -153,7 +153,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def isClosed: Boolean = closed
 
   override def close(): Unit = {
-    logger.debug("closing")
+    logger.debug("closing graph")
     this.closed = true
 
     for {
@@ -161,7 +161,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
       if hasChangedSinceOpen
     } Serialization.writeGraph(this, storagePath)
 
-    logger.info("closed")
+    logger.info("closed graph")
   }
 
   override def toString(): String =
