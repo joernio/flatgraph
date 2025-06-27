@@ -238,6 +238,7 @@ private[flatgraph] class DiffGraphApplier(
   }
 
   private[flatgraph] def applyUpdate(): Int = {
+    graph.hasChangedSinceOpen = true
     val ndiff = splitUpdate()
     diff.buffer = null
 

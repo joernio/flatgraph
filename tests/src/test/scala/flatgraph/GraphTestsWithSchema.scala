@@ -9,7 +9,6 @@ import scala.annotation.experimental
 import testdomains.generic.GenericDomain
 import testdomains.generic.language.*
 import testdomains.generic.nodes.{NewNodeA, NewNodeB, NodeA}
-
 import scala.jdk.CollectionConverters.MapHasAsScala
 
 @experimental

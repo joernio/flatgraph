@@ -1,6 +1,5 @@
 package flatgraph
 
-import flatgraph.Edge.Direction
 import flatgraph.GNode.KindAndSeq
 import flatgraph.Graph.*
 import flatgraph.misc.{InitNodeIterator, InitNodeIteratorArray, InitNodeIteratorArrayFiltered}
@@ -43,6 +42,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private val propertiesCount = schema.getNumberOfPropertyKinds
   private var closed          = false
 
+  private[flatgraph] var hasChangedSinceOpen               = false
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
@@ -153,13 +153,15 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def isClosed: Boolean = closed
 
   override def close(): Unit = {
+    logger.debug("closing graph")
     this.closed = true
 
-    storagePathMaybe.foreach { storagePath =>
-      logger.info(s"closing graph: writing to storage at `$storagePath`")
-      val (nodes, edges, props) = Serialization.writeGraph(this, storagePath)
-      logger.debug(s"closed graph: wrote $nodes nodes with $edges edges and $props properties")
-    }
+    for {
+      storagePath <- storagePathMaybe
+      if hasChangedSinceOpen
+    } Serialization.writeGraph(this, storagePath)
+
+    logger.info("closed graph")
   }
 
   override def toString(): String =

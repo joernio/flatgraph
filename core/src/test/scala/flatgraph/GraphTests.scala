@@ -13,7 +13,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
+import java.security.MessageDigest
 
 class GraphTests extends AnyWordSpec with Matchers {
 
@@ -1152,5 +1153,55 @@ class GraphTests extends AnyWordSpec with Matchers {
         |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
         |   V0_0       : 0: [X, Y], 1: [50, 51]
         |""".stripMargin
+  }
+
+  "`close` should write to disk only if there are changes" in {
+    val tmpFile = Files.createTempFile("graphtests", ".tmp")
+    Files.delete(tmpFile) // we want flatgraph to create the file
+
+    val schema = TestSchema.make(2, 1)
+    val graph0 = new Graph(schema, Some(tmpFile))
+    graph0.close()
+    withClue(s"file $tmpFile should not exist") {
+      Files.exists(tmpFile) shouldBe false
+    }
+
+    // open the graph again, modify and close it -> should initially persist to file
+    val graph1 = new Graph(schema, Some(tmpFile))
+    val diff1  = DiffGraphBuilder(schema)._addEdge(GenericDNode(0), GenericDNode(0), 0)
+    DiffGraphApplier.applyDiff(graph1, diff1)
+    graph1.close()
+    withClue(s"file $tmpFile should exist") {
+      Files.exists(tmpFile) shouldBe true
+    }
+    val hash1             = calculateHash(tmpFile)
+    val lastModifiedTime1 = Files.getLastModifiedTime(tmpFile)
+
+    // opening the graph again, modify and close it
+    val graph2 = new Graph(schema, Some(tmpFile))
+    val diff2  = DiffGraphBuilder(schema)._addEdge(GenericDNode(1), GenericDNode(1), 0)
+    DiffGraphApplier.applyDiff(graph2, diff2)
+    graph2.close()
+    val hash2             = calculateHash(tmpFile)
+    val lastModifiedTime2 = Files.getLastModifiedTime(tmpFile)
+    withClue(s"file $tmpFile should have changed") {
+      hash2 should not equal hash1
+      lastModifiedTime2 should not equal lastModifiedTime1
+    }
+
+    // opening with a different schema, closing straight away without modifying it -> should not write anything to file
+    new Graph(TestSchema.make(2, 2), Some(tmpFile)).close()
+    withClue(s"file $tmpFile should not have changed") {
+      calculateHash(tmpFile) shouldBe hash2
+      Files.getLastModifiedTime(tmpFile) shouldBe lastModifiedTime2
+    }
+
+    Files.deleteIfExists(tmpFile)
+  }
+
+  private def calculateHash(file: Path) = {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val bytes  = Files.readAllBytes(file)
+    digest.digest(bytes).map("%02x".format(_)).mkString
   }
 }
