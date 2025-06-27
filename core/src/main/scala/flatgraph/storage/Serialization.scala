@@ -232,10 +232,10 @@ object Serialization {
     }
 
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
-    val writer = new WriterContext(fileChannel, Misc.maybeOverrideExecutor(requestedExecutor))
+    val writer      = new WriterContext(fileChannel, Misc.maybeOverrideExecutor(requestedExecutor))
 
     try {
-      val writeCounts = innerWriteGraph(g, writer)
+      val writeCounts           = innerWriteGraph(g, writer)
       val (nodes, edges, props) = writeCounts
       logger.debug(s"wrote $nodes nodes with $edges edges and $props properties")
       writeCounts

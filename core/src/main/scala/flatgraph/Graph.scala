@@ -42,7 +42,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private val propertiesCount = schema.getNumberOfPropertyKinds
   private var closed          = false
 
-  private[flatgraph] var hasChangedSinceOpen = false
+  private[flatgraph] var hasChangedSinceOpen               = false
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)

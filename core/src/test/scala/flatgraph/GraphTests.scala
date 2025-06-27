@@ -1159,7 +1159,7 @@ class GraphTests extends AnyWordSpec with Matchers {
     val tmpFile = Files.createTempFile("graphtests", ".tmp")
     Files.delete(tmpFile) // we want flatgraph to create the file
 
-    val schema     = TestSchema.make(2, 1)
+    val schema = TestSchema.make(2, 1)
     val graph0 = new Graph(schema, Some(tmpFile))
     graph0.close()
     withClue(s"file $tmpFile should not exist") {
@@ -1168,7 +1168,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // open the graph again, modify and close it -> should initially persist to file
     val graph1 = new Graph(schema, Some(tmpFile))
-    val diff1 = DiffGraphBuilder(schema)._addEdge(GenericDNode(0), GenericDNode(0), 0)
+    val diff1  = DiffGraphBuilder(schema)._addEdge(GenericDNode(0), GenericDNode(0), 0)
     DiffGraphApplier.applyDiff(graph1, diff1)
     graph1.close()
     withClue(s"file $tmpFile should exist") {
@@ -1179,7 +1179,7 @@ class GraphTests extends AnyWordSpec with Matchers {
 
     // opening the graph again, modify and close it
     val graph2 = new Graph(schema, Some(tmpFile))
-    val diff2 = DiffGraphBuilder(schema)._addEdge(GenericDNode(1), GenericDNode(1), 0)
+    val diff2  = DiffGraphBuilder(schema)._addEdge(GenericDNode(1), GenericDNode(1), 0)
     DiffGraphApplier.applyDiff(graph2, diff2)
     graph2.close()
     val hash2             = calculateHash(tmpFile)
