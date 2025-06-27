@@ -15,7 +15,6 @@ import java.nio.{ByteBuffer, ByteOrder}
 import java.util.concurrent.atomic.AtomicLong
 import scala.collection.mutable
 import java.util.concurrent
-import java.util.concurrent.TimeUnit
 
 class WriterContext(val fileChannel: FileChannel, val executor: concurrent.ExecutorService) {
 
@@ -221,24 +220,17 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
 
 object Serialization {
   val logger = LoggerFactory.getLogger(getClass)
+  case class Counts(nodes: Int, edges: Int, properties: Int)
 
-  def writeGraph(g: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): (Int, Int, Int) = {
+  def writeGraph(graph: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): Counts = {
     logger.info(s"writing to storage at `$storagePath`")
 
-    // ensure parent directory exists
-    Option(storagePath.getParent) match {
-      case Some(dir) => if (Files.notExists(dir)) Files.createDirectories(dir)
-      case None      => // no parent, i.e. we're at the root dir already
-    }
-
+    ensureParentDirectoryExists(storagePath)
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
     val writer      = new WriterContext(fileChannel, Misc.maybeOverrideExecutor(requestedExecutor))
 
     try {
-      val writeCounts           = innerWriteGraph(g, writer)
-      val (nodes, edges, props) = writeCounts
-      logger.debug(s"wrote $nodes nodes with $edges edges and $props properties")
-      writeCounts
+      innerWriteGraph(graph, writer)
     } catch {
       case ex: java.util.concurrent.ExecutionException =>
         throw ex.getCause()
@@ -248,56 +240,55 @@ object Serialization {
     }
   }
 
-  private def innerWriteGraph(g: Graph, writer: WriterContext): (Int, Int, Int) = {
+  private def innerWriteGraph(graph: Graph, writer: WriterContext): Counts = {
     val nodes      = mutable.ArrayBuffer.empty[NodeItem]
     val edges      = mutable.ArrayBuffer.empty[EdgeItem]
     val properties = mutable.ArrayBuffer.empty[PropertyItem]
-    for (nodeKind <- g.schema.nodeKinds) {
-      val nodeLabel = g.schema.getNodeLabel(nodeKind)
-      val deletions = g
+    for (nodeKind <- graph.schema.nodeKinds) {
+      val nodeLabel = graph.schema.getNodeLabel(nodeKind)
+      val deletions = graph
         .nodesArray(nodeKind)
         .collect {
           case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
         }
-      val size = g.nodeCountByKind(nodeKind)
+      val size = graph.nodeCountByKind(nodeKind)
       nodes.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
     }
     for {
-      nodeKind  <- g.schema.nodeKinds
-      edgeKind  <- g.schema.edgeKinds
+      nodeKind  <- graph.schema.nodeKinds
+      edgeKind  <- graph.schema.edgeKinds
       direction <- Direction.values
     } {
-      val pos = g.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
-      if (g.neighbors(pos) != null) {
-        val nodeLabel = g.schema.getNodeLabel(nodeKind)
-        val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
+      val pos = graph.schema.neighborOffsetArrayIndex(nodeKind, direction, edgeKind)
+      if (graph.neighbors(pos) != null) {
+        val nodeLabel = graph.schema.getNodeLabel(nodeKind)
+        val edgeLabel = graph.schema.getEdgeLabel(nodeKind, edgeKind)
         val edgeItem  = new Manifest.EdgeItem(nodeLabel, edgeLabel, direction.encoding)
         edges.addOne(edgeItem)
-        writer.encodeAny(g.neighbors(pos), edgeItem.qty, delta = g.nodeCountByKind(nodeKind))
-        writer.encodeAny(g.neighbors(pos + 1), edgeItem.neighbors)
-        writer.encodeAny(g.neighbors(pos + 2), edgeItem.property)
+        writer.encodeAny(graph.neighbors(pos), edgeItem.qty, delta = graph.nodeCountByKind(nodeKind))
+        writer.encodeAny(graph.neighbors(pos + 1), edgeItem.neighbors)
+        writer.encodeAny(graph.neighbors(pos + 2), edgeItem.property)
       }
     }
     for {
-      nodeKind     <- g.schema.nodeKinds
-      propertyKind <- g.schema.propertyKinds
+      nodeKind     <- graph.schema.nodeKinds
+      propertyKind <- graph.schema.propertyKinds
     } {
-      val pos = g.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
-      if (g.properties(pos) != null) {
-        val nodeLabel     = g.schema.getNodeLabel(nodeKind)
-        val propertyLabel = g.schema.getPropertyLabel(nodeKind, propertyKind)
+      val pos = graph.schema.propertyOffsetArrayIndex(nodeKind, propertyKind)
+      if (graph.properties(pos) != null) {
+        val nodeLabel     = graph.schema.getNodeLabel(nodeKind)
+        val propertyLabel = graph.schema.getPropertyLabel(nodeKind, propertyKind)
         val propertyItem  = new Manifest.PropertyItem(nodeLabel, propertyLabel)
         properties.addOne(propertyItem)
-        writer.encodeAny(g.properties(pos).asInstanceOf[Array[Int]], propertyItem.qty, delta = g.nodeCountByKind(nodeKind))
-        writer.encodeAny(g.properties(pos + 1), propertyItem.property)
+        writer.encodeAny(graph.properties(pos).asInstanceOf[Array[Int]], propertyItem.qty, delta = graph.nodeCountByKind(nodeKind))
+        writer.encodeAny(graph.properties(pos + 1), propertyItem.property)
       }
     }
 
-    val counts   = (nodes.size, edges.size, properties.size)
     val manifest = new GraphItem(nodes.toArray, edges.toArray, properties.toArray)
     writer.finish(manifest)
-
-    counts
+    logger.debug(s"wrote ${nodes.size} nodes with ${edges.size} edges and ${properties.size} properties")
+    Counts(nodes.size, edges.size, properties.size)
   }
 
   private[flatgraph] def write(bytes: Array[Byte], res: OutlineStorage, filePtr: AtomicLong, fileChannel: FileChannel): OutlineStorage = {
@@ -314,4 +305,10 @@ object Serialization {
     res
   }
 
+  private def ensureParentDirectoryExists(path: Path): Unit = {
+    Option(path.getParent) match {
+      case Some(dir) => if (Files.notExists(dir)) Files.createDirectories(dir)
+      case None      => // no parent, i.e. we're at the root dir already
+    }
+  }
 }
