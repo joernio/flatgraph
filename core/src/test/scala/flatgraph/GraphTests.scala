@@ -1161,43 +1161,41 @@ class GraphTests extends AnyWordSpec with Matchers {
     val tmpFile = Files.createTempFile("graphtests", ".tmp")
     Files.delete(tmpFile) // we want flatgraph to create the file
 
-    val schema = TestSchema.make(1, 1)
+    val schema     = TestSchema.make(1, 1)
     val emptyGraph = new Graph(schema, Some(tmpFile))
     emptyGraph.close()
 
     withClue(s"file should exist at $tmpFile") {
       Files.exists(tmpFile) shouldBe true
     }
-    val hash0 = calculateHash(tmpFile)
-    println(hash0)
-    ???
-    // TODO also get the file details, like last modified etc.
+    val hash0             = calculateHash(tmpFile)
+    val lastModifiedTime0 = Files.getLastModifiedTime(tmpFile)
 
-    // opening with a different schema, closing straight away -> should not write anything to file
+    // open the graph from file again, modify and close it
+    val graph = new Graph(schema, Some(tmpFile))
+    val diff = DiffGraphBuilder(schema)._addEdge(GenericDNode(0), GenericDNode(0), 0)
+    DiffGraphApplier.applyDiff(graph, diff)
+    graph.close()
+    val hash1             = calculateHash(tmpFile)
+    val lastModifiedTime1 = Files.getLastModifiedTime(tmpFile)
+    withClue(s"file $tmpFile should have changed") {
+      calculateHash(tmpFile) should not equal hash0
+      Files.getLastModifiedTime(tmpFile) should not equal lastModifiedTime0
+    }
+
+    // opening with a different schema, closing straight away without modifying it -> should not write anything to file
     new Graph(TestSchema.make(2, 2), Some(tmpFile)).close()
-    g2.close()
-    val hash1 = calculateHash(tmpFile)
-    println(hash1)
+    withClue(s"file $tmpFile should not have changed") {
+      calculateHash(tmpFile) shouldBe hash1
+      Files.getLastModifiedTime(tmpFile) shouldBe lastModifiedTime1
+    }
 
-
-    // // empty graph
-    // debugDump(g) shouldBe
-    //   """#Node numbers (kindId, nnodes) (0: 0), total 0
-    //     |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 0 [NA], 0 [NA]),
-    //     |""".stripMargin
-    // // with some edges
-    // val diff0 = new DiffGraphBuilder(schema)
-    // val V0_0  = new GenericDNode(0)
-    // val V0_1  = new GenericDNode(0)
-    // diff0
-    //   ._addEdge(V0_0, V0_1, 0)
-    // DiffGraphApplier.applyDiff(g, diff0)
     Files.deleteIfExists(tmpFile)
   }
 
   private def calculateHash(file: Path) = {
     val digest = MessageDigest.getInstance("SHA-256")
-    val bytes = Files.readAllBytes(file)
+    val bytes  = Files.readAllBytes(file)
     digest.digest(bytes).map("%02x".format(_)).mkString
   }
 }
