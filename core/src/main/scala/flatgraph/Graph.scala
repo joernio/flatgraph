@@ -153,15 +153,15 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   def isClosed: Boolean = closed
 
   override def close(): Unit = {
+    logger.debug("closing")
     this.closed = true
 
-    storagePathMaybe.foreach { storagePath =>
-      if (!Files.exists(storagePath) || hasChangedSinceOpen) {
-        logger.info(s"closing graph: writing to storage at `$storagePath`")
-        val (nodes, edges, props) = Serialization.writeGraph(this, storagePath)
-        logger.debug(s"closed graph: wrote $nodes nodes with $edges edges and $props properties")
-      }
-    }
+    for {
+      storagePath <- storagePathMaybe
+      if hasChangedSinceOpen
+    } Serialization.writeGraph(this, storagePath)
+
+    logger.info("closed")
   }
 
   override def toString(): String =

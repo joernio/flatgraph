@@ -5,6 +5,7 @@ import flatgraph.*
 import flatgraph.Edge.Direction
 import flatgraph.misc.Misc
 import flatgraph.storage.Manifest.*
+import org.slf4j.LoggerFactory
 
 import java.io.ByteArrayOutputStream
 import java.nio.channels.FileChannel
@@ -219,8 +220,10 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
 }
 
 object Serialization {
+  val logger = LoggerFactory.getLogger(getClass)
 
   def writeGraph(g: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): (Int, Int, Int) = {
+    logger.info(s"writing to storage at `$storagePath`")
 
     // ensure parent directory exists
     Option(storagePath.getParent) match {
@@ -229,11 +232,13 @@ object Serialization {
     }
 
     val fileChannel = new java.io.RandomAccessFile(storagePath.toAbsolutePath.toFile, "rw").getChannel
-
     val writer = new WriterContext(fileChannel, Misc.maybeOverrideExecutor(requestedExecutor))
 
     try {
-      innerWriteGraph(g, writer)
+      val writeCounts = innerWriteGraph(g, writer)
+      val (nodes, edges, props) = writeCounts
+      logger.debug(s"wrote $nodes nodes with $edges edges and $props properties")
+      writeCounts
     } catch {
       case ex: java.util.concurrent.ExecutionException =>
         throw ex.getCause()
