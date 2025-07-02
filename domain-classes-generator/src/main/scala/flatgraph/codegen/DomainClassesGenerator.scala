@@ -1158,6 +1158,16 @@ class DomainClassesGenerator(schema: Schema) {
           )}: String = "${property.name}""""
       }
       .mkString("\n\n")
+    val containedNodes = schema.nodeTypes.flatMap(_.containedNodes)
+    val containedNodesSource = containedNodes
+      .map { containedNode =>
+        s"""/** Contained node */
+         |val ${camelCaseCaps(containedNode.nodeType.name)}: String = "${containedNode.nodeType.name}"""".stripMargin
+      }
+      .toSet
+      .mkString("\n\n")
+    val allNames =
+      (schema.properties.map(p => camelCaseCaps(p.name)) ++ containedNodes.map(n => camelCaseCaps(n.nodeType.name))).mkString(",\n")
     val propertyNamesFile = outputDir / "PropertyNames.scala"
     os.write(
       propertyNamesFile,
@@ -1169,8 +1179,10 @@ class DomainClassesGenerator(schema: Schema) {
          |object PropertyNames {
          |$propertyNamesSource
          |
+         |$containedNodesSource
+         |
          |val All: Set[String] = new HashSet[String](Seq(
-         |${schema.properties.map(p => camelCaseCaps(p.name)).mkString(",\n")}
+         |$allNames
          |).asJava)
          |}
          |""".stripMargin

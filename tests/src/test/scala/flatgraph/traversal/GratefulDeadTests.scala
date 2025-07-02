@@ -4,6 +4,7 @@ import flatgraph.formats.graphml.GraphMLImporter
 import flatgraph.misc.Regex.InvalidRegexException
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
+import testdomains.gratefuldead.PropertyNames
 import testdomains.gratefuldead.GratefulDead
 import testdomains.gratefuldead.language.*
 import testdomains.gratefuldead.edges.{Sungby, Writtenby}
@@ -44,9 +45,9 @@ class GratefulDeadTests extends AnyWordSpec {
       graph.nodes().label.toSet shouldBe Set(Artist.Label, Song.Label)
 
       graph.nodes(Artist.Label).size shouldBe 224
-      graph.nodes(Song.Label).has(Song.PropertyNames.Name, "IM A MAN").size shouldBe 1
-      graph.nodes().has(Song.PropertyNames.Songtype).size shouldBe 584
-      graph.nodes().has(Song.PropertyNames.Performances, 2).size shouldBe 36
+      graph.nodes(Song.Label).has(PropertyNames.Name, "IM A MAN").size shouldBe 1
+      graph.nodes().has(PropertyNames.Songtype).size shouldBe 584
+      graph.nodes().has(PropertyNames.Performances, 2).size shouldBe 36
     }
   }
 

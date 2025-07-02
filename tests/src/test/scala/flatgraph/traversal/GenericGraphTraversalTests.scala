@@ -112,7 +112,7 @@ class GenericGraphTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
   }
 
   "filter steps".can {
-    import NodeA.PropertyNames.StringMandatory
+    import testdomains.generic.PropertyNames.StringMandatory
 
     "filter by property" in {
       graph.nodes().has(StringMandatory).size shouldBe 9

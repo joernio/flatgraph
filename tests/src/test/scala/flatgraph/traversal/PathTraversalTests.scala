@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import testdomains.generic.language.*
 import testdomains.generic.nodes.NodeA
-import testdomains.generic.nodes.NodeA.PropertyNames
+import testdomains.generic.{Properties, PropertyNames}
 
 import scala.collection.mutable
 
@@ -124,7 +124,7 @@ class PathTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
 
         center.start.enablePathTracking.out
           .sideEffectPF {
-            case node if node.property(NodeA.Properties.StringMandatory).startsWith("L") =>
+            case node if node.property(Properties.StringMandatory).startsWith("L") =>
               sack.addOne(node)
           }
           .out

@@ -16,5 +16,9 @@ object PropertyNames {
 
   val StringOptional: String = "string_optional"
 
-  val All: Set[String] = new HashSet[String](Seq(IntList, IntMandatory, IntOptional, StringList, StringMandatory, StringOptional).asJava)
+  /** Contained node */
+  val NodeB: String = "node_b"
+
+  val All: Set[String] =
+    new HashSet[String](Seq(IntList, IntMandatory, IntOptional, StringList, StringMandatory, StringOptional, NodeB).asJava)
 }
