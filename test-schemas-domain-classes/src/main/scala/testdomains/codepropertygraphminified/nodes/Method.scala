@@ -20,13 +20,6 @@ trait MethodBase extends AbstractNode with DeclarationBase with StaticType[Metho
 
 object Method {
   val Label = "METHOD"
-  object PropertyNames {
-
-    val Name = "NAME"
-  }
-  object Properties {
-    val Name = flatgraph.SinglePropertyKey[String](kind = 1, name = "NAME", default = "<empty>")
-  }
 }
 
 /** Node properties:

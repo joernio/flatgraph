@@ -20,13 +20,6 @@ trait NodeXBase extends AbstractNode with BaseNodeBase with StaticType[NodeXEMT]
 
 object NodeX {
   val Label = "node_x"
-  object PropertyNames {
-
-    val Name = "name"
-  }
-  object Properties {
-    val Name = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "<empty>")
-  }
 }
 
 /** Node properties:

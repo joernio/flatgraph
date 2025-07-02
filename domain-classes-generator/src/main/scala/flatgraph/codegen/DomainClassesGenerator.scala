@@ -379,28 +379,6 @@ class DomainClassesGenerator(schema: Schema) {
       val productElementAccessors = productElements.zipWithIndex.map { case (name, index) =>
         s"case $index => this.$name"
       }.mkString("\n")
-
-      val propertyNames = {
-        val sourceLines = Seq.newBuilder[String]
-        nodeType.properties.map { property =>
-          s"""${scaladocMaybe(property.comment)}
-             |val ${camelCaseCaps(property.name)} = "${property.name}" """.stripMargin
-        }.map(sourceLines.addOne)
-        nodeType.containedNodes.map { containedNode =>
-          s"""${scaladocMaybe(containedNode.comment)}
-             |val ${camelCaseCaps(containedNode.localName)} = "${containedNode.localName}" """.stripMargin.trim
-        }.map(sourceLines.addOne)
-        sourceLines.result().mkString("\n")
-      }
-
-      val properties = {
-        val sourceLines = Seq.newBuilder[String]
-        nodeType.properties.map { property =>
-          propertyKeySource(property, propertyKindByProperty(property))
-        }.map(sourceLines.addOne)
-        sourceLines.result().mkString("\n")
-      }
-
       // format: on
 
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
@@ -517,12 +495,6 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |object ${nodeType.className} {
            |  val Label = "${nodeType.name}"
-           |  object PropertyNames {
-           |    $propertyNames
-           |  }
-           |  object Properties {
-           |    $properties
-           |  }
            |}
            |
            |/**${("Node properties:" :: nodeType.properties.map(property => camelCaseCaps(property.name)).toList).mkString("\n  * - ")}

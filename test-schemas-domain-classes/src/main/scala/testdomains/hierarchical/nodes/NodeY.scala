@@ -20,13 +20,6 @@ trait NodeYBase extends AbstractNode with BaseNodeBase with StaticType[NodeYEMT]
 
 object NodeY {
   val Label = "node_y"
-  object PropertyNames {
-
-    val Name = "name"
-  }
-  object Properties {
-    val Name = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "<empty>")
-  }
 }
 
 /** Node properties:
