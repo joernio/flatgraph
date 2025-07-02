@@ -27,9 +27,11 @@ object NodeB {
   object Properties {
     val StringOptional = flatgraph.OptionalPropertyKey[String](kind = 5, name = "string_optional")
   }
-  object PropertyDefaults {}
 }
 
+/** Node properties:
+  *   - StringOptional
+  */
 class NodeB(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)
     with NodeBBase

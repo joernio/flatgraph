@@ -158,12 +158,6 @@ class DomainClassesGenerator(schema: Schema) {
       val mixinsNew =
         List("NewNode", s"${baseType.className}Base") ++ baseType.extendz.map(_.className + "New") ++ baseType.markerTraits.map(_.name)
       val newProperties = newPropsAtNodeList(baseType)
-      val propertyDefaults = newProperties
-        .collect {
-          case p if p.hasDefault =>
-            s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
-        }
-        .mkString("\n")
       val mixinsEMT =
         (List("AnyRef") ++ newExtendz.map { p => s"${p.className}EMT" } ++ newProperties.map { p => s"Has${p.className}EMT" })
           .mkString(" with ")
@@ -205,12 +199,6 @@ class DomainClassesGenerator(schema: Schema) {
           .map(_.name)
           .mkString(", ")}
           |trait ${baseType.className} extends ${mixinsStored.mkString(" with ")} with StaticType[${baseType.className}EMT]
-          |
-          |object ${baseType.className} {
-          |  object PropertyDefaults {
-          |    $propertyDefaults
-          |  }
-          |}
           |
           |trait ${baseType.className}New extends ${mixinsNew.mkString(" with ")} with StaticType[${baseType.className}EMT]{
           |  ${newNodeDefs.mkString("\n")}
@@ -413,10 +401,6 @@ class DomainClassesGenerator(schema: Schema) {
         sourceLines.result().mkString("\n")
       }
 
-      val propertyDefaults = nodeType.properties.collect {
-        case p if p.hasDefault =>
-          s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
-      }.mkString("\n")
       // format: on
 
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
@@ -539,11 +523,10 @@ class DomainClassesGenerator(schema: Schema) {
            |  object Properties {
            |    $properties
            |  }
-           |  object PropertyDefaults {
-           |    $propertyDefaults
-           |  }
            |}
            |
+           |/**${("Node properties:" :: nodeType.properties.map(property => camelCaseCaps(property.name)).toList).mkString("\n  * - ")}
+           |  */
            |$storedNode {
            |  ${storedNodeProps.mkString("\n")}
            |
@@ -1196,16 +1179,33 @@ class DomainClassesGenerator(schema: Schema) {
         propertyKeySource(property, propertyKind = kindContexts.propertyKindByProperty(property))
       }
     }.mkString("\n\n")
-    val file = outputDir / "Properties.scala"
+    val propertiesFile = outputDir / "Properties.scala"
     os.write(
-      file,
+      propertiesFile,
       s"""package ${schema.basePackage}
          |
          |object Properties {
          |$propertyKeysConstantsSource
          |}""".stripMargin
     )
-    results.addOne(file)
+    results.addOne(propertiesFile)
+    val propertyDefaultsSource = schema.properties
+      .collect {
+        case p if p.hasDefault =>
+          s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
+      }
+      .mkString("\n\n")
+    val propertyDefaultsFile = outputDir / "PropertyDefaults.scala"
+    os.write(
+      propertyDefaultsFile,
+      s"""package ${schema.basePackage}
+         |
+         |object PropertyDefaults {
+         |$propertyDefaultsSource
+         |}
+         |""".stripMargin
+    )
+    results.addOne(propertyDefaultsFile)
 
     results.result()
   }

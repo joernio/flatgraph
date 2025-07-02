@@ -35,13 +35,13 @@ object Call {
     val Name         = flatgraph.SinglePropertyKey[String](kind = 1, name = "NAME", default = "<empty>")
     val Order        = flatgraph.SinglePropertyKey[Int](kind = 2, name = "ORDER", default = -1: Int)
   }
-  object PropertyDefaults {
-    val DispatchType = "<empty>"
-    val Name         = "<empty>"
-    val Order        = -1: Int
-  }
 }
 
+/** Node properties:
+  *   - DispatchType
+  *   - Name
+  *   - Order
+  */
 class Call(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
     with CallBase

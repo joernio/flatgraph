@@ -35,11 +35,13 @@ object Song {
     val Performances = flatgraph.OptionalPropertyKey[Int](kind = 1, name = "performances")
     val Songtype     = flatgraph.OptionalPropertyKey[String](kind = 2, name = "songType")
   }
-  object PropertyDefaults {
-    val Name = ""
-  }
 }
 
+/** Node properties:
+  *   - Name
+  *   - Performances
+  *   - Songtype
+  */
 class Song(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, 1, seq_4762) with SongBase with StaticType[SongEMT] {
 
   override def productElementName(n: Int): String =

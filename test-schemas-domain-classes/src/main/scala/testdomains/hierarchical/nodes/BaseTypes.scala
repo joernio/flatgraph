@@ -9,12 +9,6 @@ trait BaseNodeBase extends AbstractNode with StaticType[BaseNodeEMT]
 // implementing nodes: node_x, node_y
 trait BaseNode extends StoredNode with BaseNodeBase with StaticType[BaseNodeEMT]
 
-object BaseNode {
-  object PropertyDefaults {
-    val Name = "<empty>"
-  }
-}
-
 trait BaseNodeNew extends NewNode with BaseNodeBase with StaticType[BaseNodeEMT] {
   def name: String
   def name_=(value: String): Unit

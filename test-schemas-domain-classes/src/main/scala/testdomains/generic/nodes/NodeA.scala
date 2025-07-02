@@ -56,12 +56,16 @@ object NodeA {
     val StringMandatory = flatgraph.SinglePropertyKey[String](kind = 4, name = "string_mandatory", default = "<empty>")
     val StringOptional  = flatgraph.OptionalPropertyKey[String](kind = 5, name = "string_optional")
   }
-  object PropertyDefaults {
-    val IntMandatory    = 42: Int
-    val StringMandatory = "<empty>"
-  }
 }
 
+/** Node properties:
+  *   - IntList
+  *   - IntMandatory
+  *   - IntOptional
+  *   - StringList
+  *   - StringMandatory
+  *   - StringOptional
+  */
 class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
     with NodeABase

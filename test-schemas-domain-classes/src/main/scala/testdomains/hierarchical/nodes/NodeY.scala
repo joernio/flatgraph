@@ -27,11 +27,11 @@ object NodeY {
   object Properties {
     val Name = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "<empty>")
   }
-  object PropertyDefaults {
-    val Name = "<empty>"
-  }
 }
 
+/** Node properties:
+  *   - Name
+  */
 class NodeY(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)
     with NodeYBase
