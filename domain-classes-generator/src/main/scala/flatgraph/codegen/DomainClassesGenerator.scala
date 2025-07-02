@@ -479,6 +479,23 @@ class DomainClassesGenerator(schema: Schema) {
         "\n",
         "\n res\n}"
       )
+
+      val propertyNames = nodeType.properties match {
+        case properties if properties.nonEmpty =>
+          "Node properties:" :: properties.map(property => camelCaseCaps(property.name)).toList
+        case _ => Nil
+      }
+      val containedNodeNames = nodeType.containedNodes match {
+        case containedNodes if containedNodes.nonEmpty =>
+          containedNodes.map(n => camelCaseCaps(n.nodeType.name)).toList
+        case _ => Nil
+      }
+      val nodePropertiesCommentSource = (propertyNames ++ containedNodeNames) match {
+        case Nil => ""
+        case names =>
+          s"""/** ${names.mkString("\n * - ")}
+             |  */""".stripMargin
+      }
       val nodeSource = {
         s"""package $basePackage.nodes
            |
@@ -497,8 +514,7 @@ class DomainClassesGenerator(schema: Schema) {
            |  val Label = "${nodeType.name}"
            |}
            |
-           |/**${("Node properties:" :: nodeType.properties.map(property => camelCaseCaps(property.name)).toList).mkString("\n  * - ")}
-           |  */
+           |$nodePropertiesCommentSource
            |$storedNode {
            |  ${storedNodeProps.mkString("\n")}
            |

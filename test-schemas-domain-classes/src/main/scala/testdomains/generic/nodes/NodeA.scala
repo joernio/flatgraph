@@ -42,6 +42,7 @@ object NodeA {
   *   - StringList
   *   - StringMandatory
   *   - StringOptional
+  *   - NodeB
   */
 class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
