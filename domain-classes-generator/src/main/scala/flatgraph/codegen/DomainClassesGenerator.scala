@@ -1108,16 +1108,6 @@ class DomainClassesGenerator(schema: Schema) {
     }
 
     writeConstants(
-      "PropertyNames",
-      schema.properties.map { property =>
-        ConstantContext(
-          property.name.toUpperCase,
-          s"""public static final String ${property.name.toUpperCase} = "${property.name}";""",
-          property.comment
-        )
-      }
-    )
-    writeConstants(
       "NodeTypes",
       schema.nodeTypes.map { nodeType =>
         ConstantContext(
@@ -1161,10 +1151,35 @@ class DomainClassesGenerator(schema: Schema) {
          |}""".stripMargin
     )
     results.addOne(propertiesFile)
+    val propertyNamesSource = schema.properties
+      .map { property =>
+        property.comment.map(comment => "/**" ++ comment ++ "*/\n").getOrElse("") ++ s"""val ${camelCaseCaps(
+            property.name
+          )}: String = "${property.name}""""
+      }
+      .mkString("\n\n")
+    val propertyNamesFile = outputDir / "PropertyNames.scala"
+    os.write(
+      propertyNamesFile,
+      s"""package ${schema.basePackage}
+         |
+         |import java.util.{HashSet, Set}
+         |import scala.jdk.CollectionConverters.SeqHasAsJava
+         |
+         |object PropertyNames {
+         |$propertyNamesSource
+         |
+         |val All: Set[String] = new HashSet[String](Seq(
+         |${schema.properties.map(p => camelCaseCaps(p.name)).mkString(",\n")}
+         |).asJava)
+         |}
+         |""".stripMargin
+    )
+    results.addOne(propertyNamesFile)
     val propertyDefaultsSource = schema.properties
       .collect {
         case p if p.hasDefault =>
-          s"""val ${p.className} = ${Helpers.defaultValueImpl(p.default.get)}"""
+          s"""val ${camelCaseCaps(p.name)} = ${Helpers.defaultValueImpl(p.default.get)}"""
       }
       .mkString("\n\n")
     val propertyDefaultsFile = outputDir / "PropertyDefaults.scala"

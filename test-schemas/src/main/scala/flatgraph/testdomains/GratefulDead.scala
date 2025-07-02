@@ -12,7 +12,7 @@ object GratefulDead {
     val builder = new SchemaBuilder(domainShortName = "GratefulDead", basePackage = "testdomains.gratefuldead")
 
     // properties
-    val name         = builder.addProperty("name", ValueType.String).mandatory(default = "")
+    val name         = builder.addProperty("name", ValueType.String, "This is a property comment").mandatory(default = "")
     val songType     = builder.addProperty("songType", ValueType.String)
     val performances = builder.addProperty("performances", ValueType.Int)
     val weight       = builder.addProperty("weight", ValueType.Int).mandatory(default = 0)
