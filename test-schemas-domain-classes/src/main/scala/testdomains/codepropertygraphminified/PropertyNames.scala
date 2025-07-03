@@ -6,7 +6,7 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
 object PropertyNames {
   val DispatchType: String = "DISPATCH_TYPE"
 
-  /** the name of a thing */
+  /** The name of a thing. */
   val Name: String  = "NAME"
   val Order: String = "ORDER"
 

@@ -22,10 +22,9 @@ object Artist {
   val Label = "artist"
 }
 
-/** NODE PROPERTIES
-  *   - Name: Name
-  *   - ValueType: String
-  *   - Comment: This is a property comment
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value ``); This is a property comment
   */
 class Artist(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)

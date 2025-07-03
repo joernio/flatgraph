@@ -35,24 +35,23 @@ object NodeA {
   val Label = "node_a"
 }
 
-/** NODE PROPERTIES
-  *   - Name: IntList
-  *   - ValueType: Int -
-  *   - Name: IntMandatory
-  *   - ValueType: Int -
-  *   - Name: IntOptional
-  *   - ValueType: Int -
-  *   - Name: StringList
-  *   - ValueType: String -
-  *   - Name: StringMandatory
-  *   - ValueType: String -
-  *   - Name: StringOptional
-  *   - ValueType: String -
-  * CONTAINED NODES
-  *   - NodeType: NodeB
-  *   - LocalName: node_b
-  *   - Cardinality: ZeroOrOne
-  *   - ClassNameForStoredNode: NodeB
+/** * NODE PROPERTIES:
+  *
+  * ▸ IntList (Int); Cardinality `List` (many)
+  *
+  * ▸ IntMandatory (Int); Cardinality `one` (mandatory with default value `42`)
+  *
+  * ▸ IntOptional (Int); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ StringList (String); Cardinality `List` (many)
+  *
+  * ▸ StringMandatory (String); Cardinality `one` (mandatory with default value `<empty>`)
+  *
+  * ▸ StringOptional (String); Cardinality `ZeroOrOne` (optional)
+  *
+  * CONTAINED NODES:
+  *
+  * ▸ node_b (NodeB); Cardinality `ZeroOrOne` (optional)
   */
 class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)

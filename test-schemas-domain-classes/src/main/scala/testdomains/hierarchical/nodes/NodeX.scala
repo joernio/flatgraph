@@ -22,9 +22,9 @@ object NodeX {
   val Label = "node_x"
 }
 
-/** NODE PROPERTIES
-  *   - Name: Name
-  *   - ValueType: String
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value `<empty>`)
   */
 class NodeX(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)

@@ -8,7 +8,7 @@ object CodePropertyGraphMinified {
     val builder = new SchemaBuilder(domainShortName = "CpgMinified", basePackage = "testdomains.codepropertygraphminified")
 
     val name = builder
-      .addProperty(name = "NAME", valueType = ValueType.String, comment = "the name of a thing")
+      .addProperty(name = "NAME", valueType = ValueType.String, comment = "The name of a thing.")
       .mandatory(default = "<empty>")
 
     val order = builder

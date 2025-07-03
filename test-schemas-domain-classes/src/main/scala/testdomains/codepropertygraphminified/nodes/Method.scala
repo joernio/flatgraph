@@ -22,10 +22,9 @@ object Method {
   val Label = "METHOD"
 }
 
-/** NODE PROPERTIES
-  *   - Name: Name
-  *   - ValueType: String
-  *   - Comment: the name of a thing
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value `<empty>`); The name of a thing.
   */
 class Method(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)

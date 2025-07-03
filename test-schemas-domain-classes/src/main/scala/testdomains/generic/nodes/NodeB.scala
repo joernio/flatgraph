@@ -22,9 +22,9 @@ object NodeB {
   val Label = "node_b"
 }
 
-/** NODE PROPERTIES
-  *   - Name: StringOptional
-  *   - ValueType: String
+/** * NODE PROPERTIES:
+  *
+  * ▸ StringOptional (String); Cardinality `ZeroOrOne` (optional)
   */
 class NodeB(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)

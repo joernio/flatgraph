@@ -24,14 +24,13 @@ object Call {
   val Label = "CALL"
 }
 
-/** NODE PROPERTIES
-  *   - Name: DispatchType
-  *   - ValueType: String -
-  *   - Name: Name
-  *   - ValueType: String
-  *   - Comment: the name of a thing -
-  *   - Name: Order
-  *   - ValueType: Int
+/** * NODE PROPERTIES:
+  *
+  * ▸ DispatchType (String); Cardinality `one` (mandatory with default value `<empty>`)
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value `<empty>`); The name of a thing.
+  *
+  * ▸ Order (Int); Cardinality `one` (mandatory with default value `-1`)
   */
 class Call(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)

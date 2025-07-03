@@ -24,14 +24,13 @@ object Song {
   val Label = "song"
 }
 
-/** NODE PROPERTIES
-  *   - Name: Name
-  *   - ValueType: String
-  *   - Comment: This is a property comment -
-  *   - Name: Performances
-  *   - ValueType: Int -
-  *   - Name: Songtype
-  *   - ValueType: String
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value ``); This is a property comment
+  *
+  * ▸ Performances (Int); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ Songtype (String); Cardinality `ZeroOrOne` (optional)
   */
 class Song(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, 1, seq_4762) with SongBase with StaticType[SongEMT] {
 
