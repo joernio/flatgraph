@@ -33,7 +33,7 @@ object NodeX {
 }
 
 class NodeX(graph_4762: flatgraph.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 0.toShort, seq_4762)
+    extends StoredNode(graph_4762, 0, seq_4762)
     with NodeXBase
     with BaseNode
     with StaticType[NodeXEMT] {
@@ -86,7 +86,7 @@ object NewNodeX {
   }
 }
 
-class NewNodeX extends NewNode(0.toShort) with NodeXBase with BaseNodeNew {
+class NewNodeX extends NewNode(0) with NodeXBase with BaseNodeNew {
   override type StoredNodeType = NodeX
   override def label: String = "node_x"
 

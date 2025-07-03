@@ -43,7 +43,7 @@ object Call {
 }
 
 class Call(graph_4762: flatgraph.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 0.toShort, seq_4762)
+    extends StoredNode(graph_4762, 0, seq_4762)
     with CallBase
     with CallRepr
     with StaticType[CallEMT] {
@@ -142,7 +142,7 @@ object NewCall {
   }
 }
 
-class NewCall extends NewNode(0.toShort) with CallBase with CallReprNew {
+class NewCall extends NewNode(0) with CallBase with CallReprNew {
   override type StoredNodeType = Call
   override def label: String = "CALL"
 

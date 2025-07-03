@@ -33,7 +33,7 @@ object Artist {
 }
 
 class Artist(graph_4762: flatgraph.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 0.toShort, seq_4762)
+    extends StoredNode(graph_4762, 0, seq_4762)
     with ArtistBase
     with StaticType[ArtistEMT] {
 
@@ -85,7 +85,7 @@ object NewArtist {
   }
 }
 
-class NewArtist extends NewNode(0.toShort) with ArtistBase {
+class NewArtist extends NewNode(0) with ArtistBase {
   override type StoredNodeType = Artist
   override def label: String = "artist"
 
