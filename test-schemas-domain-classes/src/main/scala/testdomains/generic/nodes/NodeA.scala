@@ -35,14 +35,25 @@ object NodeA {
   val Label = "node_a"
 }
 
-/** Node properties:
-  *   - IntList
-  *   - IntMandatory
-  *   - IntOptional
-  *   - StringList
-  *   - StringMandatory
-  *   - StringOptional
-  *   - NodeB
+/** NODE PROPERTIES
+  *   - Name: IntList
+  *   - ValueType: Int
+  *   - Name: IntMandatory
+  *   - ValueType: Int
+  *   - Name: IntOptional
+  *   - ValueType: Int
+  *   - Name: StringList
+  *   - ValueType: String
+  *   - Name: StringMandatory
+  *   - ValueType: String
+  *   - Name: StringOptional
+  *   - ValueType: String
+  *
+  * CONTAINED NODES
+  *   - NodeType: NodeB
+  *   - LocalName: node_b
+  *   - Cardinality: ZeroOrOne
+  *   - ClassNameForStoredNode: NodeB
   */
 class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)

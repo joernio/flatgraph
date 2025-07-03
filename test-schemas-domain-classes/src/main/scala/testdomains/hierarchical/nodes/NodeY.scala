@@ -22,8 +22,9 @@ object NodeY {
   val Label = "node_y"
 }
 
-/** Node properties:
-  *   - Name
+/** NODE PROPERTIES
+  *   - Name: Name
+  *   - ValueType: String
   */
 class NodeY(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)

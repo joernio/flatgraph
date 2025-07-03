@@ -3,7 +3,18 @@ package flatgraph.codegen
 import java.nio.file.Path
 import flatgraph.codegen.CodeSnippets.{FilterSteps, NewNodeInserters}
 import flatgraph.codegen.Helpers._
-import flatgraph.schema.{AbstractNodeType, AdjacentNode, Direction, EdgeType, MarkerTrait, NodeBaseType, NodeType, Property, Schema}
+import flatgraph.schema.{
+  AbstractNodeType,
+  AdjacentNode,
+  ContainedNode,
+  Direction,
+  EdgeType,
+  MarkerTrait,
+  NodeBaseType,
+  NodeType,
+  Property,
+  Schema
+}
 import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 
@@ -480,22 +491,6 @@ class DomainClassesGenerator(schema: Schema) {
         "\n res\n}"
       )
 
-      val propertyNames = nodeType.properties match {
-        case properties if properties.nonEmpty =>
-          "Node properties:" :: properties.map(property => camelCaseCaps(property.name)).toList
-        case _ => Nil
-      }
-      val containedNodeNames = nodeType.containedNodes match {
-        case containedNodes if containedNodes.nonEmpty =>
-          containedNodes.map(n => camelCaseCaps(n.nodeType.name)).toList
-        case _ => Nil
-      }
-      val nodePropertiesCommentSource = (propertyNames ++ containedNodeNames) match {
-        case Nil => ""
-        case names =>
-          s"""/** ${names.mkString("\n * - ")}
-             |  */""".stripMargin
-      }
       val nodeSource = {
         s"""package $basePackage.nodes
            |
@@ -514,7 +509,7 @@ class DomainClassesGenerator(schema: Schema) {
            |  val Label = "${nodeType.name}"
            |}
            |
-           |$nodePropertiesCommentSource
+           |${commentForNodeType(nodeType)}
            |$storedNode {
            |  ${storedNodeProps.mkString("\n")}
            |
@@ -1167,23 +1162,11 @@ class DomainClassesGenerator(schema: Schema) {
          |}""".stripMargin
     )
     results.addOne(propertiesFile)
-    val propertyNamesSource = schema.properties
-      .map { property =>
-        property.comment.map(comment => "/**" ++ comment ++ "*/\n").getOrElse("") ++ s"""val ${camelCaseCaps(
-            property.name
-          )}: String = "${property.name}""""
-      }
-      .mkString("\n\n")
-    val containedNodes = schema.nodeTypes.flatMap(_.containedNodes)
-    val containedNodesSource = containedNodes
-      .map { containedNode =>
-        s"""/** Contained node */
-         |val ${camelCaseCaps(containedNode.nodeType.name)}: String = "${containedNode.nodeType.name}"""".stripMargin
-      }
-      .toSet
-      .mkString("\n\n")
+    val propertyNamesSource  = schema.properties.map(p => propertyNameConstantDef(p.comment, p.name)).mkString("\n")
+    val containedNodeTypes   = schema.nodeTypes.flatMap(_.containedNodes).map(_.nodeType)
+    val containedNodesSource = containedNodeTypes.map(n => propertyNameConstantDef(n.comment, n.name)).mkString("\n")
     val allNames =
-      (schema.properties.map(p => camelCaseCaps(p.name)) ++ containedNodes.map(n => camelCaseCaps(n.nodeType.name))).mkString(",\n")
+      (schema.properties.map(p => p.name) ++ containedNodeTypes.map(n => n.name)).map(camelCaseCaps).mkString(",\n")
     val propertyNamesFile = outputDir / "PropertyNames.scala"
     os.write(
       propertyNamesFile,
@@ -1209,7 +1192,7 @@ class DomainClassesGenerator(schema: Schema) {
         case p if p.hasDefault =>
           s"""val ${camelCaseCaps(p.name)} = ${Helpers.defaultValueImpl(p.default.get)}"""
       }
-      .mkString("\n\n")
+      .mkString("\n")
     val propertyDefaultsFile = outputDir / "PropertyDefaults.scala"
     os.write(
       propertyDefaultsFile,
@@ -1568,6 +1551,56 @@ class DomainClassesGenerator(schema: Schema) {
     )
 
     PropertyContexts(relevantPropertiesSet.toArray.sortBy(_.name), containingByName.view.toMap)
+  }
+
+  private def commentLinesForPropertiesInfo(prefix: String, propertiesInfo: Seq[Seq[(String, Any)]]): String = {
+    val propertiesInfoStrings = propertiesInfo.map { propertyNamesAndValues =>
+      val nameAndValueStrings = propertyNamesAndValues.map { case (name, value) => s"- $name: $value" }
+      nameAndValueStrings.mkString("\n")
+    }
+
+    val suffixString = propertiesInfoStrings.mkString("\n\n")
+
+    if (suffixString.nonEmpty)
+      s"""$prefix
+         |$suffixString""".stripMargin
+    else
+      ""
+  }
+
+  private def commentForNodeType(nodeType: NodeType): String = {
+    val propertiesInfo = nodeType.properties.map { property =>
+      List(
+        ("Name", camelCaseCaps(property.name)),
+        ("ValueType", property.valueType.getClass.getSimpleName.stripSuffix("$"))
+      ) ++ property.comment.map(("Comment", _))
+    }
+    val containedNodesInfo = nodeType.containedNodes.map { containedNode =>
+      List(
+        ("NodeType", camelCaseCaps(containedNode.nodeType.name)),
+        ("LocalName", containedNode.localName),
+        ("Cardinality", containedNode.cardinality),
+        ("ClassNameForStoredNode", containedNode.classNameForStoredNode)
+      ) ++ containedNode.comment.map(("Comment", _))
+    }
+
+    val commentLines = List(
+      commentLinesForPropertiesInfo("NODE PROPERTIES", propertiesInfo),
+      commentLinesForPropertiesInfo("CONTAINED NODES", containedNodesInfo)
+    ).mkString("\n\n")
+
+    s"""/** $commentLines
+       |  */""".stripMargin
+  }
+
+  private def propertyNameConstantDef[A](comment: Option[String], propertyName: String): String = {
+    val commentString = comment.map { comment =>
+      s"/** $comment */"
+    }.toList
+
+    val defString = s"""val ${camelCaseCaps(propertyName)}: String = "$propertyName""""
+
+    (commentString :+ defString).mkString("\n")
   }
 
   lazy val allNodeTypes = schema.allNodeTypes.toSet
