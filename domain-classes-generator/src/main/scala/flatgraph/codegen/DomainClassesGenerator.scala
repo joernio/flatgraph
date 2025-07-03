@@ -1164,7 +1164,7 @@ class DomainClassesGenerator(schema: Schema) {
     results.addOne(propertiesFile)
     val propertyNamesSource  = schema.properties.map(p => propertyNameConstantDef(p.comment, p.name)).mkString("\n")
     val containedNodeTypes   = schema.nodeTypes.flatMap(_.containedNodes).map(_.nodeType)
-    val containedNodesSource = containedNodeTypes.map(n => propertyNameConstantDef(n.comment, n.name)).mkString("\n")
+    val containedNodesSource = containedNodeTypes.map(n => propertyNameConstantDef(n.comment, n.name)).toSet.mkString("\n")
     val allNames =
       (schema.properties.map(p => p.name) ++ containedNodeTypes.map(n => n.name)).map(camelCaseCaps).mkString(",\n")
     val propertyNamesFile = outputDir / "PropertyNames.scala"
@@ -1555,11 +1555,11 @@ class DomainClassesGenerator(schema: Schema) {
 
   private def commentLinesForPropertiesInfo(prefix: String, propertiesInfo: Seq[Seq[(String, Any)]]): String = {
     val propertiesInfoStrings = propertiesInfo.map { propertyNamesAndValues =>
-      val nameAndValueStrings = propertyNamesAndValues.map { case (name, value) => s"- $name: $value" }
+      val nameAndValueStrings = propertyNamesAndValues.map { case (name, value) => s"  - $name: $value" }
       nameAndValueStrings.mkString("\n")
     }
 
-    val suffixString = propertiesInfoStrings.mkString("\n\n")
+    val suffixString = propertiesInfoStrings.mkString("\n   -\n")
 
     if (suffixString.nonEmpty)
       s"""$prefix
@@ -1587,7 +1587,7 @@ class DomainClassesGenerator(schema: Schema) {
     val commentLines = List(
       commentLinesForPropertiesInfo("NODE PROPERTIES", propertiesInfo),
       commentLinesForPropertiesInfo("CONTAINED NODES", containedNodesInfo)
-    ).mkString("\n\n")
+    ).filter(_.nonEmpty).mkString("\n   -\n")
 
     s"""/** $commentLines
        |  */""".stripMargin

@@ -25,14 +25,12 @@ object Call {
 }
 
 /** NODE PROPERTIES
-  * - Name: DispatchType
-  * - ValueType: String
-  *
-  * - Name: Name
-  * - ValueType: String
-  *
-  * - Name: Order
-  * - ValueType: Int
+  *   - Name: DispatchType
+  *   - ValueType: String -
+  *   - Name: Name
+  *   - ValueType: String -
+  *   - Name: Order
+  *   - ValueType: Int
   */
 class Call(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
