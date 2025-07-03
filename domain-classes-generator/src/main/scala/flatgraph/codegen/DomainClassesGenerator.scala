@@ -1558,12 +1558,12 @@ class DomainClassesGenerator(schema: Schema) {
     def documentCardinality(cardinality: Cardinality): String = {
       cardinality match {
         case Cardinality.One(default) => s"Cardinality `one` (mandatory with default value `${default.value}`)"
-        case Cardinality.ZeroOrOne => "Cardinality `ZeroOrOne` (optional)"
-        case Cardinality.List => "Cardinality `List` (many)"
+        case Cardinality.ZeroOrOne    => "Cardinality `ZeroOrOne` (optional)"
+        case Cardinality.List         => "Cardinality `List` (many)"
       }
     }
     val propertiesInfos = nodeType.properties.map { property =>
-      val typeInfo = property.valueType.getClass.getSimpleName.stripSuffix("$")
+      val typeInfo     = property.valueType.getClass.getSimpleName.stripSuffix("$")
       val commentMaybe = property.comment.map(comment => s"; $comment").getOrElse("")
       s"▸ ${camelCaseCaps(property.name)} ($typeInfo); ${documentCardinality(property.cardinality)}$commentMaybe"
     }
@@ -1573,14 +1573,14 @@ class DomainClassesGenerator(schema: Schema) {
     }
 
     val containedNodesInfo = nodeType.containedNodes.map { containedNode =>
-      val nodeType = camelCaseCaps(containedNode.nodeType.name)
+      val nodeType     = camelCaseCaps(containedNode.nodeType.name)
       val commentMaybe = containedNode.comment.map(comment => s"; $comment").getOrElse("")
       s"▸ ${containedNode.localName} ($nodeType); ${documentCardinality(containedNode.cardinality)}$commentMaybe"
     }
-      if (containedNodesInfo.nonEmpty) {
-        commentLines += "* CONTAINED NODES:"
-        commentLines.addAll(containedNodesInfo)
-      }
+    if (containedNodesInfo.nonEmpty) {
+      commentLines += "* CONTAINED NODES:"
+      commentLines.addAll(containedNodesInfo)
+    }
 
     // TODO tame scalafmt - we'd rather only have one \n here:
     commentLines.result().mkString(start = "/** ", sep = "\n\n*", end = "*/")
