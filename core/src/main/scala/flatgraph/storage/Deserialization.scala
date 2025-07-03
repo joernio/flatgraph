@@ -3,6 +3,7 @@ package flatgraph.storage
 import flatgraph.{AccessHelpers, FreeSchema, GNode, Graph, Schema}
 import flatgraph.Edge.Direction
 import flatgraph.misc.Misc
+import flatgraph.misc.Conversions.toShortSafely
 import flatgraph.storage.Manifest.{GraphItem, OutlineStorage}
 import org.slf4j.LoggerFactory
 
@@ -46,7 +47,7 @@ object Deserialization {
         else None
       val g         = new Graph(schema, storagePathMaybe)
       val nodekinds = mutable.HashMap[String, Short]()
-      for (nodeKind <- g.schema.nodeKinds) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShort
+      for (nodeKind <- g.schema.nodeKinds) nodekinds(g.schema.getNodeLabel(nodeKind)) = nodeKind.toShortSafely
       val nodeRemapper = new Array[Array[GNode]](manifest.nodes.length)
       for {
         (nodeItem, idx) <- manifest.nodes.zipWithIndex
@@ -74,7 +75,7 @@ object Deserialization {
         val nodeLabel = g.schema.getNodeLabel(nodeKind)
         val edgeLabel = g.schema.getEdgeLabel(nodeKind, edgeKind)
         if (edgeLabel != null) {
-          edgeKinds((nodeLabel, edgeLabel)) = edgeKind.toShort
+          edgeKinds((nodeLabel, edgeLabel)) = edgeKind.toShortSafely
         }
       }
 
