@@ -33,7 +33,7 @@ object Method {
 }
 
 class Method(graph_4762: flatgraph.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 1.toShort, seq_4762)
+    extends StoredNode(graph_4762, 1, seq_4762)
     with MethodBase
     with Declaration
     with StaticType[MethodEMT] {
@@ -86,7 +86,7 @@ object NewMethod {
   }
 }
 
-class NewMethod extends NewNode(1.toShort) with MethodBase with DeclarationNew {
+class NewMethod extends NewNode(1) with MethodBase with DeclarationNew {
   override type StoredNodeType = Method
   override def label: String = "METHOD"
 

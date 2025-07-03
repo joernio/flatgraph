@@ -40,10 +40,7 @@ object Song {
   }
 }
 
-class Song(graph_4762: flatgraph.Graph, seq_4762: Int)
-    extends StoredNode(graph_4762, 1.toShort, seq_4762)
-    with SongBase
-    with StaticType[SongEMT] {
+class Song(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, 1, seq_4762) with SongBase with StaticType[SongEMT] {
 
   override def productElementName(n: Int): String =
     n match {
@@ -148,7 +145,7 @@ object NewSong {
   }
 }
 
-class NewSong extends NewNode(1.toShort) with SongBase {
+class NewSong extends NewNode(1) with SongBase {
   override type StoredNodeType = Song
   override def label: String = "song"
 

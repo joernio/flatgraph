@@ -256,7 +256,7 @@ class DomainClassesGenerator(schema: Schema) {
           |}
           |
           |class ${edgeType.className}(src_4762: flatgraph.GNode, dst_4762: flatgraph.GNode, subSeq_4862: Int, property_4862: Any)
-          |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}.toShort, subSeq_4862, property_4862) {
+          |  extends flatgraph.Edge(src_4762, dst_4762, ${edgeKindByEdgeType(edgeType)}, subSeq_4862, property_4862) {
           |  ${propertyNameImplForClass.getOrElse("")}
           |}
           |""".stripMargin
@@ -291,7 +291,7 @@ class DomainClassesGenerator(schema: Schema) {
 
       val storedNode = {
         val mixins = s"${nodeType.className}Base" +: newExtendz.map(_.className) :+ s"StaticType[${nodeType.className}EMT]"
-        s"""class ${nodeType.className}(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, $kind.toShort , seq_4762)""" +: mixins
+        s"""class ${nodeType.className}(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, $kind, seq_4762)""" +: mixins
       }.mkString(" with ")
 
       val newNodeProps       = mutable.ArrayBuffer.empty[String]
@@ -467,7 +467,7 @@ class DomainClassesGenerator(schema: Schema) {
            |  }
            |}
            |
-           |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}.toShort) $newNodeMixins {
+           |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}) $newNodeMixins {
            |  override type StoredNodeType = ${nodeType.className}
            |  override def label: String = "${nodeType.name}"
            |
@@ -1457,8 +1457,8 @@ class DomainClassesGenerator(schema: Schema) {
       case ValueType.Boolean                                          => s"${default.value}: Boolean"
       case ValueType.String if default.value == null                  => "null: String"
       case ValueType.String                                           => s""""${escapeJava(default.value.asInstanceOf[String])}": String"""
-      case ValueType.Byte                                             => s"${default.value}.toByte"
-      case ValueType.Short                                            => s"${default.value}.toShort"
+      case ValueType.Byte                                             => s"${default.value}: Byte"
+      case ValueType.Short                                            => s"${default.value}: Short"
       case ValueType.Int                                              => s"${default.value}: Int"
       case ValueType.Long                                             => s"${default.value}L: Long"
       case ValueType.Float if default.value.asInstanceOf[Float].isNaN => "Float.NaN"
