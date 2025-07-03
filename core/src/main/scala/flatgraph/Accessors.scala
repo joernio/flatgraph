@@ -3,6 +3,7 @@ package flatgraph
 import flatgraph.Edge.Direction
 import flatgraph.Edge.Direction.{Incoming, Outgoing}
 import flatgraph.misc.{ISeq, MultiDictIndex}
+import flatgraph.misc.Conversions.toShortSafely
 
 object Accessors {
 
@@ -16,7 +17,7 @@ object Accessors {
       node,
       node.graph.neighbors(pos + 2),
       1,
-      edgeKind.toShort,
+      edgeKind.toShortSafely,
       offsets(node.seq()),
       offsets(node.seq() + 1)
     )
@@ -32,7 +33,7 @@ object Accessors {
       node,
       node.graph.neighbors(pos + 2),
       0,
-      edgeKind.toShort,
+      edgeKind.toShortSafely,
       offsets(node.seq()),
       offsets(node.seq() + 1)
     )
@@ -64,10 +65,10 @@ object Accessors {
   }
 
   def getNeighborsOut(node: GNode, edgeKind: Int): Iterator[GNode] =
-    getNeighborsOut(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
+    getNeighborsOut(node.graph, node.nodeKind, node.seq, edgeKind.toShortSafely)
 
   def getNeighborsIn(node: GNode, edgeKind: Int): Iterator[GNode] =
-    getNeighborsIn(node.graph, node.nodeKind, node.seq, edgeKind.toShort)
+    getNeighborsIn(node.graph, node.nodeKind, node.seq, edgeKind.toShortSafely)
 
   /** follow _all_ OUT edges to their adjacent nodes */
   def getNeighborsOut(node: GNode): Iterator[GNode] =
@@ -86,14 +87,14 @@ object Accessors {
   /** follow _all_ OUT edges to their adjacent nodes */
   def getNeighborsOut(g: Graph, nodeKind: Short, seq: Int): Iterator[GNode] = {
     g.schema.edgeKinds.iterator.flatMap { edgeKind =>
-      getNeighborsOut(g, nodeKind, seq, edgeKind.toShort)
+      getNeighborsOut(g, nodeKind, seq, edgeKind.toShortSafely)
     }
   }
 
   /** follow _all_ IN edges to their adjacent nodes */
   def getNeighborsIn(g: Graph, nodeKind: Short, seq: Int): Iterator[GNode] = {
     g.schema.edgeKinds.iterator.flatMap { edgeKind =>
-      getNeighborsIn(g, nodeKind, seq, edgeKind.toShort)
+      getNeighborsIn(g, nodeKind, seq, edgeKind.toShortSafely)
     }
   }
 
