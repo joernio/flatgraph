@@ -1,21 +1,22 @@
 package flatgraph.testdomains
 
 import flatgraph.schema.*
+import flatgraph.schema.Property.ValueType
 
 object CodePropertyGraphMinified {
   val schema: Schema = {
     val builder = new SchemaBuilder(domainShortName = "CpgMinified", basePackage = "testdomains.codepropertygraphminified")
 
     val name = builder
-      .addProperty(name = "NAME", valueType = Property.ValueType.String)
+      .addProperty(name = "NAME", valueType = ValueType.String, comment = "the name of a thing")
       .mandatory(default = "<empty>")
 
     val order = builder
-      .addProperty(name = "ORDER", valueType = Property.ValueType.Int)
+      .addProperty(name = "ORDER", valueType = ValueType.Int)
       .mandatory(-1)
 
     val dispatchType = builder
-      .addProperty(name = "DISPATCH_TYPE", valueType = Property.ValueType.String)
+      .addProperty(name = "DISPATCH_TYPE", valueType = ValueType.String)
       .mandatory(default = "<empty>")
 
     val declaration = builder

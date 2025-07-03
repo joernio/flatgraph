@@ -28,7 +28,8 @@ object Call {
   *   - Name: DispatchType
   *   - ValueType: String -
   *   - Name: Name
-  *   - ValueType: String -
+  *   - ValueType: String
+  *   - Comment: the name of a thing -
   *   - Name: Order
   *   - ValueType: Int
   */
