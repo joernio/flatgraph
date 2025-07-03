@@ -25,13 +25,15 @@ object Song {
 }
 
 /** NODE PROPERTIES
-  *   - Name: Name
-  *   - ValueType: String
-  *   - Comment: This is a property comment
-  *   - Name: Performances
-  *   - ValueType: Int
-  *   - Name: Songtype
-  *   - ValueType: String
+  * - Name: Name
+  * - ValueType: String
+  * - Comment: This is a property comment
+  *
+  * - Name: Performances
+  * - ValueType: Int
+  *
+  * - Name: Songtype
+  * - ValueType: String
   */
 class Song(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, 1, seq_4762) with SongBase with StaticType[SongEMT] {
 
