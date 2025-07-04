@@ -9,13 +9,6 @@ trait CallReprBase extends AbstractNode with StaticType[CallReprEMT]
 // implementing nodes: CALL
 trait CallRepr extends StoredNode with CallReprBase with StaticType[CallReprEMT]
 
-object CallRepr {
-  object PropertyDefaults {
-    val Name  = "<empty>"
-    val Order = -1: Int
-  }
-}
-
 trait CallReprNew extends NewNode with CallReprBase with StaticType[CallReprEMT] {
   def name: String
   def name_=(value: String): Unit
@@ -33,12 +26,6 @@ trait DeclarationBase extends AbstractNode with StaticType[DeclarationEMT]
 // inherited interfaces:
 // implementing nodes: METHOD
 trait Declaration extends StoredNode with DeclarationBase with StaticType[DeclarationEMT]
-
-object Declaration {
-  object PropertyDefaults {
-    val Name = "<empty>"
-  }
-}
 
 trait DeclarationNew extends NewNode with DeclarationBase with StaticType[DeclarationEMT] {
   def name: String

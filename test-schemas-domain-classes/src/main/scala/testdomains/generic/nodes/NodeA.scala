@@ -33,35 +33,26 @@ trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
 
 object NodeA {
   val Label = "node_a"
-  object PropertyNames {
-
-    val IntList = "int_list"
-
-    val IntMandatory = "int_mandatory"
-
-    val IntOptional = "int_optional"
-
-    val StringList = "string_list"
-
-    val StringMandatory = "string_mandatory"
-
-    val StringOptional = "string_optional"
-    val NodeB          = "node_b"
-  }
-  object Properties {
-    val IntList         = flatgraph.MultiPropertyKey[Int](kind = 0, name = "int_list")
-    val IntMandatory    = flatgraph.SinglePropertyKey[Int](kind = 1, name = "int_mandatory", default = 42: Int)
-    val IntOptional     = flatgraph.OptionalPropertyKey[Int](kind = 2, name = "int_optional")
-    val StringList      = flatgraph.MultiPropertyKey[String](kind = 3, name = "string_list")
-    val StringMandatory = flatgraph.SinglePropertyKey[String](kind = 4, name = "string_mandatory", default = "<empty>")
-    val StringOptional  = flatgraph.OptionalPropertyKey[String](kind = 5, name = "string_optional")
-  }
-  object PropertyDefaults {
-    val IntMandatory    = 42: Int
-    val StringMandatory = "<empty>"
-  }
 }
 
+/** * NODE PROPERTIES:
+  *
+  * ▸ IntList (Int); Cardinality `List` (many)
+  *
+  * ▸ IntMandatory (Int); Cardinality `one` (mandatory with default value `42`)
+  *
+  * ▸ IntOptional (Int); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ StringList (String); Cardinality `List` (many)
+  *
+  * ▸ StringMandatory (String); Cardinality `one` (mandatory with default value `<empty>`)
+  *
+  * ▸ StringOptional (String); Cardinality `ZeroOrOne` (optional)
+  *
+  * CONTAINED NODES:
+  *
+  * ▸ node_b (NodeB); Cardinality `ZeroOrOne` (optional)
+  */
 class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
     with NodeABase

@@ -20,16 +20,12 @@ trait NodeBBase extends AbstractNode with StaticType[NodeBEMT] {
 
 object NodeB {
   val Label = "node_b"
-  object PropertyNames {
-
-    val StringOptional = "string_optional"
-  }
-  object Properties {
-    val StringOptional = flatgraph.OptionalPropertyKey[String](kind = 5, name = "string_optional")
-  }
-  object PropertyDefaults {}
 }
 
+/** * NODE PROPERTIES:
+  *
+  * ▸ StringOptional (String); Cardinality `ZeroOrOne` (optional)
+  */
 class NodeB(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)
     with NodeBBase

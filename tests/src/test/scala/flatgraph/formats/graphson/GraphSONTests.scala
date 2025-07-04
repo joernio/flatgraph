@@ -6,7 +6,7 @@ import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.util.DiffTool
 import testdomains.generic.language.*
 import testdomains.generic.nodes.NodeA
-import testdomains.generic.GenericDomain
+import testdomains.generic.{GenericDomain, PropertyNames}
 import testdomains.generic.nodes.NewNodeB
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -47,7 +47,7 @@ class GraphSONTests extends AnyWordSpec {
     DiffGraphApplier.applyDiff(
       graph,
       GenericDomain.newDiffGraphBuilder
-        .setNodeProperty(node2, NodeA.PropertyNames.NodeB, newNodeB)
+        .setNodeProperty(node2, PropertyNames.NodeB, newNodeB)
     )
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>

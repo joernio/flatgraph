@@ -22,24 +22,16 @@ trait SongBase extends AbstractNode with StaticType[SongEMT] {
 
 object Song {
   val Label = "song"
-  object PropertyNames {
-
-    val Name = "name"
-
-    val Performances = "performances"
-
-    val Songtype = "songType"
-  }
-  object Properties {
-    val Name         = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "")
-    val Performances = flatgraph.OptionalPropertyKey[Int](kind = 1, name = "performances")
-    val Songtype     = flatgraph.OptionalPropertyKey[String](kind = 2, name = "songType")
-  }
-  object PropertyDefaults {
-    val Name = ""
-  }
 }
 
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value ``); This is a property comment
+  *
+  * ▸ Performances (Int); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ Songtype (String); Cardinality `ZeroOrOne` (optional)
+  */
 class Song(graph_4762: flatgraph.Graph, seq_4762: Int) extends StoredNode(graph_4762, 1, seq_4762) with SongBase with StaticType[SongEMT] {
 
   override def productElementName(n: Int): String =

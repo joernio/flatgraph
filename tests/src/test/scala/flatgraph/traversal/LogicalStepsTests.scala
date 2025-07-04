@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import testdomains.generic.language.*
 import testdomains.generic.nodes.NodeA
-import testdomains.generic.nodes.NodeA.PropertyNames.StringMandatory
+import testdomains.generic.PropertyNames.StringMandatory
 
 class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
 

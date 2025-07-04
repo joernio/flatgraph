@@ -20,18 +20,12 @@ trait NodeYBase extends AbstractNode with BaseNodeBase with StaticType[NodeYEMT]
 
 object NodeY {
   val Label = "node_y"
-  object PropertyNames {
-
-    val Name = "name"
-  }
-  object Properties {
-    val Name = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "<empty>")
-  }
-  object PropertyDefaults {
-    val Name = "<empty>"
-  }
 }
 
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value `<empty>`)
+  */
 class NodeY(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 1, seq_4762)
     with NodeYBase

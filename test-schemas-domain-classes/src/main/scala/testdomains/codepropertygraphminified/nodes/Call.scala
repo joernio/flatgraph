@@ -22,26 +22,16 @@ trait CallBase extends AbstractNode with CallReprBase with StaticType[CallEMT] {
 
 object Call {
   val Label = "CALL"
-  object PropertyNames {
-
-    val DispatchType = "DISPATCH_TYPE"
-
-    val Name = "NAME"
-
-    val Order = "ORDER"
-  }
-  object Properties {
-    val DispatchType = flatgraph.SinglePropertyKey[String](kind = 0, name = "DISPATCH_TYPE", default = "<empty>")
-    val Name         = flatgraph.SinglePropertyKey[String](kind = 1, name = "NAME", default = "<empty>")
-    val Order        = flatgraph.SinglePropertyKey[Int](kind = 2, name = "ORDER", default = -1: Int)
-  }
-  object PropertyDefaults {
-    val DispatchType = "<empty>"
-    val Name         = "<empty>"
-    val Order        = -1: Int
-  }
 }
 
+/** * NODE PROPERTIES:
+  *
+  * ▸ DispatchType (String); Cardinality `one` (mandatory with default value `<empty>`)
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value `<empty>`); The name of a thing.
+  *
+  * ▸ Order (Int); Cardinality `one` (mandatory with default value `-1`)
+  */
 class Call(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
     with CallBase

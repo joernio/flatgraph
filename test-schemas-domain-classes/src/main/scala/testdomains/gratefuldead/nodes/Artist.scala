@@ -20,18 +20,12 @@ trait ArtistBase extends AbstractNode with StaticType[ArtistEMT] {
 
 object Artist {
   val Label = "artist"
-  object PropertyNames {
-
-    val Name = "name"
-  }
-  object Properties {
-    val Name = flatgraph.SinglePropertyKey[String](kind = 0, name = "name", default = "")
-  }
-  object PropertyDefaults {
-    val Name = ""
-  }
 }
 
+/** * NODE PROPERTIES:
+  *
+  * ▸ Name (String); Cardinality `one` (mandatory with default value ``); This is a property comment
+  */
 class Artist(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
     with ArtistBase
