@@ -92,8 +92,12 @@ class DomainClassesGenerator(schema: Schema) {
     // format: off
     val edgeAccess = edgeTypes.map { et =>
       s"""
-       |final def _${camelCase(et.name)}Out: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, ${edgeKindByType(et)}).asInstanceOf[Iterator[StoredNode]]
-       |final def _${camelCase(et.name)}In: Iterator[StoredNode] = flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, ${edgeKindByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |final def _${camelCase(et.name)}Out: Iterator[StoredNode] = {
+       |  flatgraph.Accessors.getNeighborsOut(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = ${edgeKindByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |}
+       |final def _${camelCase(et.name)}In: Iterator[StoredNode] = {
+       |  flatgraph.Accessors.getNeighborsIn( this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = ${edgeKindByType(et)}).asInstanceOf[Iterator[StoredNode]]
+       |}
        |""".stripMargin
     }.mkString("\n")
     // format: on
@@ -126,7 +130,7 @@ class DomainClassesGenerator(schema: Schema) {
          |$edgeAccess
          |}
          |
-         |abstract class NewNode(val nodeKind:Short) extends AbstractNode with flatgraph.DNode {
+         |abstract class NewNode(val nodeKind: Short) extends AbstractNode with flatgraph.DNode {
          |  private /* volatile? */ var _storedRef: StoredNodeType      = null.asInstanceOf[StoredNodeType]
          |  override def storedRef: Option[StoredNodeType]           = Option(this._storedRef)
          |  override def storedRef_=(stored: Option[flatgraph.GNode]): Unit = this._storedRef = stored.orNull.asInstanceOf[StoredNodeType]
@@ -348,7 +352,7 @@ class DomainClassesGenerator(schema: Schema) {
             newNodeFluent.append(s"def $pname(value: IterableOnce[$ptyp]): this.type = {this.$pname = value.iterator.to(ArraySeq); this }")
             baseNodeProps.append(s"def $pname: IndexedSeq[$ptyp]")
             storedNodeProps.append(
-              s"def $pname: IndexedSeq[${styp}] = flatgraph.Accessors.getNodePropertyMulti[$styp](graph, nodeKind, $index, seq)"
+              s"def $pname: IndexedSeq[${styp}] = flatgraph.Accessors.getNodePropertyMulti[$styp](graph, nodeKind = nodeKind, propertyKind = $index, seq = seq)"
             )
             propDictItems.append(s"""val tmp$pname = this.$pname; if(tmp$pname.nonEmpty) res.put("$pname", tmp$pname)""")
             // flattenItems.append(s"""if($pname.nonEmpty) interface.insertProperty(this, $pid, this.$pname)""")
@@ -362,7 +366,7 @@ class DomainClassesGenerator(schema: Schema) {
             newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = Option(value); this }")
             baseNodeProps.append(s"def $pname: Option[$ptyp]")
             storedNodeProps.append(
-              s"def $pname: Option[${styp}] = flatgraph.Accessors.getNodePropertyOption[$styp](graph, nodeKind, $index, seq)"
+              s"def $pname: Option[${styp}] = flatgraph.Accessors.getNodePropertyOption[$styp](graph, nodeKind = nodeKind, propertyKind = $index, seq = seq)"
             )
             propDictItems.append(s"""this.$pname.foreach{p => res.put("$pname", p )}""")
             flattenItems.append(s"interface.countProperty(this, $pid, ${pname}.size)")
@@ -373,7 +377,7 @@ class DomainClassesGenerator(schema: Schema) {
             newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
             baseNodeProps.append(s"def $pname: $ptyp")
             storedNodeProps.append(
-              s"def $pname: ${styp} = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind, $index, seq, null: ${styp})"
+              s"def $pname: ${styp} = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind = nodeKind, propertyKind = $index, deq = seq, default = null: ${styp})"
             )
             propDictItems.append(s"""res.put("$pname", this.$pname )""")
             flattenItems.append(s"interface.countProperty(this, $pid, 1)")
@@ -467,7 +471,7 @@ class DomainClassesGenerator(schema: Schema) {
            |  }
            |}
            |
-           |class New${nodeType.className} extends NewNode(${nodeKindByNodeType(nodeType)}) $newNodeMixins {
+           |class New${nodeType.className} extends NewNode(nodeKind = ${nodeKindByNodeType(nodeType)}) $newNodeMixins {
            |  override type StoredNodeType = ${nodeType.className}
            |  override def label: String = "${nodeType.name}"
            |
@@ -786,11 +790,11 @@ class DomainClassesGenerator(schema: Schema) {
         s"""final class ${propertyAccessorClassname(p.name)}(val node: nodes.StoredNode) extends AnyVal {
            |  def $funName: ${typeForProperty(p)}  = ${p.cardinality match {
             case Cardinality.ZeroOrOne =>
-              s"flatgraph.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq)"
+              s"flatgraph.Accessors.getNodePropertyOption[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, nodeKind = node.nodeKind, propertyKind = ${propertyKindByProperty(p)}, seq = node.seq)"
             case Cardinality.List =>
-              s"flatgraph.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq)"
+              s"flatgraph.Accessors.getNodePropertyMulti[${unpackTypeUnboxed(p.valueType, true, false)}](node.graph, nodeKind = node.nodeKind, propertyKind = ${propertyKindByProperty(p)}, seq = node.seq)"
             case one: Cardinality.One[?] =>
-              s"flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, ${propertyKindByProperty(p)}, node.seq(), ${unpackDefault(p.valueType, one.default)})"
+              s"flatgraph.Accessors.getNodePropertySingle(node.graph, nodeKind = node.nodeKind, propertyKind = ${propertyKindByProperty(p)}, seq = node.seq(), default = ${unpackDefault(p.valueType, one.default)})"
           }}
            |}""".stripMargin
       )
