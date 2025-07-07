@@ -8,22 +8,33 @@ object languagebootstrap extends ConcreteStoredConversions
 object Accessors {
   /* accessors for concrete stored nodes start */
   final class AccessPropertyIntList(val node: nodes.StoredNode) extends AnyVal {
-    def intList: IndexedSeq[Int] = flatgraph.Accessors.getNodePropertyMulti[Int](node.graph, node.nodeKind, 0, node.seq)
+    def intList: IndexedSeq[Int] =
+      flatgraph.Accessors.getNodePropertyMulti[Int](node.graph, nodeKind = node.nodeKind, propertyKind = 0, seq = node.seq)
   }
   final class AccessPropertyIntMandatory(val node: nodes.StoredNode) extends AnyVal {
-    def intMandatory: Int = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 1, node.seq(), 42: Int)
+    def intMandatory: Int =
+      flatgraph.Accessors.getNodePropertySingle(node.graph, nodeKind = node.nodeKind, propertyKind = 1, seq = node.seq(), default = 42: Int)
   }
   final class AccessPropertyIntOptional(val node: nodes.StoredNode) extends AnyVal {
-    def intOptional: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 2, node.seq)
+    def intOptional: Option[Int] =
+      flatgraph.Accessors.getNodePropertyOption[Int](node.graph, nodeKind = node.nodeKind, propertyKind = 2, seq = node.seq)
   }
   final class AccessPropertyStringList(val node: nodes.StoredNode) extends AnyVal {
-    def stringList: IndexedSeq[String] = flatgraph.Accessors.getNodePropertyMulti[String](node.graph, node.nodeKind, 3, node.seq)
+    def stringList: IndexedSeq[String] =
+      flatgraph.Accessors.getNodePropertyMulti[String](node.graph, nodeKind = node.nodeKind, propertyKind = 3, seq = node.seq)
   }
   final class AccessPropertyStringMandatory(val node: nodes.StoredNode) extends AnyVal {
-    def stringMandatory: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 4, node.seq(), "<empty>": String)
+    def stringMandatory: String = flatgraph.Accessors.getNodePropertySingle(
+      node.graph,
+      nodeKind = node.nodeKind,
+      propertyKind = 4,
+      seq = node.seq(),
+      default = "<empty>": String
+    )
   }
   final class AccessPropertyStringOptional(val node: nodes.StoredNode) extends AnyVal {
-    def stringOptional: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 5, node.seq)
+    def stringOptional: Option[String] =
+      flatgraph.Accessors.getNodePropertyOption[String](node.graph, nodeKind = node.nodeKind, propertyKind = 5, seq = node.seq)
   }
   /* accessors for concrete stored nodes end */
 

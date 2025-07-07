@@ -8,13 +8,21 @@ object languagebootstrap extends ConcreteStoredConversions
 object Accessors {
   /* accessors for concrete stored nodes start */
   final class AccessPropertyName(val node: nodes.StoredNode) extends AnyVal {
-    def name: String = flatgraph.Accessors.getNodePropertySingle(node.graph, node.nodeKind, 0, node.seq(), "": String)
+    def name: String = flatgraph.Accessors.getNodePropertySingle(
+      node.graph,
+      nodeKind = node.nodeKind,
+      propertyKind = 0,
+      seq = node.seq(),
+      default = "": String
+    )
   }
   final class AccessPropertyPerformances(val node: nodes.StoredNode) extends AnyVal {
-    def performances: Option[Int] = flatgraph.Accessors.getNodePropertyOption[Int](node.graph, node.nodeKind, 1, node.seq)
+    def performances: Option[Int] =
+      flatgraph.Accessors.getNodePropertyOption[Int](node.graph, nodeKind = node.nodeKind, propertyKind = 1, seq = node.seq)
   }
   final class AccessPropertySongtype(val node: nodes.StoredNode) extends AnyVal {
-    def songtype: Option[String] = flatgraph.Accessors.getNodePropertyOption[String](node.graph, node.nodeKind, 2, node.seq)
+    def songtype: Option[String] =
+      flatgraph.Accessors.getNodePropertyOption[String](node.graph, nodeKind = node.nodeKind, propertyKind = 2, seq = node.seq)
   }
   /* accessors for concrete stored nodes end */
 

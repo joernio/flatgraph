@@ -21,7 +21,6 @@ import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 import scala.collection.mutable
 
 class DomainClassesGenerator(schema: Schema) {
-  import DomainClassesGenerator.ConstantContext
   private var enableScalafmt               = true
   private var scalafmtConfig: Option[Path] = None
 
@@ -433,59 +432,6 @@ class DomainClassesGenerator(schema: Schema) {
           .result()
           .mkString("with ", " with ", "")
 
-      val newNode =
-        s"""object New${nodeType.className} {
-           |  def apply(): New${nodeType.className} = new New${nodeType.className}
-           |  private val outNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(outEdges)})
-           |  private val inNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(inEdges)})
-           |
-           |  object InsertionHelpers {
-           |      ${newNodeHelpersCode.mkString("\n")}
-           |  }
-           |}
-           |
-           |class New${nodeType.className} extends NewNode(nodeKind = ${nodeKindByNodeType(nodeType)}) $newNodeMixins {
-           |  override type StoredNodeType = ${nodeType.className}
-           |  override def label: String = "${nodeType.name}"
-           |
-           |  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
-           |    New${nodeType.className}.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
-           |  }
-           |  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
-           |    New${nodeType.className}.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
-           |  }
-           |
-           |  ${newNodeProps.sorted.mkString("\n")}
-           |  ${newNodeFluent.sorted.mkString("\n")}
-           |  ${flattenItems.mkString(
-            "override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {\n",
-            "\n",
-            "\n}"
-          )}
-           |
-           |  override def copy: this.type = {
-           |    val newInstance = new New${nodeType.className}
-           |    $copyFieldsImpl
-           |    newInstance.asInstanceOf[this.type]
-           |  }
-           |
-           |  override def productElementName(n: Int): String =
-           |    n match {
-           |      $productElementNames
-           |      case _ => ""
-           |    }
-           |
-           |  override def productElement(n: Int): Any =
-           |    n match {
-           |      $productElementAccessors
-           |      case _ => null
-           |    }
-           |
-           |  override def productPrefix = "New${nodeType.className}"
-           |  override def productArity = ${productElements.size}
-           |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[New${nodeType.className}]
-           |}""".stripMargin
-
       val propDictItemsSource = propDictItems.mkString(
         s"""override def propertiesMap: java.util.Map[String, Any] = {
            | import $basePackage.accessors.languagebootstrap.*
@@ -534,11 +480,71 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[${nodeType.className}]
            |}
-           |
-           |$newNode
            |""".stripMargin
       }
+
+      val newNodeType = s"New${nodeType.className}"
+      val newNodeSource =
+        s"""package $basePackage.nodes
+           |
+           |import $basePackage.language.*
+           |import scala.collection.immutable.{IndexedSeq, ArraySeq}
+           |import scala.collection.mutable
+           |
+           |object $newNodeType {
+           |  def apply(): New${nodeType.className} = new New${nodeType.className}
+           |  private val outNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(outEdges)})
+           |  private val inNeighbors: Map[String, Set[String]] = Map(${neighborEdgeStr(inEdges)})
+           |
+           |  object InsertionHelpers {
+           |      ${newNodeHelpersCode.mkString("\n")}
+           |  }
+           |}
+           |
+           |class $newNodeType extends NewNode(nodeKind = ${nodeKindByNodeType(nodeType)}) $newNodeMixins {
+           |  override type StoredNodeType = ${nodeType.className}
+           |  override def label: String = "${nodeType.name}"
+           |
+           |  override def isValidOutNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+           |    New${nodeType.className}.outNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+           |  }
+           |  override def isValidInNeighbor(edgeLabel: String, n: NewNode): Boolean = {
+           |    New${nodeType.className}.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
+           |  }
+           |
+           |  ${newNodeProps.sorted.mkString("\n")}
+           |  ${newNodeFluent.sorted.mkString("\n")}
+           |  ${flattenItems.mkString(
+            "override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {\n",
+            "\n",
+            "\n}"
+          )}
+           |
+           |  override def copy: this.type = {
+           |    val newInstance = new New${nodeType.className}
+           |    $copyFieldsImpl
+           |    newInstance.asInstanceOf[this.type]
+           |  }
+           |
+           |  override def productElementName(n: Int): String =
+           |    n match {
+           |      $productElementNames
+           |      case _ => ""
+           |    }
+           |
+           |  override def productElement(n: Int): Any =
+           |    n match {
+           |      $productElementAccessors
+           |      case _ => null
+           |    }
+           |
+           |  override def productPrefix = "New${nodeType.className}"
+           |  override def productArity = ${productElements.size}
+           |  override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[New${nodeType.className}]
+           |}""".stripMargin
+
       os.write(nodesOutputDir / s"${nodeType.className}.scala", nodeSource)
+      os.write(nodesOutputDir / s"$newNodeType.scala", newNodeSource)
     }
 
     val schemaFile = {
@@ -1647,6 +1653,4 @@ class DomainClassesGenerator(schema: Schema) {
 
 }
 
-object DomainClassesGenerator {
-  case class ConstantContext(name: String, source: String, documentation: Option[String])
-}
+case class ConstantContext(name: String, source: String, documentation: Option[String])
