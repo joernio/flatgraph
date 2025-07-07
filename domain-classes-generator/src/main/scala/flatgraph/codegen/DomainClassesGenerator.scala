@@ -21,7 +21,6 @@ import flatgraph.schema.Property.{Cardinality, Default, ValueType}
 import scala.collection.mutable
 
 class DomainClassesGenerator(schema: Schema) {
-  import DomainClassesGenerator.ConstantContext
   private var enableScalafmt               = true
   private var scalafmtConfig: Option[Path] = None
 
@@ -1647,6 +1646,4 @@ class DomainClassesGenerator(schema: Schema) {
 
 }
 
-object DomainClassesGenerator {
-  case class ConstantContext(name: String, source: String, documentation: Option[String])
-}
+case class ConstantContext(name: String, source: String, documentation: Option[String])
