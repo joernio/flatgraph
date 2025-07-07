@@ -544,7 +544,7 @@ class DomainClassesGenerator(schema: Schema) {
            |}""".stripMargin
 
       os.write(nodesOutputDir / s"${nodeType.className}.scala", nodeSource)
-      os.write(nodesOutputDir / s"$newNodeType.scala", nodeSource)
+      os.write(nodesOutputDir / s"$newNodeType.scala", newNodeSource)
     }
 
     val schemaFile = {

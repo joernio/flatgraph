@@ -17,20 +17,38 @@ abstract class StoredNode(graph_4762: flatgraph.Graph, kind_4762: Short, seq_476
     extends flatgraph.GNode(graph_4762, kind_4762, seq_4762)
     with AbstractNode {
 
-  final def _followedbyOut: Iterator[StoredNode] =
-    flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 0).asInstanceOf[Iterator[StoredNode]]
-  final def _followedbyIn: Iterator[StoredNode] =
-    flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 0).asInstanceOf[Iterator[StoredNode]]
+  final def _followedbyOut: Iterator[StoredNode] = {
+    flatgraph.Accessors
+      .getNeighborsOut(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = 0)
+      .asInstanceOf[Iterator[StoredNode]]
+  }
+  final def _followedbyIn: Iterator[StoredNode] = {
+    flatgraph.Accessors
+      .getNeighborsIn(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = 0)
+      .asInstanceOf[Iterator[StoredNode]]
+  }
 
-  final def _sungbyOut: Iterator[StoredNode] =
-    flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 1).asInstanceOf[Iterator[StoredNode]]
-  final def _sungbyIn: Iterator[StoredNode] =
-    flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 1).asInstanceOf[Iterator[StoredNode]]
+  final def _sungbyOut: Iterator[StoredNode] = {
+    flatgraph.Accessors
+      .getNeighborsOut(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = 1)
+      .asInstanceOf[Iterator[StoredNode]]
+  }
+  final def _sungbyIn: Iterator[StoredNode] = {
+    flatgraph.Accessors
+      .getNeighborsIn(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = 1)
+      .asInstanceOf[Iterator[StoredNode]]
+  }
 
-  final def _writtenbyOut: Iterator[StoredNode] =
-    flatgraph.Accessors.getNeighborsOut(this.graph, this.nodeKind, this.seq, 2).asInstanceOf[Iterator[StoredNode]]
-  final def _writtenbyIn: Iterator[StoredNode] =
-    flatgraph.Accessors.getNeighborsIn(this.graph, this.nodeKind, this.seq, 2).asInstanceOf[Iterator[StoredNode]]
+  final def _writtenbyOut: Iterator[StoredNode] = {
+    flatgraph.Accessors
+      .getNeighborsOut(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = 2)
+      .asInstanceOf[Iterator[StoredNode]]
+  }
+  final def _writtenbyIn: Iterator[StoredNode] = {
+    flatgraph.Accessors
+      .getNeighborsIn(this.graph, nodeKind = this.nodeKind, seq = this.seq, edgeKind = 2)
+      .asInstanceOf[Iterator[StoredNode]]
+  }
 
 }
 
