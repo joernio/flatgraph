@@ -375,7 +375,7 @@ class DomainClassesGenerator(schema: Schema) {
             newNodeFluent.append(s"def $pname(value: $ptyp): this.type = {this.$pname = value; this }")
             baseNodeProps.append(s"def $pname: $ptyp")
             storedNodeProps.append(
-              s"def $pname: ${styp} = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind = nodeKind, propertyKind = $index, deq = seq, default = null: ${styp})"
+              s"def $pname: ${styp} = flatgraph.Accessors.getNodePropertySingle(graph, nodeKind = nodeKind, propertyKind = $index, seq = seq, default = null: ${styp})"
             )
             propDictItems.append(s"""res.put("$pname", this.$pname )""")
             flattenItems.append(s"interface.countProperty(this, $pid, 1)")
