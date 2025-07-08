@@ -490,6 +490,18 @@ generated schema (as opposed to an ad-hoc schema infered from the graph data).
 The build targets JDK8, so that's the minimum version. The build itself requires JDK11+. 
 However in any case it is highly encouraged to use a modern JVM, such as JDK20. 
 
+## What about security / untrusted flatgraph files?
+The main potentially security issue is the following situation: You get handed an untrusted, potentially malicious, flatgraph file, and want to handle it.
+Deserializing a `.fg` file should not pop a shell / cause privilege escalation, nor should not cause excessive filesystem activity. However, it may take an 
+unbounded amount of time and memory, potentially leading to an OOM crash of the JVM that might not be recoverable from within the JVM by catching some exceptions.
+
+The easiest malicious but completely valid `.fg` file in that vein is a ZIP-bomb. We take care not to decompress graphs into the filesystem, but we do decompress them into memory.
+
+If you need to handle untrusted `.fg` files, then we recommend some form of sandboxing in order to limit the DoS impact.
+
+If you do decide against our recommendation to write your own code to "sanity check" potentially malicious `.fg` files before attempting to deserialize them, then we'd be happy for your feedback and PRs. (also beware of potential parser differentials -- e.g. the manifest json can be reached either via the offset from the file header, or via `tail -n 1`, and these may very well be different manifests)
+
+
 ## What does EMT stand for?
 EMT is a naming convention that stands for "erased marker trait". 
 The domain classes generator generates one for each property in the schema and users can define additional marker traits. 
