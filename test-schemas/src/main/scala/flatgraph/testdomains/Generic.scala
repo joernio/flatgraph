@@ -28,7 +28,7 @@ object Generic {
       .addNodeType("node_b")
       .addProperty(stringOptional)
 
-    nodeA.addContainedNode(nodeB, "node_b", Cardinality.ZeroOrOne)
+    nodeA.addContainedNode(nodeB, "contained_node_b", Cardinality.ZeroOrOne)
 
     // TODO add support for edge properties with cardinality ONE and LIST
     val connectedTo = builder.addEdgeType("connected_to").withProperty(stringMandatory)

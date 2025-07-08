@@ -148,7 +148,7 @@ object NewNodeA {
         }
       }
     }
-    object NewNodeInserter_NodeA_node_b extends flatgraph.NewNodePropertyInsertionHelper {
+    object NewNodeInserter_NodeA_contained_node_b extends flatgraph.NewNodePropertyInsertionHelper {
       override def insertNewNodeProperties(newNodes: mutable.ArrayBuffer[flatgraph.DNode], dst: AnyRef, offsets: Array[Int]): Unit = {
         if (newNodes.isEmpty) return
         val dstCast = dst.asInstanceOf[Array[flatgraph.GNode]]
@@ -159,7 +159,7 @@ object NewNodeA {
           val nn = newNodes(idx)
           nn match {
             case generated: NewNodeA =>
-              generated.node_b match {
+              generated.contained_node_b match {
                 case Some(item) =>
                   dstCast(offset) = item match {
                     case newV: flatgraph.DNode => newV.storedRef.get; case oldV: flatgraph.GNode => oldV; case null => null
@@ -189,23 +189,23 @@ class NewNodeA extends NewNode(nodeKind = 0) with NodeABase {
     NewNodeA.inNeighbors.getOrElse(edgeLabel, Set.empty).contains(n.label)
   }
 
-  var intList: IndexedSeq[Int]                           = ArraySeq.empty
-  var intMandatory: Int                                  = 42: Int
-  var intOptional: Option[Int]                           = None
-  var node_b: Option[NodeBBase]                          = None
-  var stringList: IndexedSeq[String]                     = ArraySeq.empty
-  var stringMandatory: String                            = "<empty>": String
-  var stringOptional: Option[String]                     = None
-  def intList(value: IterableOnce[Int]): this.type       = { this.intList = value.iterator.to(ArraySeq); this }
-  def intMandatory(value: Int): this.type                = { this.intMandatory = value; this }
-  def intOptional(value: Int): this.type                 = { this.intOptional = Option(value); this }
-  def intOptional(value: Option[Int]): this.type         = { this.intOptional = value; this }
-  def node_b(value: NodeBBase): this.type                = { this.node_b = Option(value); this }
-  def node_b(value: Option[NodeBBase]): this.type        = { this.node_b = value; this }
-  def stringList(value: IterableOnce[String]): this.type = { this.stringList = value.iterator.to(ArraySeq); this }
-  def stringMandatory(value: String): this.type          = { this.stringMandatory = value; this }
-  def stringOptional(value: Option[String]): this.type   = { this.stringOptional = value; this }
-  def stringOptional(value: String): this.type           = { this.stringOptional = Option(value); this }
+  var contained_node_b: Option[NodeBBase]                   = None
+  var intList: IndexedSeq[Int]                              = ArraySeq.empty
+  var intMandatory: Int                                     = 42: Int
+  var intOptional: Option[Int]                              = None
+  var stringList: IndexedSeq[String]                        = ArraySeq.empty
+  var stringMandatory: String                               = "<empty>": String
+  var stringOptional: Option[String]                        = None
+  def contained_node_b(value: NodeBBase): this.type         = { this.contained_node_b = Option(value); this }
+  def contained_node_b(value: Option[NodeBBase]): this.type = { this.contained_node_b = value; this }
+  def intList(value: IterableOnce[Int]): this.type          = { this.intList = value.iterator.to(ArraySeq); this }
+  def intMandatory(value: Int): this.type                   = { this.intMandatory = value; this }
+  def intOptional(value: Int): this.type                    = { this.intOptional = Option(value); this }
+  def intOptional(value: Option[Int]): this.type            = { this.intOptional = value; this }
+  def stringList(value: IterableOnce[String]): this.type    = { this.stringList = value.iterator.to(ArraySeq); this }
+  def stringMandatory(value: String): this.type             = { this.stringMandatory = value; this }
+  def stringOptional(value: Option[String]): this.type      = { this.stringOptional = value; this }
+  def stringOptional(value: String): this.type              = { this.stringOptional = Option(value); this }
   override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
     interface.countProperty(this, 0, intList.size)
     interface.countProperty(this, 1, 1)
@@ -213,8 +213,8 @@ class NewNodeA extends NewNode(nodeKind = 0) with NodeABase {
     interface.countProperty(this, 3, stringList.size)
     interface.countProperty(this, 4, 1)
     interface.countProperty(this, 5, stringOptional.size)
-    interface.countProperty(this, 6, node_b.size)
-    node_b.foreach(interface.visitContainedNode)
+    interface.countProperty(this, 6, contained_node_b.size)
+    contained_node_b.foreach(interface.visitContainedNode)
   }
 
   override def copy: this.type = {
@@ -225,7 +225,7 @@ class NewNodeA extends NewNode(nodeKind = 0) with NodeABase {
     newInstance.stringList = this.stringList
     newInstance.stringMandatory = this.stringMandatory
     newInstance.stringOptional = this.stringOptional
-    newInstance.node_b = this.node_b
+    newInstance.contained_node_b = this.contained_node_b
     newInstance.asInstanceOf[this.type]
   }
 
@@ -237,7 +237,7 @@ class NewNodeA extends NewNode(nodeKind = 0) with NodeABase {
       case 3 => "stringList"
       case 4 => "stringMandatory"
       case 5 => "stringOptional"
-      case 6 => "node_b"
+      case 6 => "contained_node_b"
       case _ => ""
     }
 
@@ -249,7 +249,7 @@ class NewNodeA extends NewNode(nodeKind = 0) with NodeABase {
       case 3 => this.stringList
       case 4 => this.stringMandatory
       case 5 => this.stringOptional
-      case 6 => this.node_b
+      case 6 => this.contained_node_b
       case _ => null
     }
 

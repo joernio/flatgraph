@@ -48,7 +48,7 @@ class GraphTestsWithSchema extends AnyWordSpec with MockFactory {
     val genDomain      = GenericDomain.empty
     val nodeB_implicit = nodes.NewNodeB().stringOptional("implicit")
     val nodeB_explicit = nodes.NewNodeB().stringOptional("explicit")
-    val nodeA          = nodes.NewNodeA().node_b(nodeB_implicit)
+    val nodeA          = nodes.NewNodeA().contained_node_b(nodeB_implicit)
     DiffGraphApplier.applyDiff(genDomain.graph, GenericDomain.newDiffGraphBuilder.addNode(nodeA).addNode(nodeB_explicit))
     genDomain.nodeB.stringOptional.l shouldBe List("implicit", "explicit")
   }
@@ -57,7 +57,7 @@ class GraphTestsWithSchema extends AnyWordSpec with MockFactory {
     val genDomain      = GenericDomain.empty
     val nodeB_implicit = nodes.NewNodeB().stringOptional("implicit")
     val nodeB_explicit = nodes.NewNodeB().stringOptional("explicit")
-    val nodeA          = nodes.NewNodeA().node_b(nodeB_implicit)
+    val nodeA          = nodes.NewNodeA().contained_node_b(nodeB_implicit)
     DiffGraphApplier.applyDiff(genDomain.graph, GenericDomain.newDiffGraphBuilder.addNode(nodeA))
     DiffGraphApplier.applyDiff(genDomain.graph, GenericDomain.newDiffGraphBuilder.addNode(nodeB_explicit))
     genDomain.nodeB.stringOptional.l shouldBe List("implicit", "explicit")

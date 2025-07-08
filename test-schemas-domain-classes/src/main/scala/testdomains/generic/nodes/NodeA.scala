@@ -16,7 +16,7 @@ trait NodeAEMT
     with HasStringOptionalEMT
 
 trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
-  def node_b: Option[NodeBBase]
+  def contained_node_b: Option[NodeBBase]
   override def propertiesMap: java.util.Map[String, Any] = {
     import testdomains.generic.accessors.languagebootstrap.*
     val res        = new java.util.HashMap[String, Any]()
@@ -26,7 +26,7 @@ trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
     val tmpStringList = this.stringList; if (tmpStringList.nonEmpty) res.put("string_list", tmpStringList)
     if (("<empty>": String) != this.stringMandatory) res.put("string_mandatory", this.stringMandatory)
     this.stringOptional.foreach { p => res.put("string_optional", p) }
-    this.node_b.foreach { p => res.put("node_b", p) }
+    this.contained_node_b.foreach { p => res.put("contained_node_b", p) }
     res
   }
 }
@@ -51,13 +51,14 @@ object NodeA {
   *
   * CONTAINED NODES:
   *
-  * ▸ node_b (NodeB); Cardinality `ZeroOrOne` (optional)
+  * ▸ contained_node_b (NodeB); Cardinality `ZeroOrOne` (optional)
   */
 class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     extends StoredNode(graph_4762, 0, seq_4762)
     with NodeABase
     with StaticType[NodeAEMT] {
-  def node_b: Option[NodeB] = flatgraph.Accessors.getNodePropertyOption[NodeB](graph, nodeKind = nodeKind, propertyKind = 6, seq = seq)
+  def contained_node_b: Option[NodeB] =
+    flatgraph.Accessors.getNodePropertyOption[NodeB](graph, nodeKind = nodeKind, propertyKind = 6, seq = seq)
 
   override def productElementName(n: Int): String =
     n match {
@@ -67,7 +68,7 @@ class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
       case 3 => "stringList"
       case 4 => "stringMandatory"
       case 5 => "stringOptional"
-      case 6 => "node_b"
+      case 6 => "contained_node_b"
       case _ => ""
     }
 
@@ -79,7 +80,7 @@ class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
       case 3 => this.stringList
       case 4 => this.stringMandatory
       case 5 => this.stringOptional
-      case 6 => this.node_b
+      case 6 => this.contained_node_b
       case _ => null
     }
 

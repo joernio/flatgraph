@@ -47,7 +47,7 @@ class GraphSONTests extends AnyWordSpec {
     DiffGraphApplier.applyDiff(
       graph,
       GenericDomain.newDiffGraphBuilder
-        .setNodeProperty(node2, PropertyNames.NodeB, newNodeB)
+        .setNodeProperty(node2, PropertyNames.ContainedNodeB, newNodeB)
     )
 
     File.usingTemporaryDirectory(getClass.getName) { exportRootDirectory =>

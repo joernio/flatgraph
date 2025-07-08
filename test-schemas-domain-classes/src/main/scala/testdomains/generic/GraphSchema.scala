@@ -23,7 +23,7 @@ object GraphSchema extends flatgraph.Schema {
   )
   val normalNodePropertyNames: Array[String] =
     Array("int_list", "int_mandatory", "int_optional", "string_list", "string_mandatory", "string_optional")
-  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap.updated("node_b", 6)
+  val nodePropertyByLabel = normalNodePropertyNames.zipWithIndex.toMap.updated("contained_node_b", 6)
   val nodePropertyDescriptors: Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType] = {
     val nodePropertyDescriptors = new Array[FormalQtyType.FormalQuantity | FormalQtyType.FormalType](28)
     for (idx <- Range(0, 28)) {
@@ -44,7 +44,7 @@ object GraphSchema extends flatgraph.Schema {
     nodePropertyDescriptors(17) = FormalQtyType.QtyOne
     nodePropertyDescriptors(20) = FormalQtyType.StringType // node_a.string_optional
     nodePropertyDescriptors(21) = FormalQtyType.QtyOption
-    nodePropertyDescriptors(24) = FormalQtyType.RefType // node_a.node_b
+    nodePropertyDescriptors(24) = FormalQtyType.RefType // node_a.contained_node_b
     nodePropertyDescriptors(25) = FormalQtyType.QtyOption
     nodePropertyDescriptors(22) = FormalQtyType.StringType // node_b.string_optional
     nodePropertyDescriptors(23) = FormalQtyType.QtyOption
@@ -58,7 +58,7 @@ object GraphSchema extends flatgraph.Schema {
     _newNodeInserters(12) = nodes.NewNodeA.InsertionHelpers.NewNodeInserter_NodeA_stringList
     _newNodeInserters(16) = nodes.NewNodeA.InsertionHelpers.NewNodeInserter_NodeA_stringMandatory
     _newNodeInserters(20) = nodes.NewNodeA.InsertionHelpers.NewNodeInserter_NodeA_stringOptional
-    _newNodeInserters(24) = nodes.NewNodeA.InsertionHelpers.NewNodeInserter_NodeA_node_b
+    _newNodeInserters(24) = nodes.NewNodeA.InsertionHelpers.NewNodeInserter_NodeA_contained_node_b
     _newNodeInserters(22) = nodes.NewNodeB.InsertionHelpers.NewNodeInserter_NodeB_stringOptional
     _newNodeInserters
   }
@@ -84,7 +84,7 @@ object GraphSchema extends flatgraph.Schema {
 
   override def getPropertyLabel(nodeKind: Int, propertyKind: Int): String = {
     if (propertyKind < 6) normalNodePropertyNames(propertyKind)
-    else if (propertyKind == 6 && nodeKind == 0) "node_b" /*on node node_a*/
+    else if (propertyKind == 6 && nodeKind == 0) "contained_node_b" /*on node node_a*/
     else null
   }
 
