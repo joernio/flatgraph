@@ -11,7 +11,7 @@ object PropertyNames {
   val StringMandatory: String = "string_mandatory"
   val StringOptional: String  = "string_optional"
 
-  /** /** This is a contained node */ */
+  /** This is a contained node */
   val ContainedNodeB: String = "contained_node_b"
 
   val All: Set[String] =
