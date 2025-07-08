@@ -1175,7 +1175,7 @@ class DomainClassesGenerator(schema: Schema) {
     val propertyNamesSource     = schema.properties.map(p => propertyNameConstantDef(p.comment, p.name)).mkString("\n")
     val containedNodeLocalNames = schema.nodeTypes.flatMap(_.containedNodes).map(_.localName)
     val containedNodesSource =
-      containedNodeLocalNames.map(n => propertyNameConstantDef(Option("This is a contained node"), n)).toSet.mkString("\n")
+      containedNodeLocalNames.map(n => propertyNameConstantDef(Option("This is a contained node"), n)).distinct.sorted.mkString("\n")
     val allNames =
       (schema.properties.map(p => p.name) ++ containedNodeLocalNames).map(camelCaseCaps).mkString(",\n")
     val propertyNamesFile = outputDir / "PropertyNames.scala"
