@@ -493,7 +493,7 @@ However in any case it is highly encouraged to use a modern JVM, such as JDK20.
 ## What about security / untrusted flatgraph files?
 The main potentially security issue is probably: how can you handle an untrusted - and potentially malicious - flatgraph file?
 Deserializing a `.fg` file should not be able to open a shell or cause privilege escalation, nor should it cause excessive filesystem activity. However, it may take an 
-unbounded amount of time and memory, potentially leading to an OOM crash of the JVM that might not be recoverable from within the JVM by catching some exceptions.
+unbounded amount of time and memory, potentially leading to an OutOfMemoryError in which is typically not recoverable and will bring down the entire JVM.
 
 The easiest malicious but completely valid `.fg` file in that vein is a ZIP-bomb. We take care not to decompress graphs into the filesystem, but we do decompress them into memory.
 
