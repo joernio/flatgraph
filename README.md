@@ -497,7 +497,7 @@ unbounded amount of time and memory, potentially leading to an OutOfMemoryError 
 
 The easiest malicious but completely valid `.fg` file in that vein is a ZIP-bomb. We take care not to decompress graphs into the filesystem, but we do decompress them into memory.
 
-If you need to handle untrusted `.fg` files, then we recommend some form of sandboxing in order to limit the DoS impact.
+If you need to handle untrusted `.fg` files you should really sandbox your process, in order to limit the DoS impact.
 
 If you do decide against our recommendation to write your own code to "sanity check" potentially malicious `.fg` files before attempting to deserialize them, then we'd be happy for your feedback and PRs. (also beware of potential parser differentials -- e.g. the manifest json can be reached either via the offset from the file header, or via `tail -n 1`, and these may very well be different manifests)
 
