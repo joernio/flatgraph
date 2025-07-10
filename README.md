@@ -491,7 +491,7 @@ The build targets JDK8, so that's the minimum version. The build itself requires
 However in any case it is highly encouraged to use a modern JVM, such as JDK20. 
 
 ## What about security / untrusted flatgraph files?
-The main potentially security issue is the following situation: You get handed an untrusted, potentially malicious, flatgraph file, and want to handle it.
+The main potentially security issue is probably: how can you handle an untrusted - and potentially malicious - flatgraph file?
 Deserializing a `.fg` file should not pop a shell / cause privilege escalation, nor should not cause excessive filesystem activity. However, it may take an 
 unbounded amount of time and memory, potentially leading to an OOM crash of the JVM that might not be recoverable from within the JVM by catching some exceptions.
 
