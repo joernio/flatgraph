@@ -491,15 +491,15 @@ The build targets JDK8, so that's the minimum version. The build itself requires
 However in any case it is highly encouraged to use a modern JVM, such as JDK20. 
 
 ## What about security / untrusted flatgraph files?
-The main potentially security issue is probably: how can you handle an untrusted - and potentially malicious - flatgraph file?
+The main potential security issue is probably: how can you handle an untrusted - and potentially malicious - flatgraph file?
 Deserializing a `.fg` file should not be able to open a shell or cause privilege escalation, nor should it cause excessive filesystem activity. However, it may take an 
-unbounded amount of time and memory, potentially leading to an OutOfMemoryError in which is typically not recoverable and will bring down the entire JVM.
+unbounded amount of time and memory, potentially leading to an OutOfMemoryError, and potentially bringing down the JVM or even, depending on configuration, the system (off-heap allocations via `ByteBuffer.allocateDirect` do not necessarily respect the maximum heap size, and the OOM-killer is not gentle).
 
 The easiest malicious but completely valid `.fg` file in that vein is a ZIP-bomb. We take care not to decompress graphs into the filesystem, but we do decompress them into memory.
 
-If you need to handle untrusted `.fg` files you should really sandbox your process, in order to limit the DoS impact.
+If you need to handle untrusted `.fg` files, then you should really sandbox your process, in order to limit the DoS impact.
 
-If you do decide against our recommendation to write your own code to "sanity check" potentially malicious `.fg` files before attempting to deserialize them, then we'd be happy for your feedback and PRs. (also beware of potential parser differentials -- e.g. the manifest json can be reached either via the offset from the file header, or via `tail -n 1`, and these may very well be different manifests)
+If you decide to rather sanity check graphs before loading, then we would be happy for PRs; however, this is not our current development priority, nor is it our recommendation. In that case, also beware of potential parser differentials; e.g. the manifest json can be reached either via the offset from the file header, or via `tail -n 1`, and these may very well be different manifests.
 
 
 ## What does EMT stand for?
