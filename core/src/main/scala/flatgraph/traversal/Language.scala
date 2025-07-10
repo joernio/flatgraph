@@ -28,6 +28,9 @@ trait language {
 
   implicit def iteratorToNumericSteps[A: Numeric](iter: IterableOnce[A]): NumericSteps[A] =
     new NumericSteps[A](iter)
+
+  implicit def iterableOnceExtension[A](iter: IterableOnce[A]): IterableOnceExtension[A] =
+    new IterableOnceExtension[A](iter)
 }
 
 @Traversal(elementType = classOf[AnyRef])
