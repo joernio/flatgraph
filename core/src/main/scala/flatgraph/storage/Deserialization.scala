@@ -194,9 +194,10 @@ object Deserialization {
 
     val manifestOffset = header.getLong()
     val manifestSize   = channel.size() - manifestOffset
-    if (manifestSize > fileSize) {
+    if (manifestSize > fileSize)
       throw new DeserializationException(s"corrupt file: manifest size ($manifestSize) cannot be larger than the file's size ($fileSize)")
-    }
+    if (manifestSize > Int.MaxValue)
+      throw new DeserializationException(s"corrupt file: unreasonably large manifest size ($manifestSize)... aborting")
 
     val manifestBytes = ByteBuffer.allocate(manifestSize.toInt)
     readBytes = 0
