@@ -30,6 +30,10 @@ class IterableOnceExtensionTests extends AnyWordSpec with Matchers {
     }.getMessage should include("it has 2") // ArrayBuffer can 'cheaply' compute their size, so we can have it in the exception message
 
     intercept[AssertionError] {
+      Iterator(1, 2).loneElement
+    }.getMessage should include("it has 2") // should know that it's two elements, even if iterator consumes elements after iteration
+
+    intercept[AssertionError] {
       Seq(1, 2).loneElement("some context")
     }.getMessage should include("it has more than one. Hint: some context")
   }

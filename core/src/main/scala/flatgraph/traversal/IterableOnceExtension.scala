@@ -18,14 +18,17 @@ class IterableOnceExtension[A](val iterable: IterableOnce[A]) extends AnyVal {
       if (hint.isEmpty) ""
       else s" Hint: $hint"
 
+    // if the iterable can only be iterated once, the 'knownSize' will decrement on iteration, so we store the value now
+    val knownSize = iterable.knownSize
+
     val iter = iterable.iterator
     if (iter.isEmpty) {
       throw new NoSuchElementException(s"Iterable was expected to have exactly one element, but it is empty.$hintMaybe")
     } else {
       val res = iter.next()
       if (iter.hasNext) {
-        val collectionSizeHint = iterable.knownSize match {
-          case -1        => "it has more than one" // cannot be computed cheaply, i.e. without traversing the collection
+        val collectionSizeHint = knownSize match {
+          case -1        => "it has more than one" // cannot be computed cheaply
           case knownSize => s"it has $knownSize"
         }
         throw new AssertionError(s"Iterable was expected to have exactly one element, but $collectionSizeHint.$hintMaybe")
