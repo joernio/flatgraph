@@ -45,8 +45,10 @@ class SerializationTests extends AnyWordSpec with Matchers {
     originalDump shouldBe newDump
   }
 
-  /* show that we're no longer vulnerable to the denial of service issue filed here:
-   * https://github.com/joernio/flatgraph/security/advisories/GHSA-jqmx-3x2p-69vh
+  /* Show that we're no longer vulnerable to the 'denial of service attack by manipulating the manifest'
+   * issue filed here: https://github.com/joernio/flatgraph/security/advisories/GHSA-jqmx-3x2p-69vh
+   * Note that we cannot prevent all potential 'small flatgraph file leads to OOM error' attacks.
+   * Always treat untrusted files with precaution...
    */
   "is no longer vulnerable to manifest size attack" in {
     val schema = TestSchema.make(1, 0)
