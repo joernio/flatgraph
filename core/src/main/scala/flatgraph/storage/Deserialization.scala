@@ -173,8 +173,9 @@ object Deserialization {
   }
 
   def readManifest(channel: FileChannel): ujson.Value = {
-    if (channel.size() < HeaderSize)
-      throw new DeserializationException(s"corrupt file, expected at least $HeaderSize bytes, but only found ${channel.size()}")
+    val fileSize = channel.size()
+    if (fileSize < HeaderSize)
+      throw new DeserializationException(s"corrupt file: expected at least $HeaderSize bytes, but only found ${channel.size()}")
 
     val header    = ByteBuffer.allocate(HeaderSize).order(ByteOrder.LITTLE_ENDIAN)
     var readBytes = 0
@@ -185,21 +186,26 @@ object Deserialization {
 
     val headerBytes = new Array[Byte](Keys.Header.length)
     header.get(headerBytes)
-    if (!Arrays.equals(headerBytes, Keys.Header))
+    if (!Arrays.equals(headerBytes, Keys.Header)) {
       throw new DeserializationException(
         s"expected header '$MagicBytesString' (`${Keys.Header.mkString("")}`), but found '${headerBytes.mkString("")}'"
       )
+    }
 
     val manifestOffset = header.getLong()
     val manifestSize   = channel.size() - manifestOffset
-    val manifestBytes  = ByteBuffer.allocate(manifestSize.toInt)
+    if (manifestSize > fileSize)
+      throw new DeserializationException(s"corrupt file: manifest size ($manifestSize) cannot be larger than the file's size ($fileSize)")
+    if (manifestSize > Int.MaxValue)
+      throw new DeserializationException(s"corrupt file: unreasonably large manifest size ($manifestSize)... aborting")
+
+    val manifestBytes = ByteBuffer.allocate(manifestSize.toInt)
     readBytes = 0
     while (readBytes < manifestSize) {
       readBytes += channel.read(manifestBytes, readBytes + manifestOffset)
     }
     manifestBytes.flip()
     ujson.read(manifestBytes)
-
   }
 
   private def readPool(manifest: GraphItem, fileChannel: FileChannel, zstdCtx: ZstdWrapper.ZstdCtx): Array[String] = {
