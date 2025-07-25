@@ -159,7 +159,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
       storagePath <- storagePathMaybe
       if hasChangedSinceOpen
     } {
-      logger.debug(s"closing graph: start writing changes to $storagePathMaybe")
+      logger.debug(s"closing graph: start writing changes to $storagePath")
       Serialization.writeGraph(this, storagePath)
       logger.info(s"closed graph at $storagePath}")
     }
