@@ -225,19 +225,19 @@ class EdgeType(val name: String, val comment: Option[String], val schemaInfo: Sc
     extends HasClassName
     with HasOptionalProtoId
     with HasSchemaInfo {
-  protected var _property: Option[Property[?]] = None
+  protected var _property: Option[Property[?]]       = None
   protected var _defaultAccessorName: Option[String] = None
 
   override def toString = s"EdgeType($name)"
 
-  def property: Option[Property[?]] = _property
+  def property: Option[Property[?]]       = _property
   def defaultAccessorName: Option[String] = _defaultAccessorName
 
   def withProperty(property: Property[?]): this.type = {
     _property = Option(property)
     this
   }
-    
+
   def withDefaultAccessorName(value: String): this.type = {
     _defaultAccessorName = Option(value)
     this
