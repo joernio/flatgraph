@@ -12,5 +12,11 @@ package object neighboraccessors {
 
     implicit def accessNeighborsForNodeATraversal(traversal: IterableOnce[nodes.NodeA]): AccessNeighborsForNodeATraversal =
       new AccessNeighborsForNodeATraversal(traversal.iterator)
+
+    implicit def accessNeighborsForNodeB(node: nodes.NodeB): AccessNeighborsForNodeB =
+      new AccessNeighborsForNodeB(node)
+
+    implicit def accessNeighborsForNodeBTraversal(traversal: IterableOnce[nodes.NodeB]): AccessNeighborsForNodeBTraversal =
+      new AccessNeighborsForNodeBTraversal(traversal.iterator)
   }
 }

@@ -34,6 +34,9 @@ object Generic {
     val connectedTo = builder.addEdgeType("connected_to").withProperty(stringMandatory)
     nodeA.addOutEdge(connectedTo, nodeA, stepNameOut = "connectedTo", stepNameOutDoc = "Connected neighbor node")
 
+    val anotherEdge = builder.addEdgeType("another_edge").withDefaultAccessorName("default_step_name")
+    nodeA.addOutEdge(anotherEdge, nodeB)
+
     builder.build
   }
 }

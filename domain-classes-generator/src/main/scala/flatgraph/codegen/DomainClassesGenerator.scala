@@ -1224,7 +1224,13 @@ class DomainClassesGenerator(schema: Schema) {
 
     case class NeighborContext(adjacentNode: AdjacentNode, scaladoc: String, defaultMethodName: String, customStepName: Option[String])
     case class NeighborContextsByEdge(direction: Direction.Value, edge: EdgeType, neighborContexts: Seq[NeighborContext]) {
-      lazy val edgeAccessorName = camelCase(edge.name + "_" + direction)
+      lazy val edgeAccessorName = {
+        val namePart = edge.defaultAccessorName.getOrElse(edge.name)
+        camelCase(namePart + "_" + direction)
+      }
+
+      lazy val edgeAccessorNameOnRootType =
+        camelCase(edge.name + "_" + direction)
 
       /** common root type across neighbors via this edge */
       lazy val commonNeighborClassName =
@@ -1253,7 +1259,7 @@ class DomainClassesGenerator(schema: Schema) {
         val stepImplementations = Seq.newBuilder[String]
         neighborContextsByEdge.foreach { case context @ NeighborContextsByEdge(direction, edge, neighborContexts) =>
           stepImplementations.addOne(
-            s"def ${context.edgeAccessorName}: Iterator[nodes.${context.commonNeighborClassName}] = node._${context.edgeAccessorName}.cast[nodes.${context.commonNeighborClassName}]"
+            s"def ${context.edgeAccessorName}: Iterator[nodes.${context.commonNeighborClassName}] = node._${context.edgeAccessorNameOnRootType}.cast[nodes.${context.commonNeighborClassName}]"
           )
 
           neighborContexts.foreach { case NeighborContext(adjacentNode, scaladoc, defaultMethodName, customStepName) =>
