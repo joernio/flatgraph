@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 object NewNodeA {
   def apply(): NewNodeA                              = new NewNodeA
-  private val outNeighbors: Map[String, Set[String]] = Map("connected_to" -> Set("node_a"))
+  private val outNeighbors: Map[String, Set[String]] = Map("another_edge" -> Set("node_b"), "connected_to" -> Set("node_a"))
   private val inNeighbors: Map[String, Set[String]]  = Map("connected_to" -> Set("node_a"))
 
   object InsertionHelpers {

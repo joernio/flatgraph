@@ -7,7 +7,7 @@ import scala.collection.mutable
 object NewNodeB {
   def apply(): NewNodeB                              = new NewNodeB
   private val outNeighbors: Map[String, Set[String]] = Map()
-  private val inNeighbors: Map[String, Set[String]]  = Map()
+  private val inNeighbors: Map[String, Set[String]]  = Map("another_edge" -> Set("node_a"))
 
   object InsertionHelpers {
     object NewNodeInserter_NodeB_stringOptional extends flatgraph.NewNodePropertyInsertionHelper {

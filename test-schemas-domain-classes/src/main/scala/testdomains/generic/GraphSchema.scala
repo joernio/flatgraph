@@ -3,15 +3,16 @@ package testdomains.generic
 import flatgraph.FormalQtyType
 
 object GraphSchema extends flatgraph.Schema {
-  private val nodeLabels                             = IndexedSeq("node_a", "node_b")
-  val nodeKindByLabel                                = nodeLabels.zipWithIndex.toMap
-  val edgeLabels: Array[String]                      = Array("connected_to")
-  val edgeKindByLabel                                = edgeLabels.zipWithIndex.toMap
-  val edgePropertyAllocators: Array[Int => Array[?]] = Array(size => Array.fill(size)("<empty>") /* label = connected_to, id = 0 */ )
+  private val nodeLabels        = IndexedSeq("node_a", "node_b")
+  val nodeKindByLabel           = nodeLabels.zipWithIndex.toMap
+  val edgeLabels: Array[String] = Array("another_edge", "connected_to")
+  val edgeKindByLabel           = edgeLabels.zipWithIndex.toMap
+  val edgePropertyAllocators: Array[Int => Array[?]] =
+    Array(size => null, size => Array.fill(size)("<empty>") /* label = connected_to, id = 1 */ )
   val nodeFactories: Array[(flatgraph.Graph, Int) => nodes.StoredNode] =
     Array((g, seq) => new nodes.NodeA(g, seq), (g, seq) => new nodes.NodeB(g, seq))
   val edgeFactories: Array[(flatgraph.GNode, flatgraph.GNode, Int, Any) => flatgraph.Edge] =
-    Array((s, d, subseq, p) => new edges.ConnectedTo(s, d, subseq, p))
+    Array((s, d, subseq, p) => new edges.AnotherEdge(s, d, subseq, p), (s, d, subseq, p) => new edges.ConnectedTo(s, d, subseq, p))
   val nodePropertyAllocators: Array[Int => Array[?]] = Array(
     size => new Array[Int](size),
     size => new Array[Int](size),
@@ -63,7 +64,7 @@ object GraphSchema extends flatgraph.Schema {
     _newNodeInserters
   }
   override def getNumberOfNodeKinds: Int                          = 2
-  override def getNumberOfEdgeKinds: Int                          = 1
+  override def getNumberOfEdgeKinds: Int                          = 2
   override def getNodeLabel(nodeKind: Int): String                = nodeLabels(nodeKind)
   override def getNodeKindByLabel(label: String): Int             = nodeKindByLabel.getOrElse(label, flatgraph.Schema.UndefinedKind)
   override def getEdgeLabel(nodeKind: Int, edgeKind: Int): String = edgeLabels(edgeKind)
