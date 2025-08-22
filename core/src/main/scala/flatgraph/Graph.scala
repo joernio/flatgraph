@@ -161,7 +161,7 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
     } {
       logger.debug(s"closing graph: start writing changes to $storagePath")
       Serialization.writeGraph(this, storagePath)
-      logger.info(s"closed graph at $storagePath}")
+      logger.info(s"closed graph at $storagePath")
     }
   }
 
