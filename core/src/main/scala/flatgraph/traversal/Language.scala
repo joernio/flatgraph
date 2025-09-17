@@ -57,23 +57,24 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     counts.to(Map)
   }
 
+  /** Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged. */
+  @Doc(info =
+    "Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged."
+  )
   def groupBy[K](f: A => K): Map[K, List[A]] = l.groupBy(f)
 
   /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator */
   @Doc(info = "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator")
-  def groupByOrdered[K](f: A => K): mutable.LinkedHashMap[K, List[A]] = {
-    val bld = List.newBuilder
+  def groupByOrdered[K](f: A => K): Map[K, List[A]] = {
     val res = mutable.LinkedHashMap[K, mutable.Builder[A, List[A]]]()
     while (iterator.hasNext) {
       val item = iterator.next
       val key  = f(item)
       res.getOrElseUpdate(key, List.newBuilder[A]).addOne(item)
     }
-    res
-      .asInstanceOf[mutable.LinkedHashMap[K, Any]]
-      .mapValuesInPlace((k, v) => v.asInstanceOf[mutable.Builder[A, List[A]]].result())
-      .asInstanceOf[mutable.LinkedHashMap[K, List[A]]]
+    scala.collection.immutable.VectorMap.from(res.iterator.map { kv => (kv._1, kv._2.result()) })
   }
+
   def groupMap[K, B](key: A => K)(f: A => B): Map[K, List[B]]                      = l.groupMap(key)(f)
   def groupMapReduce[K, B](key: A => K)(f: A => B)(reduce: (B, B) => B): Map[K, B] = l.groupMapReduce(key)(f)(reduce)
 
