@@ -47,4 +47,14 @@ class IterableOnceExtensionTests extends AnyWordSpec with Matchers {
     Seq(1, 2).loneElementOption shouldBe None
   }
 
+  "groupByOrdered works" in {
+    Seq(5, 4, 3, 2, 1, 0).groupByOrdered(x => x % 3).valuesIterator.map { _.l }.l shouldBe List(List(5, 2), List(4, 1), List(3, 0))
+
+    // This is why we need groupByOrdered: 5 doesn't come first because groupBy uses an unordered hashmap.
+    // Especially aggravating for items that hash by object identity -- this is a nondeterministic random number
+    Seq(5, 4, 3, 2, 1, 0).groupBy(x => x % 3).valuesIterator.map { _.l }.l shouldBe List(List(3, 0), List(4, 1), List(5, 2))
+    Seq(5, 4, 3, 2, 1, 0).groupBy(x => ~(x % 3)).valuesIterator.map { _.l }.l shouldBe List(List(5, 2), List(3, 0), List(4, 1))
+
+  }
+
 }

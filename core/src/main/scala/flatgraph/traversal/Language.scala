@@ -57,7 +57,19 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     counts.to(Map)
   }
 
-  def groupBy[K](f: A => K): Map[K, List[A]]                                       = l.groupBy(f)
+  def groupBy[K](f: A => K): Map[K, List[A]] = l.groupBy(f)
+
+  /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator */
+  @Doc(info = "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator")
+  def groupByOrdered[K](f: A => K): mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]] = {
+    val res = mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]]()
+    while (iterator.hasNext) {
+      val item = iterator.next
+      val key  = f(item)
+      res.getOrElseUpdate(key, mutable.ArrayBuffer[A]()).addOne(item)
+    }
+    res
+  }
   def groupMap[K, B](key: A => K)(f: A => B): Map[K, List[B]]                      = l.groupMap(key)(f)
   def groupMapReduce[K, B](key: A => K)(f: A => B)(reduce: (B, B) => B): Map[K, B] = l.groupMapReduce(key)(f)(reduce)
 
