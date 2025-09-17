@@ -3,6 +3,7 @@ package flatgraph.traversal
 import flatgraph.help.{Doc, Traversal}
 import flatgraph.{Accessors, Edge, GNode, MultiPropertyKey, OptionalPropertyKey, PropertyKey, Schema, SinglePropertyKey}
 
+import java.util
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.ArraySeq
 import scala.collection.{Iterator, mutable}
@@ -59,13 +60,29 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
 
   /** Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged. */
   @Doc(info =
-    "Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged."
+    "Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged, because iteration order is not reproducible, which tends to produce very bad bugs."
   )
   def groupBy[K](f: A => K): Map[K, List[A]] = l.groupBy(f)
 
   /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator */
-  @Doc(info = "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator")
-  def groupByOrdered[K](f: A => K): Map[K, List[A]] = {
+  @Doc(info = "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator.")
+  def groupByStable[K](f: A => K): mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]] = {
+    val res = mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]]()
+    while (iterator.hasNext) {
+      val item = iterator.next
+      val key  = f(item)
+      res.getOrElseUpdate(key, mutable.ArrayBuffer[A]()).addOne(item)
+    }
+    res
+  }
+
+  /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator, with the same API
+    * as groupBy; somewhat slowish.
+    */
+  @Doc(info =
+    "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator, with the exact same API as groupBy, but somewhat slowish."
+  )
+  def groupByStableDropInReplacement[K](f: A => K): Map[K, List[A]] = {
     val res = mutable.LinkedHashMap[K, mutable.Builder[A, List[A]]]()
     while (iterator.hasNext) {
       val item = iterator.next
