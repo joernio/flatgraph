@@ -196,24 +196,28 @@ private[flatgraph] class DiffGraphApplier(
             new EdgeRepr(inR.src, inR.dst, inR.edgeKind, inR.subSeq, setEdgeProperty.property),
             graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind)
           )
-        case edgeDeletion: RemoveEdge
-            if !AccessHelpers.isDeleted(edgeDeletion.edge.src) && !AccessHelpers.isDeleted(edgeDeletion.edge.dst) =>
-          ndiff += 1
+        case edgeDeletion: RemoveEdge =>
+          if (AccessHelpers.isDeleted(edgeDeletion.edge.src) || AccessHelpers.isDeleted(edgeDeletion.edge.dst)) {
+            // the adjacent nodes have already been deleted - nothing more for us to do here
+            // and, importantly, we do not want to fail if that's the case, but simply relax and enjoy
+          } else {
 
-          /** This is the delEdge case. It is massively annoying.
-            *
-            * In order to support edge properties, we need to grab the right edge from e.src->e.dst. If we assume that our graph was built
-            * normally, i.e. edges were sequentially/batched added without the unsafe unidirectional edges, then our graph has the following
-            * invariant: The kth edge connecting A->B corresponds to the kth edge connecting B<-A This sucks big time, because edge removal
-            * is potentially O(N**2). The degenerate behavior occurs when we have ~k edges of the same type starting in src = X or ending in
-            * the same dst = X. Each deletion then costs us ~k, and if we delete all ~k edges we pay ~ k*k.
-            *
-            * But k~N is possible where N is the graph size!
-            */
-          val (outR, inR) = normalizeRepresentation(edgeDeletion.edge)
-          insert(delEdges, outR, graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind))
-          insert(delEdges, inR, graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind))
+            ndiff += 1
 
+            /** This is the delEdge case. It is massively annoying.
+              *
+              * In order to support edge properties, we need to grab the right edge from e.src->e.dst. If we assume that our graph was built
+              * normally, i.e. edges were sequentially/batched added without the unsafe unidirectional edges, then our graph has the
+              * following invariant: The kth edge connecting A->B corresponds to the kth edge connecting B<-A This sucks big time, because
+              * edge removal is potentially O(N**2). The degenerate behavior occurs when we have ~k edges of the same type starting in src =
+              * X or ending in the same dst = X. Each deletion then costs us ~k, and if we delete all ~k edges we pay ~ k*k.
+              *
+              * But k~N is possible where N is the graph size!
+              */
+            val (outR, inR) = normalizeRepresentation(edgeDeletion.edge)
+            insert(delEdges, outR, graph.schema.neighborOffsetArrayIndex(outR.src.nodeKind, Outgoing, outR.edgeKind))
+            insert(delEdges, inR, graph.schema.neighborOffsetArrayIndex(inR.src.nodeKind, Incoming, inR.edgeKind))
+          }
         case setNodeProperty: SetNodeProperty if !AccessHelpers.isDeleted(setNodeProperty.node) =>
           ndiff += 1
           val iter = setNodeProperty.property match {
