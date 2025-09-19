@@ -524,6 +524,72 @@ class GraphTests extends AnyWordSpec with Matchers {
     testSerialization(g)
   }
 
+  "permit deleting an edge together with it's node" in {
+    // if a node get's deleted we automatically delete the adjacent edges
+    // but if a user explicitly removes the edge (additionally) we do not want to fail hard for that...
+
+    var g = mkGraph()
+    debugDump(g) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 4), total 4
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 7 [dense], 7 [dense]),
+        |   V0_0   [0] -> V0_2, V0_1, V0_3, V0_2, V0_1
+        |   V0_1   [0] <- V0_0, V0_3, V0_0
+        |   V0_2   [0] <- V0_0, V0_0, V0_3
+        |   V0_3   [0] -> V0_1, V0_2
+        |   V0_3   [0] <- V0_0
+        |""".stripMargin
+
+    val nodeToDelete = g.node(0, 0)
+    val edgeToDelete = Accessors.getEdgesOut(nodeToDelete, 0)(0)
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        .removeNode(nodeToDelete)
+        .removeEdge(edgeToDelete)
+    )
+
+    debugDump(g) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 4), total 4
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
+        |   V0_1   [0] <- V0_3
+        |   V0_2   [0] <- V0_3
+        |   V0_3   [0] -> V0_1, V0_2
+        |""".stripMargin
+
+    g = mkGraph()
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        .removeNode(g.node(0, 1))
+    )
+    debugDump(g) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 4), total 4
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 4 [dense], 4 [dense]),
+        |   V0_0   [0] -> V0_2, V0_3, V0_2
+        |   V0_2   [0] <- V0_0, V0_0, V0_3
+        |   V0_3   [0] -> V0_2
+        |   V0_3   [0] <- V0_0
+        |""".stripMargin
+
+    testSerialization(g)
+
+    g = mkGraph()
+    DiffGraphApplier.applyDiff(
+      g,
+      new DiffGraphBuilder(schema)
+        .removeNode(g.node(0, 2))
+        .removeNode(g.node(0, 3))
+    )
+    debugDump(g) shouldBe
+      """#Node numbers (kindId, nnodes) (0: 4), total 4
+        |Node kind 0. (eid, nEdgesOut, nEdgesIn): (0, 2 [dense], 2 [dense]),
+        |   V0_0   [0] -> V0_1, V0_1
+        |   V0_1   [0] <- V0_0, V0_0
+        |""".stripMargin
+
+    testSerialization(g)
+  }
+
   "dont mess up after node deletion" in {
     val schema = TestSchema.make(1, 0, 1, nodePropertyPrototypes = Array(Array[String]("")), edgePropertyPrototypes = null)
     val g      = new Graph(schema)
