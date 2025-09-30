@@ -2,6 +2,7 @@ package flatgraph
 
 import flatgraph.misc.DebugDump.debugDump
 import flatgraph.storage.Deserialization.DeserializationException
+import flatgraph.storage.Serialization.Counts
 import flatgraph.storage.{Deserialization, Serialization}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -38,7 +39,8 @@ class SerializationTests extends AnyWordSpec with Matchers {
         |   V0_1   [0] <- V0_0
         |""".stripMargin
 
-    Serialization.writeGraph(graph, storagePath)
+    val counts = Serialization.writeGraph(graph, storagePath)
+    counts shouldBe Counts(nodeKinds = 1, edgeKinds = 2, propertyKinds = 0)
 
     val deserialized = Deserialization.readGraph(storagePath, Option(graph.schema))
     val newDump      = debugDump(deserialized)
@@ -57,7 +59,8 @@ class SerializationTests extends AnyWordSpec with Matchers {
     DiffGraphApplier.applyDiff(graph, diff)
 
     val storagePath = Files.createTempFile(s"flatgraph-${getClass.getSimpleName}", "fg")
-    Serialization.writeGraph(graph, storagePath)
+    val counts      = Serialization.writeGraph(graph, storagePath)
+    counts shouldBe Counts(nodeKinds = 1, edgeKinds = 0, propertyKinds = 0)
     patchFile(storagePath)
 
     // when the vulnerability was reported, the following line raised a:

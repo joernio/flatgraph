@@ -17,7 +17,6 @@ import scala.collection.mutable
 import java.util.concurrent
 
 class WriterContext(val fileChannel: FileChannel, val executor: concurrent.ExecutorService) {
-
   val compressCtx      = new ZstdWrapper.ZstdCtx
   var fileOffset: Long = 16L
   val compressQueue    = mutable.ArrayDeque[concurrent.Future[(OutlineStorage, ByteBuffer)]]()
@@ -220,7 +219,7 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
 
 object Serialization {
   val logger = LoggerFactory.getLogger(getClass)
-  case class Counts(nodes: Int, edges: Int, properties: Int)
+  case class Counts(nodeKinds: Int, edgeKinds: Int, propertyKinds: Int)
 
   def writeGraph(graph: Graph, storagePath: Path, requestedExecutor: Option[concurrent.ExecutorService] = None): Counts = {
     logger.info(s"writing to storage at `$storagePath`")
@@ -241,9 +240,9 @@ object Serialization {
   }
 
   private def innerWriteGraph(graph: Graph, writer: WriterContext): Counts = {
-    val nodes      = mutable.ArrayBuffer.empty[NodeItem]
-    val edges      = mutable.ArrayBuffer.empty[EdgeItem]
-    val properties = mutable.ArrayBuffer.empty[PropertyItem]
+    val nodeKinds     = mutable.ArrayBuffer.empty[NodeItem]
+    val edgeKinds     = mutable.ArrayBuffer.empty[EdgeItem]
+    val propertyKinds = mutable.ArrayBuffer.empty[PropertyItem]
     for (nodeKind <- graph.schema.nodeKinds) {
       val nodeLabel = graph.schema.getNodeLabel(nodeKind)
       val deletions = graph
@@ -252,7 +251,7 @@ object Serialization {
           case deleted: GNode if AccessHelpers.isDeleted(deleted) => deleted.seq()
         }
       val size = graph.nodeCountByKind(nodeKind)
-      nodes.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
+      nodeKinds.addOne(new Manifest.NodeItem(nodeLabel, size, deletions))
     }
     for {
       nodeKind  <- graph.schema.nodeKinds
@@ -264,7 +263,7 @@ object Serialization {
         val nodeLabel = graph.schema.getNodeLabel(nodeKind)
         val edgeLabel = graph.schema.getEdgeLabel(nodeKind, edgeKind)
         val edgeItem  = new Manifest.EdgeItem(nodeLabel, edgeLabel, direction.encoding)
-        edges.addOne(edgeItem)
+        edgeKinds.addOne(edgeItem)
         writer.encodeAny(graph.neighbors(pos), edgeItem.qty, delta = graph.nodeCountByKind(nodeKind))
         writer.encodeAny(graph.neighbors(pos + 1), edgeItem.neighbors)
         writer.encodeAny(graph.neighbors(pos + 2), edgeItem.property)
@@ -279,16 +278,16 @@ object Serialization {
         val nodeLabel     = graph.schema.getNodeLabel(nodeKind)
         val propertyLabel = graph.schema.getPropertyLabel(nodeKind, propertyKind)
         val propertyItem  = new Manifest.PropertyItem(nodeLabel, propertyLabel)
-        properties.addOne(propertyItem)
+        propertyKinds.addOne(propertyItem)
         writer.encodeAny(graph.properties(pos).asInstanceOf[Array[Int]], propertyItem.qty, delta = graph.nodeCountByKind(nodeKind))
         writer.encodeAny(graph.properties(pos + 1), propertyItem.property)
       }
     }
 
-    val manifest = new GraphItem(nodes.toArray, edges.toArray, properties.toArray)
+    val manifest = new GraphItem(nodeKinds.toArray, edgeKinds.toArray, propertyKinds.toArray)
     writer.finish(manifest)
-    logger.debug(s"wrote ${nodes.size} nodes with ${edges.size} edges and ${properties.size} properties")
-    Counts(nodes.size, edges.size, properties.size)
+    logger.debug(s"wrote ${nodeKinds.size} node kinds, {edges.size} edge kinds and ${propertyKinds.size} property kinds")
+    Counts(nodeKinds.size, edgeKinds.size, propertyKinds.size)
   }
 
   private[flatgraph] def write(bytes: Array[Byte], res: OutlineStorage, filePtr: AtomicLong, fileChannel: FileChannel): OutlineStorage = {
