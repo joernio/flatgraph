@@ -47,4 +47,11 @@ class IterableOnceExtensionTests extends AnyWordSpec with Matchers {
     Seq(1, 2).loneElementOption shouldBe None
   }
 
+  "groupBy respects iteration order" in {
+    Seq(5, 4, 3, 2, 1, 0).groupByStable(x => x % 3).valuesIterator.map { _.l }.l shouldBe List(List(5, 2), List(4, 1), List(3, 0))
+    Seq(5, 4, 3, 2, 1, 0).groupByStable(x => (x + 1) % 3).valuesIterator.map { _.l }.l shouldBe List(List(5, 2), List(4, 1), List(3, 0))
+    Seq(5, 4, 3, 2, 1, 0).groupByStable(x => (x + 2) % 3).valuesIterator.map { _.l }.l shouldBe List(List(5, 2), List(4, 1), List(3, 0))
+
+  }
+
 }

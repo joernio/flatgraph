@@ -3,6 +3,7 @@ package flatgraph.traversal
 import flatgraph.help.{Doc, Traversal}
 import flatgraph.{Accessors, Edge, GNode, MultiPropertyKey, OptionalPropertyKey, PropertyKey, Schema, SinglePropertyKey}
 
+import java.util
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.ArraySeq
 import scala.collection.{Iterator, mutable}
@@ -57,7 +58,24 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
     counts.to(Map)
   }
 
-  def groupBy[K](f: A => K): Map[K, List[A]]                                       = l.groupBy(f)
+  /** Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged. */
+  @Doc(info =
+    "Execute the traversal and group elements by a given transformation function, ignoring the iterator order. Use is discouraged, because iteration order is not reproducible, which tends to produce very bad bugs."
+  )
+  def groupBy[K](f: A => K): Map[K, List[A]] = l.groupBy(f)
+
+  /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator */
+  @Doc(info = "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator.")
+  def groupByStable[K](f: A => K): scala.collection.SeqMap[K, scala.collection.Seq[A]] = {
+    val res = mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]]()
+    while (iterator.hasNext) {
+      val item = iterator.next
+      val key  = f(item)
+      res.getOrElseUpdate(key, mutable.ArrayBuffer[A]()).addOne(item)
+    }
+    res
+  }
+
   def groupMap[K, B](key: A => K)(f: A => B): Map[K, List[B]]                      = l.groupMap(key)(f)
   def groupMapReduce[K, B](key: A => K)(f: A => B)(reduce: (B, B) => B): Map[K, B] = l.groupMapReduce(key)(f)(reduce)
 
