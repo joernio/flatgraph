@@ -66,7 +66,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
 
   /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator */
   @Doc(info = "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator.")
-  def groupByStable[K](f: A => K): mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]] = {
+  def groupByStable[K](f: A => K): scala.collection.SeqMap[K, scala.collection.Seq[A]] = {
     val res = mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]]()
     while (iterator.hasNext) {
       val item = iterator.next
@@ -74,22 +74,6 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
       res.getOrElseUpdate(key, mutable.ArrayBuffer[A]()).addOne(item)
     }
     res
-  }
-
-  /** Execute the traversal and group elements by a given transformation function, respecting the order of the iterator, with the same API
-    * as groupBy; somewhat slowish.
-    */
-  @Doc(info =
-    "Execute the traversal and group elements by a given transformation function, respecting the order of the iterator, with the exact same API as groupBy, but somewhat slowish."
-  )
-  def groupByStableDropInReplacement[K](f: A => K): Map[K, List[A]] = {
-    val res = mutable.LinkedHashMap[K, mutable.Builder[A, List[A]]]()
-    while (iterator.hasNext) {
-      val item = iterator.next
-      val key  = f(item)
-      res.getOrElseUpdate(key, List.newBuilder[A]).addOne(item)
-    }
-    scala.collection.immutable.VectorMap.from(res.iterator.map { kv => (kv._1, kv._2.result()) })
   }
 
   def groupMap[K, B](key: A => K)(f: A => B): Map[K, List[B]]                      = l.groupMap(key)(f)
