@@ -286,7 +286,7 @@ object Serialization {
 
     val manifest = new GraphItem(nodeKinds.toArray, edgeKinds.toArray, propertyKinds.toArray)
     writer.finish(manifest)
-    logger.debug(s"wrote ${nodeKinds.size} node kinds, ${edges.size} edge kinds and ${propertyKinds.size} property kinds")
+    logger.debug(s"wrote ${nodeKinds.size} node kinds, ${edgeKinds.size} edge kinds and ${propertyKinds.size} property kinds")
     Counts(nodeKinds.size, edgeKinds.size, propertyKinds.size)
   }
 
