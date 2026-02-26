@@ -209,7 +209,9 @@ ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "--release", "8",
-  "-language:implicitConversions"
+  "-language:implicitConversions",
+  "-old-syntax",
+  "-no-indent"
 )
 
 val scalacOptionsFor2_12 = Seq(
