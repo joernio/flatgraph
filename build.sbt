@@ -44,7 +44,6 @@ lazy val help = project
   .settings(
     name := "flatgraph-help",
     libraryDependencies ++= Seq(
-      "de.vandermeer" % "asciitable" % "0.3.2",
       "net.oneandone.reflections8" % "reflections8" % "0.11.7",
     )
   )
