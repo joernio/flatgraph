@@ -1,11 +1,6 @@
 package flatgraph.help
 
-import de.vandermeer.asciitable.{AsciiTable, CWC_LongestLine}
-import de.vandermeer.asciithemes.TA_GridThemes
-import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment
 import Table.*
-
-import scala.jdk.CollectionConverters.SeqHasAsJava
 
 case class Table(columnNames: Seq[String], rows: Seq[Row]) {
 
@@ -13,27 +8,77 @@ case class Table(columnNames: Seq[String], rows: Seq[Row]) {
     if (columnNames.isEmpty && rows.isEmpty) {
       ""
     } else {
-      val table = new AsciiTable()
-      table.addRule()
-      table.addRow(columnNames.asJava)
-      table.addRule()
-      if (rows.nonEmpty) {
-        rows.map(_.asJava).foreach(table.addRow)
+      val renderingWidth = math.max(availableWidthProvider.apply(), 60)
+      val minWidth       = 5
+      val maxWidth       = renderingWidth - minWidth
+      val allRows        = columnNames +: rows
+      val numCols        = columnNames.size
+
+      // calculate column widths: longest content per column, clamped to [minWidth, maxWidth]
+      val colWidths = (0 until numCols).map { col =>
+        val longest = allRows.map(row => if (col < row.size) row(col).length else 0).max
+        math.min(math.max(longest, minWidth), maxWidth)
       }
-      table.addRule()
-      table.getContext.setGridTheme(TA_GridThemes.FULL)
-      table.setTextAlignment(TextAlignment.LEFT)
 
-      val renderingWidth        = math.max(availableWidthProvider.apply(), 60)
-      val minWidth              = 5
-      val maxWidth              = renderingWidth - minWidth
-      val columnWidthCalculator = new CWC_LongestLine().add(minWidth, maxWidth)
-      table.getRenderer.setCWC(columnWidthCalculator)
-
-      // some terminal emulators (e.g. on github actions CI) report to have a width of 0...
-      // that doesn't work for rendering a table, so we compensate by using a minimum width
-      table.render(renderingWidth)
+      val sb = new StringBuilder()
+      sb.append(horizontalRule('┌', '┬', '┐', colWidths))
+      sb.append('\n')
+      appendRow(sb, columnNames, colWidths)
+      sb.append(horizontalRule('├', '┼', '┤', colWidths))
+      sb.append('\n')
+      if (rows.nonEmpty) {
+        rows.foreach(row => appendRow(sb, row, colWidths))
+      }
+      sb.append(horizontalRule('└', '┴', '┘', colWidths))
+      sb.toString()
     }
+  }
+
+  private def horizontalRule(left: Char, mid: Char, right: Char, colWidths: Seq[Int]): String = {
+    colWidths.map("─" * _).mkString(left.toString, mid.toString, right.toString)
+  }
+
+  private def appendRow(sb: StringBuilder, row: Seq[String], colWidths: Seq[Int]): Unit = {
+    val wrappedCols = colWidths.indices.map { col =>
+      val content = if (col < row.size) row(col) else ""
+      wordWrap(content, colWidths(col))
+    }
+    val maxLines = wrappedCols.map(_.size).max
+    for (line <- 0 until maxLines) {
+      sb.append('│')
+      for (col <- colWidths.indices) {
+        val text = if (line < wrappedCols(col).size) wrappedCols(col)(line) else ""
+        sb.append(text)
+        sb.append(" " * (colWidths(col) - text.length))
+        sb.append('│')
+      }
+      sb.append('\n')
+    }
+  }
+
+  private def wordWrap(text: String, width: Int): Seq[String] = {
+    if (text.length <= width) {
+      return Seq(text)
+    }
+    val words   = text.split(" ", -1)
+    val lines   = Seq.newBuilder[String]
+    val current = new StringBuilder()
+    for (word <- words) {
+      if (current.isEmpty) {
+        current.append(word)
+      } else if (current.length + 1 + word.length > width) {
+        lines += current.toString()
+        current.clear()
+        current.append(word)
+      } else {
+        current.append(' ')
+        current.append(word)
+      }
+    }
+    if (current.nonEmpty) {
+      lines += current.toString()
+    }
+    lines.result()
   }
 }
 
