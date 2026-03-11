@@ -8,16 +8,27 @@ case class Table(columnNames: Seq[String], rows: Seq[Row]) {
     if (columnNames.isEmpty && rows.isEmpty) {
       ""
     } else {
-      val renderingWidth = math.max(availableWidthProvider.apply(), 60)
       val minWidth       = 1
-      val maxWidth       = renderingWidth - minWidth
       val allRows        = columnNames +: rows
       val numCols        = columnNames.size
+      val separatorWidth = numCols + 1 // │ around and between each column
+      val minRenderingWidth  = math.max(60, numCols * minWidth + separatorWidth)
+      val renderingWidth     = math.max(availableWidthProvider.apply(), minRenderingWidth)
+      val availableForContent = renderingWidth - separatorWidth
 
-      // calculate column widths: longest content per column, clamped to [minWidth, maxWidth]
-      val colWidths = (0 until numCols).map { col =>
+      // calculate natural column widths: longest content per column, clamped to minWidth
+      val widths = (0 until numCols).map { col =>
         val longest = allRows.map(row => if (col < row.size) row(col).length else 0).max
-        math.min(math.max(longest, minWidth), maxWidth)
+        math.max(longest, minWidth)
+      }.toArray
+
+      // shrink widest columns until total fits within available space
+      val colWidths = {
+        while (widths.sum > availableForContent) {
+          val maxIdx = widths.zipWithIndex.maxBy(_._1)._2
+          widths(maxIdx) = math.max(widths(maxIdx) - 1, minWidth)
+        }
+        widths.toIndexedSeq
       }
 
       val sb = new StringBuilder()

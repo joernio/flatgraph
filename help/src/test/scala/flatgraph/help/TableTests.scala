@@ -35,26 +35,28 @@ class TableTests extends AnyWordSpec {
     implicit val availableWidthProvider: AvailableWidthProvider = () => currentTerminalWidth
 
     table.render.trim shouldBe
-      """┌───────────────────────────────────────────────────────┐
-        |│lorem ipsum                                            │
-        |├───────────────────────────────────────────────────────┤
-        |│Lorem ipsum dolor sit amet, consectetur adipiscing     │
-        |│elit, sed do eiusmod tempor incididunt ut labore et    │
-        |│dolore magna aliqua. Ut enim ad minim veniam, quis     │
-        |│nostrud exercitation ullamco laboris nisi ut aliquip   │
-        |└───────────────────────────────────────────────────────┘
+      """┌──────────────────────────────────────────────────────────┐
+        |│lorem ipsum                                               │
+        |├──────────────────────────────────────────────────────────┤
+        |│Lorem ipsum dolor sit amet, consectetur adipiscing elit,  │
+        |│sed do eiusmod tempor incididunt ut labore et dolore magna│
+        |│aliqua. Ut enim ad minim veniam, quis nostrud exercitation│
+        |│ullamco laboris nisi ut aliquip                           │
+        |└──────────────────────────────────────────────────────────┘
         |""".stripMargin.trim
+    table.render.trim.linesIterator.foreach(_.length shouldBe 60) // 60 is min rendering width
 
     currentTerminalWidth = 100 // emulating: terminal size has changed
     table.render.trim shouldBe
-      """┌───────────────────────────────────────────────────────────────────────────────────────────────┐
-        |│lorem ipsum                                                                                    │
-        |├───────────────────────────────────────────────────────────────────────────────────────────────┤
-        |│Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut   │
-        |│labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco      │
-        |│laboris nisi ut aliquip                                                                        │
-        |└───────────────────────────────────────────────────────────────────────────────────────────────┘
+      """┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+        |│lorem ipsum                                                                                       │
+        |├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+        |│Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut      │
+        |│labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris │
+        |│nisi ut aliquip                                                                                   │
+        |└──────────────────────────────────────────────────────────────────────────────────────────────────┘
         |""".stripMargin.trim
+    table.render.trim.linesIterator.foreach(_.length shouldBe currentTerminalWidth)
   }
 
 }

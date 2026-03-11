@@ -165,7 +165,7 @@ class TraversalTests extends AnyWordSpec {
 //      thingTraversalHelpVerbose should include("simple.SimpleDomainTravers")
       thingTraversalHelpVerbose should include("node label")
       thingTraversalHelpVerbose should include("flatgraph.traversal.NodeSteps")
-      thingTraversalHelpVerbose should include("result to a list")
+      thingTraversalHelpVerbose should include("│.l                  │Execute the traversal and convert the result to a  │flatgraph.traversal.GenericSteps│            │")
       thingTraversalHelpVerbose should include("flatgraph.traversal.GenericSt")
     }
   }
