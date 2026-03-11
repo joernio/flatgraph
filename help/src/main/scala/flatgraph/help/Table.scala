@@ -9,7 +9,7 @@ case class Table(columnNames: Seq[String], rows: Seq[Row]) {
       ""
     } else {
       val renderingWidth = math.max(availableWidthProvider.apply(), 60)
-      val minWidth       = 5
+      val minWidth       = 1
       val maxWidth       = renderingWidth - minWidth
       val allRows        = columnNames +: rows
       val numCols        = columnNames.size
