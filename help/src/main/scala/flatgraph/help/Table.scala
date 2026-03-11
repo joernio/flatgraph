@@ -8,12 +8,12 @@ case class Table(columnNames: Seq[String], rows: Seq[Row]) {
     if (columnNames.isEmpty && rows.isEmpty) {
       ""
     } else {
-      val minWidth       = 1
-      val allRows        = columnNames +: rows
-      val numCols        = columnNames.size
-      val separatorWidth = numCols + 1 // │ around and between each column
-      val minRenderingWidth  = math.max(60, numCols * minWidth + separatorWidth)
-      val renderingWidth     = math.max(availableWidthProvider.apply(), minRenderingWidth)
+      val minWidth            = 1
+      val allRows             = columnNames +: rows
+      val numCols             = columnNames.size
+      val separatorWidth      = numCols + 1 // │ around and between each column
+      val minRenderingWidth   = math.max(60, numCols * minWidth + separatorWidth)
+      val renderingWidth      = math.max(availableWidthProvider.apply(), minRenderingWidth)
       val availableForContent = renderingWidth - separatorWidth
 
       // calculate natural column widths: longest content per column, clamped to minWidth
