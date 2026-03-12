@@ -18,7 +18,7 @@ case class Table(columnNames: Seq[String], rows: Seq[Row]) {
 
       // calculate natural column widths: longest content per column, clamped to minWidth
       val widths = (0 until numCols).map { col =>
-        val longest = allRows.map(row => if (col < row.size) row(col).length else 0).max
+        val longest = allRows.map(row => if (col < row.size) row(col).linesIterator.map(_.length).maxOption.getOrElse(0) else 0).max
         math.max(longest, minWidth)
       }.toArray
 
@@ -68,28 +68,31 @@ case class Table(columnNames: Seq[String], rows: Seq[Row]) {
   }
 
   private def wordWrap(text: String, width: Int): Seq[String] = {
-    if (text.length <= width) {
-      return Seq(text)
-    }
-    val words   = text.split(" ", -1)
-    val lines   = Seq.newBuilder[String]
-    val current = new StringBuilder()
-    for (word <- words) {
-      if (current.isEmpty) {
-        current.append(word)
-      } else if (current.length + 1 + word.length > width) {
-        lines += current.toString()
-        current.clear()
-        current.append(word)
+    text.linesIterator.flatMap { paragraph =>
+      if (paragraph.length <= width) {
+        Seq(paragraph)
       } else {
-        current.append(' ')
-        current.append(word)
+        val words   = paragraph.split(" ", -1)
+        val lines   = Seq.newBuilder[String]
+        val current = new StringBuilder()
+        for (word <- words) {
+          if (current.isEmpty) {
+            current.append(word)
+          } else if (current.length + 1 + word.length > width) {
+            lines += current.toString()
+            current.clear()
+            current.append(word)
+          } else {
+            current.append(' ')
+            current.append(word)
+          }
+        }
+        if (current.nonEmpty) {
+          lines += current.toString()
+        }
+        lines.result()
       }
-    }
-    if (current.nonEmpty) {
-      lines += current.toString()
-    }
-    lines.result()
+    }.toSeq
   }
 }
 
