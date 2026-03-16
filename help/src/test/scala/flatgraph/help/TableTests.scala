@@ -20,6 +20,23 @@ class TableTests extends AnyWordSpec {
         |""".stripMargin.trim
   }
 
+  "handle newlines in cell content" in {
+    val table = Table(Seq("column a", "column b"), Seq(Seq("line1\nline2", "single"), Seq("no newline", "a\nb\nc")))
+
+    implicit val availableWidthProvider: AvailableWidthProvider = new Table.ConstantWidth(80)
+    table.render.trim shouldBe
+      """┌──────────┬────────┐
+        |│column a  │column b│
+        |├──────────┼────────┤
+        |│line1     │single  │
+        |│line2     │        │
+        |│no newline│a       │
+        |│          │b       │
+        |│          │c       │
+        |└──────────┴────────┘
+        |""".stripMargin.trim
+  }
+
   "adapt to dynamically changing terminal width" in {
     val table = Table(
       Seq("lorem ipsum"),
