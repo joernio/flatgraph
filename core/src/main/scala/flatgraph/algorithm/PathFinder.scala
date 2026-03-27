@@ -11,12 +11,14 @@ object PathFinder {
       Iterator
         .single(nodeA)
         .enablePathTracking
-        .repeat(_.both) { initialBehaviour =>
-          val behaviour = initialBehaviour.dedup // no cycles
-            .until(_.is(nodeB)) // don't continue on a given path if we've reached our destination
-          if (maxDepth > -1) behaviour.maxDepth(maxDepth)
-          else behaviour
-        }
+        .repeat(_.both)(using
+          { initialBehaviour =>
+            val behaviour = initialBehaviour.dedup // no cycles
+              .until(_.is(nodeB)) // don't continue on a given path if we've reached our destination
+            if (maxDepth > -1) behaviour.maxDepth(maxDepth)
+            else behaviour
+          }
+        )
         .is(nodeB) // we only care about the paths that lead to our destination
         .path
         .cast[Seq[GNode]]

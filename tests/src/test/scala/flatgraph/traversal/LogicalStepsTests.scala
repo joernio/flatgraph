@@ -50,8 +50,8 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
     "provide if/elseif semantics" in {
       genericDomain.nodeA
         .choose(_.property[String](StringMandatory)) {
-          case "L1" => _.out                          // -> L2
-          case "R1" => _.repeat(_.out)(_.maxDepth(3)) // -> R4
+          case "L1" => _.out                                // -> L2
+          case "R1" => _.repeat(_.out)(using _.maxDepth(3)) // -> R4
         }
         .property(StringMandatory)
         .toSet shouldBe Set("L2", "R4")
@@ -60,8 +60,8 @@ class LogicalStepsTests extends AnyWordSpec with FlatlineGraphFixture {
     "provide if/else semantics" in {
       genericDomain.nodeA
         .choose(_.property[String](StringMandatory)) {
-          case "L1" => _.out                          // -> L2
-          case "R1" => _.repeat(_.out)(_.maxDepth(3)) // -> R4
+          case "L1" => _.out                                // -> L2
+          case "R1" => _.repeat(_.out)(using _.maxDepth(3)) // -> R4
           case _    => _.in
         }
         .property(StringMandatory)

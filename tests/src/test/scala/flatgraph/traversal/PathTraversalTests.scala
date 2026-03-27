@@ -44,7 +44,10 @@ class PathTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
     }
 
     "work with repeat step" in {
-      centerTrav.enablePathTracking.repeat(_.connectedTo)(_.maxDepth(2)).path.toSet shouldBe Set(Seq(center, l1, l2), Seq(center, r1, r2))
+      centerTrav.enablePathTracking.repeat(_.connectedTo)(using _.maxDepth(2)).path.toSet shouldBe Set(
+        Seq(center, l1, l2),
+        Seq(center, r1, r2)
+      )
     }
 
     "work in combination with other steps" should {
@@ -153,8 +156,8 @@ class PathTraversalTests extends AnyWordSpec with FlatlineGraphFixture {
       "choose" in {
         genericDomain.nodeA.enablePathTracking
           .choose(_.stringMandatory) {
-            case "L1" => _.out                          // -> L2
-            case "R1" => _.repeat(_.out)(_.maxDepth(3)) // -> R4
+            case "L1" => _.out                                // -> L2
+            case "R1" => _.repeat(_.out)(using _.maxDepth(3)) // -> R4
           }
           .property(PropertyNames.StringMandatory)
           .path

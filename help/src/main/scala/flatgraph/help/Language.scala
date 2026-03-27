@@ -21,10 +21,10 @@ class HelpSteps[A](iterator: Iterator[A]) extends AnyVal {
     */
   @Doc(info = "print help/documentation based on the current elementType `A`.")
   @implicitNotFound("""If you're using flatgraph purely without a schema and associated generated domain classes, you can
-      |start with `given DocSearchPackages = DocSearchPackages.default`.
-      |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
-      |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
-      |""".stripMargin)
+start with `given DocSearchPackages = DocSearchPackages.default`.
+If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
+If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
+""")
   def help[B >: A](implicit
     elementType: ClassTag[B],
     searchPackages: DocSearchPackages,
@@ -34,10 +34,10 @@ class HelpSteps[A](iterator: Iterator[A]) extends AnyVal {
 
   @Doc(info = "print verbose help/documentation based on the current elementType `A`.")
   @implicitNotFound("""If you're using flatgraph purely without a schema and associated generated domain classes, you can
-      |start with `given DocSearchPackages = DocSearchPackages.default`.
-      |If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
-      |If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
-      |""".stripMargin)
+start with `given DocSearchPackages = DocSearchPackages.default`.
+If you have generated domain classes, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage`.
+If you have additional custom extension steps that specify help texts via @Doc annotations, use `given DocSearchPackages = MyDomain.defaultDocSearchPackage.withAdditionalPackage("my.custom.package)"`
+""")
   def helpVerbose[B >: A](implicit
     elementType: ClassTag[B],
     searchPackages: DocSearchPackages,

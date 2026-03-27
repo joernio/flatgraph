@@ -134,7 +134,7 @@ class GratefulDeadTests extends AnyWordSpec {
       gratefulDead.artist
         .name("Hunter")
         .sang
-        .repeat(_.followedBy)(_.maxDepth(3))
+        .repeat(_.followedBy)(using _.maxDepth(3))
         .sungBy
         .toSet
         .size shouldBe 43
