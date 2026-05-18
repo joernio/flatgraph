@@ -320,6 +320,12 @@ object CodeSnippets {
          |  value match { case Some(_val) => $nameCamelCase(_val); case None => traversal.filter{node => node.$nameCamelCase.isEmpty} }
          |
          |/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`, or no results if `value` is None.
+         |  * */
+         |def ${nameCamelCase}IfPresent(value: Option[$baseType]): Iterator[NodeType] =
+         |  value match { case Some(_val) => $nameCamelCase(_val); case None => Iterator.empty }
+         |
+         |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
          |  * */
          |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
