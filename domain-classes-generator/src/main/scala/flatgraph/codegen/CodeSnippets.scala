@@ -251,6 +251,12 @@ object CodeSnippets {
          |  traversal.filter{_.$nameCamelCase == value}
          |
          |/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`, or no results if `value` is None
+         |  * */
+         |def $nameCamelCase(value: Option[$baseType]): Iterator[NodeType] =
+         |  value match { case Some(_val) => $nameCamelCase(_val); case None => Iterator.empty }
+         |
+         |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
          |  * */
          |def $nameCamelCase(values: $baseType*): Iterator[NodeType] = {
@@ -305,6 +311,19 @@ object CodeSnippets {
          |  * */
          |def $nameCamelCase(value: $baseType): Iterator[NodeType] =
          |  traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`.
+         |  * If `value` is None, only nodes where $nameCamelCase is not set are included.
+         |  * */
+         |def $nameCamelCase(value: Option[$baseType]): Iterator[NodeType] =
+         |  value match { case Some(_val) => $nameCamelCase(_val); case None => traversal.filter{node => node.$nameCamelCase.isEmpty} }
+         |
+         |/**
+         |  * Traverse to nodes where the $nameCamelCase equals the given `value`, or no results if `value` is None.
+         |  * */
+         |def ${nameCamelCase}IfPresent(value: Option[$baseType]): Iterator[NodeType] =
+         |  value match { case Some(_val) => $nameCamelCase(_val); case None => Iterator.empty }
          |
          |/**
          |  * Traverse to nodes where the $nameCamelCase equals at least one of the given `values`
