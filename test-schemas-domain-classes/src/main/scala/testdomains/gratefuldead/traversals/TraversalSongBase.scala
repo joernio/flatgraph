@@ -80,6 +80,17 @@ final class TraversalSongBase[NodeType <: nodes.SongBase](val traversal: Iterato
       val tmp = node.performances; tmp.isDefined && tmp.get == value
     }
 
+  /** Traverse to nodes where the performances equals the given `value`. If `value` is None, only nodes where performances is not set are
+    * included.
+    */
+  def performances(value: Option[Int]): Iterator[NodeType] =
+    value match { case Some(_val) => performances(_val); case None => traversal.filter { node => node.performances.isEmpty } }
+
+  /** Traverse to nodes where the performances equals the given `value`, or no results if `value` is None.
+    */
+  def performancesIfPresent(value: Option[Int]): Iterator[NodeType] =
+    value match { case Some(_val) => performances(_val); case None => Iterator.empty }
+
   /** Traverse to nodes where the performances equals at least one of the given `values`
     */
   def performances(values: Int*): Iterator[NodeType] = {

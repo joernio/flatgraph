@@ -18,6 +18,17 @@ final class TraversalPropertyIntOptional[NodeType <: nodes.StoredNode & nodes.St
       val tmp = node.intOptional; tmp.isDefined && tmp.get == value
     }
 
+  /** Traverse to nodes where the intOptional equals the given `value`. If `value` is None, only nodes where intOptional is not set are
+    * included.
+    */
+  def intOptional(value: Option[Int]): Iterator[NodeType] =
+    value match { case Some(_val) => intOptional(_val); case None => traversal.filter { node => node.intOptional.isEmpty } }
+
+  /** Traverse to nodes where the intOptional equals the given `value`, or no results if `value` is None.
+    */
+  def intOptionalIfPresent(value: Option[Int]): Iterator[NodeType] =
+    value match { case Some(_val) => intOptional(_val); case None => Iterator.empty }
+
   /** Traverse to nodes where the intOptional equals at least one of the given `values`
     */
   def intOptional(values: Int*): Iterator[NodeType] = {

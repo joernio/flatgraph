@@ -16,6 +16,11 @@ final class TraversalPropertyIntMandatory[NodeType <: nodes.StoredNode & nodes.S
   def intMandatory(value: Int): Iterator[NodeType] =
     traversal.filter { _.intMandatory == value }
 
+  /** Traverse to nodes where the intMandatory equals the given `value`, or no results if `value` is None
+    */
+  def intMandatory(value: Option[Int]): Iterator[NodeType] =
+    value match { case Some(_val) => intMandatory(_val); case None => Iterator.empty }
+
   /** Traverse to nodes where the intMandatory equals at least one of the given `values`
     */
   def intMandatory(values: Int*): Iterator[NodeType] = {
