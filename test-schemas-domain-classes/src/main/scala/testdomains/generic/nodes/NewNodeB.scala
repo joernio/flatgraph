@@ -53,7 +53,7 @@ class NewNodeB extends NewNode(nodeKind = 1) with NodeBBase {
   def stringOptional(value: Option[String]): this.type = { this.stringOptional = value; this }
   def stringOptional(value: String): this.type         = { this.stringOptional = Option(value); this }
   override def countAndVisitProperties(interface: flatgraph.BatchedUpdateInterface): Unit = {
-    interface.countProperty(this, 5, stringOptional.size)
+    interface.countProperty(this, 9, stringOptional.size)
   }
 
   override def copy: this.type = {

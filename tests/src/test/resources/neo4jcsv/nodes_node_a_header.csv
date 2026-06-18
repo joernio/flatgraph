@@ -1,1 +1,1 @@
-:ID,:LABEL,int_list:int[],int_mandatory:int,int_optional:int,string_list:string[],string_mandatory:string,string_optional:string
+:ID,:LABEL,boolean_optional,double_optional,float_optional,int_list:int[],int_mandatory:int,int_optional:int,long_optional,string_list:string[],string_mandatory:string,string_optional:string

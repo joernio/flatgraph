@@ -14,6 +14,10 @@ object Generic {
     val intMandatory    = builder.addProperty("int_mandatory", ValueType.Int).mandatory(default = 42)
     val intOptional     = builder.addProperty("int_optional", ValueType.Int)
     val intList         = builder.addProperty("int_list", ValueType.Int).asList()
+    val floatOptional   = builder.addProperty("float_optional", ValueType.Float)
+    val doubleOptional  = builder.addProperty("double_optional", ValueType.Double)
+    val longOptional    = builder.addProperty("long_optional", ValueType.Long)
+    val booleanOptional = builder.addProperty("boolean_optional", ValueType.Boolean)
 
     val nodeA = builder
       .addNodeType("node_a")
@@ -23,6 +27,10 @@ object Generic {
       .addProperty(intMandatory)
       .addProperty(intOptional)
       .addProperty(intList)
+      .addProperty(floatOptional)
+      .addProperty(doubleOptional)
+      .addProperty(longOptional)
+      .addProperty(booleanOptional)
 
     val nodeB = builder
       .addNodeType("node_b")
