@@ -5,9 +5,8 @@ import flatgraph.{DiffGraphApplier, GenericDNode, TestGraphs}
 import flatgraph.misc.TestUtils.applyDiff
 import flatgraph.util.DiffTool
 import testdomains.generic.language.*
-import testdomains.generic.nodes.NodeA
+import testdomains.generic.nodes.{NewNodeA, NewNodeB}
 import testdomains.generic.{GenericDomain, PropertyNames}
-import testdomains.generic.nodes.NewNodeB
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -61,6 +60,38 @@ class GraphSONTests extends AnyWordSpec {
       val diff       = DiffTool.compare(graph, reimported)
       val diffString = diff.asScala.mkString(lineSeparator)
       withClue(s"original graph contained two properties, these should also be present in reimported graph $diffString $lineSeparator") {
+        diff.size shouldBe 0
+      }
+    }
+  }
+
+  "export and re-import all PropertyValue types" in {
+    val domain = GenericDomain.empty
+    val graph  = domain.graph
+
+    // Use values that round-trip through Float/Double JSON serialization exactly
+    val newNode = NewNodeA()
+      .floatOptional(2.0f)
+      .doubleOptional(4.0)
+      .longOptional(Long.MaxValue)
+      .booleanOptional(true)
+      .stringList(Seq("alpha", "beta"))
+      .intList(Seq(1, 2, 3))
+
+    DiffGraphApplier.applyDiff(graph, GenericDomain.newDiffGraphBuilder.addNode(newNode))
+
+    File.usingTemporaryDirectory(getClass.getName) { exportDir =>
+      val exportResult = GraphSONExporter.runExport(graph, exportDir.pathAsString)
+      exportResult.nodeCount shouldBe 1
+      exportResult.edgeCount shouldBe 0
+      val Seq(graphJsonFile) = exportResult.files
+
+      val reimported = GenericDomain.empty.graph
+      GraphSONImporter.runImport(reimported, graphJsonFile)
+
+      val diff       = DiffTool.compare(graph, reimported)
+      val diffString = diff.asScala.mkString(lineSeparator)
+      withClue(s"original and reimported graph should be equal, differences:\n$diffString\n") {
         diff.size shouldBe 0
       }
     }
