@@ -58,6 +58,7 @@ lazy val formats = project
       "org.apache.commons" % "commons-text" % commonsTextVersion,
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       "io.spray" %% "spray-json" % "1.3.6",
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.17.2",
       "com.github.scopt" %% "scopt" % "4.1.0",
     )
   )

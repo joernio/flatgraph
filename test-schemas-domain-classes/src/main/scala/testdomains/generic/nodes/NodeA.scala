@@ -8,9 +8,13 @@ import scala.collection.mutable
   */
 trait NodeAEMT
     extends AnyRef
+    with HasBooleanOptionalEMT
+    with HasDoubleOptionalEMT
+    with HasFloatOptionalEMT
     with HasIntListEMT
     with HasIntMandatoryEMT
     with HasIntOptionalEMT
+    with HasLongOptionalEMT
     with HasStringListEMT
     with HasStringMandatoryEMT
     with HasStringOptionalEMT
@@ -19,10 +23,14 @@ trait NodeABase extends AbstractNode with StaticType[NodeAEMT] {
   def contained_node_b: Option[NodeBBase]
   override def propertiesMap: java.util.Map[String, Any] = {
     import testdomains.generic.accessors.languagebootstrap.*
-    val res        = new java.util.HashMap[String, Any]()
+    val res = new java.util.HashMap[String, Any]()
+    this.booleanOptional.foreach { p => res.put("boolean_optional", p) }
+    this.doubleOptional.foreach { p => res.put("double_optional", p) }
+    this.floatOptional.foreach { p => res.put("float_optional", p) }
     val tmpIntList = this.intList; if (tmpIntList.nonEmpty) res.put("int_list", tmpIntList)
     if ((42: Int) != this.intMandatory) res.put("int_mandatory", this.intMandatory)
     this.intOptional.foreach { p => res.put("int_optional", p) }
+    this.longOptional.foreach { p => res.put("long_optional", p) }
     val tmpStringList = this.stringList; if (tmpStringList.nonEmpty) res.put("string_list", tmpStringList)
     if (("<empty>": String) != this.stringMandatory) res.put("string_mandatory", this.stringMandatory)
     this.stringOptional.foreach { p => res.put("string_optional", p) }
@@ -37,11 +45,19 @@ object NodeA {
 
 /** * NODE PROPERTIES:
   *
+  * ▸ BooleanOptional (Boolean); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ DoubleOptional (Double); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ FloatOptional (Float); Cardinality `ZeroOrOne` (optional)
+  *
   * ▸ IntList (Int); Cardinality `List` (many)
   *
   * ▸ IntMandatory (Int); Cardinality `one` (mandatory with default value `42`)
   *
   * ▸ IntOptional (Int); Cardinality `ZeroOrOne` (optional)
+  *
+  * ▸ LongOptional (Long); Cardinality `ZeroOrOne` (optional)
   *
   * ▸ StringList (String); Cardinality `List` (many)
   *
@@ -58,34 +74,42 @@ class NodeA(graph_4762: flatgraph.Graph, seq_4762: Int)
     with NodeABase
     with StaticType[NodeAEMT] {
   def contained_node_b: Option[NodeB] =
-    flatgraph.Accessors.getNodePropertyOption[NodeB](graph, nodeKind = nodeKind, propertyKind = 6, seq = seq)
+    flatgraph.Accessors.getNodePropertyOption[NodeB](graph, nodeKind = nodeKind, propertyKind = 10, seq = seq)
 
   override def productElementName(n: Int): String =
     n match {
-      case 0 => "intList"
-      case 1 => "intMandatory"
-      case 2 => "intOptional"
-      case 3 => "stringList"
-      case 4 => "stringMandatory"
-      case 5 => "stringOptional"
-      case 6 => "contained_node_b"
-      case _ => ""
+      case 0  => "booleanOptional"
+      case 1  => "doubleOptional"
+      case 2  => "floatOptional"
+      case 3  => "intList"
+      case 4  => "intMandatory"
+      case 5  => "intOptional"
+      case 6  => "longOptional"
+      case 7  => "stringList"
+      case 8  => "stringMandatory"
+      case 9  => "stringOptional"
+      case 10 => "contained_node_b"
+      case _  => ""
     }
 
   override def productElement(n: Int): Any =
     n match {
-      case 0 => this.intList
-      case 1 => this.intMandatory
-      case 2 => this.intOptional
-      case 3 => this.stringList
-      case 4 => this.stringMandatory
-      case 5 => this.stringOptional
-      case 6 => this.contained_node_b
-      case _ => null
+      case 0  => this.booleanOptional
+      case 1  => this.doubleOptional
+      case 2  => this.floatOptional
+      case 3  => this.intList
+      case 4  => this.intMandatory
+      case 5  => this.intOptional
+      case 6  => this.longOptional
+      case 7  => this.stringList
+      case 8  => this.stringMandatory
+      case 9  => this.stringOptional
+      case 10 => this.contained_node_b
+      case _  => null
     }
 
   override def productPrefix = "NodeA"
-  override def productArity  = 7
+  override def productArity  = 11
 
   override def canEqual(that: Any): Boolean = that != null && that.isInstanceOf[NodeA]
 }

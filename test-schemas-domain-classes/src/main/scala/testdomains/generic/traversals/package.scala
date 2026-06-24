@@ -9,6 +9,15 @@ package object traversals {
   object languagebootstrap extends ConcreteStoredConversions
 
   trait ConcreteStoredConversions extends ConcreteBaseConversions {
+    implicit def accessPropertyBooleanOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasBooleanOptionalEMT]](
+      traversal: IterableOnce[NodeType]
+    ): TraversalPropertyBooleanOptional[NodeType] = new TraversalPropertyBooleanOptional(traversal.iterator)
+    implicit def accessPropertyDoubleOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasDoubleOptionalEMT]](
+      traversal: IterableOnce[NodeType]
+    ): TraversalPropertyDoubleOptional[NodeType] = new TraversalPropertyDoubleOptional(traversal.iterator)
+    implicit def accessPropertyFloatOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasFloatOptionalEMT]](
+      traversal: IterableOnce[NodeType]
+    ): TraversalPropertyFloatOptional[NodeType] = new TraversalPropertyFloatOptional(traversal.iterator)
     implicit def accessPropertyIntListTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasIntListEMT]](
       traversal: IterableOnce[NodeType]
     ): TraversalPropertyIntList[NodeType] = new TraversalPropertyIntList(traversal.iterator)
@@ -18,6 +27,9 @@ package object traversals {
     implicit def accessPropertyIntOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasIntOptionalEMT]](
       traversal: IterableOnce[NodeType]
     ): TraversalPropertyIntOptional[NodeType] = new TraversalPropertyIntOptional(traversal.iterator)
+    implicit def accessPropertyLongOptionalTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasLongOptionalEMT]](
+      traversal: IterableOnce[NodeType]
+    ): TraversalPropertyLongOptional[NodeType] = new TraversalPropertyLongOptional(traversal.iterator)
     implicit def accessPropertyStringListTraversal[NodeType <: nodes.StoredNode & nodes.StaticType[nodes.HasStringListEMT]](
       traversal: IterableOnce[NodeType]
     ): TraversalPropertyStringList[NodeType] = new TraversalPropertyStringList(traversal.iterator)

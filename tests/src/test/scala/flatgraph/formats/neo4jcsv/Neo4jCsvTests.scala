@@ -34,12 +34,12 @@ class Neo4jCsvTests extends AnyWordSpec {
       // assert csv file contents
       val nodeHeaderFile = fuzzyFindFile(exportedFiles, NodeA.Label, HeaderFileSuffix)
       nodeHeaderFile.contentAsString.trim shouldBe
-        ":ID,:LABEL,int_list:int[],int_mandatory:int,int_optional:int,string_list:string[],string_mandatory:string,string_optional:string"
+        ":ID,:LABEL,boolean_optional,double_optional,float_optional,int_list:int[],int_mandatory:int,int_optional:int,long_optional,string_list:string[],string_mandatory:string,string_optional:string"
 
       val nodeDataFileLines = fuzzyFindFile(exportedFiles, NodeA.Label, DataFileSuffix).lines.toSeq
       nodeDataFileLines.size shouldBe 2
-      nodeDataFileLines should contain("0,node_a,,42,,node 1 c1;node 1 c2,node 1 a,node 1 b")
-      nodeDataFileLines should contain("1,node_a,10;11;12,1,2,,<empty>,")
+      nodeDataFileLines should contain("0,node_a,,,,,42,,,node 1 c1;node 1 c2,node 1 a,node 1 b")
+      nodeDataFileLines should contain("1,node_a,,,,10;11;12,1,2,,,<empty>,")
 
       val edgeHeaderFile = fuzzyFindFile(exportedFiles, ConnectedTo.Label, HeaderFileSuffix)
       edgeHeaderFile.contentAsString.trim shouldBe ":START_ID,:END_ID,:TYPE,string_mandatory:string"
@@ -52,12 +52,16 @@ class Neo4jCsvTests extends AnyWordSpec {
         """LOAD CSV FROM 'file:/nodes_node_a_data.csv' AS line
           |CREATE (:node_a {
           |id: toInteger(line[0]),
-          |int_list: toIntegerList(split(line[2], ";")),
-          |int_mandatory: toInteger(line[3]),
-          |int_optional: toInteger(line[4]),
-          |string_list: toStringList(split(line[5], ";")),
-          |string_mandatory: line[6],
-          |string_optional: line[7]
+          |boolean_optional: line[2],
+          |double_optional: line[3],
+          |float_optional: line[4],
+          |int_list: toIntegerList(split(line[5], ";")),
+          |int_mandatory: toInteger(line[6]),
+          |int_optional: toInteger(line[7]),
+          |long_optional: line[8],
+          |string_list: toStringList(split(line[9], ";")),
+          |string_mandatory: line[10],
+          |string_optional: line[11]
           |});
           |""".stripMargin
 

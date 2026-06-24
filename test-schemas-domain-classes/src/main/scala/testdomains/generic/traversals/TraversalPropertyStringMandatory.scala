@@ -33,7 +33,7 @@ final class TraversalPropertyStringMandatory[NodeType <: nodes.StoredNode & node
   def stringMandatoryExact(value: String): Iterator[NodeType] = traversal match {
     case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
       val someNode = init.next
-      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
+      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
     case _ => traversal.filter { _.stringMandatory == value }
   }
 
@@ -45,7 +45,7 @@ final class TraversalPropertyStringMandatory[NodeType <: nodes.StoredNode & node
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         values.iterator.flatMap { value =>
-          flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
+          flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
         }
       case _ =>
         val valueSet = values.toSet

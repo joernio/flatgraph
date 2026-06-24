@@ -5,6 +5,71 @@ import testdomains.generic.accessors.languagebootstrap.*
 
 final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Iterator[NodeType]) extends AnyVal {
 
+  /** Traverse to booleanOptional property */
+  def booleanOptional: Iterator[Boolean] =
+    traversal.flatMap(_.booleanOptional)
+
+  /** Traverse to nodes where the booleanOptional equals the given `value`
+    */
+  def booleanOptional(value: Boolean): Iterator[NodeType] =
+    traversal.filter { node => node.booleanOptional.isDefined && node.booleanOptional.get == value }
+
+  /** Traverse to doubleOptional property */
+  def doubleOptional: Iterator[Double] =
+    traversal.flatMap(_.doubleOptional)
+
+  /** Traverse to nodes where the doubleOptional equals the given `value`
+    */
+  def doubleOptional(value: Double): Iterator[NodeType] =
+    traversal.filter { node => node.doubleOptional.isDefined && node.doubleOptional.get == value }
+
+  /** Traverse to nodes where the doubleOptional equals at least one of the given `values`
+    */
+  def doubleOptional(values: Double*): Iterator[NodeType] = {
+    val vset = values.toSet
+    traversal.filter { node => node.doubleOptional.isDefined && vset.contains(node.doubleOptional.get) }
+  }
+
+  /** Traverse to nodes where the doubleOptional does not equal the given `value`
+    */
+  def doubleOptionalNot(value: Double): Iterator[NodeType] =
+    traversal.filter { node => node.doubleOptional.isEmpty || node.doubleOptional.get != value }
+
+  /** Traverse to nodes where the doubleOptional does not equal any one of the given `values`
+    */
+  def doubleOptionalNot(values: Double*): Iterator[NodeType] = {
+    val vset = values.toSet
+    traversal.filter { node => node.doubleOptional.isEmpty || !vset.contains(node.doubleOptional.get) }
+  }
+
+  /** Traverse to floatOptional property */
+  def floatOptional: Iterator[Float] =
+    traversal.flatMap(_.floatOptional)
+
+  /** Traverse to nodes where the floatOptional equals the given `value`
+    */
+  def floatOptional(value: Float): Iterator[NodeType] =
+    traversal.filter { node => node.floatOptional.isDefined && node.floatOptional.get == value }
+
+  /** Traverse to nodes where the floatOptional equals at least one of the given `values`
+    */
+  def floatOptional(values: Float*): Iterator[NodeType] = {
+    val vset = values.toSet
+    traversal.filter { node => node.floatOptional.isDefined && vset.contains(node.floatOptional.get) }
+  }
+
+  /** Traverse to nodes where the floatOptional does not equal the given `value`
+    */
+  def floatOptionalNot(value: Float): Iterator[NodeType] =
+    traversal.filter { node => node.floatOptional.isEmpty || node.floatOptional.get != value }
+
+  /** Traverse to nodes where the floatOptional does not equal any one of the given `values`
+    */
+  def floatOptionalNot(values: Float*): Iterator[NodeType] = {
+    val vset = values.toSet
+    traversal.filter { node => node.floatOptional.isEmpty || !vset.contains(node.floatOptional.get) }
+  }
+
   /** Traverse to intList property */
   def intList: Iterator[Int] =
     traversal.flatMap(_.intList)
@@ -137,6 +202,34 @@ final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Itera
       val tmp = node.intOptional; tmp.isDefined && tmp.get <= value
     }
 
+  /** Traverse to longOptional property */
+  def longOptional: Iterator[Long] =
+    traversal.flatMap(_.longOptional)
+
+  /** Traverse to nodes where the longOptional equals the given `value`
+    */
+  def longOptional(value: Long): Iterator[NodeType] =
+    traversal.filter { node => node.longOptional.isDefined && node.longOptional.get == value }
+
+  /** Traverse to nodes where the longOptional equals at least one of the given `values`
+    */
+  def longOptional(values: Long*): Iterator[NodeType] = {
+    val vset = values.toSet
+    traversal.filter { node => node.longOptional.isDefined && vset.contains(node.longOptional.get) }
+  }
+
+  /** Traverse to nodes where the longOptional does not equal the given `value`
+    */
+  def longOptionalNot(value: Long): Iterator[NodeType] =
+    traversal.filter { node => node.longOptional.isEmpty || node.longOptional.get != value }
+
+  /** Traverse to nodes where the longOptional does not equal any one of the given `values`
+    */
+  def longOptionalNot(values: Long*): Iterator[NodeType] = {
+    val vset = values.toSet
+    traversal.filter { node => node.longOptional.isEmpty || !vset.contains(node.longOptional.get) }
+  }
+
   /** Traverse to stringList property */
   def stringList: Iterator[String] =
     traversal.flatMap(_.stringList)
@@ -167,7 +260,7 @@ final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Itera
   def stringMandatoryExact(value: String): Iterator[NodeType] = traversal match {
     case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
       val someNode = init.next
-      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
+      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
     case _ => traversal.filter { _.stringMandatory == value }
   }
 
@@ -179,7 +272,7 @@ final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Itera
       case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
         val someNode = init.next
         values.iterator.flatMap { value =>
-          flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 4, value).asInstanceOf[Iterator[NodeType]]
+          flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 8, value).asInstanceOf[Iterator[NodeType]]
         }
       case _ =>
         val valueSet = values.toSet
@@ -236,7 +329,7 @@ final class TraversalNodeaBase[NodeType <: nodes.NodeABase](val traversal: Itera
   def stringOptionalExact(value: String): Iterator[NodeType] = traversal match {
     case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
       val someNode = init.next
-      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 5, value).asInstanceOf[Iterator[NodeType]]
+      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 9, value).asInstanceOf[Iterator[NodeType]]
     case _ =>
       traversal.filter { node =>
         val tmp = node.stringOptional; tmp.isDefined && tmp.get == value
