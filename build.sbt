@@ -2,7 +2,7 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val scala3 = "3.7.4"
+val scala3 = "3.3.8"
 // ^ n.b. should always be the current scala LTS release, see
 // https://www.scala-lang.org/blog/2022/08/17/long-term-compatibility-plans.html#library-maintainers
 val scala2_12 = "2.12.20"
