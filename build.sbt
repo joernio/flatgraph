@@ -2,7 +2,7 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val scala3 = "3.3.7"
+val scala3 = "3.7.4"
 // ^ n.b. should always be the current scala LTS release, see
 // https://www.scala-lang.org/blog/2022/08/17/long-term-compatibility-plans.html#library-maintainers
 val scala2_12 = "2.12.20"
@@ -33,7 +33,7 @@ lazy val core = project
     name := "flatgraph-core",
     libraryDependencies ++= Seq(
       "com.lihaoyi"     %% "ujson"  % "4.1.0",
-      "com.github.luben" % "zstd-jni" % "1.5.7-2",
+      "com.github.luben" % "zstd-jni" % "1.5.7-11",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
     )
   )
@@ -208,7 +208,7 @@ ThisBuild / libraryDependencies ++= Seq(
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
-  "--release", "8",
+  "--release", "11",
   "-language:implicitConversions",
   "-no-indent", // Require classical {...} syntax, indentation is not significant.
   "-old-syntax" // Require `(...)` around conditions.
@@ -222,7 +222,7 @@ val scalacOptionsFor2_12 = Seq(
 
 ThisBuild / compile / javacOptions ++= Seq(
   "-g", // debug symbols
-  "--release=8"
+  "--release=11"
 )
 
 Global / cancelable           := true
