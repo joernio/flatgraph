@@ -211,7 +211,8 @@ ThisBuild / scalacOptions ++= Seq(
   "--release", "11",
   "-language:implicitConversions",
   "-no-indent", // Require classical {...} syntax, indentation is not significant.
-  "-old-syntax" // Require `(...)` around conditions.
+  "-old-syntax", // Require `(...)` around conditions.
+  "-Yfuture-lazy-vals"
 )
 
 val scalacOptionsFor2_12 = Seq(
