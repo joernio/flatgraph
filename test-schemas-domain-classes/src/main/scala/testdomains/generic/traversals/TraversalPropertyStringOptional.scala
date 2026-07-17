@@ -37,7 +37,7 @@ final class TraversalPropertyStringOptional[NodeType <: nodes.StoredNode & nodes
     */
   def stringOptionalExact(value: String): Iterator[NodeType] = traversal match {
     case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
-      val someNode = init.next
+      val someNode = init.next()
       flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind, 9, value).asInstanceOf[Iterator[NodeType]]
     case _ =>
       traversal.filter { node =>

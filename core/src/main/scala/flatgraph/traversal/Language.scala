@@ -69,7 +69,7 @@ class GenericSteps[A](iterator: Iterator[A]) extends AnyVal {
   def groupByStable[K](f: A => K): scala.collection.SeqMap[K, scala.collection.Seq[A]] = {
     val res = mutable.LinkedHashMap[K, mutable.ArrayBuffer[A]]()
     while (iterator.hasNext) {
-      val item = iterator.next
+      val item = iterator.next()
       val key  = f(item)
       res.getOrElseUpdate(key, mutable.ArrayBuffer[A]()).addOne(item)
     }

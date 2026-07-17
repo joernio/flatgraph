@@ -29,16 +29,16 @@ class CompileTests extends AnyWordSpec with Matchers {
     lazy val compiles = {
       iter.name("a")
       iter.order
-      iter.next.order
+      iter.next().order
       iter.isStatic.orderGt(3).staticCallee
-      iter.next.isStatic.map(_.staticCallee)
+      iter.next().isStatic.map(_.staticCallee)
 
       val isStaticIter = iter.isStatic
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
       val _: Call & StaticType[IsStaticEMT] = isStaticIter.next()
 
       // edge accessors
-      iter.next.method
+      iter.next().method
       iter.method
     }
   }
@@ -48,9 +48,9 @@ class CompileTests extends AnyWordSpec with Matchers {
     lazy val compiles = {
       iter.name("a")
       iter.order
-      iter.next.order
+      iter.next().order
       iter.isStatic
-      iter.next.isStatic
+      iter.next().isStatic
 
       val isStaticIter = iter.isStatic
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
@@ -65,9 +65,9 @@ class CompileTests extends AnyWordSpec with Matchers {
     lazy val compiles = {
       iter.name("a")
       iter.order
-      iter.next.order
+      iter.next().order
       iter.isStatic
-      iter.next.isStatic
+      iter.next().isStatic
 
       val isStaticIter = iter.isStatic
       // resolved type is both a Call and our ad-hoc defined `IsStatic` trait
@@ -81,7 +81,7 @@ class CompileTests extends AnyWordSpec with Matchers {
     lazy val iter: Iterator[Declaration] = ???
     lazy val compiles = {
       iter.name("a")
-      iter.next.name
+      iter.next().name
     }
 
   }
@@ -91,7 +91,7 @@ class CompileTests extends AnyWordSpec with Matchers {
     lazy val compiles = {
       iter.name("a")
       iter.order
-      iter.next.order
+      iter.next().order
     }
   }
 
@@ -100,7 +100,7 @@ class CompileTests extends AnyWordSpec with Matchers {
     lazy val compiles = {
       iter.name("a")
       iter.order
-      iter.next.order
+      iter.next().order
     }
   }
 
@@ -113,7 +113,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       lazy val compiles = {
         iter.name("a")
         iter.order
-        iter.next.name
+        iter.next().name
       }
     }
 
@@ -122,7 +122,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       lazy val compiles = {
         iter.name("a")
         iter.order
-        iter.next.name
+        iter.next().name
       }
     }
 
@@ -131,7 +131,7 @@ class CompileTests extends AnyWordSpec with Matchers {
       lazy val compiles = {
         iter.name("a")
         iter.order
-        iter.next.name
+        iter.next().name
       }
     }
   }

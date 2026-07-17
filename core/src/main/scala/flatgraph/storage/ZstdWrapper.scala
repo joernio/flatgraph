@@ -74,9 +74,9 @@ object ZstdWrapper {
 
     override def close(): Unit = this.synchronized {
       compressCtxs.foreach(_.close())
-      compressCtxs.clear
+      compressCtxs.clear()
       decompressCtxs.foreach(_.close())
-      decompressCtxs.clear
+      decompressCtxs.clear()
       this.closed = true
     }
   }
