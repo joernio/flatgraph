@@ -118,7 +118,7 @@ object CodeSnippets {
          |  * */
          |def ${nameCamelCase}Exact(value: $baseType): Iterator[NodeType] = traversal match {
          |    case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
-         |      val someNode = init.next
+         |      val someNode = init.next()
          |      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, value).asInstanceOf[Iterator[NodeType]]
          |    case _ => traversal.filter{_.$nameCamelCase == value}
          |  }
@@ -130,7 +130,7 @@ object CodeSnippets {
          |  if(values.length == 1) return ${nameCamelCase}Exact(values.head)
          |  traversal match {
          |    case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
-         |      val someNode = init.next
+         |      val someNode = init.next()
          |      values.iterator.flatMap { value =>
          |        flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, value).asInstanceOf[Iterator[NodeType]]
          |      }
@@ -188,7 +188,7 @@ object CodeSnippets {
          |  * */
          |def ${nameCamelCase}Exact(value: $baseType): Iterator[NodeType] = traversal match {
          |    case init: flatgraph.misc.InitNodeIterator[flatgraph.GNode @unchecked] if init.isVirgin && init.hasNext =>
-         |      val someNode = init.next
+         |      val someNode = init.next()
          |      flatgraph.Accessors.getWithInverseIndex(someNode.graph, someNode.nodeKind,  $propertyId, value).asInstanceOf[Iterator[NodeType]]
          |     case _ => traversal.filter{node => val tmp = node.$nameCamelCase; tmp.isDefined && tmp.get == value}
          |}

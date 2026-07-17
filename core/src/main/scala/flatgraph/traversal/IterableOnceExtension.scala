@@ -10,7 +10,7 @@ class IterableOnceExtension[A](val iterable: IterableOnce[A]) extends AnyVal {
     *   the one and only element from an Iterable
     * @throws NoSuchElementException
     *   if the Iterable is empty
-    * @throws AssertionError
+    * @throws java.lang.AssertionError
     *   if the Iterable has more than one element
     */
   def loneElement(hint: String): A = {
