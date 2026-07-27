@@ -67,7 +67,25 @@ class SerializationTests extends AnyWordSpec with Matchers {
     // `java.lang.OutOfMemoryError: Requested array size exceeds VM limit`
     intercept[DeserializationException] {
       Deserialization.readGraph(storagePath, Option(graph.schema))
-    }.getMessage should include("corrupt file: manifest size")
+    }.getMessage should include("corrupt file: manifest offset")
+  }
+
+  /* Show that a truncated file (manifest offset beyond EOF) produces a clear error instead of
+   * `java.lang.IllegalArgumentException: capacity < 0` deep in ByteBuffer.allocate.
+   */
+  "rejects a truncated file where manifest offset points beyond EOF" in {
+    val schema = TestSchema.make(1, 0)
+    val graph  = Graph(schema)
+    val diff   = DiffGraphBuilder(schema).addNode(new GenericDNode(0))
+    DiffGraphApplier.applyDiff(graph, diff)
+
+    val storagePath = Files.createTempFile(s"flatgraph-${getClass.getSimpleName}", "fg")
+    Serialization.writeGraph(graph, storagePath)
+    truncateFile(storagePath)
+
+    intercept[DeserializationException] {
+      Deserialization.readGraph(storagePath, Option(graph.schema))
+    }.getMessage should include("corrupt file: manifest offset")
   }
 
   /** manipulate file as detailed in https: //github.com/joernio/flatgraph/security/advisories/GHSA-jqmx-3x2p-69vh */
@@ -86,6 +104,13 @@ class SerializationTests extends AnyWordSpec with Matchers {
       buffer.order(ByteOrder.LITTLE_ENDIAN)
       buffer.putLong(maliciousOffset)
       file.write(buffer.array())
+    }
+  }
+
+  /** simulate a truncated file: keep only the header so the manifest offset always points past EOF */
+  private def truncateFile(path: Path): Unit = {
+    Using.resource(new RandomAccessFile(path.toFile, "rw")) { file =>
+      file.setLength(storage.HeaderSize)
     }
   }
 
