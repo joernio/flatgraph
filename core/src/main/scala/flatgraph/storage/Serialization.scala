@@ -23,7 +23,7 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
   val writeQueue       = mutable.ArrayDeque[concurrent.Future[Any]]()
   val jobQueue         = mutable.ArrayBuffer[() => (OutlineStorage, Array[Byte])]()
   val stringQueue      = mutable.ArrayDeque[(OutlineStorage, Array[String])]()
-  val stringpool       = mutable.LinkedHashMap[String, Int]()
+  val stringpool       = new flatgraph.misc.DedupTable
 
   def submitCompress(block: => (OutlineStorage, ByteBuffer)): Unit = {
     compressQueue.addOne(executor.submit((() => block)))
@@ -43,12 +43,6 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
       }
       res
     }
-  }
-
-  // NOT threadsafe!
-  private def insertString(stringPool: mutable.LinkedHashMap[String, Int])(s: String): Int = {
-    if (s == null) -1
-    else stringPool.getOrElseUpdate(s, stringPool.size)
   }
 
   private[flatgraph] def encodeAny(item: Any, outlineStorage: OutlineStorage = new OutlineStorage, delta: Int = -1): OutlineStorage = {
@@ -160,7 +154,7 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
         writeItem(item, bytes)
       }
       val (item, strings) = stringQueue.removeHead()
-      val indices         = strings.map(insertString(stringpool))
+      val indices         = strings.map(stringpool.insert)
       submitCompress {
         val bytes = new Array[Byte](4 * strings.length)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(indices)
@@ -171,7 +165,7 @@ class WriterContext(val fileChannel: FileChannel, val executor: concurrent.Execu
     val poolLenBytes  = new Array[Byte](4 * stringpool.size)
     val poolLenBuffer = ByteBuffer.wrap(poolLenBytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer()
     val poolBytes     = new ByteArrayOutputStream()
-    for (s <- stringpool.keysIterator) {
+    for (s <- stringpool.strs.iterator.take(stringpool.size)) {
       val bytes = s.getBytes(StandardCharsets.UTF_8)
       poolBytes.write(bytes)
       poolLenBuffer.put(bytes.length)
