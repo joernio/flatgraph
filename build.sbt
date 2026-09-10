@@ -2,9 +2,8 @@ name := "flatgraph"
 ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
-val scala3 = "3.3.8"
-// ^ n.b. should always be the current scala LTS release, see
-// https://www.scala-lang.org/blog/2022/08/17/long-term-compatibility-plans.html#library-maintainers
+val scala3 = "3.8.3"
+// ^ n.b. aligned with the codescience build; requires --release 17 or later (Scala 3.8 dropped JVM 8/11 targets)
 val scala2_12 = "2.12.20"
 val osLibVersion = "0.11.4"
 val commonsTextVersion = "1.13.0"
@@ -32,7 +31,7 @@ lazy val core = project
   .settings(
     name := "flatgraph-core",
     libraryDependencies ++= Seq(
-      "com.lihaoyi"     %% "ujson"  % "4.1.0",
+      "com.lihaoyi"     %% "ujson"  % "4.4.1",
       "com.github.luben" % "zstd-jni" % "1.5.7-11",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
     )
@@ -56,7 +55,7 @@ lazy val formats = project
     libraryDependencies ++= Seq(
       "com.github.tototoshi" %% "scala-csv" % "2.0.0",
       "org.apache.commons" % "commons-text" % commonsTextVersion,
-      "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
+      "org.scala-lang.modules" %% "scala-xml" % "2.4.0",
       "io.spray" %% "spray-json" % "1.3.6",
       "com.fasterxml.jackson.core" % "jackson-core" % "2.17.2",
       "com.github.scopt" %% "scopt" % "4.1.0",
@@ -208,11 +207,13 @@ ThisBuild / libraryDependencies ++= Seq(
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
-  "--release", "11",
+  "--release", "17",
   "-language:implicitConversions",
   "-no-indent", // Require classical {...} syntax, indentation is not significant.
   "-old-syntax", // Require `(...)` around conditions.
-  "-Yfuture-lazy-vals"
+  // This lint doesn't have an ID to suppress it, and we don't want to suppress a whole category. So the message is the only option.
+  // (same as in codescience: the `repeat(...)(...)` DSL intentionally passes behaviour builders via an implicit parameter list)
+  "-Wconf:msg=Implicit parameters should be provided with a `using` clause:s"
 )
 
 val scalacOptionsFor2_12 = Seq(
@@ -223,7 +224,7 @@ val scalacOptionsFor2_12 = Seq(
 
 ThisBuild / compile / javacOptions ++= Seq(
   "-g", // debug symbols
-  "--release=11"
+  "--release=17"
 )
 
 Global / cancelable           := true
