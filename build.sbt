@@ -3,7 +3,6 @@ ThisBuild / organization := "io.joern"
 ThisBuild / scalaVersion := scala3
 
 val scala3 = "3.8.3"
-// ^ n.b. aligned with the codescience build; requires --release 17 or later (Scala 3.8 dropped JVM 8/11 targets)
 val scala2_12 = "2.12.20"
 val osLibVersion = "0.11.4"
 val commonsTextVersion = "1.13.0"
@@ -212,7 +211,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-no-indent", // Require classical {...} syntax, indentation is not significant.
   "-old-syntax", // Require `(...)` around conditions.
   // This lint doesn't have an ID to suppress it, and we don't want to suppress a whole category. So the message is the only option.
-  // (same as in codescience: the `repeat(...)(...)` DSL intentionally passes behaviour builders via an implicit parameter list)
+  // The `repeat(...)(...)` DSL intentionally passes behaviour builders via an implicit parameter list.
   "-Wconf:msg=Implicit parameters should be provided with a `using` clause:s"
 )
 

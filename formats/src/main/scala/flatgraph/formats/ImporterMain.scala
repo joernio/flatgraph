@@ -18,6 +18,18 @@ import scala.util.Using
 object ImporterMain {
   lazy val logger = LoggerFactory.getLogger(getClass)
 
+  /** Entry point for invoking the importer as an application. Note that importing requires a domain-specific `Schema`, which cannot be
+    * passed via the command line - domain-specific tools should therefore define their own main method that delegates to [[apply]], e.g.
+    * {{{
+    * def main(args: Array[String]): Unit = ImporterMain(MyDomain.schema)(args)
+    * }}}
+    */
+  def main(args: Array[String]): Unit =
+    throw new UnsupportedOperationException(
+      "importing requires a domain-specific schema, which cannot be passed via the command line - " +
+        "please define a domain-specific main method that delegates to `ImporterMain.apply(schema)` instead"
+    )
+
   def apply(schema: Schema): Array[String] => Unit = { args =>
     OParser
       .parse(parser, args, Config(Nil, null, Paths.get("/dev/null")))
