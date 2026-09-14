@@ -1,20 +1,37 @@
 package flatgraph.codegen
 
+import java.nio.file.Path
 import flatgraph.codegen.CodeSnippets.{FilterSteps, NewNodeInserters}
 import flatgraph.codegen.Helpers._
+import flatgraph.schema.{
+  AbstractNodeType,
+  AdjacentNode,
+  ContainedNode,
+  Direction,
+  EdgeType,
+  MarkerTrait,
+  NodeBaseType,
+  NodeType,
+  Property,
+  Schema
+}
 import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
-import flatgraph.schema._
 
-import java.nio.file.Path
 import scala.collection.mutable
 
-class DomainClassesGenerator(schema: flatgraph.codegen.Schema) {
+class DomainClassesGenerator(schema: Schema) {
   private var enableScalafmt               = true
   private var scalafmtConfig: Option[Path] = None
+  private var scala3Features               = false
 
   def disableScalafmt: this.type = {
     enableScalafmt = false
+    this
+  }
+
+  def withScala3Features: this.type = {
+    scala3Features = true
     this
   }
 
@@ -384,7 +401,11 @@ class DomainClassesGenerator(schema: flatgraph.codegen.Schema) {
       }.mkString("\n")
       // format: on
 
-      val unapplyBody = productElements.map(name => s"$name = node.$name").mkString("(", ", ", ")")
+      val unapplyDef =
+        if (scala3Features) {
+          val unapplyBody = productElements.map(name => s"$name = node.$name").mkString("(", ", ", ")")
+          s"\n  def unapply(node: ${nodeType.className}Base) = $unapplyBody"
+        } else ""
 
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
         es.toSeq.sortBy(_._1).map { case (k, vs) => s"$k -> Set(${vs.toSeq.sorted.mkString(", ")})" }.mkString(", ")
@@ -447,9 +468,7 @@ class DomainClassesGenerator(schema: flatgraph.codegen.Schema) {
            |}
            |
            |object ${nodeType.className} {
-           |  val Label = "${nodeType.name}"
-           |
-           |  def unapply(node: ${nodeType.className}Base) = $unapplyBody
+           |  val Label = "${nodeType.name}"$unapplyDef
            |}
            |
            |${commentForNodeType(nodeType)}
@@ -1535,7 +1554,7 @@ class DomainClassesGenerator(schema: flatgraph.codegen.Schema) {
     propertyKindByProperty: Map[Property[?], Int]
   )
 
-  private def relevantPropertyContexts(schema: flatgraph.codegen.Schema): PropertyContexts = {
+  private def relevantPropertyContexts(schema: Schema): PropertyContexts = {
     val relevantPropertiesSet = mutable.HashSet.empty[Property[?]]
     val containingByName      = mutable.HashMap.empty[String, mutable.HashSet[NodeType]]
 

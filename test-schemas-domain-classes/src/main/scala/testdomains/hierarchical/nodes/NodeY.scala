@@ -20,8 +20,6 @@ trait NodeYBase extends AbstractNode with BaseNodeBase with StaticType[NodeYEMT]
 
 object NodeY {
   val Label = "node_y"
-
-  def unapply(node: NodeYBase) = (name = node.name)
 }
 
 /** * NODE PROPERTIES:

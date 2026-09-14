@@ -20,8 +20,6 @@ trait NodeXBase extends AbstractNode with BaseNodeBase with StaticType[NodeXEMT]
 
 object NodeX {
   val Label = "node_x"
-
-  def unapply(node: NodeXBase) = (name = node.name)
 }
 
 /** * NODE PROPERTIES:
