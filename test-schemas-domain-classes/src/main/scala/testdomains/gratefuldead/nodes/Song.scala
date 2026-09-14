@@ -22,6 +22,8 @@ trait SongBase extends AbstractNode with StaticType[SongEMT] {
 
 object Song {
   val Label = "song"
+
+  def unapply(node: SongBase) = (name = node.name, performances = node.performances, songtype = node.songtype)
 }
 
 /** * NODE PROPERTIES:

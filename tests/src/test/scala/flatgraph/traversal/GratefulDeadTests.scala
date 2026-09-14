@@ -30,6 +30,7 @@ class GratefulDeadTests extends AnyWordSpec {
     gratefulDead.song.writtenBy.name.l shouldBe List("Bo_Diddley")
     gratefulDead.ids(0L, 1L << 32).l shouldBe List(boDiddley.storedRef.get, heyBoDiddley.storedRef.get)
     gratefulDead.id(2L).l shouldBe List.empty
+    List(Song(name = "HEY BO DIDDLEY")) = gratefulDead.id(2L).l
   }
 
   lazy val gratefulDead = {

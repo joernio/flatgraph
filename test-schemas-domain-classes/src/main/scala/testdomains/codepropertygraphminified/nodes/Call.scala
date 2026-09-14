@@ -22,6 +22,8 @@ trait CallBase extends AbstractNode with CallReprBase with StaticType[CallEMT] {
 
 object Call {
   val Label = "CALL"
+
+  def unapply(node: CallBase) = (dispatchType = node.dispatchType, name = node.name, order = node.order)
 }
 
 /** * NODE PROPERTIES:

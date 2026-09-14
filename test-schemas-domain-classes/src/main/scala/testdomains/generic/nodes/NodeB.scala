@@ -20,6 +20,8 @@ trait NodeBBase extends AbstractNode with StaticType[NodeBEMT] {
 
 object NodeB {
   val Label = "node_b"
+
+  def unapply(node: NodeBBase) = (stringOptional = node.stringOptional)
 }
 
 /** * NODE PROPERTIES:

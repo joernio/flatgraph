@@ -1,26 +1,15 @@
 package flatgraph.codegen
 
-import java.nio.file.Path
 import flatgraph.codegen.CodeSnippets.{FilterSteps, NewNodeInserters}
 import flatgraph.codegen.Helpers._
-import flatgraph.schema.{
-  AbstractNodeType,
-  AdjacentNode,
-  ContainedNode,
-  Direction,
-  EdgeType,
-  MarkerTrait,
-  NodeBaseType,
-  NodeType,
-  Property,
-  Schema
-}
 import flatgraph.schema.Helpers._
 import flatgraph.schema.Property.{Cardinality, Default, ValueType}
+import flatgraph.schema._
 
+import java.nio.file.Path
 import scala.collection.mutable
 
-class DomainClassesGenerator(schema: Schema) {
+class DomainClassesGenerator(schema: flatgraph.codegen.Schema) {
   private var enableScalafmt               = true
   private var scalafmtConfig: Option[Path] = None
 
@@ -395,6 +384,8 @@ class DomainClassesGenerator(schema: Schema) {
       }.mkString("\n")
       // format: on
 
+      val unapplyBody = productElements.map(name => s"$name = node.$name").mkString("(", ", ", ")")
+
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
         es.toSeq.sortBy(_._1).map { case (k, vs) => s"$k -> Set(${vs.toSeq.sorted.mkString(", ")})" }.mkString(", ")
 
@@ -457,6 +448,8 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |object ${nodeType.className} {
            |  val Label = "${nodeType.name}"
+           |
+           |  def unapply(node: ${nodeType.className}Base) = $unapplyBody
            |}
            |
            |${commentForNodeType(nodeType)}
@@ -1542,7 +1535,7 @@ class DomainClassesGenerator(schema: Schema) {
     propertyKindByProperty: Map[Property[?], Int]
   )
 
-  private def relevantPropertyContexts(schema: Schema): PropertyContexts = {
+  private def relevantPropertyContexts(schema: flatgraph.codegen.Schema): PropertyContexts = {
     val relevantPropertiesSet = mutable.HashSet.empty[Property[?]]
     val containingByName      = mutable.HashMap.empty[String, mutable.HashSet[NodeType]]
 
