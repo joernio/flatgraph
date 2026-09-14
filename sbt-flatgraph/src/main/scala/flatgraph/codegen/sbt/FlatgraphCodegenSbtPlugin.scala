@@ -28,7 +28,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
     lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
       generateDomainClasses                     := generateDomainClassesTask.value,
       generateDomainClassesCheck                := generateDomainClassesCheckTask.value,
-      generateDomainClasses / disableFormatting := false,
+      generateDomainClasses / disableFormatting := false
     )
   }
   import autoImport._
@@ -51,7 +51,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       val invalidateOnChangesInValue = (generateDomainClasses / invalidateOnChangesIn).value
 
       val disableFormattingParamMaybe = if ((generateDomainClasses / disableFormatting).value) "--noformat" else ""
-      val scala3ParamMaybe = if ((generateDomainClasses / scala3).value) "--scala3" else ""
+      val scala3ParamMaybe            = if ((generateDomainClasses / scala3).value) "--scala3" else ""
 
       val scalafmtConfigFileMaybe = {
         val file = (generateDomainClasses / scalafmtConfig).value
@@ -103,7 +103,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       val tempOutputDir        = target.value / "generate-domain-classes-check"
 
       val disableFormattingParamMaybe = if ((generateDomainClasses / disableFormatting).value) "--noformat" else ""
-      val scala3ParamMaybe = if ((generateDomainClasses / scala3).value) "--scala3" else ""
+      val scala3ParamMaybe            = if ((generateDomainClasses / scala3).value) "--scala3" else ""
 
       val scalafmtConfigFileMaybe = {
         val file = (generateDomainClasses / scalafmtConfig).value
