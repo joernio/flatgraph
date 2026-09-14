@@ -22,6 +22,7 @@ trait SongBase extends AbstractNode with StaticType[SongEMT] {
 
 object Song {
   val Label = "song"
+
 }
 
 /** * NODE PROPERTIES:

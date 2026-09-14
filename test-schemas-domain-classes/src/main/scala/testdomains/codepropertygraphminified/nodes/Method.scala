@@ -20,6 +20,7 @@ trait MethodBase extends AbstractNode with DeclarationBase with StaticType[Metho
 
 object Method {
   val Label = "METHOD"
+
 }
 
 /** * NODE PROPERTIES:

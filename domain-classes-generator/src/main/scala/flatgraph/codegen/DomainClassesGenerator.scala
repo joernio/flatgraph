@@ -404,7 +404,7 @@ class DomainClassesGenerator(schema: Schema) {
       val unapplyDef =
         if (scala3Features) {
           val unapplyBody = productElements.map(name => s"$name = node.$name").mkString("(", ", ", ")")
-          s"\n  def unapply(node: ${nodeType.className}Base) = $unapplyBody"
+          s"  def unapply(node: ${nodeType.className}Base) = $unapplyBody"
         } else ""
 
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
@@ -468,7 +468,8 @@ class DomainClassesGenerator(schema: Schema) {
            |}
            |
            |object ${nodeType.className} {
-           |  val Label = "${nodeType.name}"$unapplyDef
+           |  val Label = "${nodeType.name}"
+           |  $unapplyDef
            |}
            |
            |${commentForNodeType(nodeType)}

@@ -20,6 +20,7 @@ trait ArtistBase extends AbstractNode with StaticType[ArtistEMT] {
 
 object Artist {
   val Label = "artist"
+
 }
 
 /** * NODE PROPERTIES:
