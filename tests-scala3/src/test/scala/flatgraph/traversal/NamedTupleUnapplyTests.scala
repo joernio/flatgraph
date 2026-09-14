@@ -26,10 +26,8 @@ class NamedTupleUnapplyTests extends AnyWordSpec {
     }
 
     "destructure an Artist node" in {
-      val garcia       = NewArtist().name("Garcia")
-      val gratefulDead = GratefulDead.from(_.addNode(garcia))
-
-      val Artist(name = "Garcia") = gratefulDead.artist.head.runtimeChecked
+      val garcia                  = NewArtist().name("Garcia")
+      val Artist(name = "Garcia") = garcia.runtimeChecked
     }
   }
 }
