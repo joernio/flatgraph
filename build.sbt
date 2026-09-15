@@ -22,7 +22,9 @@ lazy val root = (project in file(".")).aggregate(
   odbConvert,
   testSchemas,
   testSchemasDomainClasses,
+  testSchemasDomainClassesScala3,
   tests,
+  testsScala3,
 )
 
 lazy val core = project
@@ -62,6 +64,7 @@ lazy val formats = project
   )
 
 lazy val generateDomainClassesForTestSchemas = taskKey[Unit]("generate domain classes for test schemas")
+lazy val generateDomainClassesForTestSchemasScala3 = taskKey[Unit]("generate domain classes for test schemas (scala3 features)")
 
 /** tests that make use of the sample schemas (and the corresponding generated domain classes) */
 lazy val tests = project
@@ -164,6 +167,26 @@ lazy val testSchemas = project
         }
       }
     }.value,
+    generateDomainClassesForTestSchemasScala3 := Def.taskDyn {
+      val lastKnownHashsumFile = target.value / "codegen-inputs-hash-scala3.md5"
+      def lastKnownHashsum: Option[String] = scala.util.Try(IO.read(lastKnownHashsumFile)).toOption
+      val inputsHashsum = FileUtils.md5(
+        sourceDirectory.value,
+        file("build.sbt"),
+        (ThisBuild / baseDirectory).value / "domain-classes-generator/src",
+      )
+
+      if (lastKnownHashsum == Some(inputsHashsum)) {
+        Def.task {
+          streams.value.log.info("no need to regenerate scala3 domain classes for test schemas")
+        }
+      } else {
+        Def.task {
+          (Compile/runMain).toTask(s" flatgraph.testdomains.GenerateDomainClassesScala3").value
+          IO.write(lastKnownHashsumFile, inputsHashsum)
+        }
+      }
+    }.value,
   )
 
 lazy val testSchemasDomainClasses = project
@@ -172,6 +195,23 @@ lazy val testSchemasDomainClasses = project
   .settings(
     name := "test-schemas-domain-classes",
     Compile/compile := (Compile/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemas).value,
+    publish / skip := true,
+  )
+
+lazy val testSchemasDomainClassesScala3 = project
+  .in(file("test-schemas-domain-classes-scala3"))
+  .dependsOn(core, help)
+  .settings(
+    name := "test-schemas-domain-classes-scala3",
+    Compile/compile := (Compile/compile).dependsOn(testSchemas/generateDomainClassesForTestSchemasScala3).value,
+    publish / skip := true,
+  )
+
+lazy val testsScala3 = project
+  .in(file("tests-scala3"))
+  .dependsOn(core, testSchemasDomainClassesScala3)
+  .settings(
+    name := "flatgraph-tests-scala3",
     publish / skip := true,
   )
 

@@ -23,9 +23,15 @@ import scala.collection.mutable
 class DomainClassesGenerator(schema: Schema) {
   private var enableScalafmt               = true
   private var scalafmtConfig: Option[Path] = None
+  private var scala3Features               = false
 
   def disableScalafmt: this.type = {
     enableScalafmt = false
+    this
+  }
+
+  def withScala3Features: this.type = {
+    scala3Features = true
     this
   }
 
@@ -395,6 +401,12 @@ class DomainClassesGenerator(schema: Schema) {
       }.mkString("\n")
       // format: on
 
+      val unapplyDef =
+        if (scala3Features) {
+          val unapplyBody = productElements.map(name => s"$name = node.$name").mkString("(", ", ", ")")
+          s"  def unapply(node: ${nodeType.className}Base) = $unapplyBody"
+        } else ""
+
       def neighborEdgeStr(es: Map[String, Set[String]]): String =
         es.toSeq.sortBy(_._1).map { case (k, vs) => s"$k -> Set(${vs.toSeq.sorted.mkString(", ")})" }.mkString(", ")
 
@@ -457,6 +469,7 @@ class DomainClassesGenerator(schema: Schema) {
            |
            |object ${nodeType.className} {
            |  val Label = "${nodeType.name}"
+           |  $unapplyDef
            |}
            |
            |${commentForNodeType(nodeType)}

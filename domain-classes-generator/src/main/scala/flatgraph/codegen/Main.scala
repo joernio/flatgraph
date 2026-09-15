@@ -10,7 +10,8 @@ object Main {
     fieldName: String,
     outputDir: Path,
     disableScalafmt: Boolean = false,
-    scalafmtConfig: Option[Path] = None
+    scalafmtConfig: Option[Path] = None,
+    scala3Features: Boolean = false
   )
 
   def main(args: Array[String]) = {
@@ -37,14 +38,17 @@ object Main {
         opt[Path]("scalafmtConfig")
           .valueName(".scalafmt")
           .action((x, c) => c.copy(scalafmtConfig = Option(x)))
-          .text("path to scalafmt config file (e.g. .scalafmt)")
+          .text("path to scalafmt config file (e.g. .scalafmt)"),
+        opt[Unit]("scala3")
+          .action((_, c) => c.copy(scala3Features = true))
+          .text("generate Scala 3 specific features (e.g. named tuple unapply)")
       )
     }
 
     OParser.parse(parser, args, Config("", "", null)).foreach(execute)
 
     def execute(config: Config): Seq[Path] = config match {
-      case Config(classWithSchema, fieldName, outputDir, disableScalafmt, scalafmtConfig) =>
+      case Config(classWithSchema, fieldName, outputDir, disableScalafmt, scalafmtConfig, scala3Features) =>
         val classLoader = getClass.getClassLoader
         val clazz       = classLoader.loadClass(classWithSchema)
         val field       = clazz.getDeclaredField(fieldName)
@@ -58,6 +62,7 @@ object Main {
 
         val codegen = new DomainClassesGenerator(schema)
         if (disableScalafmt) codegen.disableScalafmt
+        if (scala3Features) codegen.withScala3Features
         scalafmtConfig.foreach(codegen.withScalafmtConfig)
         codegen.run(outputDir)
     }

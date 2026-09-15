@@ -23,6 +23,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       "(static) field name for schema within the specified `classWithSchema` with schema field, e.g. `org.example.MyDomain$`"
     )
     val disableFormatting = settingKey[Boolean]("disable automatic scalafmt invocation")
+    val scala3 = settingKey[Boolean]("generate code that requires Scala 3 (and has some additional features)").withRank(KeyRanks.Invisible)
 
     lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
       generateDomainClasses                     := generateDomainClassesTask.value,
@@ -49,9 +50,8 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       val outputDirValue             = (generateDomainClasses / outputDir).value
       val invalidateOnChangesInValue = (generateDomainClasses / invalidateOnChangesIn).value
 
-      val disableFormattingParamMaybe =
-        if ((generateDomainClasses / disableFormatting).value) "--noformat"
-        else ""
+      val disableFormattingParamMaybe = if ((generateDomainClasses / disableFormatting).value) "--noformat" else ""
+      val scala3ParamMaybe            = if ((generateDomainClasses / scala3).value) "--scala3" else ""
 
       val scalafmtConfigFileMaybe = {
         val file = (generateDomainClasses / scalafmtConfig).value
@@ -84,7 +84,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
         Def.task {
           (Compile / runMain)
             .toTask(
-              s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$outputDirValue $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
+              s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$outputDirValue $disableFormattingParamMaybe $scala3ParamMaybe $scalafmtConfigFileMaybe"
             )
             .value
           IO.write(schemaAndDependenciesHashFile, currentSchemaAndDependenciesHash)
@@ -102,9 +102,8 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       val outputDirValue       = (generateDomainClasses / outputDir).value
       val tempOutputDir        = target.value / "generate-domain-classes-check"
 
-      val disableFormattingParamMaybe =
-        if ((generateDomainClasses / disableFormatting).value) "--noformat"
-        else ""
+      val disableFormattingParamMaybe = if ((generateDomainClasses / disableFormatting).value) "--noformat" else ""
+      val scala3ParamMaybe            = if ((generateDomainClasses / scala3).value) "--scala3" else ""
 
       val scalafmtConfigFileMaybe = {
         val file = (generateDomainClasses / scalafmtConfig).value
@@ -115,7 +114,7 @@ object FlatgraphCodegenSbtPlugin extends AutoPlugin {
       Def.task {
         (Compile / runMain)
           .toTask(
-            s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$tempOutputDir $disableFormattingParamMaybe $scalafmtConfigFileMaybe"
+            s" flatgraph.codegen.Main --classWithSchema=$classWithSchemaValue --field=$fieldNameValue --out=$tempOutputDir $disableFormattingParamMaybe $scala3ParamMaybe $scalafmtConfigFileMaybe"
           )
           .value
 

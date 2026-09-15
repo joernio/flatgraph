@@ -22,6 +22,7 @@ trait CallBase extends AbstractNode with CallReprBase with StaticType[CallEMT] {
 
 object Call {
   val Label = "CALL"
+
 }
 
 /** * NODE PROPERTIES:
