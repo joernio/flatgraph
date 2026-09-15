@@ -1,0 +1,11 @@
+common --tool_java_language_version=21
+common --tool_java_runtime_version=remotejdk_21
+common --java_runtime_version=remotejdk_21
+
+# Execute/run binary targets in the same working directory `bazel run ...` is executed.
+# If not set the working directory is set to the targets runfiles directory.
+# This allows e.g. `bazel run //test-schemas:generate-domain-classes` to regenerate
+# the checked-in domain classes in the source tree.
+run --run_in_cwd
+
+try-import user.bazelrc

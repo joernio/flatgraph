@@ -1,5 +1,11 @@
 target
 /project/project/
+
+##############
+# Bazel      #
+##############
+user.bazelrc
+bazel-*
 /cpg.bin
 /cpg.bin.tmp
 /cpg.fg
