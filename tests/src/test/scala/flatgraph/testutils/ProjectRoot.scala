@@ -19,6 +19,16 @@ object ProjectRoot {
     s"$findRelativePath$path"
 
   def findRelativePath: String = {
+    // Under `bazel test`/`bazel run` the working directory already is the main repository's
+    // runfiles root, which mirrors the project root layout (including all `data` files).
+    if (isBazelRunfiles) "./"
+    else findViaGitMarker
+  }
+
+  private def isBazelRunfiles: Boolean =
+    sys.env.contains("TEST_SRCDIR") || sys.env.contains("RUNFILES_DIR")
+
+  private def findViaGitMarker: String = {
     val fileThatOnlyExistsInRoot = ".git"
 
     var currentDepth     = 0

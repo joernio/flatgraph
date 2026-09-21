@@ -1,0 +1,90 @@
+module(name = "flatgraph")
+
+bazel_dep(name = "bazel_tooling")
+bazel_dep(name = "rules_jvm_external", version = "7.0")
+bazel_dep(name = "aspect_rules_lint", version = "2.5.2")
+bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.2")
+
+# Keep in sync with the version used in codescience/MODULE.bazel
+BAZEL_TOOLING_VERSION = "4bcf42cc81b574b91699d696b504637677640871"
+
+git_override(
+    module_name = "bazel_tooling",
+    commit = "{}".format(BAZEL_TOOLING_VERSION),
+    remote = "git@github.com:joernio/bazel_tooling.git",
+)
+
+bazel_dep(name = "rules_scala", version = "7.2.5")
+
+scala_config = use_extension(
+    "@rules_scala//scala/extensions:config.bzl",
+    "scala_config",
+)
+
+# Matches the sbt build (ThisBuild / scalaVersion). n.b. the plus_one_toolchain
+# from bazel_tooling is pinned to this scala version (see BAZEL_TOOLING_VERSION).
+scala_config.settings(
+    scala_version = "3.8.3",
+)
+
+scala_deps = use_extension(
+    "@rules_scala//scala/extensions:deps.bzl",
+    "scala_deps",
+)
+scala_deps.scala()
+scala_deps.scalatest()
+
+register_toolchains("@bazel_tooling//scala_toolchain:plus_one_toolchain")
+
+# Import and configure external maven libraries.
+# Artifact pinning documentation:
+# https://github.com/bazel-contrib/rules_jvm_external/blob/master/docs/bzlmod.md
+# To repin after changing the artifact list: `REPIN=1 bazel run @maven//:pin`
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    name = "maven",
+    artifacts = [
+        "org.slf4j:slf4j-api:2.0.17",
+        "org.slf4j:slf4j-simple:2.0.17",
+        "com.lihaoyi:ujson_3:4.4.1",
+        "com.github.luben:zstd-jni:1.5.7-11",
+        "net.oneandone.reflections8:reflections8:0.11.7",
+        "com.github.tototoshi:scala-csv_3:2.0.0",
+        "org.apache.commons:commons-text:1.13.0",
+        "org.scala-lang.modules:scala-xml_3:2.4.0",
+        "io.spray:spray-json_3:1.3.6",
+        "com.fasterxml.jackson.core:jackson-core:2.17.2",
+        "com.github.scopt:scopt_3:4.1.0",
+        "com.lihaoyi:os-lib_3:0.11.4",
+        "org.scalameta:scalafmt-dynamic_2.13:3.9.6",
+        "io.shiftleft:overflowdb-core_3:1.194",
+        "com.github.pathikrit:better-files_3:3.9.2",
+        "org.scalamock:scalamock_3:7.3.2",
+    ],
+    excluded_artifacts = [
+        # Exclude any scala libraries which might come in transitively.
+        # rules_scala will add the correct scala library for the configured Scala version.
+        # That way we do not have conflicts between different scala library versions on
+        # the build classpath.
+        "org.scala-lang:scala3-library_3",
+        "org.scala-lang:scala-library",
+    ],
+    fetch_sources = True,
+    lock_file = "//:maven_install.json",
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
+)
+use_repo(maven, "maven")
+
+maven.install(
+    name = "format_maven",
+    artifacts = [
+        "org.scalameta:scalafmt-cli_2.13:3.9.6",
+    ],
+    lock_file = "//:format_maven_install.json",
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
+)
+use_repo(maven, "format_maven")
