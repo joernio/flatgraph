@@ -6,7 +6,7 @@ bazel_dep(name = "aspect_rules_lint", version = "2.5.2")
 bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.2")
 
 # Keep in sync with the version used in codescience/MODULE.bazel
-BAZEL_TOOLING_VERSION = "4bcf42cc81b574b91699d696b504637677640871"
+BAZEL_TOOLING_VERSION = "86bbf2be26dc7a2517a56c90e12fd9a6ed20dd25"
 
 git_override(
     module_name = "bazel_tooling",
@@ -14,7 +14,7 @@ git_override(
     remote = "git@github.com:joernio/bazel_tooling.git",
 )
 
-bazel_dep(name = "rules_scala", version = "7.2.5")
+bazel_dep(name = "rules_scala", version = "7.3.0")
 
 scala_config = use_extension(
     "@rules_scala//scala/extensions:config.bzl",
@@ -24,7 +24,7 @@ scala_config = use_extension(
 # Matches the sbt build (ThisBuild / scalaVersion). n.b. the plus_one_toolchain
 # from bazel_tooling is pinned to this scala version (see BAZEL_TOOLING_VERSION).
 scala_config.settings(
-    scala_version = "3.8.3",
+    scala_version = "3.9.0",
 )
 
 scala_deps = use_extension(
