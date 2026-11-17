@@ -45,6 +45,21 @@ class Graph(val schema: Schema, val storagePathMaybe: Option[Path] = None) exten
   private[flatgraph] var hasChangedSinceOpen               = false
   private[flatgraph] val livingNodeCountByKind: Array[Int] = new Array[Int](nodeKindCount)
 
+  private var _identityHash: Int = 0
+
+  /** The graph's identity hash, which `GNode.hashCode` mixes in when `GNode.mixInGraphIdentity` is on. It is taken the first time it is
+    * needed and kept, so only the first node hashed calls `System.identityHashCode`. 0 means not yet taken (HotSpot never gives 0 as an
+    * identity hash); threads that take it at the same time store the same value.
+    */
+  private[flatgraph] def identityHash: Int = {
+    var h = _identityHash
+    if (h == 0) {
+      h = System.identityHashCode(this)
+      _identityHash = h
+    }
+    h
+  }
+
   private[flatgraph] val properties     = new Array[AnyRef](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val inverseIndices = new AtomicReferenceArray[Object](nodeKindCount * propertiesCount * PropertySlotSize)
   private[flatgraph] val nodesArray: Array[Array[GNode]] = makeNodesArray()

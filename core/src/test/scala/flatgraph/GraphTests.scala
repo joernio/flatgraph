@@ -19,6 +19,29 @@ import java.security.MessageDigest
 class GraphTests extends AnyWordSpec with Matchers {
 
   // General tip: If a test fails, add println(debugDump.debugDump(g)) in front, in order to get untruncated "actual" for copy-paste
+  "hash nodes of different kinds on different hashes, and the same in every run with the graph's identity left out" in {
+    val schema = TestSchema.make(2, 1)
+    def build(): Seq[GNode] = {
+      val g = new Graph(schema)
+      TestHelpers.addNodes(g, Seq.tabulate(200)(i => new GenericDNode((i % 2).toShort)))
+    }
+    val order = (nodes: Seq[GNode]) => scala.collection.mutable.HashSet.from(nodes).toSeq.map(n => (n.nodeKind, n.seq))
+    AccessHelpers.getMixInGraphIdentity shouldBe true
+    val (a, b) = (build(), build())
+    a.map(_.hashCode).distinct.size shouldBe a.size
+    a.map(_.hashCode) should not be b.map(_.hashCode)
+    // equality is by identity: the same position in another graph is another node
+    a.head == b.head shouldBe false
+    AccessHelpers.setMixInGraphIdentity(false)
+    try {
+      val (c, d) = (build(), build())
+      c.map(_.hashCode).distinct.size shouldBe c.size
+      c.map(_.hashCode) shouldBe d.map(_.hashCode)
+      c.head == d.head shouldBe false
+      order(c) shouldBe order(d)
+    } finally AccessHelpers.setMixInGraphIdentity(true)
+  }
+
   "basically work for construction" in {
     val schema = TestSchema.make(1, 1)
     val g      = new Graph(schema)

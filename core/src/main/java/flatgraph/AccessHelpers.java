@@ -17,4 +17,14 @@ public class AccessHelpers {
     public static void setSeqId(GNode node, int seqId) {
         node._seqId = seqId;
     }
+
+    /** Whether `GNode.hashCode` mixes in the graph's identity hash. */
+    public static boolean getMixInGraphIdentity() {
+        return GNode.mixInGraphIdentity;
+    }
+
+    /** Sets whether `GNode.hashCode` mixes in the graph's identity hash. Call it only before any node is hashed. */
+    public static void setMixInGraphIdentity(boolean mixInGraphIdentity) {
+        GNode.mixInGraphIdentity = mixInGraphIdentity;
+    }
 }
