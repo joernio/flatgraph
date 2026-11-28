@@ -2,8 +2,6 @@ package flatgraph;
 
 import flatgraph.misc.DebugDump;
 
-import java.util.Objects;
-
 /**
  * A GNode represents a node in a graph. It is basically a glorified pointer.
  */
@@ -52,9 +50,26 @@ public class GNode implements DNodeOrNode {
         return getClass().getName() + "[label=" + label() + "; seq=" + seq() + "; id=" + id() + "]";
     }
 
+    /** Whether `hashCode` mixes in the graph's identity hash. With it on, hash-based collections of nodes iterate in a
+     * different order in every run; with it off, a node hashes the same in every run. On unless the system property
+     * `flatgraph.GNode.mixInGraphIdentity` is `false`. Change it through `AccessHelpers` only before any node is hashed:
+     * a node in a hash-based collection is not found after a change. */
+    static boolean mixInGraphIdentity = !"false".equals(System.getProperty("flatgraph.GNode.mixInGraphIdentity"));
+
+    /** MurmurHash3's 64-bit finalizer applied to `id()`, with the graph's identity hash in the upper half if
+     * `mixInGraphIdentity` is on and the node has a graph, folded to 32 bits. It spreads the nodes of all kinds over
+     * the whole int range. Equality is by identity.
+     * The finalizer is fmix64 in https://github.com/aappleby/smhasher/blob/07bb4de10a63e8cc2e1724865454eba635742383/src/MurmurHash3.cpp#L81-L90 */
     @Override
     public int hashCode() {
-        return Objects.hash(graph, nodeKind, _seqId);
+        long h = id();
+        if (mixInGraphIdentity && graph != null) h ^= (long) graph.identityHash() << 32;
+        h ^= h >>> 33;
+        h *= 0xff51afd7ed558ccdL;
+        h ^= h >>> 33;
+        h *= 0xc4ceb9fe1a85ec53L;
+        h ^= h >>> 33;
+        return (int) (h ^ (h >>> 32));
     }
 
     /** Combines the (32 bit) integer values `nodeKind` and `seq` into one (64 bit) long `id`.
